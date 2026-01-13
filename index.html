@@ -10,24 +10,21 @@
 <div class="container">
   <h1>YourSpace 2026</h1>
 
-  <!-- AUTH -->
-  <div id="authDiv">
+  <div id="auth-container">
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
     <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
+    <button id="loginBtn">Log In</button>
   </div>
 
-  <!-- LOGGED IN -->
-  <div id="appDiv" style="display:none;">
-    <button id="logoutBtn">Logout</button>
-    <h2>🔥 Trending Post</h2>
-    <div id="trendingPost"></div>
-    <h2>Global Feed</h2>
-    <div id="feed"></div>
+  <div id="welcome-container" style="display:none;">
+    <p id="welcomeMsg"></p>
+    <button id="logoutBtn">Log Out</button>
+    <a href="profile.html">Go to Profile</a>
+    <a href="feed.html">Global Feed</a>
   </div>
 </div>
 
-<script type="module" src="feed.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>

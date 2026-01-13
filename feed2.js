@@ -27,6 +27,7 @@ const storage = getStorage(app);
 document.addEventListener("DOMContentLoaded", () => {
 
   // DOM Elements
+  const postImageInput = document.getElementById("postImage");
   const postBtn = document.getElementById("postBtn");
   const postInput = document.getElementById("postText");
   const postsContainer = document.getElementById("postsContainer");

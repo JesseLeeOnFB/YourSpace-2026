@@ -7,32 +7,16 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>My Profile</h1>
-
-<!-- Profile Form -->
-<div id="profileForm">
-  <label for="usernameInput">Username:</label>
-  <input type="text" id="usernameInput">
-
-  <label for="bioInput">Bio:</label>
-  <textarea id="bioInput"></textarea>
-
-  <label for="locationInput">Location:</label>
-  <input type="text" id="locationInput">
-
-  <label for="musicInput">Music URL (embed link):</label>
-  <input type="text" id="musicInput">
-
-  <!-- Profile Photo -->
-  <label for="profilePhotoInput">Profile Photo:</label>
-  <input type="file" id="profilePhotoInput" accept="image/*">
-  <img id="profilePhotoPreview" src="" alt="Profile Photo Preview" style="width:100px; height:100px; border-radius:50%; display:block; margin-top:10px;">
-
+<div class="container">
+  <h1>Profile</h1>
+  <p id="welcomeMsg"></p>
+  <input type="text" id="username" placeholder="Username">
+  <textarea id="bio" placeholder="Bio"></textarea>
+  <input type="text" id="music" placeholder="Music URL">
+  <input type="file" id="photo">
   <button id="saveProfileBtn">Save Profile</button>
+  <button id="logoutBtn">Logout</button>
 </div>
-
-<button id="logoutBtn">Logout</button>
-
 <script type="module" src="profile.js"></script>
 </body>
 </html>

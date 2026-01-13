@@ -112,8 +112,7 @@ nav button:hover {
 }
 .postImage {
   max-width: 100%;
-  max-height: 400px;
-  border-radius: 10px;
-  margin-top: 10px;
-  object-fit: cover;
+  height: auto;
+  margin-top: 5px;
+  border-radius: 5px;
 }

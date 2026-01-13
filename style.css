@@ -110,3 +110,10 @@ nav button:hover {
     flex: 1 1 100%;
   }
 }
+.postImage {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 10px;
+  margin-top: 10px;
+  object-fit: cover;
+}

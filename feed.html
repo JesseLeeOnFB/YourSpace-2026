@@ -1,37 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace-2026 Feed</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode">
+<body>
+<nav>
+  <button onclick="window.location.href='profile.html'">My Profile</button>
+  <button onclick="window.location.href='feed.html'">Global Feed</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <nav>
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<div class="post-box">
+  <input type="text" id="postTitle" placeholder="Title">
+  <textarea id="postContent" placeholder="Write something..."></textarea>
+  <input type="text" id="postImage" placeholder="Image URL">
+  <button id="publishBtn">Publish</button>
+</div>
 
-  <div class="feed-container">
-    <h2>Global Feed</h2>
+<div id="feedContainer"></div>
 
-    <div class="new-post">
-      <input type="text" id="postTitle" placeholder="Title">
-      <textarea id="postContent" placeholder="Write something..."></textarea>
-      <input type="text" id="postImage" placeholder="Image URL (optional)">
-      <button id="publishBtn">Publish</button>
-      <p id="postError" class="error"></p>
-    </div>
-
-    <div id="trendingPost">
-      <h3>🔥 Trending Post</h3>
-      <div id="trendingContainer"></div>
-    </div>
-
-    <div id="postsContainer"></div>
-  </div>
-
-  <script type="module" src="js/feed.js"></script>
+<script type="module" src="feed.js"></script>
 </body>
 </html>

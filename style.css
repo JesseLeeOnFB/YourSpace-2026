@@ -1,51 +1,99 @@
-/* style.css?v=1 */
+/* General page styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f2f5;
+  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
 }
 
+/* Navigation bar */
 nav {
-  background-color: #4267B2;
+  background-color: #333;
   padding: 10px;
   display: flex;
   gap: 10px;
 }
 
 nav button {
-  padding: 8px 12px;
-  background-color: #fff;
+  background-color: #555;
+  color: #fff;
   border: none;
+  padding: 8px 16px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 nav button:hover {
-  background-color: #e4e6eb;
+  background-color: #777;
 }
 
-#postContainer {
-  margin: 20px;
+/* Profile photo */
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}
+
+/* Profile header info */
+.profile-header {
   display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.profile-header h2 {
+  margin: 0;
+}
+
+/* Profile input fields */
+.profile-inputs {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  margin: 20px;
 }
 
-#postContainer input {
-  flex: 1;
+.profile-inputs input {
   padding: 8px;
+  font-size: 16px;
 }
 
+/* Save profile button */
+#saveProfileBtn {
+  padding: 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#saveProfileBtn:hover {
+  background-color: #218838;
+}
+
+/* Posts container */
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+/* Individual post */
 .post {
   background-color: #fff;
-  padding: 10px;
-  margin: 10px 20px;
-  border-radius: 6px;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+  padding: 15px;
+  border-radius: 10px;
+  position: relative;
 }
 
-.post img.profile-pic {
-  width: 50px;       /* Shrinks profile picture */
+.post img.post-photo {
+  width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 50%;
@@ -53,18 +101,35 @@ nav button:hover {
   vertical-align: middle;
 }
 
-.post .post-header {
+.post-header {
   display: flex;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.post button {
-  margin-right: 5px;
+.post-text {
+  margin: 0 0 10px 0;
 }
 
-#trendingPost {
-  margin: 20px;
-  padding: 10px;
-  background-color: #fff3cd;
-  border-radius: 6px;
+.post-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.post-buttons button {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.post-buttons button:hover {
+  background-color: #ddd;
+}
+
+/* Comment section */
+.comment-section {
+  margin-top: 10px;
+  padding-left: 20px;
 }

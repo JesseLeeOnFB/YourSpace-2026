@@ -1,4 +1,4 @@
-// profile.js?v=5
+// profile.js?v=6
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -20,7 +20,6 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // DOM Elements
   const profileImg = document.getElementById("profilePic");
   const photoInput = document.getElementById("photoInput");
@@ -38,13 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      alert("You must be logged in");
       window.location.href = "index.html";
       return;
     }
 
-    // Load profile
-    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const userRef = doc(db, "users", user.uid);
+
+    // Load profile data
+    const userDoc = await getDoc(userRef);
     if (userDoc.exists()) {
       const data = userDoc.data();
       displayNameInput.value = data.displayName || "";
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.customCode) customProfileDiv.innerHTML = data.customCode;
     }
 
-    // Save profile info
+    // Save profile updates
     saveProfileBtn.addEventListener("click", async () => {
       const updates = {
         displayName: displayNameInput.value,
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         profileImg.src = updates.photoURL;
       }
 
-      await setDoc(doc(db, "users", user.uid), updates, { merge: true });
+      await setDoc(userRef, updates, { merge: true });
       alert("Profile updated!");
     });
 
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveCustomBtn.addEventListener("click", async () => {
       const customHTML = customCodeInput.value;
       customProfileDiv.innerHTML = customHTML;
-      await setDoc(doc(db, "users", user.uid), { customCode: customHTML }, { merge: true });
+      await setDoc(userRef, { customCode: customHTML }, { merge: true });
       alert("Custom profile updated!");
     });
 
@@ -95,7 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
         postDiv.innerHTML = `
           <p><strong>${data.displayName}</strong></p>
           <p>${data.text}</p>
-          <button class="deleteBtn">Delete</button>
+          <div class="postButtons">
+            <button class="deleteBtn">Delete</button>
+          </div>
         `;
         userPostsContainer.appendChild(postDiv);
 

@@ -2,55 +2,123 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Yourspace</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Dark mode & basic styles -->
+  <title>YourSpace 2026</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 0; }
-    input, button, textarea { margin: 5px 0; padding: 8px; border-radius: 4px; border: none; }
-    #profileDashboard { display: none; }
-    #postList div { margin-bottom: 10px; padding: 8px; background-color: #1e1e1e; border-radius: 5px; }
-    .deleteBtn { cursor: pointer; color: red; margin-left: 10px; }
+    /* MySpace-inspired dark theme */
+    body {
+      background: linear-gradient(#1a1a1a, #0d0d0d);
+      color: #fff;
+      font-family: 'Verdana', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #111;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+    }
+    button {
+      background-color: #00ffcc;
+      color: #111;
+      border: none;
+      padding: 5px 10px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    #login-signup {
+      display: flex;
+      gap: 5px;
+    }
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .hidden { display: none; }
+    input, textarea {
+      width: 100%;
+      margin: 5px 0 15px 0;
+      padding: 5px;
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #00ffcc;
+    }
+    .profile-section {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #00ffcc;
+      background-color: #111;
+    }
+    .post {
+      border: 1px solid #00ffcc;
+      padding: 10px;
+      margin-bottom: 15px;
+      background-color: #111;
+    }
+    .post img { max-width: 100%; }
+    .post audio { width: 100%; margin-top: 5px; }
   </style>
 </head>
 <body>
+  <header>
+    <h1>YourSpace 2026</h1>
+    <div id="login-signup">
+      <button id="login-btn">Login</button>
+      <button id="signup-btn">Sign Up</button>
+      <button id="logout-btn" class="hidden">Logout</button>
+    </div>
+  </header>
 
-  <!-- AUTH SECTION -->
-  <div id="authSection">
-    <h1>Yourspace</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Login</button>
-  </div>
+  <main>
+    <!-- Welcome -->
+    <div id="welcome" class="hidden">
+      <h2>Welcome, <span id="username-display"></span></h2>
+    </div>
 
-  <!-- POST SECTION -->
-  <div id="postSection" style="display:none;">
-    <h2>Create Post</h2>
-    <input type="text" id="postTitle" placeholder="Title">
-    <textarea id="postContent" placeholder="Write something..."></textarea>
-    <input type="text" id="postImage" placeholder="Image URL">
-    <button id="createPostBtn">Post</button>
-    <h3>Your Posts</h3>
-    <div id="postList"></div>
-  </div>
+    <!-- Profile Customization -->
+    <div id="profile-section" class="profile-section hidden">
+      <h3>Profile Customization</h3>
+      <label>Username:</label>
+      <input type="text" id="username-input" placeholder="Your username">
+      <label>Background color/CSS:</label>
+      <input type="text" id="bg-input" placeholder="CSS color or gradient">
+      <label>Music URL:</label>
+      <input type="text" id="music-input" placeholder="Direct .mp3 or embed URL">
+      <button id="save-profile-btn">Save Profile</button>
+    </div>
 
-  <!-- PROFILE DASHBOARD -->
-  <div id="profileDashboard">
-    <h2>Profile Dashboard</h2>
-    <input type="text" id="displayName" placeholder="Display Name">
-    <button id="saveDisplayName">Save Name</button>
-    <input type="text" id="profileTheme" placeholder="CSS / Background color">
-    <button id="saveTheme">Save Theme</button>
-    <input type="text" id="profileMusic" placeholder="Music URL (audio tag)">
-    <button id="saveMusicProfile">Save Music</button>
-    <button id="logoutBtn">Logout</button>
-  </div>
+    <!-- Create Post -->
+    <div id="create-post-section" class="hidden">
+      <h3>Create a Post</h3>
+      <label>Title:</label>
+      <input type="text" id="post-title" placeholder="Post title">
+      <label>Content:</label>
+      <textarea id="post-content" rows="3" placeholder="Write something..."></textarea>
+      <label>Image URL (optional):</label>
+      <input type="text" id="post-image" placeholder="Direct image URL">
+      <label>Music URL (optional):</label>
+      <input type="text" id="post-music" placeholder="Direct .mp3 or embed URL">
+      <button id="create-post-btn">Create Post</button>
+    </div>
 
-  <!-- MUSIC PLAYER -->
-  <div id="musicPlayer"></div>
+    <!-- Feed -->
+    <div id="feed">
+      <h3>Feed</h3>
+      <div id="posts-container"></div>
+    </div>
+  </main>
 
-  <!-- FIREBASE + SCRIPT -->
   <script type="module" src="script.js"></script>
 </body>
 </html>

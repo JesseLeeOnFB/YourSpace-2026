@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourSpace Feed</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="feed.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="nav-bar">
-        <button onclick="location.href='index.html'">Home</button>
-        <button onclick="location.href='profile.html'">Profile</button>
-        <button id="logoutBtn">Logout</button>
-    </nav>
 
-    <div class="post-section">
-        <input type="text" id="postInput" placeholder="What's on your mind?">
-        <button id="postBtn">Post</button>
-    </div>
+<nav>
+    <button onclick="location.href='feed.html'">Global Feed</button>
+    <button onclick="location.href='profile.html'">Profile</button>
+    <button id="logoutBtn">Logout</button>
+</nav>
 
-    <div id="feedContainer" class="feed-container">
-        <!-- Posts will appear here -->
-    </div>
+<h2>Global Feed</h2>
+
+<div class="new-post">
+    <input type="text" id="postContent" placeholder="What's up?">
+    <button id="publishBtn">Publish</button>
+</div>
+
+<h3>Trending Post (Updated Hourly)</h3>
+<div id="trendingPost"></div>
+
+<h3>All Posts</h3>
+<div id="postsContainer"></div>
+
+<script type="module" src="feed.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>

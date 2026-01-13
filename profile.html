@@ -1,47 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="script.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Your Profile</h1>
+<div class="container">
+  <h1>Your Profile</h1>
 
-    <!-- Username -->
-    <label>Username:</label>
-    <input type="text" id="usernameInput" placeholder="Enter your username">
-
-    <!-- Bio -->
-    <label>Bio:</label>
-    <textarea id="bioInput" placeholder="Tell us about yourself"></textarea>
-
-    <!-- Profile Picture -->
-    <label>Profile Picture:</label>
-    <input type="file" id="photoInput" accept="image/*">
-
-    <!-- Background / CSS -->
-    <label>Profile Theme (CSS or color):</label>
-    <input type="text" id="cssInput" placeholder="e.g., #222222 or custom CSS">
-
-    <!-- Music URL -->
-    <label>Music URL (mp3 link):</label>
-    <input type="text" id="musicInput" placeholder="Link to audio file">
-
-    <!-- Buttons -->
+  <div id="profileDiv">
+    <input type="text" id="username" placeholder="Username">
+    <textarea id="bio" placeholder="Bio"></textarea>
+    <input type="text" id="location" placeholder="Location">
+    <input type="text" id="themeColor" placeholder="Theme Color (#hex)">
+    <input type="text" id="musicUrl" placeholder="Music URL (embed link)">
+    <input type="file" id="profileImage" accept="image/*">
     <button id="saveProfileBtn">Save Profile</button>
     <button id="logoutBtn">Logout</button>
-    
-    <!-- Preview -->
-    <h2>Preview</h2>
-    <div id="profilePreview">
-      <img id="previewPhoto" src="" alt="Profile Photo">
-      <h3 id="previewUsername"></h3>
-      <p id="previewBio"></p>
-      <audio id="previewMusic" controls></audio>
-    </div>
   </div>
+
+  <h2>Create a Post</h2>
+  <textarea id="postContent" placeholder="Write something..."></textarea>
+  <input type="text" id="postImageUrl" placeholder="Image URL">
+  <button id="createPostBtn">Post</button>
+
+  <h2>Your Posts</h2>
+  <div id="userPosts"></div>
+</div>
+
+<script type="module" src="script.js"></script>
 </body>
 </html>

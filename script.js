@@ -4,7 +4,13 @@ console.log("🔥 script.js loaded");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// 🎯 Get DOM elements
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -114,6 +120,7 @@ async function loadPosts() {
 
 // Auto-load posts every 5s for demo
 setInterval(loadPosts, 5000);
+
 
 
 

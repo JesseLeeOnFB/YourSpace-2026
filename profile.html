@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - YourSpace</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode">
+<body>
+<nav>
+  <button onclick="window.location.href='feed.html'">Global Feed</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <nav>
-    <button id="homeBtn">Home</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<div class="profile-box">
+  <h2>Profile Settings</h2>
+  <input type="text" id="profileUsername" placeholder="Username">
+  <input type="text" id="profileBio" placeholder="Bio">
+  <input type="text" id="profileLocation" placeholder="Location">
+  <input type="text" id="profileMusic" placeholder="Music URL (audio)">
+  <textarea id="profileTheme" placeholder="Custom HTML/CSS for profile"></textarea>
+  <input type="file" id="profilePhoto">
+  <button id="saveProfileBtn">Save Profile</button>
+</div>
 
-  <div class="profile-container">
-    <h2>My Profile</h2>
+<div class="user-posts-container"></div>
 
-    <img id="profilePicPreview" src="assets/placeholder.png" alt="Profile Picture" class="profile-pic">
-    <input type="file" id="profilePicInput" accept="image/*">
-    <input type="text" id="usernameInput" placeholder="Username">
-    <input type="text" id="locationInput" placeholder="Location">
-    <textarea id="bioInput" placeholder="Bio"></textarea>
-    <input type="text" id="musicInput" placeholder="Music URL (optional)">
-    <textarea id="themeInput" placeholder="Custom HTML/CSS for profile (optional)"></textarea>
-    <button id="saveProfileBtn">Save Profile</button>
-    <p id="profileError" class="error"></p>
-
-    <h3>My Posts</h3>
-    <div id="myPostsContainer"></div>
-  </div>
-
-  <script type="module" src="js/profile.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YourSpace 2026 - Feed</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <h1>Global Feed</h1>
+
+  <!-- Create Post -->
+  <div id="postContainer">
+    <input type="text" id="postText" placeholder="Write something...">
+    <button id="postBtn">Post</button>
+  </div>
+
+  <!-- Feed Display -->
+  <div id="postsContainer"></div>
+
+  <h2>Trending Post (hourly)</h2>
+  <div id="trendingPost"></div>
+
+  <!-- JS -->
+  <script type="module" src="feed.js"></script>
+</body>
+</html>

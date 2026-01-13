@@ -1,9 +1,8 @@
-// /YourSpace-2026/script.js
 console.log("🔥 script.js loaded");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -19,7 +18,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM
+// DOM elements
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const emailInput = document.getElementById("email");
@@ -32,22 +31,12 @@ signupBtn.addEventListener("click", async () => {
   const password = passwordInput.value.trim();
   const displayName = displayNameInput.value.trim();
 
-  if (!email || !password || !displayName) return alert("Fill all fields");
+  if (!email || !password || !displayName) return alert("Fill in all fields");
 
   try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCred.user;
-
-    // Save displayName in Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      displayName,
-      bio: "",
-      location: "",
-      photoURL: "",
-      musicURL: "",
-      themeCSS: ""
-    });
-
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(auth.currentUser, { displayName });
+    await setDoc(doc(db, "users", userCredential.user.uid), { displayName, bio: "", location: "", photoURL: "", theme: "", music: "" });
     window.location.href = "feed.html";
   } catch (err) {
     alert(err.message);
@@ -58,9 +47,6 @@ signupBtn.addEventListener("click", async () => {
 loginBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-
-  if (!email || !password) return alert("Fill all fields");
-
   try {
     await signInWithEmailAndPassword(auth, email, password);
     window.location.href = "feed.html";

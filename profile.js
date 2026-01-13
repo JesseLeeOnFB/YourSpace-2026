@@ -1,98 +1,103 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { firebaseConfig } from "../firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Elements
+const homeBtn = document.getElementById("homeBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicPreview = document.getElementById("profilePicPreview");
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const musicInput = document.getElementById("musicInput");
-const profilePicInput = document.getElementById("profilePicInput");
-const customHTMLInput = document.getElementById("customHTMLInput");
-const saveBtn = document.getElementById("saveProfileBtn");
-const userPostsContainer = document.getElementById("userPostsContainer");
-const homeBtn = document.getElementById("homeBtn");
-const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+const themeInput = document.getElementById("themeInput");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const profileError = document.getElementById("profileError");
+
+const myPostsContainer = document.getElementById("myPostsContainer");
 
 // Navigation
-homeBtn.onclick = () => window.location.href = "feed.html";
-profileBtn.onclick = () => window.location.href = "profile.html";
-logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+homeBtn.addEventListener("click", () => location.href="feed.html");
+logoutBtn.addEventListener("click", () => auth.signOut().then(()=> location.href="index.html"));
+
+// Auth check
+onAuthStateChanged(auth, async user => {
+    if (!user) location.href = "index.html";
+    else {
+        loadProfile();
+        loadMyPosts();
+    }
+});
+
+// Save profile
+saveProfileBtn.addEventListener("click", async () => {
+    try {
+        let photoURL = profilePicPreview.src;
+        if (profilePicInput.files[0]) {
+            const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
+            await uploadBytes(storageRef, profilePicInput.files[0]);
+            photoURL = await getDownloadURL(storageRef);
+        }
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+            username: usernameInput.value,
+            bio: bioInput.value,
+            location: locationInput.value,
+            music: musicInput.value,
+            theme: themeInput.value,
+            photoURL: photoURL
+        });
+        profileError.textContent = "Profile saved!";
+    } catch(err) {
+        profileError.textContent = err.message;
+    }
+});
 
 // Load profile
 async function loadProfile() {
-  const user = auth.currentUser;
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDocs(collection(db, "users"));
-  const userData = (await userRef.get()).data();
-
-  usernameInput.value = userData.username || "";
-  bioInput.value = userData.bio || "";
-  locationInput.value = userData.location || "";
-  musicInput.value = userData.musicURL || "";
-  profilePicInput.value = userData.profilePicURL || "";
-  customHTMLInput.value = userData.customHTML || "";
-
-  loadUserPosts();
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        usernameInput.value = data.username || "";
+        bioInput.value = data.bio || "";
+        locationInput.value = data.location || "";
+        musicInput.value = data.music || "";
+        themeInput.value = data.theme || "";
+        profilePicPreview.src = data.photoURL || "assets/placeholder.png";
+    }
 }
-
-// Save profile
-saveBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  const userRef = doc(db, "users", user.uid);
-
-  await setDoc(userRef, {
-    username: usernameInput.value,
-    bio: bioInput.value,
-    location: locationInput.value,
-    musicURL: musicInput.value,
-    profilePicURL: profilePicInput.value,
-    customHTML: customHTMLInput.value
-  }, { merge: true });
-
-  alert("Profile saved!");
-  loadProfile();
-});
 
 // Load user posts
-async function loadUserPosts() {
-  userPostsContainer.innerHTML = "";
-  const user = auth.currentUser;
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    if (data.userId === user.uid) {
-      const div = document.createElement("div");
-      div.classList.add("post");
-      div.innerHTML = `
-        <img src="${data.profilePicURL || 'placeholder.jpg'}" class="post-profile-pic">
-        <h3>${data.username}</h3>
-        <p>${data.content}</p>
-        ${data.imageURL ? `<img src="${data.imageURL}"/>` : ""}
-      `;
-      userPostsContainer.appendChild(div);
-    }
-  });
+async function loadMyPosts() {
+    myPostsContainer.innerHTML = "";
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, orderBy("timestamp", "desc"));
+    const snapshot = await getDocs(q);
+    snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (data.userId === auth.currentUser.uid) {
+            const postEl = document.createElement("div");
+            postEl.className = "post";
+            postEl.innerHTML = `
+                <h4>${data.title}</h4>
+                <p>${data.content}</p>
+                ${data.image ? `<img src="${data.image}" class="post-img">` : ""}
+                <button class="deleteBtn">Delete</button>
+            `;
+            const deleteBtn = postEl.querySelector(".deleteBtn");
+            deleteBtn.addEventListener("click", async () => {
+                await deleteDoc(doc(db, "posts", docSnap.id));
+                loadMyPosts();
+            });
+            myPostsContainer.appendChild(postEl);
+        }
+    });
 }
-
-auth.onAuthStateChanged((user) => {
-  if (!user) window.location.href = "index.html";
-  else loadProfile();
-});

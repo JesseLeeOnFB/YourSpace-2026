@@ -1,60 +1,64 @@
-import { auth, db } from "./script.js";
-import { collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { auth, db, storage } from './firebase-config.js';
+import { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// DOM Elements
-const publishBtn = document.getElementById("publishBtn");
-const feedContainer = document.getElementById("feedContainer");
+const createPostBtn = document.getElementById("createPostBtn");
+const postContent = document.getElementById("postContent");
+const postImageInput = document.getElementById("postImageInput");
+const postsContainer = document.getElementById("postsContainer");
 const logoutBtn = document.getElementById("logoutBtn");
 
-auth.onAuthStateChanged(user => {
-  if (!user) window.location.href = "index.html";
-  else loadFeed();
-});
+logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href="index.html"));
 
-async function loadFeed() {
-  feedContainer.innerHTML = "";
-  const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")));
-  postsSnap.forEach(docSnap => {
-    const data = docSnap.data();
-    const postDiv = document.createElement("div");
-    postDiv.className = "post-card";
-    postDiv.innerHTML = `
-      <h3>${data.title}</h3>
-      <p>${data.content}</p>
-      ${data.image ? `<img src="${data.image}"/>` : ""}
-      <p>By: ${data.username || "Anonymous"}</p>
-    `;
-    feedContainer.appendChild(postDiv);
+async function loadPosts() {
+  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+  onSnapshot(q, snapshot => {
+    postsContainer.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const post = docSnap.data();
+      const div = document.createElement("div");
+      div.classList.add("post");
+      div.innerHTML = `
+        <p><strong>${post.username}</strong></p>
+        <p>${post.content}</p>
+        ${post.imageURL ? `<img src="${post.imageURL}" />` : ""}
+        ${auth.currentUser.uid === post.userId ? `<button class="deleteBtn" data-id="${docSnap.id}">Delete</button>` : ""}
+      `;
+      postsContainer.appendChild(div);
+    });
+
+    document.querySelectorAll(".deleteBtn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const postId = e.target.dataset.id;
+        await deleteDoc(doc(db, "posts", postId));
+      });
+    });
   });
 }
 
-// Publish post
-publishBtn.addEventListener("click", async () => {
-  const title = document.getElementById("postTitle").value;
-  const content = document.getElementById("postContent").value;
-  const image = document.getElementById("postImage").value;
-
-  if (!title && !content) return alert("Enter something to post!");
-
+createPostBtn.addEventListener("click", async () => {
+  const content = postContent.value;
+  if (!content) return alert("Enter something to post!");
+  let imageURL = "";
+  if (postImageInput.files.length > 0) {
+    const file = postImageInput.files[0];
+    const storageRef = ref(storage, `postImages/${auth.currentUser.uid}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    imageURL = await getDownloadURL(storageRef);
+  }
+  const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
   await addDoc(collection(db, "posts"), {
-    title,
-    content,
-    image,
-    username: auth.currentUser.displayName,
     userId: auth.currentUser.uid,
+    username: userDoc.data().username,
+    content,
+    imageURL,
     timestamp: new Date()
   });
-
-  document.getElementById("postTitle").value = "";
-  document.getElementById("postContent").value = "";
-  document.getElementById("postImage").value = "";
-
-  loadFeed();
+  postContent.value = "";
+  postImageInput.value = "";
 });
 
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
+auth.onAuthStateChanged(user => {
+  if (!user) window.location.href = "index.html";
+  else loadPosts();
 });

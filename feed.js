@@ -1,11 +1,9 @@
 console.log("🔥 feed.js loaded");
 
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -16,108 +14,50 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM elements
-const logoutBtn = document.getElementById("logoutBtn");
-const goProfileBtn = document.getElementById("goProfileBtn");
+const postInput = document.getElementById("postInput");
 const createPostBtn = document.getElementById("createPostBtn");
+const feedDiv = document.getElementById("feed");
+const logoutBtn = document.getElementById("logoutBtn");
 
-const postTitleInput = document.getElementById("postTitle");
-const postContentInput = document.getElementById("postContent");
-const imageURLInput = document.getElementById("imageURL");
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "index.html";
 
-const feedContainer = document.getElementById("feedContainer");
-const trendingContainer = document.getElementById("trendingContainer");
-
-// Logout button
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  alert("Logged out!");
-  window.location.href = "index.html";
-});
-
-// Go to profile
-goProfileBtn.addEventListener("click", () => {
-  window.location.href = "profile.html";
-});
-
-// Create a post
-createPostBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return alert("You must be logged in to post!");
-
-  const title = postTitleInput.value.trim();
-  const content = postContentInput.value.trim();
-  const imageURL = imageURLInput.value.trim();
-
-  if (!title && !content) return alert("Please add a title or content!");
-
-  await addDoc(collection(db, "posts"), {
-    userId: user.uid,
-    username: user.email.split("@")[0], // fallback for username
-    title,
-    content,
-    imageURL,
-    createdAt: new Date(),
-    likes: 0,
-    comments: 0,
-    shares: 0
+  // Logout
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
   });
 
-  postTitleInput.value = "";
-  postContentInput.value = "";
-  imageURLInput.value = "";
-
-  alert("Post created!");
-  loadFeed();
-});
-
-// Load all posts in global feed
-async function loadFeed() {
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-  const querySnapshot = await getDocs(q);
-
-  feedContainer.innerHTML = "";
-  let trendingPost = null;
-  let maxScore = -1;
-
-  querySnapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const postEl = document.createElement("div");
-    postEl.classList.add("post");
-    postEl.innerHTML = `
-      <h3>${post.title || "(No title)"}</h3>
-      <p>${post.content}</p>
-      ${post.imageURL ? `<img src="${post.imageURL}" style="max-width:100%;">` : ""}
-      <small>by ${post.username}</small>
-    `;
-    feedContainer.appendChild(postEl);
-
-    // Simple trending score = likes + comments + shares
-    const score = (post.likes || 0) + (post.comments || 0) + (post.shares || 0);
-    if (score > maxScore) {
-      maxScore = score;
-      trendingPost = post;
-    }
+  // Create post
+  createPostBtn.addEventListener("click", async () => {
+    if (!postInput.value.trim()) return alert("Enter something!");
+    await addDoc(collection(db, "posts"), {
+      text: postInput.value.trim(),
+      userId: user.uid,
+      username: user.displayName || "Anonymous",
+      timestamp: serverTimestamp()
+    });
+    postInput.value = "";
+    loadFeed();
   });
 
-  // Show trending
-  if (trendingPost) {
-    trendingContainer.innerHTML = `
-      <h3>${trendingPost.title || "(No title)"}</h3>
-      <p>${trendingPost.content}</p>
-      ${trendingPost.imageURL ? `<img src="${trendingPost.imageURL}" style="max-width:100%;">` : ""}
-      <small>by ${trendingPost.username}</small>
-    `;
+  // Load feed
+  async function loadFeed() {
+    feedDiv.innerHTML = "";
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const postEl = document.createElement("div");
+      postEl.className = "post";
+      postEl.innerHTML = `<strong>${data.username}</strong>: ${data.text}`;
+      feedDiv.appendChild(postEl);
+    });
   }
-}
 
-// Load feed on auth state
-auth.onAuthStateChanged(user => {
-  if (!user) window.location.href = "index.html";
-  else loadFeed();
+  loadFeed();
 });

@@ -18,7 +18,7 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupBtn = document.getElementById("signupBtn");
-  const loginBtn = document.getElementById("loginBtn");
+  const loginBtn = document.getElementById("const signupBtn = document.getElementById("signupBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const usernameInput = document.getElementById("username");

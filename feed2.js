@@ -1,29 +1,21 @@
 // feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
   getFirestore,
   collection,
   addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
   query,
   orderBy,
   onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc,
   serverTimestamp,
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -57,45 +49,49 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // CREATE POST
+  // POST BUTTON
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
     if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
 
     let postImageURL = "";
-    if (postImageInput.files.length > 0) {
-      const file = postImageInput.files[0];
-      const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      postImageURL = await getDownloadURL(storageRef);
+    try {
+      if (postImageInput.files.length > 0) {
+        const file = postImageInput.files[0];
+        const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        postImageURL = await getDownloadURL(storageRef);
+      }
+
+      // Fetch profile info
+      const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+      const profile = userSnap.exists() ? userSnap.data() : {};
+
+      await addDoc(collection(db, "posts"), {
+        text,
+        userId: auth.currentUser.uid,
+        displayName: profile.displayName || "Anonymous",
+        photoURL: profile.photoURL || "",
+        postImage: postImageURL,
+        likes: 0,
+        comments: [],
+        createdAt: serverTimestamp()
+      });
+
+      postInput.value = "";
+      postImageInput.value = "";
+    } catch (err) {
+      console.error("Post failed:", err);
+      alert("Post failed: " + err.message);
     }
-
-    // Fetch user profile for displayName/photo
-    const userSnap = await doc(db, "users", user.uid).get();
-    const profileDoc = await userSnap.get();
-    const profile = profileDoc.exists() ? profileDoc.data() : {};
-
-    await addDoc(collection(db, "posts"), {
-      text,
-      userId: user.uid,
-      displayName: profile.displayName || "Anonymous",
-      photoURL: profile.photoURL || "",
-      postImage: postImageURL,
-      likes: 0,
-      comments: [],
-      createdAt: serverTimestamp()
-    });
-
-    postInput.value = "";
-    postImageInput.value = "";
   });
 
-  // NAV buttons
+  // NAV
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
 
-  // LISTEN TO POSTS
+  // POSTS LISTENER
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
@@ -116,43 +112,37 @@ onAuthStateChanged(auth, async (user) => {
           <button class="likeBtn">Like (${data.likes || 0})</button>
           <button class="commentBtn">Comment</button>
           <button class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+          ${auth.currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
         </div>
         <div class="commentsContainer"></div>
       `;
       postsContainer.appendChild(postDiv);
 
       // BUTTONS
-      const likeBtn = postDiv.querySelector(".likeBtn");
-      likeBtn.addEventListener("click", async () => {
+      postDiv.querySelector(".likeBtn").addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
-      const commentBtn = postDiv.querySelector(".commentBtn");
-      const commentsContainer = postDiv.querySelector(".commentsContainer");
-      commentBtn.addEventListener("click", async () => {
+      postDiv.querySelector(".commentBtn").addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
         const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
+        const updatedComments = [...(data.comments || []), { text: commentText, user: auth.currentUser.uid }];
         await updateDoc(postRef, { comments: updatedComments });
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;
-        commentsContainer.appendChild(commentEl);
+        postDiv.querySelector(".commentsContainer").appendChild(commentEl);
       });
 
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
-          if (confirm("Delete this post?")) {
-            await deleteDoc(doc(db, "posts", docSnap.id));
-          }
+          if (confirm("Delete this post?")) await deleteDoc(doc(db, "posts", docSnap.id));
         });
       }
 
-      const shareBtn = postDiv.querySelector(".shareBtn");
-      shareBtn.addEventListener("click", () => {
+      postDiv.querySelector(".shareBtn").addEventListener("click", () => {
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
         } else {

@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<nav>
-  <button id="homeBtn">Home</button>
-  <button id="profileBtn">Profile</button>
-  <button id="logoutBtn">Log Out</button>
-</nav>
+<body class="dark-mode">
 
-<div class="profile-container">
-  <h2>Profile</h2>
-  <input type="text" id="usernameInput" placeholder="Username">
-  <input type="text" id="bioInput" placeholder="Bio">
-  <input type="text" id="locationInput" placeholder="Location">
-  <input type="text" id="musicInput" placeholder="Music URL">
-  <input type="text" id="profilePicInput" placeholder="Profile Image URL">
-  <textarea id="customHTMLInput" placeholder="Custom HTML/CSS"></textarea>
-  <button id="saveProfileBtn">Save Profile</button>
+  <nav>
+    <button id="homeBtn">Home</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-  <h3>Your Posts</h3>
-  <div id="userPostsContainer"></div>
-</div>
+  <div class="profile-container">
+    <h2>My Profile</h2>
 
-<script type="module" src="profile.js"></script>
+    <img id="profilePicPreview" src="assets/placeholder.png" alt="Profile Picture" class="profile-pic">
+    <input type="file" id="profilePicInput" accept="image/*">
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="locationInput" placeholder="Location">
+    <textarea id="bioInput" placeholder="Bio"></textarea>
+    <input type="text" id="musicInput" placeholder="Music URL (optional)">
+    <textarea id="themeInput" placeholder="Custom HTML/CSS for profile (optional)"></textarea>
+    <button id="saveProfileBtn">Save Profile</button>
+    <p id="profileError" class="error"></p>
+
+    <h3>My Posts</h3>
+    <div id="myPostsContainer"></div>
+  </div>
+
+  <script type="module" src="js/profile.js"></script>
 </body>
 </html>

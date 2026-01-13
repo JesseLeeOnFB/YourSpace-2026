@@ -1,35 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<nav>
+  <button id="homeBtn">Home</button>
+  <button id="profileBtn">Profile</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <h1>YourSpace Feed</h1>
+<h1>YourSpace Feed</h1>
 
-  <!-- Post input -->
-  <div id="postContainer">
-    <input type="text" id="postText" placeholder="Write something...">
-    <input type="file" id="postImageInput">
-    <button id="postBtn">Post</button>
-  </div>
+<div id="postContainer">
+  <input type="text" id="postText" placeholder="Write something...">
+  <input type="file" id="postImageInput">
+  <button id="postBtn">Post</button>
+</div>
 
-  <!-- Feed -->
-  <div id="postsContainer"></div>
+<div id="postsContainer"></div>
 
-  <!-- Trending post -->
-  <h2>Trending Post (hourly)</h2>
-  <div id="trendingPost"></div>
+<h2>Trending Post (hourly)</h2>
+<div id="trendingPost"></div>
 
-  <!-- Firebase & Feed logic -->
-  <script type="module" src="feed2.js"></script>
+<script type="module" src="feed2.js"></script>
 </body>
 </html>

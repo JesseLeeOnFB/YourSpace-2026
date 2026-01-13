@@ -45,27 +45,35 @@ document.addEventListener("DOMContentLoaded", () => {
   postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return alert("Login first");
-
   const text = postInput.value.trim();
-  const imageFile = document.getElementById("postImage").files[0];
+  const file = postImageInput.files[0];
 
-  if (!text && !imageFile) {
-    alert("Write something or add an image");
-    return;
-  }
+  if (!text && !file) return alert("Write something or select an image!");
 
   let imageURL = "";
+  if (file) {
+    const storageRef = ref(storage, `postImages/${user.uid}/${Date.now()}-${file.name}`);
+    await uploadBytes(storageRef, file);
+    imageURL = await getDownloadURL(storageRef);
+  }
 
-  try {
-    // Upload image if exists
-    if (imageFile) {
-      const imageRef = ref(
-        storage,
-        `postImages/${user.uid}/${Date.now()}_${imageFile.name}`
-      );
-      await uploadBytes(imageRef, imageFile);
-      imageURL = await getDownloadURL(imageRef);
-    }
+  const userSnap = await getDoc(doc(db, "users", user.uid));
+  const profile = userSnap.exists() ? userSnap.data() : {};
+
+  await addDoc(collection(db, "posts"), {
+    text,
+    userId: user.uid,
+    displayName: profile.displayName || user.email,
+    photoURL: profile.photoURL || "",
+    postImage: imageURL,  // <-- store uploaded image URL
+    createdAt: serverTimestamp(),
+    likes: 0,
+    comments: [],
+  });
+
+  postInput.value = "";
+  postImageInput.value = "";
+});
 
     // Load user profile
     const userSnap = await getDoc(doc(db, "users", user.uid));

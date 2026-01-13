@@ -42,29 +42,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Create Post
   postBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return alert("You must be logged in!");
-    const text = postInput.value.trim();
-    if (!text) return alert("Write something first!");
+  const user = auth.currentUser;
+  if (!user) return alert("Login first");
 
-    try {
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
-      await addDoc(collection(db, "posts"), {
-        text,
-        userId: user.uid,
-        displayName: profile.displayName || user.email,
-        photoURL: profile.photoURL || "",
-        createdAt: serverTimestamp(),
-        likes: 0,
-        comments: [],
-      });
-      postInput.value = "";
-    } catch (err) {
-      console.error(err);
-      alert("Error posting: " + err.message);
+  const text = postInput.value.trim();
+  const imageFile = document.getElementById("postImage").files[0];
+
+  if (!text && !imageFile) {
+    alert("Write something or add an image");
+    return;
+  }
+
+  let imageURL = "";
+
+  try {
+    // Upload image if exists
+    if (imageFile) {
+      const imageRef = ref(
+        storage,
+        `postImages/${user.uid}/${Date.now()}_${imageFile.name}`
+      );
+      await uploadBytes(imageRef, imageFile);
+      imageURL = await getDownloadURL(imageRef);
     }
-  });
+
+    // Load user profile
+    const userSnap = await getDoc(doc(db, "users", user.uid));
+    const profile = userSnap.exists() ? userSnap.data() : {};
+
+    await addDoc(collection(db, "posts"), {
+      text,
+      imageURL,
+      userId: user.uid,
+      displayName: profile.displayName || user.email,
+      photoURL: profile.photoURL || "",
+      createdAt: serverTimestamp(),
+      likes: 0,
+      comments: []
+    });
+
+    postInput.value = "";
+    document.getElementById("postImage").value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Post failed: " + err.message);
+  }
+});
 
   // Display Feed
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));

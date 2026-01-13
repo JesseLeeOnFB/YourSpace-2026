@@ -109,32 +109,28 @@ const profile = userSnap.exists() ? userSnap.data() : {};
     // LISTEN TO POSTS
     const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     onSnapshot(postsQuery, (snapshot) => {
-      postsContainer.innerHTML = "";
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const postDiv = document.createElement("div");
-        postDiv.classList.add("post");
+  postsContainer.innerHTML = "";
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    const postDiv = document.createElement("div");
 
-        const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-        postDiv.innerHTML = `
-          <div class="postHeader">
-            <img src="${data.photoURL || "default-avatar.png"}" class="postProfilePic">
-            <strong>${data.displayName}</strong>
-          </div>
-          <p>${data.text || ""}</p>
-          ${imageHTML}
-          <div class="postButtons">
-            <button class="likeBtn">Like (${data.likes || 0})</button>
-            <button class="commentBtn">Comment</button>
-            <button class="shareBtn">Share</button>
-            ${
-              auth.currentUser.uid === data.userId
-                ? '<button class="deleteBtn">Delete</button>'
-                : ""
-            }
-          </div>
-          <div class="commentsContainer"></div>
-        `;
+    const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
+    postDiv.innerHTML = `
+      <div class="postHeader">
+        <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
+        <strong>${data.displayName}</strong>
+      </div>
+      <p>${data.text || ""}</p>
+      ${imageHTML}
+      <div class="postButtons">
+        <button class="likeBtn">Like (<span class="likeCount">${data.likes || 0}</span>)</button>
+        <button class="commentBtn">Comment</button>
+        <button class="shareBtn">Share</button>
+        ${auth.currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+      </div>
+      <div class="commentsContainer"></div>
+    `;
         postsContainer.appendChild(postDiv);
 
         // Like button

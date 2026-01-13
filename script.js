@@ -1,3 +1,4 @@
+alert("SCRIPT LOADED");
 // 🔥 Firebase imports — MUST BE FIRST
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -88,3 +89,4 @@ logoutBtn?.addEventListener("click", async () => {
 onAuthStateChanged(auth, (user) => {
   console.log("Auth state:", user ? user.email : "logged out");
 });
+

@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace 2026</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace 2026</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>YourSpace 2026</h1>
+<div class="container">
+  <h1>YourSpace 2026</h1>
 
-    <!-- Auth -->
-    <div id="authContainer">
-      <input type="email" id="email" placeholder="Email">
-      <input type="password" id="password" placeholder="Password">
-      <button id="signupBtn">Sign Up</button>
-      <button id="loginBtn">Login</button>
-    </div>
-
-    <!-- Welcome -->
-    <div id="welcomeContainer" style="display:none;">
-      <h2>Welcome, <span id="userEmail"></span>!</h2>
-      <button id="logoutBtn">Logout</button>
-      <a href="profile.html">Go to Profile</a>
-    </div>
+  <!-- AUTH -->
+  <div id="authDiv">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <!-- LOGGED IN -->
+  <div id="appDiv" style="display:none;">
+    <button id="logoutBtn">Logout</button>
+    <h2>🔥 Trending Post</h2>
+    <div id="trendingPost"></div>
+    <h2>Global Feed</h2>
+    <div id="feed"></div>
+  </div>
+</div>
+
+<script type="module" src="feed.js"></script>
 </body>
 </html>

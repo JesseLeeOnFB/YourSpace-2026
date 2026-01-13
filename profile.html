@@ -8,28 +8,25 @@
 </head>
 <body>
 <div class="container">
-  <h1>Your Profile</h1>
+  <h1>Profile</h1>
+  <p id="profileEmail"></p>
+  <input type="text" id="username" placeholder="Username">
+  <input type="text" id="bio" placeholder="Bio">
+  <input type="text" id="location" placeholder="Location">
+  <input type="url" id="musicUrl" placeholder="Music URL (embed link)">
+  <input type="color" id="themeColor" placeholder="Theme/Background Color">
+  <input type="file" id="profilePic" accept="image/*">
+  <button id="saveProfileBtn">Save Profile</button>
 
-  <div id="profileDiv">
-    <input type="text" id="username" placeholder="Username">
-    <textarea id="bio" placeholder="Bio"></textarea>
-    <input type="text" id="location" placeholder="Location">
-    <input type="text" id="themeColor" placeholder="Theme Color (#hex)">
-    <input type="text" id="musicUrl" placeholder="Music URL (embed link)">
-    <input type="file" id="profileImage" accept="image/*">
-    <button id="saveProfileBtn">Save Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <div id="profileDisplay">
+    <h3 id="displayUsername"></h3>
+    <p id="displayBio"></p>
+    <p id="displayLocation"></p>
+    <img id="displayPic" src="" alt="Profile Pic">
+    <audio id="displayMusic" controls></audio>
   </div>
-
-  <h2>Create a Post</h2>
-  <textarea id="postContent" placeholder="Write something..."></textarea>
-  <input type="text" id="postImageUrl" placeholder="Image URL">
-  <button id="createPostBtn">Post</button>
-
-  <h2>Your Posts</h2>
-  <div id="userPosts"></div>
 </div>
 
-<script type="module" src="script.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

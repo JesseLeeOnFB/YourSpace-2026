@@ -58,7 +58,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Fetch user profile for displayName/photo
+  // Fetch current user profile once
   const userDocSnap = await getDoc(doc(db, "users", user.uid));
   const userProfile = userDocSnap.exists() ? userDocSnap.data() : {};
 
@@ -99,12 +99,14 @@ onAuthStateChanged(auth, async (user) => {
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
-    snapshot.forEach((docSnap) => {
+
+    snapshot.forEach(async (docSnap) => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -120,31 +122,33 @@ onAuthStateChanged(auth, async (user) => {
         </div>
         <div class="commentsContainer"></div>
       `;
+
       postsContainer.appendChild(postDiv);
 
-      // BUTTONS
+      // LIKE BUTTON
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
+      // COMMENT BUTTON
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
-
         const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid, displayName: userProfile.displayName || "Anonymous" }];
+        const updatedComments = [...(data.comments || []), { text: commentText, userId: user.uid }];
         await updateDoc(postRef, { comments: updatedComments });
 
-        // Display comment immediately
+        // RENDER COMMENTS IMMEDIATELY
         const commentEl = document.createElement("p");
-        commentEl.textContent = `${userProfile.displayName || "Anonymous"}: ${commentText}`;
+        commentEl.textContent = `${userProfile.displayName || "You"}: ${commentText}`;
         commentsContainer.appendChild(commentEl);
       });
 
+      // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
@@ -154,6 +158,7 @@ onAuthStateChanged(auth, async (user) => {
         });
       }
 
+      // SHARE BUTTON
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
@@ -163,13 +168,15 @@ onAuthStateChanged(auth, async (user) => {
         }
       });
 
-      // Render existing comments
+      // RENDER EXISTING COMMENTS
       const commentsContainer = postDiv.querySelector(".commentsContainer");
-      (data.comments || []).forEach(c => {
-        const commentEl = document.createElement("p");
-        commentEl.textContent = `${c.displayName || "Anonymous"}: ${c.text}`;
-        commentsContainer.appendChild(commentEl);
-      });
+      if (data.comments && data.comments.length > 0) {
+        data.comments.forEach((c) => {
+          const commentEl = document.createElement("p");
+          commentEl.textContent = `${c.userId === user.uid ? (userProfile.displayName || "You") : "Anonymous"}: ${c.text}`;
+          commentsContainer.appendChild(commentEl);
+        });
+      }
     });
   });
 });

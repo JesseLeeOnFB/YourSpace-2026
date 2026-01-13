@@ -7,29 +7,32 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>YourSpace Profile</h1>
-    <button id="logoutBtn">Logout</button>
-  </header>
+<h1>My Profile</h1>
 
-  <main>
-    <section class="profile-section">
-      <h2>Profile Info</h2>
-      <label>Username:</label>
-      <input type="text" id="username" placeholder="Enter username">
+<!-- Profile Form -->
+<div id="profileForm">
+  <label for="usernameInput">Username:</label>
+  <input type="text" id="usernameInput">
 
-      <label>Bio:</label>
-      <textarea id="bio" placeholder="Enter bio"></textarea>
+  <label for="bioInput">Bio:</label>
+  <textarea id="bioInput"></textarea>
 
-      <label>Profile Photo:</label>
-      <input type="file" id="profilePicInput" accept="image/*">
-      <img id="profilePicDisplay" src="" alt="Profile Picture" style="width:150px;height:150px;display:block;margin-top:10px;">
+  <label for="locationInput">Location:</label>
+  <input type="text" id="locationInput">
 
-      <button id="saveProfileBtn">Save Profile</button>
-      <button id="uploadPhotoBtn">Upload Photo</button>
-    </section>
-  </main>
+  <label for="musicInput">Music URL (embed link):</label>
+  <input type="text" id="musicInput">
 
-  <script type="module" src="profile.js"></script>
+  <!-- Profile Photo -->
+  <label for="profilePhotoInput">Profile Photo:</label>
+  <input type="file" id="profilePhotoInput" accept="image/*">
+  <img id="profilePhotoPreview" src="" alt="Profile Photo Preview" style="width:100px; height:100px; border-radius:50%; display:block; margin-top:10px;">
+
+  <button id="saveProfileBtn">Save Profile</button>
+</div>
+
+<button id="logoutBtn">Logout</button>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

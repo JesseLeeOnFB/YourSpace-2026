@@ -4,76 +4,184 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yourspace</title>
-<link rel="stylesheet" href="style.css">
-<!-- Firebase SDKs -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  window.auth = auth; // make auth globally available
-  window.db = db; // make firestore globally available
-</script>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #1E1E2F; color: #fff; }
+  .container { max-width: 600px; margin: 20px auto; }
+  input, button, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 4px; border: none; }
+  input, textarea { background-color: #2A2A40; color: #fff; }
+  button { background-color: #ff4081; color: #fff; cursor: pointer; }
+  button:hover { opacity: 0.9; }
+  .post { background-color: #2A2A40; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+  .hidden { display: none; }
+</style>
 </head>
 <body>
-<div id="container">
+<div class="container">
 
-  <!-- Login / Signup -->
+  <h1>Yourspace</h1>
+
+  <!-- Auth Section -->
   <div id="auth-section">
-    <h1>Yourspace</h1>
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
     <button id="signup-btn">Sign Up</button>
     <button id="login-btn">Login</button>
-    <p id="auth-msg"></p>
   </div>
 
-  <!-- Main App Section -->
-  <div id="app-section" class="hidden">
-    <header>
-      <h2>Welcome, <span id="user-email"></span></h2>
-      <button id="logout-btn">Logout</button>
-    </header>
+  <!-- User Dashboard -->
+  <div id="dashboard" class="hidden">
+    <p>Welcome, <span id="user-name"></span>!</p>
+    <button id="logout-btn">Logout</button>
 
-    <!-- Profile -->
-    <section id="profile-section">
-      <h3>Your Profile</h3>
-      <input type="text" id="profile-name" placeholder="Display Name">
-      <input type="text" id="profile-theme" placeholder="Theme / Background (HTML/CSS)">
-      <input type="text" id="profile-music" placeholder="Music Link (placeholder)">
-      <button id="save-profile">Save Profile</button>
-    </section>
+    <h3>Profile</h3>
+    <input type="text" id="theme" placeholder="Profile theme CSS or colors">
+    <input type="text" id="music" placeholder="Music URL">
+    <button id="save-profile-btn">Save Profile</button>
 
-    <!-- Post Creation -->
-    <section id="post-section">
-      <h3>Create a Post</h3>
-      <textarea id="post-text" placeholder="What's on your mind?"></textarea>
-      <input type="text" id="post-image" placeholder="Image Link (optional)">
-      <button id="post-btn">Post</button>
-    </section>
+    <h3>Create Post</h3>
+    <textarea id="post-text" placeholder="What's on your mind?"></textarea>
+    <input type="text" id="post-image" placeholder="Optional Image URL">
+    <button id="create-post-btn">Post</button>
 
-    <!-- Feed -->
-    <section id="feed-section">
-      <h3>Public Feed</h3>
-      <div id="feed"></div>
-    </section>
+    <h3>Posts</h3>
+    <div id="posts-container"></div>
   </div>
 
 </div>
 
-<script type="module" src="script.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, addDoc, collection, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  // 🔑 Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
+  const db = getFirestore(app);
+
+  // DOM Elements
+  const authSection = document.getElementById('auth-section');
+  const dashboard = document.getElementById('dashboard');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const signupBtn = document.getElementById('signup-btn');
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userNameSpan = document.getElementById('user-name');
+
+  const themeInput = document.getElementById('theme');
+  const musicInput = document.getElementById('music');
+  const saveProfileBtn = document.getElementById('save-profile-btn');
+
+  const postText = document.getElementById('post-text');
+  const postImage = document.getElementById('post-image');
+  const createPostBtn = document.getElementById('create-post-btn');
+  const postsContainer = document.getElementById('posts-container');
+
+  let currentUser = null;
+
+  // Auth
+  signupBtn.addEventListener('click', async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+      currentUser = userCredential.user;
+      await setDoc(doc(db, "users", currentUser.uid), {
+        displayName: currentUser.email,
+        uid: currentUser.uid,
+        createdAt: serverTimestamp(),
+        theme: "",
+        music: ""
+      });
+      showDashboard();
+    } catch(e) { alert(e.message); }
+  });
+
+  loginBtn.addEventListener('click', async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+      currentUser = userCredential.user;
+      showDashboard();
+    } catch(e) { alert(e.message); }
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    await signOut(auth);
+    currentUser = null;
+    dashboard.classList.add('hidden');
+    authSection.classList.remove('hidden');
+  });
+
+  // Show Dashboard
+  async function showDashboard() {
+    authSection.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    userNameSpan.textContent = currentUser.email;
+
+    // Load profile info
+    const userDoc = await doc(db, "users", currentUser.uid).get();
+    if(userDoc.exists){
+      const data = userDoc.data();
+      themeInput.value = data.theme || "";
+      musicInput.value = data.music || "";
+    }
+
+    loadPosts();
+  }
+
+  // Save Profile
+  saveProfileBtn.addEventListener('click', async () => {
+    await setDoc(doc(db, "users", currentUser.uid), {
+      displayName: currentUser.email,
+      uid: currentUser.uid,
+      theme: themeInput.value,
+      music: musicInput.value,
+      createdAt: serverTimestamp()
+    });
+    alert('Profile saved!');
+  });
+
+  // Create Post
+  createPostBtn.addEventListener('click', async () => {
+    if(postText.value.trim() === "") return alert("Enter post text!");
+    await addDoc(collection(db, "posts"), {
+      uid: currentUser.uid,
+      text: postText.value,
+      image: postImage.value,
+      timestamp: serverTimestamp(),
+      likes: []
+    });
+    postText.value = "";
+    postImage.value = "";
+    loadPosts();
+  });
+
+  // Load Posts
+  async function loadPosts(){
+    postsContainer.innerHTML = "";
+    const q = query(collection(db, "posts"), orderBy("timestamp","desc"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const div = document.createElement('div');
+      div.classList.add('post');
+      div.innerHTML = `<p><strong>${data.uid}</strong></p>
+                       <p>${data.text}</p>
+                       ${data.image ? `<img src="${data.image}" style="max-width:100%">` : ""}`;
+      postsContainer.appendChild(div);
+    });
+  }
+
+</script>
 </body>
 </html>

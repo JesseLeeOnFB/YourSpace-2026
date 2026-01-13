@@ -1,17 +1,18 @@
+// feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, doc, query, orderBy, onSnapshot, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Firebase config
+// ---------- Firebase config ----------
 const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-  measurementId: "..."
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -19,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM elements
+// ---------- DOM Elements ----------
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -29,10 +30,15 @@ const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 const trendingContainer = document.getElementById("trendingPost");
 
+// ---------- Auth check ----------
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "index.html";
+  if (!user) {
+    // Delay redirect slightly to allow Firebase to initialize
+    setTimeout(() => window.location.href = "index.html", 100);
+    return;
+  }
 
-  // Post button
+  // ---------- POST BUTTON ----------
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
     if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
@@ -45,15 +51,16 @@ onAuthStateChanged(auth, async (user) => {
       postImageURL = await getDownloadURL(storageRef);
     }
 
+    // Fetch user profile
     const userSnap = await getDoc(doc(db, "users", user.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
 
     await addDoc(collection(db, "posts"), {
       text,
-      postImage: postImageURL,
       userId: user.uid,
       displayName: profile.displayName || "Anonymous",
       photoURL: profile.photoURL || "",
+      postImage: postImageURL,
       likes: 0,
       comments: [],
       createdAt: serverTimestamp()
@@ -63,12 +70,12 @@ onAuthStateChanged(auth, async (user) => {
     postImageInput.value = "";
   });
 
-  // NAV buttons
+  // ---------- NAV BUTTONS ----------
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
-  logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "index.html"));
+  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
 
-  // Listen to posts
+  // ---------- LISTEN TO POSTS ----------
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
@@ -77,7 +84,9 @@ onAuthStateChanged(auth, async (user) => {
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
+      // Image HTML
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -95,11 +104,10 @@ onAuthStateChanged(auth, async (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // Buttons functionality
+      // ---------- BUTTONS FUNCTIONALITY ----------
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
-        const postRef = doc(db, "posts", docSnap.id);
-        await updateDoc(postRef, { likes: (data.likes || 0) + 1 });
+        await updateDoc(doc(db, "posts", docSnap.id), { likes: (data.likes || 0) + 1 });
       });
 
       const commentBtn = postDiv.querySelector(".commentBtn");
@@ -107,9 +115,8 @@ onAuthStateChanged(auth, async (user) => {
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
-        const postRef = doc(db, "posts", docSnap.id);
         const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
-        await updateDoc(postRef, { comments: updatedComments });
+        await updateDoc(doc(db, "posts", docSnap.id), { comments: updatedComments });
 
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;

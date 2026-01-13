@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace 2026</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>YourSpace-2026 Login</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<div class="auth-container">
-  <h1>YourSpace 2026</h1>
-  <input type="text" id="username" placeholder="Username (for display)">
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="signupBtn">Sign Up</button>
-  <button id="loginBtn">Log In</button>
-</div>
+<body class="dark-mode">
 
-<script type="module" src="auth.js"></script>
+  <div class="login-container">
+    <h1>YourSpace</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn">Sign Up</button>
+    <p id="loginError" class="error"></p>
+  </div>
+
+  <script type="module" src="js/auth.js"></script>
 </body>
 </html>

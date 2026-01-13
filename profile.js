@@ -1,69 +1,73 @@
-// File: profile.js
+console.log("🔥 profile.js loaded");
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { firebaseConfig } from './firebase-config.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
+};
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const profilePicInput = document.getElementById("profilePic");
-const profilePicPreview = document.getElementById("profilePicPreview");
-const usernameInput = document.getElementById("username");
+// DOM
+const displayNameInput = document.getElementById("displayName");
 const bioInput = document.getElementById("bio");
 const locationInput = document.getElementById("location");
+const photoFile = document.getElementById("photoFile");
 const musicInput = document.getElementById("musicURL");
-const backgroundInput = document.getElementById("backgroundCSS");
-const saveBtn = document.getElementById("saveProfileBtn");
+const themeInput = document.getElementById("theme");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
 
-// Logout
-logoutBtn.addEventListener("click", async ()=>{ await signOut(auth); window.location.href="index.html"; });
-
-// Load profile
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){ window.location.href="index.html"; return; }
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-  if(userSnap.exists()){
-    const data = userSnap.data();
-    usernameInput.value = data.username || "";
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-    musicInput.value = data.musicURL || "";
-    backgroundInput.value = data.backgroundCSS || "";
-    profilePicPreview.src = data.profilePic || "https://via.placeholder.com/80";
-  }
+// Auth listener
+onAuthStateChanged(auth, async user => {
+  if (!user) return window.location.href = "index.html";
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+  const data = userDoc.exists() ? userDoc.data() : {};
+  displayNameInput.value = data.displayName || "";
+  bioInput.value = data.bio || "";
+  locationInput.value = data.location || "";
+  musicInput.value = data.musicURL || "";
+  themeInput.value = data.theme || "";
 });
 
 // Save profile
-saveBtn.addEventListener("click", async ()=>{
+saveProfileBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if(!user) return;
-  let profilePicURL = profilePicPreview.src;
+  if (!user) return alert("Not logged in");
 
-  // Upload profile pic if changed
-  if(profilePicInput.files.length > 0){
-    const file = profilePicInput.files[0];
-    const storageRef = ref(storage, `profilePics/${user.uid}`);
-    await uploadBytes(storageRef, file);
-    profilePicURL = await getDownloadURL(storageRef);
+  let photoURL = "";
+  if (photoFile.files[0]) {
+    const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+    await uploadBytes(storageRef, photoFile.files[0]);
+    photoURL = await getDownloadURL(storageRef);
   }
 
-  // Update profile in Firestore
   await setDoc(doc(db, "users", user.uid), {
-    username: usernameInput.value,
+    displayName: displayNameInput.value,
     bio: bioInput.value,
     location: locationInput.value,
     musicURL: musicInput.value,
-    backgroundCSS: backgroundInput.value,
-    profilePic: profilePicURL
-  }, { merge:true });
+    theme: themeInput.value,
+    photoURL
+  }, { merge: true });
 
-  // Update Auth displayName
-  await updateProfile(user, { displayName: usernameInput.value });
-  alert("Profile updated!");
+  await updateProfile(user, { displayName: displayNameInput.value, photoURL });
+  alert("Profile Updated!");
 });
+
+// Navigation
+logoutBtn.addEventListener("click", async () => { await auth.signOut(); window.location.href = "index.html"; });
+homeBtn.addEventListener("click", () => window.location.href = "feed.html");

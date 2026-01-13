@@ -3,9 +3,19 @@ console.log("🔥 feed.js loaded");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, getDocs, doc, serverTimestamp, query, orderBy, updateDoc, deleteDoc
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -20,7 +30,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM
+// DOM elements
 const postBtn = document.getElementById("postBtn");
 const postInput = document.getElementById("postText");
 const postsContainer = document.getElementById("postsContainer");
@@ -29,10 +39,10 @@ const trendingPostDiv = document.getElementById("trendingPost");
 const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-profileBtn.addEventListener("click", () => { window.location.href = "profile.html"; });
+profileBtn.addEventListener("click", () => window.location.href = "profile.html");
 logoutBtn.addEventListener("click", async () => { await auth.signOut(); window.location.href = "index.html"; });
 
-// Create post
+// Create a post
 postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return alert("You must be logged in");
@@ -40,18 +50,19 @@ postBtn.addEventListener("click", async () => {
   if (!text) return alert("Write something first");
 
   try {
-    // Load user profile
-    const userDoc = await getDocs(collection(db, "users"));
+    // Get current user's profile
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
     let displayName = user.email;
     let photoURL = "";
-    
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await docRef.get ? await docRef.get() : await getDocs(doc(db, "users", user.uid));
-    if (docSnap.exists()) {
-      displayName = docSnap.data().displayName || user.email;
-      photoURL = docSnap.data().photoURL || "";
+
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      displayName = data.displayName || user.email;
+      photoURL = data.photoURL || "";
     }
 
+    // Add post to Firestore
     await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
@@ -73,6 +84,8 @@ postBtn.addEventListener("click", async () => {
 // Load posts
 async function loadPosts() {
   postsContainer.innerHTML = "";
+  trendingPostDiv.innerHTML = "";
+
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   const querySnap = await getDocs(postsQuery);
 
@@ -90,7 +103,7 @@ async function loadPosts() {
         <strong>${post.displayName || post.userId}</strong>
       </div>
       <p>${post.text}</p>
-      <button class="likeBtn">Like (${post.likes})</button>
+      <button class="likeBtn">Like (${post.likes || 0})</button>
       <button class="deleteBtn">Delete</button>
       <div class="commentsSection"></div>
     `;
@@ -103,23 +116,25 @@ async function loadPosts() {
 
     // Delete button
     postDiv.querySelector(".deleteBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (user.uid !== post.userId) return alert("Cannot delete someone else's post");
+      const currentUser = auth.currentUser;
+      if (currentUser.uid !== post.userId) return alert("Cannot delete someone else's post");
       await deleteDoc(doc(db, "posts", postId));
       loadPosts();
     });
 
     postsContainer.appendChild(postDiv);
 
-    if (post.likes > (topPost.likes || 0)) {
-      topPost = { likes: post.likes, element: postDiv.cloneNode(true) };
+    if ((post.likes || 0) > topPost.likes) {
+      topPost = { likes: post.likes || 0, element: postDiv.cloneNode(true) };
     }
   });
 
-  trendingPostDiv.innerHTML = "";
+  // Show top trending post
   if (topPost.element) trendingPostDiv.appendChild(topPost.element);
 }
 
-// Refresh posts every minute
-setInterval(loadPosts, 60000);
-onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "index.html"; loadPosts(); });
+// Initial load
+onAuthStateChanged(auth, (user) => {
+  if (!user) window.location.href = "index.html";
+  loadPosts();
+});

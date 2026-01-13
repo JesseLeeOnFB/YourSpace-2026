@@ -1,0 +1,64 @@
+/* File: style.css */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1a1a2e;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+input, button, select, textarea {
+  display: block;
+  margin: 10px 0;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  border: none;
+}
+button {
+  background-color: #162447;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #1f4068;
+}
+.navbar {
+  background-color: #0f0f23;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+.navbar button {
+  width: auto;
+  margin: 0 5px;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.profile-header img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+.post {
+  background-color: #162447;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+.post img {
+  max-width: 100%;
+}
+.comment {
+  background-color: #1f4068;
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 3px;
+}

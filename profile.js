@@ -18,47 +18,42 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Wait for Firebase auth to initialize
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    // Only redirect if user is truly not logged in
-    alert("You must be logged in");
+    // Redirect if NOT logged in
     window.location.href = "index.html";
     return;
   }
 
-  // DOM elements
+  // ====== DOM elements ======
   const displayNameInput = document.getElementById("displayName");
   const bioInput = document.getElementById("bio");
   const profilePicInput = document.getElementById("profilePic");
   const saveBtn = document.getElementById("saveProfile");
+  const profileImg = document.getElementById("profileImg");
 
-  // Load current profile
+  // ====== Load current profile ======
   const userDoc = await getDoc(doc(db, "users", user.uid));
   if (userDoc.exists()) {
     const data = userDoc.data();
     displayNameInput.value = data.displayName || "";
     bioInput.value = data.bio || "";
-    if (data.photoURL) {
-      const img = document.getElementById("profileImg");
-      img.src = data.photoURL;
-    }
+    if (data.photoURL) profileImg.src = data.photoURL;
   }
 
-  // Save profile
+  // ====== Save profile ======
   saveBtn.addEventListener("click", async () => {
     const updates = {
       displayName: displayNameInput.value,
       bio: bioInput.value
     };
 
-    // Upload photo if selected
     if (profilePicInput.files.length > 0) {
       const file = profilePicInput.files[0];
       const storageRef = ref(storage, `profilePics/${user.uid}`);
       await uploadBytes(storageRef, file);
       updates.photoURL = await getDownloadURL(storageRef);
-      document.getElementById("profileImg").src = updates.photoURL; // immediately show
+      profileImg.src = updates.photoURL; // immediately update picture
     }
 
     await setDoc(doc(db, "users", user.uid), updates, { merge: true });

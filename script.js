@@ -1,12 +1,9 @@
-console.log("🔥 script.js loaded");
-
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, getDocs, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// 🔑 Firebase config
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -17,91 +14,91 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM Elements
-const usernameInput = document.getElementById("usernameInput");
-const bioInput = document.getElementById("bioInput");
-const photoInput = document.getElementById("photoInput");
-const cssInput = document.getElementById("cssInput");
-const musicInput = document.getElementById("musicInput");
-
-const saveProfileBtn = document.getElementById("saveProfileBtn");
+// DOM elements
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
-const previewPhoto = document.getElementById("previewPhoto");
-const previewUsername = document.getElementById("previewUsername");
-const previewBio = document.getElementById("previewBio");
-const previewMusic = document.getElementById("previewMusic");
+const usernameInput = document.getElementById("username");
+const bioInput = document.getElementById("bio");
+const locationInput = document.getElementById("location");
+const themeInput = document.getElementById("themeColor");
+const musicInput = document.getElementById("musicUrl");
+const profileImageInput = document.getElementById("profileImage");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-// ----------------------
-// Load current user profile
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      usernameInput.value = data.username || "";
-      bioInput.value = data.bio || "";
-      cssInput.value = data.css || "";
-      musicInput.value = data.musicUrl || "";
+const postContentInput = document.getElementById("postContent");
+const postImageInput = document.getElementById("postImageUrl");
+const createPostBtn = document.getElementById("createPostBtn");
+const userPostsDiv = document.getElementById("userPosts");
 
-      if (data.photoURL) previewPhoto.src = data.photoURL;
-      previewUsername.textContent = data.username || "";
-      previewBio.textContent = data.bio || "";
-      previewMusic.src = data.musicUrl || "";
-    }
-  } else {
-    console.log("No user signed in");
-  }
+// AUTH
+signupBtn?.addEventListener("click", async () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  try {
+    await createUserWithEmailAndPassword(auth,email,password);
+    alert("Account created!"); window.location.reload();
+  } catch(e){ alert(e.message); }
 });
 
-// ----------------------
-// Save profile handler
-saveProfileBtn.addEventListener("click", async () => {
+loginBtn?.addEventListener("click", async () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  try { await signInWithEmailAndPassword(auth,email,password); window.location.reload(); }
+  catch(e){ alert(e.message); }
+});
+
+logoutBtn?.addEventListener("click", ()=>signOut(auth).then(()=>window.location.href="index.html"));
+
+// PROFILE
+saveProfileBtn?.addEventListener("click", async ()=>{
   const user = auth.currentUser;
-  if (!user) return alert("Not logged in!");
+  if(!user) return alert("Not signed in");
 
-  const username = usernameInput.value;
-  const bio = bioInput.value;
-  const css = cssInput.value;
-  const musicUrl = musicInput.value;
-  const file = photoInput.files[0];
-
-  let photoURL = "";
-
-  if (file) {
-    const storageRef = ref(storage, `profilePictures/${user.uid}`);
-    await uploadBytes(storageRef, file);
-    photoURL = await getDownloadURL(storageRef);
+  let profileImageUrl = "";
+  if(profileImageInput.files.length>0){
+    const file = profileImageInput.files[0];
+    const storageRef = ref(storage, `profile_images/${user.uid}/${file.name}`);
+    await uploadBytes(storageRef,file);
+    profileImageUrl = await getDownloadURL(storageRef);
   }
 
-  await setDoc(doc(db, "users", user.uid), {
-    username,
-    bio,
-    css,
-    musicUrl,
-    photoURL
-  }, { merge: true });
-
-  // Update preview
-  previewPhoto.src = photoURL || previewPhoto.src;
-  previewUsername.textContent = username;
-  previewBio.textContent = bio;
-  previewMusic.src = musicUrl;
+  await setDoc(doc(db,"users",user.uid),{
+    username: usernameInput.value,
+    bio: bioInput.value,
+    location: locationInput.value,
+    themeColor: themeInput.value,
+    musicUrl: musicInput.value,
+    profileImageUrl
+  });
 
   alert("Profile saved!");
 });
 
-// ----------------------
-// Logout
-logoutBtn.addEventListener("click", () => {
-  signOut(auth);
-  alert("Logged out!");
-  window.location.href = "index.html";
+// CREATE POST
+createPostBtn?.addEventListener("click", async ()=>{
+  const user = auth.currentUser;
+  if(!user) return alert("Sign in first");
+
+  const userDoc = await getDoc(doc(db,"users",user.uid));
+  const username = userDoc.exists()?userDoc.data().username:"Unknown";
+
+  await addDoc(collection(db,"posts"),{
+    userId:user.uid,
+    username,
+    content:postContentInput.value,
+    imageUrl:postImageInput.value||"",
+    timestamp:Timestamp.now(),
+    likes:0
+  });
+
+  alert("Post created!"); postContentInput.value=""; postImageInput.value="";
 });

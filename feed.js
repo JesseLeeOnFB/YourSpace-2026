@@ -1,8 +1,17 @@
-// feed.js?v=1
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { 
-  getFirestore, collection, addDoc, doc, getDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -28,25 +37,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const homeBtn = document.getElementById("homeBtn");
 
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in!");
+
   // Nav buttons
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
 
-  // Create post
+  // Post button
   postBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return alert("Login first");
     const text = postInput.value.trim();
-    if (!text) return alert("Write something first");
+    if (!text) return alert("Write something first!");
 
     const userSnap = await getDoc(doc(db, "users", user.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
 
-    const docRef = await addDoc(collection(db, "posts"), {
+    await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
-      displayName: profile.displayName || user.email,
+      displayName: profile.displayName || "Anonymous",
       photoURL: profile.photoURL || "",
       createdAt: serverTimestamp(),
       likes: 0,
@@ -54,10 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     postInput.value = "";
-    console.log("Post created with ID:", docRef.id);
   });
 
-  // Render feed
+  // Display posts
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, snapshot => {
     postsContainer.innerHTML = "";
@@ -65,39 +74,66 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
-
       postDiv.innerHTML = `
         <div class="post-header">
-          <img src="${data.photoURL || 'default.png'}" class="profile-pic">
-          <strong>${data.displayName}</strong>
+          <img class="post-photo" src="${data.photoURL || 'default.png'}" alt="Profile">
+          <strong>${data.displayName || 'Anonymous'}</strong>
         </div>
-        <p>${data.text}</p>
-        <button class="likeBtn">Like (${data.likes || 0})</button>
-        <button class="commentBtn">Comment</button>
-        <button class="shareBtn">Share</button>
-        ${auth.currentUser && auth.currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+        <p class="post-text">${data.text}</p>
+        <div class="post-buttons">
+          <button class="likeBtn">Like (${data.likes || 0})</button>
+          <button class="commentBtn">Comment (${data.comments?.length || 0})</button>
+          <button class="shareBtn">Share</button>
+          ${data.userId === user.uid ? '<button class="deleteBtn">Delete</button>' : ''}
+        </div>
+        <div class="comment-section" id="comment-${docSnap.id}"></div>
       `;
+      postsContainer.appendChild(postDiv);
 
-      // Delete button
-      const deleteBtn = postDiv.querySelector(".deleteBtn");
-      if(deleteBtn){
-        deleteBtn.addEventListener("click", async () => {
+      // Like
+      postDiv.querySelector(".likeBtn").addEventListener("click", async () => {
+        await setDoc(doc(db, "posts", docSnap.id), {
+          likes: (data.likes || 0) + 1
+        }, { merge: true });
+      });
+
+      // Delete
+      if (data.userId === user.uid) {
+        postDiv.querySelector(".deleteBtn").addEventListener("click", async () => {
           await deleteDoc(doc(db, "posts", docSnap.id));
         });
       }
 
-      postsContainer.appendChild(postDiv);
+      // Comment (simple prompt for now)
+      postDiv.querySelector(".commentBtn").addEventListener("click", async () => {
+        const comment = prompt("Write your comment:");
+        if (!comment) return;
+        const comments = data.comments || [];
+        comments.push({ userId: user.uid, text: comment });
+        await setDoc(doc(db, "posts", docSnap.id), { comments }, { merge: true });
+      });
+
+      // Share (simple link copy)
+      postDiv.querySelector(".shareBtn").addEventListener("click", () => {
+        const url = `${window.location.href}?post=${docSnap.id}`;
+        navigator.clipboard.writeText(url);
+        alert("Post link copied!");
+      });
     });
   });
 
-  // Trending post - top liked in last hour
+  // Trending Post: top liked in last hour
   setInterval(async () => {
     const postsSnap = await getDocs(collection(db, "posts"));
+    const oneHourAgo = Date.now() - 3600 * 1000;
     let topPost = null;
     postsSnap.forEach(docSnap => {
       const data = docSnap.data();
-      if(!topPost || (data.likes || 0) > (topPost.likes || 0)) topPost = data;
+      const timestamp = data.createdAt?.toMillis?.() || 0;
+      if (timestamp < oneHourAgo) return;
+      if (!topPost || (data.likes || 0) > (topPost.likes || 0)) topPost = data;
     });
-    trendingContainer.innerHTML = topPost ? `<strong>${topPost.displayName}</strong>: ${topPost.text} (Likes: ${topPost.likes || 0})` : "No posts yet";
-  }, 3600*1000);
+    trendingContainer.innerHTML = topPost ? `<strong>${topPost.displayName}</strong>: ${topPost.text} (Likes: ${topPost.likes || 0})` : "No trending posts yet";
+  }, 3600 * 1000);
+
 });

@@ -3,36 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Global Feed</title>
+<title>YourSpace Feed</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>YourSpace Global Feed</h1>
-    <button id="logoutBtn">Logout</button>
-    <button id="goProfileBtn">Profile</button>
-  </header>
-
-  <main>
-    <section class="new-post">
-      <h2>Create a Post</h2>
-      <input type="text" id="postTitle" placeholder="Post title">
-      <textarea id="postContent" placeholder="Write something..."></textarea>
-      <input type="text" id="imageURL" placeholder="Image URL (optional)">
-      <button id="createPostBtn">Post</button>
-    </section>
-
-    <section class="trending-post">
-      <h2>Trending Post</h2>
-      <div id="trendingContainer"></div>
-    </section>
-
-    <section class="global-feed">
-      <h2>Global Feed</h2>
-      <div id="feedContainer"></div>
-    </section>
-  </main>
-
-  <script type="module" src="feed.js"></script>
+<div class="container">
+  <h1>Global Feed</h1>
+  <div class="post-box">
+    <textarea id="postInput" placeholder="Write something..."></textarea>
+    <button id="createPostBtn">Post</button>
+  </div>
+  <div id="feed"></div>
+  <button id="logoutBtn">Logout</button>
+</div>
+<script type="module" src="feed.js"></script>
 </body>
 </html>

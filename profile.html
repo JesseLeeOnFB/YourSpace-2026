@@ -2,30 +2,139 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Profile - YourSpace 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
   <nav>
-    <a href="home.html">Home</a>
-    <a href="profile.html">Profile</a>
-    <a href="index.html" id="logoutNavBtn">Logout</a>
+    <button onclick="location.href='feed.html'">Home</button>
+    <button onclick="location.href='index.html'">Logout</button>
   </nav>
 
   <div class="profile-container">
-    <h2>Profile Settings</h2>
-    <input type="text" id="username" placeholder="Username">
-    <textarea id="bio" placeholder="Bio"></textarea>
-    <input type="text" id="location" placeholder="Location">
-    <input type="text" id="music" placeholder="Music URL (optional)">
-    <input type="file" id="profilePhoto">
-    <input type="text" id="theme" placeholder="Theme CSS/HTML (optional)">
+    <h1 id="usernameHeader">Username</h1>
+    <input type="text" id="usernameInput" placeholder="Change username">
+    <textarea id="bioInput" placeholder="Update bio"></textarea>
+    <input type="text" id="locationInput" placeholder="Location">
+    <input type="url" id="musicInput" placeholder="Music embed URL">
+    <input type="text" id="themeInput" placeholder="Theme CSS or HTML">
+    <input type="file" id="profilePicInput" accept="image/*">
+    <input type="file" id="backgroundInput" accept="image/*">
     <button id="saveProfileBtn">Save Profile</button>
   </div>
 
-  <script type="module" src="js/config.js"></script>
-  <script type="module" src="js/auth-functions.js"></script>
-  <script type="module" src="js/profile-functions.js"></script>
+  <div class="user-posts">
+    <h2>Your Posts</h2>
+    <div id="postsContainer"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+      measurementId: "G-FZ4GFXWGSS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+    const storage = getStorage();
+
+    const usernameHeader = document.getElementById("usernameHeader");
+    const usernameInput = document.getElementById("usernameInput");
+    const bioInput = document.getElementById("bioInput");
+    const locationInput = document.getElementById("locationInput");
+    const musicInput = document.getElementById("musicInput");
+    const themeInput = document.getElementById("themeInput");
+    const profilePicInput = document.getElementById("profilePicInput");
+    const backgroundInput = document.getElementById("backgroundInput");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const postsContainer = document.getElementById("postsContainer");
+
+    let currentUser;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) location.href = "index.html";
+      currentUser = user;
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        usernameHeader.textContent = data.username;
+        usernameInput.value = data.username;
+        bioInput.value = data.bio;
+        locationInput.value = data.location || "";
+        musicInput.value = data.music || "";
+        themeInput.value = data.theme || "";
+        if(data.background) document.body.style.backgroundImage = `url(${data.background})`;
+      }
+      loadPosts();
+    });
+
+    saveProfileBtn.addEventListener("click", async () => {
+      const updates = {
+        username: usernameInput.value,
+        bio: bioInput.value,
+        location: locationInput.value,
+        music: musicInput.value,
+        theme: themeInput.value
+      };
+
+      // Upload profile picture if selected
+      if(profilePicInput.files[0]){
+        const picRef = ref(storage, `users/${currentUser.uid}/profilePic`);
+        await uploadBytes(picRef, profilePicInput.files[0]);
+        updates.profilePic = await getDownloadURL(picRef);
+      }
+
+      // Upload background if selected
+      if(backgroundInput.files[0]){
+        const bgRef = ref(storage, `users/${currentUser.uid}/background`);
+        await uploadBytes(bgRef, backgroundInput.files[0]);
+        updates.background = await getDownloadURL(bgRef);
+        document.body.style.backgroundImage = `url(${updates.background})`;
+      }
+
+      await updateDoc(doc(db, "users", currentUser.uid), updates);
+      usernameHeader.textContent = updates.username;
+      alert("Profile updated!");
+    });
+
+    async function loadPosts(){
+      postsContainer.innerHTML = "";
+      const q = query(collection(db, "posts"), where("userId", "==", currentUser.uid));
+      const snapshot = await getDocs(q);
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.classList.add("post");
+        div.innerHTML = `
+          <h3>${data.username}</h3>
+          <p>${data.content}</p>
+          ${data.imageURL ? `<img src="${data.imageURL}" />` : ""}
+          <button onclick="deletePost('${docSnap.id}')">Delete</button>
+        `;
+        postsContainer.appendChild(div);
+      });
+    }
+
+    window.deletePost = async (postId) => {
+      if(confirm("Delete this post?")){
+        await deleteDoc(doc(db, "posts", postId));
+        loadPosts();
+      }
+    };
+  </script>
 </body>
 </html>

@@ -1,26 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile - YourSpace 2026</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>YourSpace - Profile</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <button id="homeBtn">Home</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+    <nav>
+        <button id="homeBtn">Home</button>
+        <button id="logoutBtn">Logout</button>
+    </nav>
 
-  <h1>Profile</h1>
-  <input type="text" id="displayName" placeholder="Username"/>
-  <input type="text" id="bio" placeholder="Bio"/>
-  <input type="text" id="location" placeholder="Location"/>
-  <input type="file" id="photo" accept="image/*"/>
-  <input type="text" id="theme" placeholder="Theme CSS or color"/>
-  <input type="text" id="music" placeholder="Music URL (embed)"/>
-  <button id="saveProfileBtn">Save Profile</button>
+    <h1>Your Profile</h1>
 
-<script type="module" src="profile.js"></script>
+    <div id="profileSection">
+        <img id="profilePhotoPreview" src="https://via.placeholder.com/150" alt="Profile Photo">
+        <input type="file" id="profilePhotoInput">
+        <br>
+
+        <label for="displayName">Display Name:</label>
+        <input type="text" id="displayName" placeholder="Your display name">
+        <br>
+
+        <label for="bio">Bio:</label>
+        <textarea id="bio" placeholder="Write something about yourself"></textarea>
+        <br>
+
+        <label for="musicURL">Music URL (embed player link):</label>
+        <input type="text" id="musicURL" placeholder="https://...">
+        <br>
+
+        <label for="themeHTML">Profile Theme HTML/CSS:</label>
+        <textarea id="themeHTML" placeholder="<style>body{background:#000;}</style>"></textarea>
+        <br>
+
+        <button id="saveProfileBtn">Save Profile</button>
+    </div>
+
+    <script type="module" src="profile.js"></script>
 </body>
 </html>

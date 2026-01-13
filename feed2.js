@@ -13,11 +13,11 @@ import {
   orderBy,
   onSnapshot,
   doc,
-  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  increment
+  increment,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getStorage,
@@ -60,42 +60,40 @@ onAuthStateChanged(auth, async (user) => {
 
   // CREATE POST
   postBtn.addEventListener("click", async () => {
-    try {
-      const text = postInput.value.trim();
-      if (!text && postImageInput.files.length === 0) {
-        return alert("Write something or attach an image!");
-      }
+    const text = postInput.value.trim();
+    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
 
-      let postImageURL = "";
-      if (postImageInput.files.length > 0) {
+    let postImageURL = "";
+    if (postImageInput.files.length > 0) {
+      try {
         const file = postImageInput.files[0];
         const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
         await uploadBytes(storageRef, file);
         postImageURL = await getDownloadURL(storageRef);
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        alert("Failed to upload image. Check permissions or file type.");
+        return;
       }
-
-      // Fetch user profile for displayName/photo
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
-
-      await addDoc(collection(db, "posts"), {
-        text,
-        userId: user.uid,
-        displayName: profile.displayName || "Anonymous",
-        photoURL: profile.photoURL || "",
-        postImage: postImageURL,
-        likes: 0,
-        comments: [],
-        createdAt: serverTimestamp()
-      });
-
-      // Clear inputs
-      postInput.value = "";
-      postImageInput.value = "";
-    } catch (err) {
-      console.error("Error posting:", err);
-      alert("Failed to post. See console for details.");
     }
+
+    // Fetch user profile for displayName/photo
+    const userSnap = await getDoc(doc(db, "users", user.uid));
+    const profile = userSnap.exists() ? userSnap.data() : {};
+
+    await addDoc(collection(db, "posts"), {
+      text,
+      userId: user.uid,
+      displayName: profile.displayName || "Anonymous",
+      photoURL: profile.photoURL || "",
+      postImage: postImageURL,
+      likes: 0,
+      comments: [],
+      createdAt: serverTimestamp()
+    });
+
+    postInput.value = "";
+    postImageInput.value = "";
   });
 
   // NAV buttons
@@ -130,51 +128,35 @@ onAuthStateChanged(auth, async (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // LIKE button
+      // BUTTONS
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
-        try {
-          const postRef = doc(db, "posts", docSnap.id);
-          await updateDoc(postRef, { likes: increment(1) });
-        } catch (err) {
-          console.error("Error liking post:", err);
-        }
+        const postRef = doc(db, "posts", docSnap.id);
+        await updateDoc(postRef, { likes: increment(1) });
       });
 
-      // COMMENT button
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
-        try {
-          const postRef = doc(db, "posts", docSnap.id);
-          const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
-          await updateDoc(postRef, { comments: updatedComments });
-
-          const commentEl = document.createElement("p");
-          commentEl.textContent = commentText;
-          commentsContainer.appendChild(commentEl);
-        } catch (err) {
-          console.error("Error adding comment:", err);
-        }
+        const postRef = doc(db, "posts", docSnap.id);
+        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
+        await updateDoc(postRef, { comments: updatedComments });
+        const commentEl = document.createElement("p");
+        commentEl.textContent = commentText;
+        commentsContainer.appendChild(commentEl);
       });
 
-      // DELETE button
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
           if (confirm("Delete this post?")) {
-            try {
-              await deleteDoc(doc(db, "posts", docSnap.id));
-            } catch (err) {
-              console.error("Error deleting post:", err);
-            }
+            await deleteDoc(doc(db, "posts", docSnap.id));
           }
         });
       }
 
-      // SHARE button
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
@@ -183,16 +165,6 @@ onAuthStateChanged(auth, async (user) => {
           prompt("Copy this link to share:", window.location.href);
         }
       });
-
-      // Render comments from Firestore
-      const commentsContainer = postDiv.querySelector(".commentsContainer");
-      if (data.comments && data.comments.length > 0) {
-        data.comments.forEach((c) => {
-          const commentEl = document.createElement("p");
-          commentEl.textContent = c.text;
-          commentsContainer.appendChild(commentEl);
-        });
-      }
     });
   });
 });

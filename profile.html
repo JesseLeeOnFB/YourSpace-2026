@@ -1,3 +1,4 @@
+<!-- /YourSpace-2026/profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,19 +9,23 @@
 </head>
 <body>
 <nav>
-  <button id="homeBtn">Home</button>
+  <button onclick="location.href='feed.html'">Home</button>
+  <button onclick="location.href='profile.html'">Profile</button>
   <button id="logoutBtn">Logout</button>
 </nav>
 
 <div class="container">
   <h2>Profile</h2>
   <input type="text" id="displayName" placeholder="Display Name">
-  <textarea id="bio" placeholder="Bio"></textarea>
+  <input type="text" id="bio" placeholder="Bio">
   <input type="text" id="location" placeholder="Location">
+  <input type="text" id="musicURL" placeholder="Music URL (<audio> embed)">
+
   <input type="file" id="photoFile">
-  <input type="text" id="musicURL" placeholder="Music URL (embed link)">
-  <textarea id="theme" placeholder="Custom HTML/CSS for profile background"></textarea>
+  <textarea id="themeCSS" placeholder="Custom CSS/HTML for profile"></textarea>
+
   <button id="saveProfileBtn">Save Profile</button>
+  <div id="userPosts"></div>
 </div>
 
 <script type="module" src="profile.js"></script>

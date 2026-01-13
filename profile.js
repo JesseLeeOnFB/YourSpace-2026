@@ -1,12 +1,10 @@
 console.log("🔥 profile.js loaded");
 
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -17,90 +15,54 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM elements
-const usernameInput = document.getElementById("usernameInput");
-const bioInput = document.getElementById("bioInput");
-const locationInput = document.getElementById("locationInput");
-const musicInput = document.getElementById("musicInput");
-const profilePhotoInput = document.getElementById("profilePhotoInput");
-const profilePhotoPreview = document.getElementById("profilePhotoPreview");
+const welcomeMsg = document.getElementById("welcomeMsg");
+const usernameInput = document.getElementById("username");
+const bioInput = document.getElementById("bio");
+const musicInput = document.getElementById("music");
+const photoInput = document.getElementById("photo");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-let currentUser;
-
-// Monitor auth state
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("Not logged in. Redirecting to homepage.");
-    window.location.href = "index.html";
-    return;
-  }
-  currentUser = user;
+  if (!user) return window.location.href = "index.html";
+  welcomeMsg.textContent = `Welcome ${user.email}`;
 
-  // Load existing profile data
+  // Load user profile
   const userDoc = await getDoc(doc(db, "users", user.uid));
   if (userDoc.exists()) {
     const data = userDoc.data();
-    usernameInput.value = data.username || "";
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-    musicInput.value = data.music || "";
-    if (data.photoURL) profilePhotoPreview.src = data.photoURL;
+    usernameInput.value = data.username;
+    bioInput.value = data.bio;
+    musicInput.value = data.music;
   }
-});
 
-// Save profile
-saveProfileBtn.addEventListener("click", async () => {
-  if (!currentUser) return alert("Not logged in");
+  // Save profile
+  saveProfileBtn.addEventListener("click", async () => {
+    let photoURL = "";
+    if (photoInput.files[0]) {
+      const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+      await uploadBytes(storageRef, photoInput.files[0]);
+      photoURL = await getDownloadURL(storageRef);
+    }
 
-  try {
-    const dataToSave = {
+    await setDoc(doc(db, "users", user.uid), {
       username: usernameInput.value,
       bio: bioInput.value,
-      location: locationInput.value,
-      music: musicInput.value
-    };
-
-    await setDoc(doc(db, "users", currentUser.uid), dataToSave, { merge: true });
+      music: musicInput.value,
+      photoURL
+    }, { merge: true });
 
     alert("Profile updated!");
-  } catch (error) {
-    console.error("Error saving profile:", error);
-    alert("Failed to save profile. Check console.");
-  }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
 });
-
-// Upload profile photo
-profilePhotoInput.addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (!currentUser) return alert("Not logged in");
-
-  try {
-    const storageRef = ref(storage, `profilePhotos/${currentUser.uid}/${file.name}`);
-    await uploadBytes(storageRef, file);
-    const photoURL = await getDownloadURL(storageRef);
-
-    // Save URL to Firestore
-    await setDoc(doc(db, "users", currentUser.uid), { photoURL }, { merge: true });
-
-    // Preview
-    profilePhotoPreview.src = photoURL;
-
-    alert("Profile photo uploaded!");
-  } catch (error) {
-    console.error("Photo upload error:", error);
-    alert("Failed to upload photo.");
-  }
-});
-
-// Logout
-logoutBtn.addEventListener("click", () => signOut(auth));

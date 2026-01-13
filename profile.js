@@ -84,32 +84,35 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Custom profile updated!");
     });
 
-    // Load user posts
-    const postsQuery = query(collection(db, "posts"), where("userId", "==", user.uid));
-    onSnapshot(postsQuery, (snapshot) => {
-      userPostsContainer.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const postDiv = document.createElement("div");
-        postDiv.classList.add("post");
-        postDiv.innerHTML = `
-          <p><strong>${data.displayName}</strong></p>
-          <p>${data.text}</p>
-          <div class="postButtons">
-            <button class="deleteBtn">Delete</button>
-          </div>
-        `;
-        userPostsContainer.appendChild(postDiv);
+// Load user posts
+const postsQuery = query(collection(db, "posts"), where("userId", "==", auth.currentUser.uid));
+onSnapshot(postsQuery, (snapshot) => {
+  userPostsContainer.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const postDiv = document.createElement("div");
+    postDiv.classList.add("post");
 
-        // Delete post button
-        const deleteBtn = postDiv.querySelector(".deleteBtn");
-        deleteBtn.addEventListener("click", async () => {
-          if (confirm("Delete this post?")) {
-            await deleteDoc(doc(db, "posts", docSnap.id));
-          }
-        });
-      });
+    // Check if the post has an image
+    const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
+    postDiv.innerHTML = `
+      <p><strong>${data.displayName}</strong></p>
+      <p>${data.text}</p>
+      ${imageHTML}
+      <button class="deleteBtn">Delete</button>
+    `;
+    userPostsContainer.appendChild(postDiv);
+
+    // Delete post button
+    const deleteBtn = postDiv.querySelector(".deleteBtn");
+    deleteBtn.addEventListener("click", async () => {
+      if (confirm("Delete this post?")) {
+        await deleteDoc(doc(db, "posts", docSnap.id));
+      }
     });
+  });
+});
 
     // Nav buttons
     homeBtn.addEventListener("click", () => window.location.href = "feed.html");

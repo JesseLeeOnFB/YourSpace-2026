@@ -1,89 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Yourspace</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Dark mode & basic styles -->
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
-
-    button {
-      background: #6366f1;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #4f46e5;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .post {
-      background: #020617;
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 8px;
-    }
-
-    .small {
-      font-size: 12px;
-      opacity: 0.7;
-    }
+    body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; margin: 0; padding: 0; }
+    input, button, textarea { margin: 5px 0; padding: 8px; border-radius: 4px; border: none; }
+    #profileDashboard { display: none; }
+    #postList div { margin-bottom: 10px; padding: 8px; background-color: #1e1e1e; border-radius: 5px; }
+    .deleteBtn { cursor: pointer; color: red; margin-left: 10px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-
-  <h1>Yourspace</h1>
-
-  <!-- AUTH -->
+  <!-- AUTH SECTION -->
   <div id="authSection">
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
+    <h1>Yourspace</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
     <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Log In</button>
+    <button id="loginBtn">Login</button>
   </div>
 
-  <!-- APP -->
-  <div id="appSection" class="hidden">
-    <p>Welcome, <span id="userEmail"></span></p>
-    <button id="logoutBtn">Log Out</button>
-
-    <h3>Create a Post</h3>
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
-    <button id="postBtn">Create Post</button>
-
-    <h3>Public Feed</h3>
-    <div id="feed"></div>
+  <!-- POST SECTION -->
+  <div id="postSection" style="display:none;">
+    <h2>Create Post</h2>
+    <input type="text" id="postTitle" placeholder="Title">
+    <textarea id="postContent" placeholder="Write something..."></textarea>
+    <input type="text" id="postImage" placeholder="Image URL">
+    <button id="createPostBtn">Post</button>
+    <h3>Your Posts</h3>
+    <div id="postList"></div>
   </div>
 
-</div>
+  <!-- PROFILE DASHBOARD -->
+  <div id="profileDashboard">
+    <h2>Profile Dashboard</h2>
+    <input type="text" id="displayName" placeholder="Display Name">
+    <button id="saveDisplayName">Save Name</button>
+    <input type="text" id="profileTheme" placeholder="CSS / Background color">
+    <button id="saveTheme">Save Theme</button>
+    <input type="text" id="profileMusic" placeholder="Music URL (audio tag)">
+    <button id="saveMusicProfile">Save Music</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
 
-<script type="module" src="script.js"></script>
+  <!-- MUSIC PLAYER -->
+  <div id="musicPlayer"></div>
+
+  <!-- FIREBASE + SCRIPT -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>

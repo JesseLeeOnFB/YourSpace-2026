@@ -1,9 +1,8 @@
-// /YourSpace-2026/feed.js
 console.log("🔥 feed.js loaded");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, serverTimestamp, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -20,63 +19,69 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // DOM
-const logoutBtn = document.getElementById("logoutBtn");
 const postBtn = document.getElementById("postBtn");
 const postInput = document.getElementById("postText");
-const postsContainer = document.getElementById("postsContainer");
+const feedContainer = document.getElementById("feedContainer");
+const logoutBtn = document.getElementById("logoutBtn");
+const profileBtn = document.getElementById("profileBtn");
 
-// Logout
-logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+// Redirect if not logged in
+onAuthStateChanged(auth, user => {
+  if (!user) return window.location.href = "index.html";
+  loadPosts();
+});
 
-// Add Post
+// Post
 postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   const text = postInput.value.trim();
-  if (!user) return alert("Login first");
   if (!text) return alert("Write something first");
-
-  const userDoc = await (await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')).getDoc(doc(db, "users", user.uid));
-  const profile = userDoc.exists() ? userDoc.data() : {};
-
-  await addDoc(collection(db, "posts"), {
-    text,
-    userId: user.uid,
-    displayName: profile.displayName || "Anonymous",
-    photoURL: profile.photoURL || "",
-    createdAt: serverTimestamp(),
-    likes: 0,
-    comments: []
-  });
-
-  postInput.value = "";
+  try {
+    await addDoc(collection(db, "posts"), {
+      text,
+      userId: user.uid,
+      displayName: user.displayName || "Anonymous",
+      createdAt: serverTimestamp(),
+      likes: 0
+    });
+    postInput.value = "";
+    loadPosts();
+  } catch (err) { console.error(err); alert(err.message); }
 });
 
-// Render Posts
-const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-onSnapshot(q, (snapshot) => {
-  postsContainer.innerHTML = "";
+// Logout/Profile
+logoutBtn.addEventListener("click", () => signOut(auth).then(()=> window.location.href="index.html"));
+profileBtn.addEventListener("click", () => window.location.href="profile.html"));
+
+// Load Posts
+async function loadPosts() {
+  feedContainer.innerHTML = "";
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
   snapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "post";
-    div.innerHTML = `
-      <img src="${post.photoURL || 'https://via.placeholder.com/50'}" class="post-pic">
-      <b>${post.displayName}</b>: ${post.text} <br>
-      <button onclick="likePost('${docSnap.id}', ${post.likes})">Like (${post.likes})</button>
-      <button onclick="deletePost('${docSnap.id}', '${post.userId}')">Delete</button>
+    const data = docSnap.data();
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+    postDiv.innerHTML = `
+      <strong>${data.displayName}</strong><br/>
+      ${data.text}<br/>
+      <button onclick="likePost('${docSnap.id}', ${data.likes})">Like (${data.likes || 0})</button>
+      <button onclick="deletePost('${docSnap.id}', '${data.userId}')">Delete</button>
     `;
-    postsContainer.appendChild(div);
+    feedContainer.appendChild(postDiv);
   });
-});
+}
 
 // Like/Delete functions
-window.likePost = async (id, likes) => {
-  const docRef = doc(db, "posts", id);
-  await updateDoc(docRef, { likes: likes + 1 });
+window.likePost = async (postId, currentLikes) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, { likes: (currentLikes || 0) + 1 });
+  loadPosts();
 };
 
-window.deletePost = async (id, userId) => {
-  if (auth.currentUser.uid !== userId) return alert("Can't delete");
-  const docRef = doc(db, "posts", id);
-  await updateDoc(docRef, { text: "[deleted]" });
+window.deletePost = async (postId, postUserId) => {
+  const user = auth.currentUser;
+  if (user.uid !== postUserId) return alert("You can only delete your own posts");
+  await deleteDoc(doc(db, "posts", postId));
+  loadPosts();
 };

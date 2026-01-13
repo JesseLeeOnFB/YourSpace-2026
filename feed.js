@@ -1,140 +1,100 @@
 console.log("🔥 feed.js loaded");
 
-// Firebase imports (replace with your actual firebaseConfig import)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, doc, onSnapshot, setDoc, getDoc, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
+const auth = getAuth();
+const db = getFirestore();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const postsContainer = document.getElementById("postsContainer");
+// DOM
+const postTitle = document.getElementById("postTitle");
+const postContent = document.getElementById("postContent");
+const postImageUrl = document.getElementById("postImageUrl");
+const publishPostBtn = document.getElementById("publishPostBtn");
+const feedPostsContainer = document.getElementById("feedPostsContainer");
 const trendingPost = document.getElementById("trendingPost");
+const homeBtn = document.getElementById("homeBtn");
+const profileBtn = document.getElementById("profileBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// Utility to render posts
-function renderPosts(snapshot) {
-  postsContainer.innerHTML = "";
-  let trending = null;
-  let maxScore = 0;
+// Navigation
+homeBtn.addEventListener("click", () => window.location.href = "feed.html");
+profileBtn.addEventListener("click", () => window.location.href = "profile.html");
+logoutBtn.addEventListener("click", async () => await auth.signOut());
 
-  snapshot.forEach(docSnap => {
+let currentUser;
+onAuthStateChanged(auth, (user) => {
+  if (!user) return window.location.href = "index.html";
+  currentUser = user;
+  loadFeed();
+  loadTrending();
+});
+
+// Publish post
+publishPostBtn.addEventListener("click", async () => {
+  const title = postTitle.value;
+  const content = postContent.value;
+  const imageUrl = postImageUrl.value;
+
+  if (!title && !content) return alert("Enter a title or content!");
+
+  await addDoc(collection(db, "posts"), {
+    userId: currentUser.uid,
+    username: currentUser.displayName || currentUser.email,
+    title,
+    content,
+    imageUrl: imageUrl || "",
+    timestamp: new Date(),
+    likes: 0,
+    comments: []
+  });
+
+  postTitle.value = "";
+  postContent.value = "";
+  postImageUrl.value = "";
+  loadFeed();
+  loadTrending();
+});
+
+// Load global feed
+async function loadFeed() {
+  feedPostsContainer.innerHTML = "";
+
+  const postsSnapshot = await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")));
+  postsSnapshot.forEach(docSnap => {
     const post = docSnap.data();
-    const postId = docSnap.id;
-
-    const score = (post.likes?.length || 0) + (post.comments?.length || 0) + (post.shares?.length || 0);
-    if(score > maxScore){
-      maxScore = score;
-      trending = { ...post, postId };
-    }
-
-    const div = document.createElement("div");
-    div.classList.add("post");
-    const userLiked = post.likes?.includes(auth.currentUser.uid);
-    div.innerHTML = `
-      <p><strong>${post.username || "Anonymous"}</strong></p>
+    const postEl = document.createElement("div");
+    postEl.classList.add("post");
+    postEl.innerHTML = `
+      <h4>${post.title}</h4>
       <p>${post.content}</p>
-      ${post.imageURL ? `<img src="${post.imageURL}" />` : ""}
-      <button class="likeBtn" data-id="${postId}">${userLiked ? "Unlike" : "Like"} (${post.likes?.length || 0})</button>
-      <button class="shareBtn" data-id="${postId}">Share (${post.shares?.length || 0})</button>
-      <input class="commentInput" data-id="${postId}" placeholder="Comment..." />
-      <button class="commentBtn" data-id="${postId}">Post Comment (${post.comments?.length || 0})</button>
-      ${auth.currentUser.uid === post.userId ? `<button class="deleteBtn" data-id="${postId}">Delete</button>` : ""}
-      <div class="commentsContainer"></div>
+      ${post.imageUrl ? `<img src="${post.imageUrl}" width="200"/>` : ""}
+      <p>By: ${post.username}</p>
+      ${post.userId === currentUser.uid ? `<button onclick="deletePost('${docSnap.id}')">Delete</button>` : ""}
     `;
-    postsContainer.appendChild(div);
-
-    const commentsContainer = div.querySelector(".commentsContainer");
-    post.comments?.forEach(c => {
-      const cDiv = document.createElement("div");
-      cDiv.textContent = `${c.username}: ${c.content}`;
-      commentsContainer.appendChild(cDiv);
-    });
+    feedPostsContainer.appendChild(postEl);
   });
+}
 
-  // Show trending post
-  if(trending){
+// Delete post
+window.deletePost = async (postId) => {
+  const postRef = doc(db, "posts", postId);
+  await deleteDoc(postRef);
+  loadFeed();
+  loadTrending();
+}
+
+// Load trending post (hourly)
+async function loadTrending() {
+  const postsSnapshot = await getDocs(query(collection(db, "posts"), orderBy("likes", "desc"), limit(1)));
+  trendingPost.innerHTML = "";
+  postsSnapshot.forEach(docSnap => {
+    const post = docSnap.data();
     trendingPost.innerHTML = `
-      <h2>Trending Post</h2>
-      <p><strong>${trending.username}</strong></p>
-      <p>${trending.content}</p>
-      ${trending.imageURL ? `<img src="${trending.imageURL}" />` : ""}
-      <p>Score: ${(trending.likes?.length || 0) + (trending.comments?.length || 0) + (trending.shares?.length || 0)}</p>
+      <h4>${post.title}</h4>
+      <p>${post.content}</p>
+      ${post.imageUrl ? `<img src="${post.imageUrl}" width="200"/>` : ""}
+      <p>By: ${post.username}</p>
     `;
-  }
-
-  // Attach button listeners
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
-    btn.addEventListener("click", async e => {
-      const postId = e.target.dataset.id;
-      await deleteDoc(doc(db, "posts", postId));
-    });
   });
-
-  document.querySelectorAll(".likeBtn").forEach(btn => {
-    btn.addEventListener("click", async e => {
-      const postId = e.target.dataset.id;
-      const postRef = doc(db, "posts", postId);
-      const postSnap = await getDoc(postRef);
-      let likes = postSnap.data().likes || [];
-      if(likes.includes(auth.currentUser.uid)){
-        likes = likes.filter(uid => uid !== auth.currentUser.uid); // Unlike
-      } else {
-        likes.push(auth.currentUser.uid); // Like
-      }
-      await setDoc(postRef, { likes }, { merge: true });
-    });
-  });
-
-  document.querySelectorAll(".shareBtn").forEach(btn => {
-    btn.addEventListener("click", async e => {
-      const postId = e.target.dataset.id;
-      const postRef = doc(db, "posts", postId);
-      const postSnap = await getDoc(postRef);
-      let shares = postSnap.data().shares || [];
-      if(!shares.includes(auth.currentUser.uid)) shares.push(auth.currentUser.uid);
-      await setDoc(postRef, { shares }, { merge: true });
-    });
-  });
-
-  document.querySelectorAll(".commentBtn").forEach(btn => {
-    btn.addEventListener("click", async e => {
-      const postId = e.target.dataset.id;
-      const input = document.querySelector(`.commentInput[data-id='${postId}']`);
-      const content = input.value.trim();
-      if(!content) return;
-      const postRef = doc(db, "posts", postId);
-      const postSnap = await getDoc(postRef);
-      let comments = postSnap.data().comments || [];
-      comments.push({
-        userId: auth.currentUser.uid,
-        username: auth.currentUser.displayName || "Anonymous",
-        content,
-        timestamp: new Date()
-      });
-      await setDoc(postRef, { comments }, { merge: true });
-      input.value = "";
-    });
-  });
-
 }
-
-// Real-time listener
-function listenPosts(){
-  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-  onSnapshot(q, renderPosts);
-}
-
-// Refresh trending every hour
-setInterval(listenPosts, 60 * 60 * 1000); // 1 hour
-listenPosts();

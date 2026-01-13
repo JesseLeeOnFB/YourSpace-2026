@@ -1,130 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Global Feed - YourSpace 2026</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="feed.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <button onclick="location.href='profile.html'">Profile</button>
-    <button onclick="location.href='index.html'">Logout</button>
-  </nav>
+<nav>
+  <button id="homeBtn">Home</button>
+  <button id="profileBtn">Profile</button>
+  <button id="logoutBtn">Log Out</button>
+</nav>
 
-  <div class="feed-container">
-    <h1>Global Feed</h1>
+<div class="create-post">
+  <textarea id="postContent" placeholder="What's up?"></textarea>
+  <input type="text" id="postImage" placeholder="Image URL (optional)">
+  <button id="publishPostBtn">Publish</button>
+</div>
 
-    <div class="new-post">
-      <textarea id="postContent" placeholder="What's on your mind?"></textarea>
-      <input type="url" id="postImage" placeholder="Image URL (optional)">
-      <button id="publishBtn">Publish</button>
-    </div>
+<h2>Trending Post</h2>
+<div id="trendingPost"></div>
 
-    <div class="trending">
-      <h2>Trending Post 🏆</h2>
-      <div id="trendingContainer"></div>
-    </div>
+<h2>Global Feed</h2>
+<div id="postsContainer"></div>
 
-    <div class="all-posts">
-      <h2>All Posts</h2>
-      <div id="postsContainer"></div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-      authDomain: "yourspace-2026.firebaseapp.com",
-      projectId: "yourspace-2026",
-      storageBucket: "yourspace-2026.firebasestorage.app",
-      messagingSenderId: "72667267302",
-      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-      measurementId: "G-FZ4GFXWGSS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore();
-
-    const postContent = document.getElementById("postContent");
-    const postImage = document.getElementById("postImage");
-    const publishBtn = document.getElementById("publishBtn");
-    const postsContainer = document.getElementById("postsContainer");
-    const trendingContainer = document.getElementById("trendingContainer");
-
-    let currentUser;
-
-    onAuthStateChanged(auth, async (user) => {
-      if(!user) location.href = "index.html";
-      currentUser = user;
-      loadPosts();
-      loadTrending();
-    });
-
-    publishBtn.addEventListener("click", async () => {
-      const content = postContent.value;
-      const imageURL = postImage.value;
-      if(!content) { alert("Enter something!"); return; }
-
-      await addDoc(collection(db, "posts"), {
-        content,
-        imageURL: imageURL || "",
-        userId: currentUser.uid,
-        username: currentUser.email,
-        createdAt: new Date(),
-        likes: 0
-      });
-
-      postContent.value = "";
-      postImage.value = "";
-      loadPosts();
-      loadTrending();
-    });
-
-    async function loadPosts() {
-      postsContainer.innerHTML = "";
-      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const div = document.createElement("div");
-        div.classList.add("post");
-        div.innerHTML = `
-          <h3>${data.username}</h3>
-          <p>${data.content}</p>
-          ${data.imageURL ? `<img src="${data.imageURL}" />` : ""}
-          <p>Likes: ${data.likes}</p>
-        `;
-        postsContainer.appendChild(div);
-      });
-    }
-
-    async function loadTrending() {
-      trendingContainer.innerHTML = "";
-      const q = query(collection(db, "posts"), orderBy("likes", "desc"));
-      const snapshot = await getDocs(q);
-      const top = snapshot.docs[0];
-      if(top){
-        const data = top.data();
-        const div = document.createElement("div");
-        div.classList.add("post");
-        div.innerHTML = `
-          <h3>${data.username}</h3>
-          <p>${data.content}</p>
-          ${data.imageURL ? `<img src="${data.imageURL}" />` : ""}
-          <p>Likes: ${data.likes}</p>
-        `;
-        trendingContainer.appendChild(div);
-      }
-    }
-
-    // Refresh trending hourly
-    setInterval(loadTrending, 3600000);
-  </script>
+<script type="module" src="feed.js"></script>
 </body>
 </html>

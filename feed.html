@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>Global Feed</h1>
+  <div id="create-post">
+    <input type="text" id="postTitle" placeholder="Title">
+    <textarea id="postContent" placeholder="Write something"></textarea>
+    <input type="url" id="postImage" placeholder="Image URL">
+    <input type="url" id="postAudio" placeholder="Audio URL">
+    <button id="createPostBtn">Create Post</button>
+  </div>
+
+  <div id="trendingPost">
+    <h2>Trending Post</h2>
+    <div id="trendingContainer"></div>
+  </div>
+
+  <div id="feedContainer"></div>
+</div>
+
+<script type="module" src="feed.js"></script>
+</body>
+</html>

@@ -1,8 +1,6 @@
-console.log("🔥 script.js loaded");
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -18,39 +16,40 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM elements
-const signupBtn = document.getElementById("signupBtn");
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const displayNameInput = document.getElementById("displayName");
+document.addEventListener("DOMContentLoaded", () => {
+  const signupBtn = document.getElementById("signupBtn");
+  const loginBtn = document.getElementById("loginBtn");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const usernameInput = document.getElementById("username");
 
-// Sign Up
-signupBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  const displayName = displayNameInput.value.trim();
+  signupBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const displayName = usernameInput.value.trim();
 
-  if (!email || !password || !displayName) return alert("Fill in all fields");
+    if (!email || !password || !displayName) return alert("Fill all fields");
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(auth.currentUser, { displayName });
-    await setDoc(doc(db, "users", userCredential.user.uid), { displayName, bio: "", location: "", photoURL: "", theme: "", music: "" });
-    window.location.href = "feed.html";
-  } catch (err) {
-    alert(err.message);
-  }
-});
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCred.user, { displayName });
+      await setDoc(doc(db, "users", userCred.user.uid), { displayName, bio: "", photoURL: "", musicURL: "", theme: "" });
+      alert("Account created!");
+      window.location.href = "feed.html";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 
-// Login
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "feed.html";
-  } catch (err) {
-    alert(err.message);
-  }
+  loginBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "feed.html";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 });

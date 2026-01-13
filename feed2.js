@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-        const profile = userSnap.exists() ? userSnap.data() : {};
+const profile = userSnap.exists() ? userSnap.data() : {};
 
         await addDoc(collection(db, "posts"), {
           text,

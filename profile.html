@@ -11,37 +11,30 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="profile-header">
-    <img id="profileImage" class="profile-photo" src="default.png" alt="Profile Picture">
-    <div>
-      <h2 id="displayNameHeader">Display Name</h2>
-      <p id="bioHeader">Bio</p>
-      <p id="locationHeader">Location</p>
-    </div>
-  </div>
+  <h1>Your Profile</h1>
 
-  <div class="profile-inputs">
-    <label>Change Display Name</label>
-    <input type="text" id="displayNameInput" placeholder="Enter new display name">
+  <div id="profileContainer">
+    <img id="profilePhoto" src="default.png" alt="Profile Photo" class="profile-photo">
+    <input type="file" id="photoInput">
+    
+    <label>Display Name:</label>
+    <input type="text" id="displayName" placeholder="Your name">
 
-    <label>Bio</label>
-    <input type="text" id="bioInput" placeholder="Enter your bio">
+    <label>Bio:</label>
+    <textarea id="bio" placeholder="Tell something about yourself"></textarea>
 
-    <label>Location</label>
-    <input type="text" id="locationInput" placeholder="Enter your location">
+    <label>Location:</label>
+    <input type="text" id="location" placeholder="City, State">
 
-    <label>Music URL (embed player)</label>
-    <input type="text" id="musicInput" placeholder="Enter music URL">
-
-    <label>Upload Profile Photo</label>
-    <input type="file" id="photoInput" accept="image/*">
+    <label>Music URL:</label>
+    <input type="text" id="musicURL" placeholder="https://">
 
     <button id="saveProfileBtn">Save Profile</button>
   </div>
 
   <h2>Your Posts</h2>
-  <div class="posts-container" id="postsContainer"></div>
+  <div id="userPostsContainer" class="posts-container"></div>
 
-  <script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js?v=2"></script>
 </body>
 </html>

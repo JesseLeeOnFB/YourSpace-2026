@@ -42,6 +42,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   loginBtn.addEventListener("click", async () => {
+    signupBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    alert("Enter email and password");
+    return;
+  }
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+    // create user profile doc
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      displayName: email.split("@")[0],
+      createdAt: serverTimestamp()
+    });
+
+    window.location.href = "feed.html";
+  } catch (err) {
+    alert(err.message);
+  }
+});
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 

@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container">
-  <h1>Profile</h1>
-  <p id="welcomeMsg"></p>
-  <input type="text" id="username" placeholder="Username">
-  <textarea id="bio" placeholder="Bio"></textarea>
-  <input type="text" id="music" placeholder="Music URL">
-  <input type="file" id="photo">
-  <button id="saveProfileBtn">Save Profile</button>
-  <button id="logoutBtn">Logout</button>
-</div>
-<script type="module" src="profile.js"></script>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="profile.html">Profile</a>
+    <a href="index.html" id="logoutNavBtn">Logout</a>
+  </nav>
+
+  <div class="profile-container">
+    <h2>Profile Settings</h2>
+    <input type="text" id="username" placeholder="Username">
+    <textarea id="bio" placeholder="Bio"></textarea>
+    <input type="text" id="location" placeholder="Location">
+    <input type="text" id="music" placeholder="Music URL (optional)">
+    <input type="file" id="profilePhoto">
+    <input type="text" id="theme" placeholder="Theme CSS/HTML (optional)">
+    <button id="saveProfileBtn">Save Profile</button>
+  </div>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/auth-functions.js"></script>
+  <script type="module" src="js/profile-functions.js"></script>
 </body>
 </html>

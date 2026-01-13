@@ -1,22 +1,11 @@
 // feed.js
 console.log("🔥 feed.js loaded");
 
-import {
-  getAuth
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  doc,
-  getDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
+// 🔑 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -27,44 +16,68 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM
-window.addEventListener("DOMContentLoaded", () => {
-  const postBtn = document.getElementById("postBtn");
-  const postInput = document.getElementById("postText");
+// DOM elements
+const postBtn = document.getElementById("postBtn");
+const postInput = document.getElementById("postText");
+const feedContainer = document.getElementById("feedContainer");
+const logoutBtn = document.getElementById("logoutBtn");
 
-  if (!postBtn || !postInput) {
-    console.error("Post elements not found");
-    return;
-  }
+// LOGOUT
+logoutBtn.addEventListener("click", () => {
+  signOut(auth).then(() => location.href = "index.html");
+});
 
-  postBtn.addEventListener("click", async () => {
+// POST
 postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   const text = postInput.value.trim();
 
   if (!user) {
-    alert("You must be logged in");
+    alert("You must be logged in!");
     return;
   }
 
   if (!text) {
-    alert("Write something first");
+    alert("Write something first!");
     return;
   }
 
   try {
-    // Load user profile
-    const userSnap = await getDoc(doc(db, "users", user.uid));
-    const profile = userSnap.exists() ? userSnap.data() : {};
+    await addDoc(collection(db, "posts"), {
+      text,
+      userId: user.uid,
+      displayName: user.displayName || user.email,
+      photoURL: user.photoURL || "",
+      createdAt: serverTimestamp()
+    });
+
     postInput.value = "";
-    alert("Posted!");
   } catch (err) {
-    console.error("POST ERROR:", err);
+    console.error(err);
     alert(err.message);
   }
 });
+
+// LIVE FEED
+const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+onSnapshot(q, (snapshot) => {
+  feedContainer.innerHTML = ""; // Clear feed
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.classList.add("post");
+
+    div.innerHTML = `
+      <strong>${data.displayName}</strong><br>
+      ${data.text}<br>
+      <small>${data.createdAt?.toDate ? data.createdAt.toDate() : ''}</small>
+    `;
+
+    feedContainer.appendChild(div);
+  });
 });

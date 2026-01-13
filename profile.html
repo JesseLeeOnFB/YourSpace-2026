@@ -1,8 +1,8 @@
-<!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,27 +12,28 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="profile-container">
-    <img id="profilePhoto" class="profile-picture" src="default.png" alt="Profile Photo">
+  <h1>Your Profile</h1>
 
-    <div class="profile-info">
-      <h2 id="displayName">Your Name</h2>
-      <p id="bio">Your bio here...</p>
-      <p id="location">Location: </p>
-      <p id="music">Music: </p>
-    </div>
-
-    <div>
-      <label>Change Profile Photo:</label>
-      <input type="file" id="photoUpload">
-      <button id="saveProfileBtn">Save Profile</button>
-    </div>
+  <!-- Profile info -->
+  <div id="profileInfo">
+    <img id="profilePic" class="profile-picture" src="" alt="Profile Picture">
+    <input type="file" id="photoInput">
+    <input type="text" id="displayName" placeholder="Username">
+    <input type="text" id="bio" placeholder="Bio">
+    <input type="text" id="location" placeholder="Location">
+    <input type="text" id="musicURL" placeholder="Music URL (YouTube/SoundCloud)">
+    <button id="saveProfile">Save Profile</button>
   </div>
 
-  <div class="profile-posts" id="profilePosts">
-    <h3>Your Posts</h3>
-    <div id="postsContainer"></div>
-  </div>
+  <!-- Custom HTML / CSS for profile customization -->
+  <h3>Custom Profile Code</h3>
+  <textarea id="customCode" placeholder="Paste HTML/CSS here"></textarea>
+  <button id="saveCustom">Save</button>
+  <div id="customProfileDiv"></div>
+
+  <!-- User's posts -->
+  <h2>Your Posts</h2>
+  <div id="userPostsContainer"></div>
 
   <script type="module" src="profile.js?v=2"></script>
 </body>

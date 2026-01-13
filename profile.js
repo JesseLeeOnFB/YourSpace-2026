@@ -1,9 +1,8 @@
-// /YourSpace-2026/profile.js
 console.log("🔥 profile.js loaded");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -22,77 +21,56 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // DOM
-const logoutBtn = document.getElementById("logoutBtn");
-const saveBtn = document.getElementById("saveProfileBtn");
 const displayNameInput = document.getElementById("displayName");
 const bioInput = document.getElementById("bio");
 const locationInput = document.getElementById("location");
-const musicInput = document.getElementById("musicURL");
-const themeInput = document.getElementById("themeCSS");
-const photoFile = document.getElementById("photoFile");
-const userPostsDiv = document.getElementById("userPosts");
+const photoInput = document.getElementById("photo");
+const themeInput = document.getElementById("theme");
+const musicInput = document.getElementById("music");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
 
-// Logout
-logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
-
-// Load profile
-auth.onAuthStateChanged(async (user) => {
+// Load profile data
+onAuthStateChanged(auth, async user => {
   if (!user) return window.location.href = "index.html";
-
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  const profile = userDoc.exists() ? userDoc.data() : {};
-
-  displayNameInput.value = profile.displayName || "";
-  bioInput.value = profile.bio || "";
-  locationInput.value = profile.location || "";
-  musicInput.value = profile.musicURL || "";
-  themeInput.value = profile.themeCSS || "";
-
-  // Load user's posts
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-  onSnapshot(q, snapshot => {
-    userPostsDiv.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const p = docSnap.data();
-      if (p.userId === user.uid) {
-        const div = document.createElement("div");
-        div.innerHTML = `
-          <b>${p.displayName}</b>: ${p.text} 
-          <button onclick="deletePost('${docSnap.id}', '${p.userId}')">Delete</button>
-        `;
-        userPostsDiv.appendChild(div);
-      }
-    });
-  });
+  const docSnap = await getDoc(doc(db, "users", user.uid));
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    displayNameInput.value = data.displayName || "";
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
+    themeInput.value = data.theme || "";
+    musicInput.value = data.music || "";
+  }
 });
 
 // Save profile
-saveBtn.addEventListener("click", async () => {
+saveProfileBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return alert("Not logged in");
 
   let photoURL = "";
-  if (photoFile.files[0]) {
-    const fileRef = ref(storage, `users/${user.uid}/${photoFile.files[0].name}`);
-    await uploadBytes(fileRef, photoFile.files[0]);
-    photoURL = await getDownloadURL(fileRef);
+  if (photoInput.files.length > 0) {
+    const file = photoInput.files[0];
+    const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
+    await uploadBytes(storageRef, file);
+    photoURL = await getDownloadURL(storageRef);
   }
 
-  await updateDoc(doc(db, "users", user.uid), {
+  await setDoc(doc(db, "users", user.uid), {
     displayName: displayNameInput.value,
     bio: bioInput.value,
     location: locationInput.value,
-    musicURL: musicInput.value,
-    themeCSS: themeInput.value,
-    photoURL: photoURL || undefined
-  });
+    theme: themeInput.value,
+    music: musicInput.value,
+    photoURL: photoURL || ""
+  }, { merge: true });
 
-  alert("Profile updated!");
+  await updateProfile(user, { displayName: displayNameInput.value, photoURL: photoURL || user.photoURL });
+  alert("Profile saved!");
 });
 
-// Delete post
-window.deletePost = async (id, userId) => {
-  if (auth.currentUser.uid !== userId) return alert("Can't delete");
-  const docRef = doc(db, "posts", id);
-  await updateDoc(docRef, { text: "[deleted]" });
-};
+// Logout & Home
+logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href="index.html"));
+homeBtn.addEventListener("click", () => window.location.href="feed.html"));

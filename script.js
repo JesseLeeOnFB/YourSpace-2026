@@ -1,77 +1,59 @@
-// File: script.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { firebaseConfig } from './firebase-config.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+console.log("🔥 script.js loaded");
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
+};
+
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const db = getFirestore(app);
+const db = getFirestore();
 
+// DOM elements
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-
 const usernameInput = document.getElementById("username");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 
-const authSection = document.getElementById("authSection");
-const welcomeSection = document.getElementById("welcomeSection");
-const displayName = document.getElementById("displayName");
-const goProfile = document.getElementById("goProfile");
-const goFeed = document.getElementById("goFeed");
-
-// Sign Up
-signupBtn.addEventListener("click", async () => {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  const username = usernameInput.value;
-  if(!email || !password || !username){ alert("Fill all fields!"); return; }
-
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    await updateProfile(user, { displayName: username });
-    await setDoc(doc(db, "users", user.uid), {
-      username: username,
-      email: email,
-      bio: "",
-      location: "",
-      profilePic: "",
-      backgroundCSS: "",
-      musicURL: ""
+if (signupBtn) {
+    signupBtn.addEventListener("click", async () => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+            await updateProfile(userCredential.user, { displayName: usernameInput.value });
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                username: usernameInput.value,
+                email: emailInput.value
+            });
+            window.location.href = "feed.html";
+        } catch (err) { console.error(err); alert(err.message); }
     });
-    showWelcome(user);
-  } catch(err) { alert(err.message); }
-});
-
-// Login
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  if(!email || !password){ alert("Fill all fields!"); return; }
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    showWelcome(userCredential.user);
-  } catch(err) { alert(err.message); }
-});
-
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  authSection.style.display = "block";
-  welcomeSection.style.display = "none";
-});
-
-// Show welcome section
-function showWelcome(user){
-  authSection.style.display = "none";
-  welcomeSection.style.display = "block";
-  displayName.textContent = user.displayName || user.email;
 }
 
-// Navigation
-goProfile.addEventListener("click", ()=>{ window.location.href="profile.html"; });
-goFeed.addEventListener("click", ()=>{ window.location.href="feed.html"; });
+if (loginBtn) {
+    loginBtn.addEventListener("click", async () => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+            window.location.href = "feed.html";
+        } catch (err) { console.error(err); alert(err.message); }
+    });
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "index.html";
+    });
+}

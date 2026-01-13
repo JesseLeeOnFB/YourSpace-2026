@@ -32,9 +32,16 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // DOM
-const postBtn = document.getElementById("postBtn");
-const postInput = document.getElementById("postText");
+window.addEventListener("DOMContentLoaded", () => {
+  const postBtn = document.getElementById("postBtn");
+  const postInput = document.getElementById("postText");
 
+  if (!postBtn || !postInput) {
+    console.error("Post elements not found");
+    return;
+  }
+
+  postBtn.addEventListener("click", async () => {
 postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   const text = postInput.value.trim();
@@ -53,19 +60,11 @@ postBtn.addEventListener("click", async () => {
     // Load user profile
     const userSnap = await getDoc(doc(db, "users", user.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
-
-    await addDoc(collection(db, "posts"), {
-      text,
-      userId: user.uid,
-      displayName: profile.displayName || user.email,
-      photoURL: profile.photoURL || "",
-      createdAt: serverTimestamp()
-    });
-
     postInput.value = "";
     alert("Posted!");
   } catch (err) {
     console.error("POST ERROR:", err);
     alert(err.message);
   }
+});
 });

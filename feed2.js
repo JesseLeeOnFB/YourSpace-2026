@@ -1,8 +1,10 @@
+// feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDoc, doc, query, orderBy, onSnapshot, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+// -------------------- CONFIG --------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -18,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM
+// -------------------- DOM ELEMENTS --------------------
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -28,27 +30,37 @@ const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 const trendingContainer = document.getElementById("trendingPost");
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "index.html";
+// -------------------- AUTH --------------------
+let currentUser;
 
-  postBtn.addEventListener("click", async () => {
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    alert("You must be logged in");
+    window.location.href = "index.html";
+    return;
+  }
+  currentUser = user;
+
+  // -------------------- POST BUTTON --------------------
+  postBtn.onclick = async () => {
     const text = postInput.value.trim();
     if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
       const file = postImageInput.files[0];
-      const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
+      const storageRef = ref(storage, `posts/${currentUser.uid}/${Date.now()}_${file.name}`);
       await uploadBytes(storageRef, file);
       postImageURL = await getDownloadURL(storageRef);
     }
 
-    const userSnap = await getDoc(doc(db, "users", user.uid));
+    // Fetch current user's profile
+    const userSnap = await getDoc(doc(db, "users", currentUser.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
 
     await addDoc(collection(db, "posts"), {
       text,
-      userId: user.uid,
+      userId: currentUser.uid,
       displayName: profile.displayName || "Anonymous",
       photoURL: profile.photoURL || "",
       postImage: postImageURL,
@@ -59,12 +71,14 @@ onAuthStateChanged(auth, async (user) => {
 
     postInput.value = "";
     postImageInput.value = "";
-  });
+  };
 
-  profileBtn.addEventListener("click", () => window.location.href = "profile.html");
-  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
-  homeBtn.addEventListener("click", () => window.location.href = "feed.html");
+  // -------------------- NAV --------------------
+  profileBtn.onclick = () => window.location.href = "profile.html";
+  logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
+  homeBtn.onclick = () => window.location.href = "feed.html";
 
+  // -------------------- LOAD POSTS --------------------
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
@@ -73,8 +87,8 @@ onAuthStateChanged(auth, async (user) => {
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
+      // Render post
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -86,54 +100,42 @@ onAuthStateChanged(auth, async (user) => {
           <button class="likeBtn">Like (${data.likes || 0})</button>
           <button class="commentBtn">Comment</button>
           <button class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+          ${currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
         </div>
         <div class="commentsContainer"></div>
       `;
       postsContainer.appendChild(postDiv);
 
+      // -------------------- BUTTONS --------------------
       const likeBtn = postDiv.querySelector(".likeBtn");
-      likeBtn.addEventListener("click", async () => {
+      likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: (data.likes || 0) + 1 });
-      });
+      };
 
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
-      commentBtn.addEventListener("click", async () => {
+      commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
         const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
+        const updatedComments = [...(data.comments || []), { text: commentText, user: currentUser.uid }];
         await updateDoc(postRef, { comments: updatedComments });
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;
         commentsContainer.appendChild(commentEl);
-      });
+      };
 
       const deleteBtn = postDiv.querySelector(".deleteBtn");
-      if (deleteBtn) deleteBtn.addEventListener("click", async () => {
+      if (deleteBtn) deleteBtn.onclick = async () => {
         if (confirm("Delete this post?")) await deleteDoc(doc(db, "posts", docSnap.id));
-      });
+      };
 
       const shareBtn = postDiv.querySelector(".shareBtn");
-      shareBtn.addEventListener("click", () => {
+      shareBtn.onclick = () => {
         if (navigator.share) navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
-        else prompt("Copy this link to share:", window.location.href);
-      });
+        else prompt("Copy this link:", window.location.href);
+      };
     });
-
-    // TRENDING POST
-    const topPost = snapshot.docs.reduce((prev, curr) => (curr.data().likes || 0) > (prev?.data().likes || 0) ? curr : prev, null);
-    if (topPost) {
-      const data = topPost.data();
-      const imgHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-      trendingContainer.innerHTML = `
-        <p><strong>${data.displayName}</strong></p>
-        <p>${data.text}</p>
-        ${imgHTML}
-        <p>Likes: ${data.likes || 0}</p>
-      `;
-    }
   });
 });

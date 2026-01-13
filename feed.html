@@ -3,26 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
+<title>Feed - YourSpace</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <button onclick="window.location.href='profile.html'">My Profile</button>
-    <button onclick="window.location.href='feed.html'">Global Feed</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<nav>
+  <a href="feed.html">Home</a>
+  <a href="profile.html">Profile</a>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <div class="container">
-    <h2>Global Feed</h2>
-    <input type="text" id="postTitle" placeholder="Post title">
-    <textarea id="postContent" placeholder="What's on your mind?"></textarea>
-    <input type="text" id="postImage" placeholder="Image URL (optional)">
-    <button id="publishBtn">Publish</button>
+<h1>Global Feed</h1>
+<input id="postContent" placeholder="What's up?" />
+<input type="file" id="postImageInput" />
+<button id="createPostBtn">Post</button>
 
-    <div id="feedContainer"></div>
-  </div>
+<div id="postsContainer"></div>
 
-  <script type="module" src="feed.js"></script>
+<script type="module" src="feed.js"></script>
 </body>
 </html>

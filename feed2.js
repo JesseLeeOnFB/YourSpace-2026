@@ -16,8 +16,7 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  increment,
-  getDoc
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getStorage,
@@ -53,12 +52,11 @@ const homeBtn = document.getElementById("homeBtn");
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("You must be logged in");
     window.location.href = "index.html";
     return;
   }
 
-  // Create a post
+  // Create Post
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
     if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
@@ -71,16 +69,15 @@ onAuthStateChanged(auth, async (user) => {
       postImageURL = await getDownloadURL(storageRef);
     }
 
-    // Get user profile
-    const userDocRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userDocRef);
-    const profile = userSnap.exists() ? userSnap.data() : {};
+    // Fetch profile data
+    const profileSnap = await getDoc(doc(db, "users", user.uid));
+    const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
     await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
-      displayName: profile.displayName || "Anonymous",
-      photoURL: profile.photoURL || "",
+      displayName: profileData.displayName || "Anonymous",
+      photoURL: profileData.photoURL || "",
       postImage: postImageURL,
       likes: 0,
       comments: [],
@@ -105,8 +102,8 @@ onAuthStateChanged(auth, async (user) => {
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
-      // Render post HTML
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -124,30 +121,28 @@ onAuthStateChanged(auth, async (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // Like button
+      // Buttons functionality
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
-      // Comment button
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
+
         const postRef = doc(db, "posts", docSnap.id);
         const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
         await updateDoc(postRef, { comments: updatedComments });
 
-        // Render new comment immediately
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;
         commentsContainer.appendChild(commentEl);
       });
 
-      // Delete button
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
@@ -157,7 +152,6 @@ onAuthStateChanged(auth, async (user) => {
         });
       }
 
-      // Share button
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {

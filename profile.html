@@ -7,28 +7,22 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <nav>
-    <button onclick="location.href='feed.html'">Global Feed</button>
-    <button onclick="location.href='profile.html'">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <button id="homeBtn">Home</button>
+  <button id="logoutBtn">Logout</button>
 </nav>
 
-<h2>My Profile</h2>
-
-<div class="profile-section">
-    <img id="profilePic" src="placeholder.png" alt="Profile Picture" width="100">
-    <input type="file" id="photoUpload">
-    <input type="text" id="bio" placeholder="Bio">
-    <input type="text" id="location" placeholder="Location">
-    <input type="text" id="musicUrl" placeholder="Music URL (Audio tag)">
-    <textarea id="customHtml" placeholder="Optional HTML/CSS customization"></textarea>
-    <button id="saveProfileBtn">Save Profile</button>
+<div class="container">
+  <h2>Profile</h2>
+  <input type="text" id="displayName" placeholder="Display Name">
+  <textarea id="bio" placeholder="Bio"></textarea>
+  <input type="text" id="location" placeholder="Location">
+  <input type="file" id="photoFile">
+  <input type="text" id="musicURL" placeholder="Music URL (embed link)">
+  <textarea id="theme" placeholder="Custom HTML/CSS for profile background"></textarea>
+  <button id="saveProfileBtn">Save Profile</button>
 </div>
 
-<h3>My Posts</h3>
-<div id="myPostsContainer"></div>
-
-<script type="module" src="./script.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

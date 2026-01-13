@@ -73,11 +73,17 @@
 <body>
   <header>
     <h1>YourSpace 2026</h1>
-    <div id="login-signup">
-      <button id="login-btn">Login</button>
-      <button id="signup-btn">Sign Up</button>
-      <button id="logout-btn" class="hidden">Logout</button>
-    </div>
+    <div id="auth-section">
+  <h3>Login / Sign Up</h3>
+  <label for="email-input">Email:</label>
+  <input type="email" id="email-input" placeholder="you@example.com">
+
+  <label for="password-input">Password:</label>
+  <input type="password" id="password-input" placeholder="Password">
+
+  <button id="login-btn">Login</button>
+  <button id="signup-btn">Sign Up</button>
+</div>
   </header>
 
   <main>
@@ -122,3 +128,4 @@
   <script type="module" src="script.js"></script>
 </body>
 </html>
+

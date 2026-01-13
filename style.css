@@ -1,135 +1,70 @@
-/* General page styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
 }
 
-/* Navigation bar */
 nav {
-  background-color: #333;
+  background-color: #4267B2;
   padding: 10px;
   display: flex;
   gap: 10px;
 }
 
 nav button {
-  background-color: #555;
-  color: #fff;
-  border: none;
   padding: 8px 16px;
+  border: none;
+  color: white;
+  background-color: #365899;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 nav button:hover {
-  background-color: #777;
+  background-color: #29487d;
 }
 
-/* Profile photo */
-.profile-photo {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #ccc;
-}
-
-/* Profile header info */
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-  background-color: #fff;
-}
-
-.profile-header h2 {
-  margin: 0;
-}
-
-/* Profile input fields */
-.profile-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+#postContainer {
   margin: 20px;
 }
 
-.profile-inputs input {
+#postText {
+  width: 70%;
   padding: 8px;
-  font-size: 16px;
 }
 
-/* Save profile button */
-#saveProfileBtn {
+#postBtn {
+  padding: 8px 16px;
+}
+
+.post {
+  border: 1px solid #ccc;
   padding: 10px;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  cursor: pointer;
+  margin: 10px;
+  background: white;
   border-radius: 5px;
 }
 
-#saveProfileBtn:hover {
-  background-color: #218838;
-}
-
-/* Posts container */
-.posts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-}
-
-/* Individual post */
-.post {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  position: relative;
-}
-
-.post img.post-photo {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-
-.post-header {
+.postHeader {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
 }
 
-.post-text {
-  margin: 0 0 10px 0;
+.postProfilePic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
-.post-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.post-buttons button {
-  padding: 5px 10px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-}
-
-.post-buttons button:hover {
-  background-color: #ddd;
-}
-
-/* Comment section */
-.comment-section {
+.postButtons {
   margin-top: 10px;
-  padding-left: 20px;
+  display: flex;
+  gap: 5px;
+}
+
+.comments {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 5px;
 }

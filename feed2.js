@@ -1,16 +1,17 @@
-// feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "...",
+  measurementId: "..."
 };
 
 const app = initializeApp(firebaseConfig);
@@ -28,15 +29,10 @@ const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 const trendingContainer = document.getElementById("trendingPost");
 
-// Wait for user
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    alert("You must be logged in!");
-    window.location.href = "index.html";
-    return;
-  }
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "index.html";
 
-  // POST button
+  // Post button
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
     if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
@@ -49,16 +45,15 @@ onAuthStateChanged(auth, (user) => {
       postImageURL = await getDownloadURL(storageRef);
     }
 
-    // Fetch user profile for displayName/photo
     const userSnap = await getDoc(doc(db, "users", user.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
 
     await addDoc(collection(db, "posts"), {
       text,
+      postImage: postImageURL,
       userId: user.uid,
       displayName: profile.displayName || "Anonymous",
       photoURL: profile.photoURL || "",
-      postImage: postImageURL,
       likes: 0,
       comments: [],
       createdAt: serverTimestamp()
@@ -82,7 +77,6 @@ onAuthStateChanged(auth, (user) => {
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
-      // Render post HTML
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
       postDiv.innerHTML = `
         <div class="postHeader">
@@ -101,7 +95,7 @@ onAuthStateChanged(auth, (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // BUTTONS FUNCTIONALITY
+      // Buttons functionality
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);

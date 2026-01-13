@@ -19,7 +19,6 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM Elements
   const profileImg = document.getElementById("profilePic");
   const photoInput = document.getElementById("photoInput");
   const displayNameInput = document.getElementById("displayName");
@@ -34,12 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeBtn = document.getElementById("homeBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  let currentUser; // store authenticated user globally
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       alert("You must be logged in");
       window.location.href = "index.html";
       return;
     }
+    currentUser = user; // assign user
 
     // Load profile
     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Save profile
-    saveProfileBtn.addEventListener("click", async () => {
+    saveProfileBtn.onclick = async () => {
       const updates = {
         displayName: displayNameInput.value,
         bio: bioInput.value,
@@ -64,26 +66,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (photoInput.files.length > 0) {
         const file = photoInput.files[0];
-        const storageRef = ref(storage, `profilePics/${user.uid}`);
+        const storageRef = ref(storage, `profilePics/${currentUser.uid}`);
         await uploadBytes(storageRef, file);
         updates.photoURL = await getDownloadURL(storageRef);
-        profileImg.src = updates.photoURL; // update immediately
+        profileImg.src = updates.photoURL;
       }
 
-      await setDoc(doc(db, "users", user.uid), updates, { merge: true });
+      await setDoc(doc(db, "users", currentUser.uid), updates, { merge: true });
       alert("Profile updated!");
-    });
+    };
 
     // Save custom HTML/CSS
-    saveCustomBtn.addEventListener("click", async () => {
+    saveCustomBtn.onclick = async () => {
       const customHTML = customCodeInput.value;
       customProfileDiv.innerHTML = customHTML;
-      await setDoc(doc(db, "users", user.uid), { customCode: customHTML }, { merge: true });
+      await setDoc(doc(db, "users", currentUser.uid), { customCode: customHTML }, { merge: true });
       alert("Custom profile updated!");
-    });
+    };
 
     // Load user posts
-    const postsQuery = query(collection(db, "posts"), where("userId", "==", user.uid));
+    const postsQuery = query(collection(db, "posts"), where("userId", "==", currentUser.uid));
     onSnapshot(postsQuery, (snapshot) => {
       userPostsContainer.innerHTML = "";
       snapshot.forEach(docSnap => {
@@ -103,55 +105,40 @@ document.addEventListener("DOMContentLoaded", () => {
             <button class="likeBtn">Like (${data.likes || 0})</button>
             <button class="commentBtn">Comment</button>
             <button class="shareBtn">Share</button>
-            ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+            <button class="deleteBtn">Delete</button>
           </div>
           <div class="commentsContainer"></div>
         `;
         userPostsContainer.appendChild(postDiv);
 
-        // Button functionality
-        const likeBtn = postDiv.querySelector(".likeBtn");
-        likeBtn.addEventListener("click", async () => {
-          const postRef = doc(db, "posts", docSnap.id);
-          await updateDoc(postRef, { likes: (data.likes || 0) + 1 });
-        });
+        // BUTTONS
+        postDiv.querySelector(".likeBtn").onclick = async () => {
+          await updateDoc(doc(db, "posts", docSnap.id), { likes: (data.likes || 0) + 1 });
+        };
 
-        const commentBtn = postDiv.querySelector(".commentBtn");
-        const commentsContainer = postDiv.querySelector(".commentsContainer");
-        commentBtn.addEventListener("click", async () => {
-          const commentText = prompt("Enter your comment:");
-          if (!commentText) return;
-          const postRef = doc(db, "posts", docSnap.id);
-          const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
-          await updateDoc(postRef, { comments: updatedComments });
-
+        postDiv.querySelector(".commentBtn").onclick = async () => {
+          const comment = prompt("Enter your comment:");
+          if (!comment) return;
+          const updatedComments = [...(data.comments || []), { text: comment, user: currentUser.uid }];
+          await updateDoc(doc(db, "posts", docSnap.id), { comments: updatedComments });
           const commentEl = document.createElement("p");
-          commentEl.textContent = commentText;
-          commentsContainer.appendChild(commentEl);
-        });
+          commentEl.textContent = comment;
+          postDiv.querySelector(".commentsContainer").appendChild(commentEl);
+        };
 
-        const deleteBtn = postDiv.querySelector(".deleteBtn");
-        if (deleteBtn) {
-          deleteBtn.addEventListener("click", async () => {
-            if (confirm("Delete this post?")) {
-              await deleteDoc(doc(db, "posts", docSnap.id));
-            }
-          });
-        }
+        postDiv.querySelector(".shareBtn").onclick = () => {
+          if (navigator.share) navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
+          else prompt("Copy this link:", window.location.href);
+        };
 
-        const shareBtn = postDiv.querySelector(".shareBtn");
-        shareBtn.addEventListener("click", () => {
-          if (navigator.share) {
-            navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
-          } else {
-            prompt("Copy this link to share:", window.location.href);
-          }
-        });
+        postDiv.querySelector(".deleteBtn").onclick = async () => {
+          if (confirm("Delete this post?")) await deleteDoc(doc(db, "posts", docSnap.id));
+        };
       });
     });
 
-    // Navigation
-    homeBtn.addEventListener("click", () => window.location.href = "feed.html");
-    logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+    // NAV
+    homeBtn.onclick = () => window.location.href = "feed.html";
+    logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   });
 });

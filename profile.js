@@ -1,6 +1,9 @@
+// profile.js?v=1
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, onSnapshot, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getFirestore, doc, getDoc, setDoc, collection, query, orderBy, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -18,101 +21,88 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-document.addEventListener("DOMContentLoaded", () => {
-  const profilePicEl = document.getElementById("profilePic");
-  const displayNameEl = document.getElementById("displayName");
-  const bioEl = document.getElementById("bio");
-  const locationEl = document.getElementById("location");
-  const musicPlayer = document.getElementById("musicPlayer");
-  const musicSource = document.getElementById("musicSource");
-
-  const newDisplayName = document.getElementById("newDisplayName");
-  const newBio = document.getElementById("newBio");
-  const newLocation = document.getElementById("newLocation");
-  const newMusic = document.getElementById("newMusic");
-  const newProfilePic = document.getElementById("newProfilePic");
+document.addEventListener("DOMContentLoaded", async () => {
+  const profilePic = document.getElementById("profilePic");
+  const profilePicInput = document.getElementById("profilePicInput");
+  const displayNameInput = document.getElementById("displayNameInput");
+  const bioInput = document.getElementById("bioInput");
+  const locationInput = document.getElementById("locationInput");
+  const musicInput = document.getElementById("musicInput");
+  const customHtmlInput = document.getElementById("customHtmlInput");
   const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-  const postsContainer = document.getElementById("postsContainer");
-  const homeBtn = document.getElementById("homeBtn");
+  const profilePostsContainer = document.getElementById("profilePostsContainer");
   const logoutBtn = document.getElementById("logoutBtn");
+  const homeBtn = document.getElementById("homeBtn");
+
+  // Nav buttons
+  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+  homeBtn.addEventListener("click", () => window.location.href = "feed.html");
 
   const user = auth.currentUser;
   if (!user) return window.location.href = "index.html";
 
-  // Nav buttons
-  homeBtn.addEventListener("click", () => window.location.href = "feed.html");
-  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+  const userDocRef = doc(db, "users", user.uid);
 
-  const userRef = doc(db, "users", user.uid);
-
-  // Load profile info
-  async function loadProfile() {
-    const snap = await getDoc(userRef);
-    if (snap.exists()) {
-      const data = snap.data();
-      profilePicEl.src = data.photoURL || "https://via.placeholder.com/150";
-      displayNameEl.textContent = data.displayName || user.email;
-      bioEl.textContent = "Bio: " + (data.bio || "");
-      locationEl.textContent = "Location: " + (data.location || "");
-      musicSource.src = data.musicURL || "";
-      musicPlayer.load();
-    }
+  // Load profile
+  const userSnap = await getDoc(userDocRef);
+  if(userSnap.exists()){
+    const data = userSnap.data();
+    profilePic.src = data.photoURL || "default.png";
+    displayNameInput.value = data.displayName || "";
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
+    musicInput.value = data.musicURL || "";
+    customHtmlInput.value = data.customHTML || "";
+    if(data.customHTML) document.body.innerHTML += data.customHTML;
   }
 
-  loadProfile();
+  // Upload profile picture
+  profilePicInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const storageRef = ref(storage, `profilePics/${user.uid}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    profilePic.src = url;
+    await setDoc(userDocRef, { photoURL: url }, { merge: true });
+  });
 
   // Save profile
   saveProfileBtn.addEventListener("click", async () => {
-    const updates = {
-      displayName: newDisplayName.value || undefined,
-      bio: newBio.value || undefined,
-      location: newLocation.value || undefined,
-      musicURL: newMusic.value || undefined,
-      updatedAt: serverTimestamp()
-    };
-
-    if (newProfilePic.files[0]) {
-      const file = newProfilePic.files[0];
-      const storageRef = ref(storage, `profilePics/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      updates.photoURL = await getDownloadURL(storageRef);
-    }
-
-    // Remove undefined fields
-    Object.keys(updates).forEach(k => updates[k] === undefined && delete updates[k]);
-
-    await setDoc(userRef, updates, { merge: true });
-    loadProfile();
-    alert("Profile updated!");
+    await setDoc(userDocRef, {
+      displayName: displayNameInput.value.trim(),
+      bio: bioInput.value.trim(),
+      location: locationInput.value.trim(),
+      musicURL: musicInput.value.trim(),
+      customHTML: customHtmlInput.value.trim()
+    }, { merge: true });
+    alert("Profile saved!");
   });
 
-  // Show user posts
-  const postsQuery = query(
-    collection(db, "posts"),
-    where("userId", "==", user.uid),
-    orderBy("createdAt", "desc")
-  );
-
-  onSnapshot(postsQuery, (snapshot) => {
-    postsContainer.innerHTML = "";
+  // Load user's posts
+  const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  onSnapshot(postsQuery, snapshot => {
+    profilePostsContainer.innerHTML = "";
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
-      const postDiv = document.createElement("div");
-      postDiv.classList.add("post");
-      postDiv.innerHTML = `
-        <p><strong>${data.displayName}</strong></p>
-        <p>${data.text}</p>
-        <button class="deleteBtn">Delete</button>
-      `;
-      postsContainer.appendChild(postDiv);
-
-      // Delete post
-      postDiv.querySelector(".deleteBtn").addEventListener("click", async () => {
-        if (confirm("Delete this post?")) {
+      if(data.userId === user.uid){
+        const postDiv = document.createElement("div");
+        postDiv.classList.add("post");
+        postDiv.innerHTML = `
+          <div class="post-header">
+            <img src="${data.photoURL || 'default.png'}" class="profile-pic">
+            <strong>${data.displayName || user.email}</strong>
+          </div>
+          <p>${data.text}</p>
+          <button class="deleteBtn">Delete</button>
+        `;
+        const deleteBtn = postDiv.querySelector(".deleteBtn");
+        deleteBtn.addEventListener("click", async () => {
           await deleteDoc(doc(db, "posts", docSnap.id));
-        }
-      });
+        });
+        profilePostsContainer.appendChild(postDiv);
+      }
     });
   });
+
 });

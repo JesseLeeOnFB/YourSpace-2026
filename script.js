@@ -1,10 +1,9 @@
-// -------- IMPORT FIREBASE --------
+// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -14,135 +13,129 @@ const firebaseConfig = {
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
   measurementId: "G-FZ4GFXWGSS"
 };
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// -------- DOM ELEMENTS --------
-const authSection = document.getElementById("authSection");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const signupBtn = document.getElementById("signupBtn");
-const loginBtn = document.getElementById("loginBtn");
+// DOM Elements
+const loginBtn = document.getElementById('login-btn');
+const signupBtn = document.getElementById('signup-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const welcomeDiv = document.getElementById('welcome');
+const usernameDisplay = document.getElementById('username-display');
+const profileSection = document.getElementById('profile-section');
+const createPostSection = document.getElementById('create-post-section');
+const postsContainer = document.getElementById('posts-container');
 
-const postSection = document.getElementById("postSection");
-const postTitle = document.getElementById("postTitle");
-const postContent = document.getElementById("postContent");
-const postImage = document.getElementById("postImage");
-const createPostBtn = document.getElementById("createPostBtn");
-const postList = document.getElementById("postList");
+const usernameInput = document.getElementById('username-input');
+const bgInput = document.getElementById('bg-input');
+const musicInput = document.getElementById('music-input');
+const saveProfileBtn = document.getElementById('save-profile-btn');
 
-const profileDashboard = document.getElementById("profileDashboard");
-const displayName = document.getElementById("displayName");
-const saveDisplayName = document.getElementById("saveDisplayName");
-const profileTheme = document.getElementById("profileTheme");
-const saveTheme = document.getElementById("saveTheme");
-const profileMusic = document.getElementById("profileMusic");
-const saveMusicProfile = document.getElementById("saveMusicProfile");
-const logoutBtn = document.getElementById("logoutBtn");
+const postTitle = document.getElementById('post-title');
+const postContent = document.getElementById('post-content');
+const postImage = document.getElementById('post-image');
+const postMusic = document.getElementById('post-music');
+const createPostBtn = document.getElementById('create-post-btn');
 
-const musicPlayer = document.getElementById("musicPlayer");
-
-// -------- AUTH --------
-signupBtn.addEventListener("click", () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then(() => alert("Account created!"))
+// Sign Up
+signupBtn.addEventListener('click', () => {
+  const email = prompt("Enter email:");
+  const password = prompt("Enter password:");
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredential => alert("Account created!"))
     .catch(err => alert(err.message));
 });
 
-loginBtn.addEventListener("click", () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
+// Login
+loginBtn.addEventListener('click', () => {
+  const email = prompt("Enter email:");
+  const password = prompt("Enter password:");
+  signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => console.log("Logged in!"))
     .catch(err => alert(err.message));
 });
 
-logoutBtn.addEventListener("click", () => signOut(auth));
+// Logout
+logoutBtn.addEventListener('click', () => {
+  signOut(auth).then(() => location.reload());
+});
 
-// -------- ON LOGIN --------
-onAuthStateChanged(auth, async user => {
+// Auth state observer
+onAuthStateChanged(auth, user => {
   if(user){
-    authSection.style.display = "none";
-    postSection.style.display = "block";
-    profileDashboard.style.display = "block";
+    loginBtn.classList.add('hidden');
+    signupBtn.classList.add('hidden');
+    logoutBtn.classList.remove('hidden');
+    welcomeDiv.classList.remove('hidden');
+    profileSection.classList.remove('hidden');
+    createPostSection.classList.remove('hidden');
 
-    await loadProfile();
-    await loadUserPosts();
-  } else {
-    authSection.style.display = "block";
-    postSection.style.display = "none";
-    profileDashboard.style.display = "none";
-  }
-});
+    usernameDisplay.textContent = user.displayName || user.email;
 
-// -------- PROFILE --------
-async function loadProfile(){
-  const docRef = doc(db, "profiles", auth.currentUser.uid);
-  const docSnap = await getDoc(docRef);
-  if(docSnap.exists()){
-    displayName.value = docSnap.data().displayName || "";
-    profileTheme.value = docSnap.data().theme || "";
-    profileMusic.value = docSnap.data().music || "";
-    if(profileMusic.value) playMusic(profileMusic.value);
-    if(profileTheme.value) document.body.style.background = profileTheme.value;
-  }
-}
-
-saveDisplayName.addEventListener("click", async () => {
-  const docRef = doc(db, "profiles", auth.currentUser.uid);
-  await setDoc(docRef, { displayName: displayName.value }, { merge: true });
-  alert("Display name saved!");
-});
-
-saveTheme.addEventListener("click", async () => {
-  const docRef = doc(db, "profiles", auth.currentUser.uid);
-  await setDoc(docRef, { theme: profileTheme.value }, { merge: true });
-  document.body.style.background = profileTheme.value;
-});
-
-saveMusicProfile.addEventListener("click", async () => {
-  const docRef = doc(db, "profiles", auth.currentUser.uid);
-  await setDoc(docRef, { music: profileMusic.value }, { merge: true });
-  playMusic(profileMusic.value);
-});
-
-function playMusic(url){
-  musicPlayer.innerHTML = `<audio src="${url}" autoplay loop controls></audio>`;
-}
-
-// -------- POSTS --------
-createPostBtn.addEventListener("click", async () => {
-  await addDoc(collection(db, "posts"), {
-    uid: auth.currentUser.uid,
-    title: postTitle.value,
-    content: postContent.value,
-    image: postImage.value,
-    timestamp: Date.now()
-  });
-  postTitle.value = "";
-  postContent.value = "";
-  postImage.value = "";
-  await loadUserPosts();
-});
-
-async function loadUserPosts(){
-  postList.innerHTML = "";
-  const querySnapshot = await getDocs(collection(db, "posts"));
-  querySnapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const postDiv = document.createElement("div");
-    postDiv.innerHTML = `
-      <strong>${data.title}</strong><br>
-      ${data.content}<br>
-      ${data.image ? `<img src="${data.image}" width="200">` : ""}
-      <span class="deleteBtn" data-id="${docSnap.id}">Delete</span>
-    `;
-    postList.appendChild(postDiv);
-
-    postDiv.querySelector(".deleteBtn").addEventListener("click", async e => {
-      await deleteDoc(doc(db, "posts", e.target.dataset.id));
-      loadUserPosts();
+    // Load posts
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    onSnapshot(q, snapshot => {
+      postsContainer.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+        postDiv.innerHTML = `
+          <strong>${data.username}</strong><br>
+          <em>${data.title}</em><p>${data.content}</p>
+          ${data.image ? `<img src="${data.image}">` : ''}
+          ${data.music ? `<audio controls src="${data.music}"></audio>` : ''}
+          <button class="delete-btn">Delete</button>
+        `;
+        const deleteBtn = postDiv.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', async () => {
+          await deleteDoc(doc(db, "posts", docSnap.id));
+        });
+        postsContainer.appendChild(postDiv);
+      });
     });
-  });
-}
+  } else {
+    loginBtn.classList.remove('hidden');
+    signupBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+    welcomeDiv.classList.add('hidden');
+    profileSection.classList.add('hidden');
+    createPostSection.classList.add('hidden');
+  }
+});
 
+// Save profile
+saveProfileBtn.addEventListener('click', () => {
+  const user = auth.currentUser;
+  if(user){
+    updateDoc(doc(db, "users", user.uid), {
+      username: usernameInput.value,
+      background: bgInput.value,
+      music: musicInput.value
+    }).then(() => alert("Profile saved!"));
+    // Apply background immediately
+    document.body.style.background = bgInput.value || "linear-gradient(#1a1a1a, #0d0d0d)";
+  }
+});
 
-
+// Create post
+createPostBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if(user){
+    await addDoc(collection(db, "posts"), {
+      username: usernameInput.value || user.email,
+      title: postTitle.value,
+      content: postContent.value,
+      image: postImage.value,
+      music: postMusic.value,
+      timestamp: new Date()
+    });
+    postTitle.value = "";
+    postContent.value = "";
+    postImage.value = "";
+    postMusic.value = "";
+  }
+});

@@ -1,8 +1,31 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// 🔑 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -19,132 +42,126 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // DOM elements
-const profilePicInput = document.getElementById("profilePicInput");
-const profilePicDisplay = document.getElementById("profilePicDisplay");
-const usernameInput = document.getElementById("username");
+const displayNameInput = document.getElementById("displayName");
 const bioInput = document.getElementById("bio");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
+const locationInput = document.getElementById("location");
+const musicInput = document.getElementById("music");
+const profilePicInput = document.getElementById("profilePic");
+const saveBtn = document.getElementById("saveProfile");
+const userPostsContainer = document.getElementById("userPosts");
 const logoutBtn = document.getElementById("logoutBtn");
-const postsContainer = document.getElementById("profilePosts");
+const homeBtn = document.getElementById("homeBtn");
 
-// Ensure UI only works when user is signed in
+// Wait for Firebase auth to initialize
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("You must be logged in!");
     window.location.href = "index.html";
     return;
   }
 
-  // Load profile info
+  // Load profile data
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
-  const profile = userSnap.exists() ? userSnap.data() : {};
-
-  usernameInput.value = profile.displayName || "";
-  bioInput.value = profile.bio || "";
-  if (profile.photoURL) {
-    profilePicDisplay.src = profile.photoURL;
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    displayNameInput.value = data.displayName || "";
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
+    musicInput.value = data.music || "";
+    if (data.photoURL) {
+      document.getElementById("profileImg").src = data.photoURL;
+    }
   }
 
-  // Display user's posts
+  // Save profile updates
+  saveBtn.addEventListener("click", async () => {
+    const updates = {
+      displayName: displayNameInput.value.trim(),
+      bio: bioInput.value.trim(),
+      location: locationInput.value.trim(),
+      music: musicInput.value.trim(),
+    };
+
+    // Profile photo upload
+    if (profilePicInput.files.length > 0) {
+      const file = profilePicInput.files[0];
+      const storageRef = ref(storage, `profilePics/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+      updates.photoURL = photoURL;
+      document.getElementById("profileImg").src = photoURL;
+    }
+
+    await setDoc(userRef, updates, { merge: true });
+    alert("Profile updated!");
+  });
+
+  // Load user posts
   const postsQuery = query(
     collection(db, "posts"),
     where("userId", "==", user.uid),
     orderBy("createdAt", "desc")
   );
+  const postsSnap = await getDocs(postsQuery);
+  userPostsContainer.innerHTML = "";
+  postsSnap.forEach((docSnap) => {
+    const data = docSnap.data();
+    const postDiv = document.createElement("div");
+    postDiv.classList.add("post");
+    postDiv.innerHTML = `
+      <div class="postHeader">
+        <img src="${data.photoURL || 'default-profile.png'}" class="postProfilePic">
+        <strong>${data.displayName || user.email}</strong>
+      </div>
+      <p>${data.text || data.bio || ""}</p>
+      <div class="postButtons">
+        <button class="likeBtn">Like (${data.likes || 0})</button>
+        <button class="commentBtn">Comment</button>
+        <button class="shareBtn">Share</button>
+        <button class="deleteBtn">Delete</button>
+      </div>
+    `;
+    userPostsContainer.appendChild(postDiv);
 
-  onSnapshot(postsQuery, (snapshot) => {
-    postsContainer.innerHTML = "";
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const postDiv = document.createElement("div");
-      postDiv.classList.add("post");
-      postDiv.innerHTML = `
-        <div class="postHeader">
-          <img src="${profile.photoURL || ''}" class="postProfilePic" alt="Profile Pic">
-          <strong>${profile.displayName || user.email}</strong>
-        </div>
-        <p>${data.text}</p>
-        <div class="postButtons">
-          <button class="likeBtn">Like (${data.likes || 0})</button>
-          <button class="commentBtn">Comment</button>
-          <button class="shareBtn">Share</button>
-          <button class="deleteBtn">Delete</button>
-        </div>
-        <div class="commentsContainer"></div>
-      `;
-      postsContainer.appendChild(postDiv);
+    // Post buttons
+    const likeBtn = postDiv.querySelector(".likeBtn");
+    likeBtn.addEventListener("click", async () => {
+      await setDoc(
+        doc(db, "posts", docSnap.id),
+        { likes: (data.likes || 0) + 1 },
+        { merge: true }
+      );
+      likeBtn.textContent = `Like (${(data.likes || 0) + 1})`;
+    });
 
-      // Buttons
-      const likeBtn = postDiv.querySelector(".likeBtn");
-      const commentBtn = postDiv.querySelector(".commentBtn");
-      const shareBtn = postDiv.querySelector(".shareBtn");
-      const deleteBtn = postDiv.querySelector(".deleteBtn");
-      const commentsContainer = postDiv.querySelector(".commentsContainer");
+    const deleteBtn = postDiv.querySelector(".deleteBtn");
+    deleteBtn.addEventListener("click", async () => {
+      if (confirm("Delete this post?")) {
+        await deleteDoc(doc(db, "posts", docSnap.id));
+        postDiv.remove();
+      }
+    });
 
-      likeBtn.addEventListener("click", async () => {
-        const postRef = doc(db, "posts", docSnap.id);
-        await setDoc(postRef, { likes: (data.likes || 0) + 1 }, { merge: true });
-      });
-
-      commentBtn.addEventListener("click", async () => {
-        const commentText = prompt("Enter your comment:");
-        if (!commentText) return;
-        const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: auth.currentUser.uid }];
-        await setDoc(postRef, { comments: updatedComments }, { merge: true });
-
-        const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
-        commentsContainer.appendChild(commentEl);
-      });
-
-      deleteBtn.addEventListener("click", async () => {
-        if (confirm("Delete this post?")) {
-          await setDoc(doc(db, "posts", docSnap.id), { deleted: true }, { merge: true });
-        }
-      });
-
-      shareBtn.addEventListener("click", () => {
-        if (navigator.share) {
-          navigator.share({
-            title: "YourSpace Post",
-            text: data.text,
-            url: window.location.href
-          });
-        } else {
-          prompt("Copy this link to share:", window.location.href);
-        }
-      });
+    const shareBtn = postDiv.querySelector(".shareBtn");
+    shareBtn.addEventListener("click", () => {
+      if (navigator.share) {
+        navigator.share({
+          title: "YourSpace Post",
+          text: data.text || "",
+          url: window.location.href
+        });
+      } else {
+        prompt("Copy this link to share:", window.location.href);
+      }
     });
   });
+
+  // Nav buttons
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).then(() => window.location.href = "index.html");
+  });
+
+  homeBtn.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
 });
-
-// Profile photo upload
-profilePicInput.addEventListener("change", async (e) => {
-  const user = auth.currentUser;
-  if (!user) return;
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const storageRef = ref(storage, `profilePics/${user.uid}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  profilePicDisplay.src = url;
-
-  await setDoc(doc(db, "users", user.uid), { photoURL: url }, { merge: true });
-});
-
-// Save profile
-saveProfileBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-  await setDoc(doc(db, "users", user.uid), {
-    displayName: usernameInput.value,
-    bio: bioInput.value
-  }, { merge: true });
-  alert("Profile saved!");
-});
-
-// Logout
-logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));

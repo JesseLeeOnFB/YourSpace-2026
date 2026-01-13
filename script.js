@@ -1,145 +1,114 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 // Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-// Firebase config
+// ==== REPLACE WITH YOUR FIREBASE CONFIG ====
 const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM Elements
-const loginBtn = document.getElementById('login-btn');
+// ====== DOM Elements ======
+const authSection = document.getElementById('auth-section');
+const appSection = document.getElementById('app-section');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 const signupBtn = document.getElementById('signup-btn');
+const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
-const welcomeDiv = document.getElementById('welcome');
-const usernameDisplay = document.getElementById('username-display');
-const profileSection = document.getElementById('profile-section');
-const createPostSection = document.getElementById('create-post-section');
-const postsContainer = document.getElementById('posts-container');
+const welcomeMsg = document.getElementById('welcome-msg');
 
-const usernameInput = document.getElementById('username-input');
-const bgInput = document.getElementById('bg-input');
-const musicInput = document.getElementById('music-input');
+const usernameInput = document.getElementById('username');
+const themeInput = document.getElementById('theme-css');
+const musicInput = document.getElementById('music-url');
 const saveProfileBtn = document.getElementById('save-profile-btn');
 
-const postTitle = document.getElementById('post-title');
-const postContent = document.getElementById('post-content');
-const postImage = document.getElementById('post-image');
-const postMusic = document.getElementById('post-music');
+const postTitleInput = document.getElementById('post-title');
+const postTextInput = document.getElementById('post-text');
+const postImageInput = document.getElementById('post-image');
+const postAudioInput = document.getElementById('post-audio');
 const createPostBtn = document.getElementById('create-post-btn');
+const feedDiv = document.getElementById('feed');
 
-// Sign Up
+// ====== AUTH ======
 signupBtn.addEventListener('click', () => {
-  const email = prompt("Enter email:");
-  const password = prompt("Enter password:");
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(userCredential => alert("Account created!"))
+    createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(userCredential => {
+        initApp(userCredential.user.uid);
+    })
     .catch(err => alert(err.message));
 });
 
-// Login
 loginBtn.addEventListener('click', () => {
-  const email = prompt("Enter email:");
-  const password = prompt("Enter password:");
-  signInWithEmailAndPassword(auth, email, password)
-    .then(userCredential => console.log("Logged in!"))
+    signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(userCredential => {
+        initApp(userCredential.user.uid);
+    })
     .catch(err => alert(err.message));
 });
 
-// Logout
 logoutBtn.addEventListener('click', () => {
-  signOut(auth).then(() => location.reload());
+    signOut(auth).then(() => location.reload());
 });
 
-// Auth state observer
-onAuthStateChanged(auth, user => {
-  if(user){
-    loginBtn.classList.add('hidden');
-    signupBtn.classList.add('hidden');
-    logoutBtn.classList.remove('hidden');
-    welcomeDiv.classList.remove('hidden');
-    profileSection.classList.remove('hidden');
-    createPostSection.classList.remove('hidden');
+// ====== INITIALIZE APP ======
+function initApp(uid) {
+    authSection.classList.add('hidden');
+    appSection.classList.remove('hidden');
+    welcomeMsg.textContent = `Welcome, ${emailInput.value}`;
+}
 
-    usernameDisplay.textContent = user.displayName || user.email;
-
-    // Load posts
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-    onSnapshot(q, snapshot => {
-      postsContainer.innerHTML = "";
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const postDiv = document.createElement('div');
-        postDiv.classList.add('post');
-        postDiv.innerHTML = `
-          <strong>${data.username}</strong><br>
-          <em>${data.title}</em><p>${data.content}</p>
-          ${data.image ? `<img src="${data.image}">` : ''}
-          ${data.music ? `<audio controls src="${data.music}"></audio>` : ''}
-          <button class="delete-btn">Delete</button>
-        `;
-        const deleteBtn = postDiv.querySelector('.delete-btn');
-        deleteBtn.addEventListener('click', async () => {
-          await deleteDoc(doc(db, "posts", docSnap.id));
-        });
-        postsContainer.appendChild(postDiv);
-      });
-    });
-  } else {
-    loginBtn.classList.remove('hidden');
-    signupBtn.classList.remove('hidden');
-    logoutBtn.classList.add('hidden');
-    welcomeDiv.classList.add('hidden');
-    profileSection.classList.add('hidden');
-    createPostSection.classList.add('hidden');
-  }
+// ====== PROFILE ======
+saveProfileBtn.addEventListener('click', async () => {
+    const profileRef = doc(db, 'users', auth.currentUser.uid);
+    await setDoc(profileRef, {
+        username: usernameInput.value,
+        theme: themeInput.value,
+        music: musicInput.value
+    }, { merge: true });
+    alert('Profile saved!');
 });
 
-// Save profile
-saveProfileBtn.addEventListener('click', () => {
-  const user = auth.currentUser;
-  if(user){
-    updateDoc(doc(db, "users", user.uid), {
-      username: usernameInput.value,
-      background: bgInput.value,
-      music: musicInput.value
-    }).then(() => alert("Profile saved!"));
-    // Apply background immediately
-    document.body.style.background = bgInput.value || "linear-gradient(#1a1a1a, #0d0d0d)";
-  }
-});
-
-// Create post
+// ====== POSTS ======
 createPostBtn.addEventListener('click', async () => {
-  const user = auth.currentUser;
-  if(user){
-    await addDoc(collection(db, "posts"), {
-      username: usernameInput.value || user.email,
-      title: postTitle.value,
-      content: postContent.value,
-      image: postImage.value,
-      music: postMusic.value,
-      timestamp: new Date()
+    await addDoc(collection(db, 'posts'), {
+        uid: auth.currentUser.uid,
+        title: postTitleInput.value,
+        text: postTextInput.value,
+        image: postImageInput.value,
+        audio: postAudioInput.value,
+        timestamp: Date.now()
     });
-    postTitle.value = "";
-    postContent.value = "";
-    postImage.value = "";
-    postMusic.value = "";
-  }
+    alert('Post created!');
+    loadPosts();
 });
 
+async function loadPosts() {
+    feedDiv.innerHTML = '';
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+    querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const postEl = document.createElement('div');
+        postEl.classList.add('post');
+        postEl.innerHTML = `
+            <h4>${data.title}</h4>
+            <p>${data.text}</p>
+            ${data.image ? `<img src="${data.image}" style="max-width:100%;">` : ''}
+            ${data.audio ? `<audio controls src="${data.audio}"></audio>` : ''}
+        `;
+        feedDiv.appendChild(postEl);
+    });
+}
+
+// Auto-load posts every 5s for demo
+setInterval(loadPosts, 5000);

@@ -1,28 +1,26 @@
-<!-- File: feed.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourSpace Feed</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="feed.js" defer></script>
 </head>
 <body>
-<div class="container">
-  <div class="navbar">
-    <button onclick="window.location.href='index.html'">Home</button>
-    <button onclick="window.location.href='profile.html'">Profile</button>
-    <button id="logoutBtn">Log Out</button>
-  </div>
+    <nav class="nav-bar">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='profile.html'">Profile</button>
+        <button id="logoutBtn">Logout</button>
+    </nav>
 
-  <h2>Global Feed</h2>
-  <div>
-    <textarea id="postContent" placeholder="What's on your mind?"></textarea>
-    <input type="text" id="postImageURL" placeholder="Image URL (optional)">
-    <button id="publishBtn">Publish</button>
-  </div>
-  <div id="feedContainer"></div>
-</div>
-<script type="module" src="feed.js"></script>
+    <div class="post-section">
+        <input type="text" id="postInput" placeholder="What's on your mind?">
+        <button id="postBtn">Post</button>
+    </div>
+
+    <div id="feedContainer" class="feed-container">
+        <!-- Posts will appear here -->
+    </div>
 </body>
 </html>

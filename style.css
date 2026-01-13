@@ -1,46 +1,8 @@
-body {
-    background-color: #121212;
-    color: #f5f5f5;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-nav {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    background-color: #1e1e1e;
-}
-
-button {
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-.auth-container, .new-post, .profile-section {
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-input, textarea {
-    padding: 8px;
-    background-color: #222;
-    color: #f5f5f5;
-    border: 1px solid #444;
-}
-
-#postsContainer, #myPostsContainer, #trendingPost {
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.post-card {
-    padding: 10px;
-    border: 1px solid #333;
-    background-color: #1e1e1e;
-}
+/* /YourSpace-2026/style.css */
+body { background: #121212; color: #fff; font-family: Arial, sans-serif; margin:0; padding:0;}
+.container { max-width: 800px; margin:auto; padding:20px;}
+input, textarea { width:100%; margin:5px 0; padding:10px; border-radius:5px; border:none;}
+button { padding:10px 20px; margin:5px 0; border:none; border-radius:5px; cursor:pointer; background:#1a73e8; color:#fff;}
+nav { display:flex; gap:10px; padding:10px; background:#1f1f1f;}
+.post { background:#1f1f1f; padding:10px; margin:10px 0; border-radius:5px; }
+.post img.post-pic { width:50px; height:50px; border-radius:50%; vertical-align:middle; margin-right:10px;}

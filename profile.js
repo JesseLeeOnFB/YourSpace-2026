@@ -19,11 +19,52 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    // Redirect if NOT logged in
-    window.location.href = "index.html";
+  // Only redirect if user is truly null AND Firebase is ready
+  if (user === null) {
+    // Let Firebase fully initialize first
+    setTimeout(() => {
+      if (!auth.currentUser) {
+        window.location.href = "index.html";
+      }
+    }, 500); // 0.5s delay to allow Firebase to restore session
     return;
   }
+
+  // ====== DOM elements ======
+  const displayNameInput = document.getElementById("displayName");
+  const bioInput = document.getElementById("bio");
+  const profilePicInput = document.getElementById("profilePic");
+  const saveBtn = document.getElementById("saveProfile");
+  const profileImg = document.getElementById("profileImg");
+
+  // ====== Load current profile ======
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+    displayNameInput.value = data.displayName || "";
+    bioInput.value = data.bio || "";
+    if (data.photoURL) profileImg.src = data.photoURL;
+  }
+
+  // ====== Save profile ======
+  saveBtn.addEventListener("click", async () => {
+    const updates = {
+      displayName: displayNameInput.value,
+      bio: bioInput.value
+    };
+
+    if (profilePicInput.files.length > 0) {
+      const file = profilePicInput.files[0];
+      const storageRef = ref(storage, `profilePics/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      updates.photoURL = await getDownloadURL(storageRef);
+      profileImg.src = updates.photoURL; // immediately update picture
+    }
+
+    await setDoc(doc(db, "users", user.uid), updates, { merge: true });
+    alert("Profile updated!");
+  });
+});
 
   // ====== DOM elements ======
   const displayNameInput = document.getElementById("displayName");

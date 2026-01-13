@@ -1,12 +1,10 @@
-console.log("🔥 script.js LOADED");
-alert("JS LOADED");
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
 console.log("🔥 script.js loaded");
 
-// Firebase config
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -17,45 +15,63 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// Init Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// DOM elements
+// DOM
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const usernameInput = document.getElementById("username");
+
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const displayNameInput = document.getElementById("displayName");
 
-if (signupBtn) {
-    signupBtn.addEventListener("click", async () => {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-            await updateProfile(userCredential.user, { displayName: usernameInput.value });
-            await setDoc(doc(db, "users", userCredential.user.uid), {
-                username: usernameInput.value,
-                email: emailInput.value
-            });
-            window.location.href = "feed.html";
-        } catch (err) { console.error(err); alert(err.message); }
-    });
-}
+// Sign Up
+signupBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const displayName = displayNameInput.value.trim() || "Anonymous";
 
-if (loginBtn) {
-    loginBtn.addEventListener("click", async () => {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-            window.location.href = "feed.html";
-        } catch (err) { console.error(err); alert(err.message); }
-    });
-}
+  if (!email || !password) return alert("Enter email and password");
 
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-        await signOut(auth);
-        window.location.href = "index.html";
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await updateProfile(user, { displayName });
+    await setDoc(doc(db, "users", user.uid), {
+      displayName,
+      bio: "",
+      photoURL: "",
+      musicURL: "",
+      theme: "",
+      location: ""
     });
-}
+
+    window.location.href = "feed.html";
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// Login
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  if (!email || !password) return alert("Enter email and password");
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "feed.html";
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// Logout
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
+});

@@ -7,21 +7,22 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav>
-  <button onclick="window.location.href='profile.html'">My Profile</button>
-  <button onclick="window.location.href='feed.html'">Global Feed</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <nav>
+    <button onclick="window.location.href='profile.html'">My Profile</button>
+    <button onclick="window.location.href='feed.html'">Global Feed</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<div class="post-box">
-  <input type="text" id="postTitle" placeholder="Title">
-  <textarea id="postContent" placeholder="Write something..."></textarea>
-  <input type="text" id="postImage" placeholder="Image URL">
-  <button id="publishBtn">Publish</button>
-</div>
+  <div class="container">
+    <h2>Global Feed</h2>
+    <input type="text" id="postTitle" placeholder="Post title">
+    <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+    <input type="text" id="postImage" placeholder="Image URL (optional)">
+    <button id="publishBtn">Publish</button>
 
-<div id="feedContainer"></div>
+    <div id="feedContainer"></div>
+  </div>
 
-<script type="module" src="feed.js"></script>
+  <script type="module" src="feed.js"></script>
 </body>
 </html>

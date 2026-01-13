@@ -1,4 +1,4 @@
-/* style.css */
+/* General styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #f0f2f5;
@@ -10,6 +10,7 @@ nav {
   background-color: #4267B2;
   padding: 10px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -19,31 +20,39 @@ nav button {
   color: white;
   background-color: #365899;
   cursor: pointer;
+  flex: 1 1 auto;
 }
 
 nav button:hover {
   background-color: #29487d;
 }
 
+/* Post input */
 #postContainer {
-  margin: 20px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 #postText {
-  width: 70%;
+  width: 100%;
   padding: 8px;
+  margin-bottom: 5px;
 }
 
 #postBtn {
   padding: 8px 16px;
 }
 
+/* Posts */
 .post {
   border: 1px solid #ccc;
   padding: 10px;
   margin: 10px;
   background: white;
   border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .postHeader {
@@ -53,8 +62,8 @@ nav button:hover {
 }
 
 .postProfilePic {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -63,58 +72,41 @@ nav button:hover {
   margin-top: 10px;
   display: flex;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
+/* Comments container */
 .comments {
   margin-top: 10px;
   border-top: 1px solid #ccc;
   padding-top: 5px;
 }
 
-/* Profile Page */
-.profile-container {
-  max-width: 800px;
-  margin: 20px auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-}
-
+/* Profile picture */
 .profile-picture {
-  width: 120px;       /* proper fixed size */
-  height: 120px;
+  max-width: 120px;
+  max-height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  display: block;
-  margin: 0 auto;
-  border: 2px solid #333;
 }
 
-.profile-info {
-  text-align: center;
+/* Custom profile HTML container */
+#customProfileDiv {
   margin-top: 10px;
 }
 
-.profile-info h2 {
-  margin: 5px 0;
-}
+/* Media query for mobile screens */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
 
-.profile-info p {
-  margin: 3px 0;
-}
+  .postButtons {
+    flex-direction: column;
+    gap: 3px;
+  }
 
-.profile-posts {
-  margin-top: 20px;
-}
-
-/* Input styling */
-input[type="text"], input[type="file"], textarea {
-  width: 100%;
-  padding: 8px;
-  margin: 5px 0 10px 0;
-  box-sizing: border-box;
-}
-
-button {
-  cursor: pointer;
+  nav button {
+    flex: 1 1 100%;
+  }
 }

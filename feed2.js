@@ -53,40 +53,33 @@ const homeBtn = document.getElementById("homeBtn");
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
+    alert("You must be logged in");
     window.location.href = "index.html";
     return;
   }
 
+  // Fetch user profile for displayName/photo
+  const userDocSnap = await getDoc(doc(db, "users", user.uid));
+  const userProfile = userDocSnap.exists() ? userDocSnap.data() : {};
+
   // CREATE POST
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) {
-      alert("Write something or attach an image!");
-      return;
-    }
+    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
-      try {
-        const file = postImageInput.files[0];
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
-        await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(storageRef);
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        alert("Failed to upload image. Check file or permissions.");
-        return;
-      }
+      const file = postImageInput.files[0];
+      const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      postImageURL = await getDownloadURL(storageRef);
     }
-
-    const userSnap = await getDoc(doc(db, "users", user.uid));
-    const profile = userSnap.exists() ? userSnap.data() : {};
 
     await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
-      displayName: profile.displayName || "Anonymous",
-      photoURL: profile.photoURL || "",
+      displayName: userProfile.displayName || "Anonymous",
+      photoURL: userProfile.photoURL || "",
       postImage: postImageURL,
       likes: 0,
       comments: [],
@@ -97,7 +90,7 @@ onAuthStateChanged(auth, async (user) => {
     postImageInput.value = "";
   });
 
-  // NAV BUTTONS
+  // NAV buttons
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
@@ -129,28 +122,29 @@ onAuthStateChanged(auth, async (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // LIKE BUTTON
+      // BUTTONS
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
-      // COMMENT BUTTON
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
+
         const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
+        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid, displayName: userProfile.displayName || "Anonymous" }];
         await updateDoc(postRef, { comments: updatedComments });
+
+        // Display comment immediately
         const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
+        commentEl.textContent = `${userProfile.displayName || "Anonymous"}: ${commentText}`;
         commentsContainer.appendChild(commentEl);
       });
 
-      // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
@@ -160,7 +154,6 @@ onAuthStateChanged(auth, async (user) => {
         });
       }
 
-      // SHARE BUTTON
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
@@ -168,6 +161,14 @@ onAuthStateChanged(auth, async (user) => {
         } else {
           prompt("Copy this link to share:", window.location.href);
         }
+      });
+
+      // Render existing comments
+      const commentsContainer = postDiv.querySelector(".commentsContainer");
+      (data.comments || []).forEach(c => {
+        const commentEl = document.createElement("p");
+        commentEl.textContent = `${c.displayName || "Anonymous"}: ${c.text}`;
+        commentsContainer.appendChild(commentEl);
       });
     });
   });

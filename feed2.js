@@ -53,7 +53,6 @@ const homeBtn = document.getElementById("homeBtn");
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("You must be logged in");
     window.location.href = "index.html";
     return;
   }
@@ -61,7 +60,10 @@ onAuthStateChanged(auth, async (user) => {
   // CREATE POST
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
+    if (!text && postImageInput.files.length === 0) {
+      alert("Write something or attach an image!");
+      return;
+    }
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
@@ -72,12 +74,11 @@ onAuthStateChanged(auth, async (user) => {
         postImageURL = await getDownloadURL(storageRef);
       } catch (err) {
         console.error("Image upload failed:", err);
-        alert("Failed to upload image. Check permissions or file type.");
+        alert("Failed to upload image. Check file or permissions.");
         return;
       }
     }
 
-    // Fetch user profile for displayName/photo
     const userSnap = await getDoc(doc(db, "users", user.uid));
     const profile = userSnap.exists() ? userSnap.data() : {};
 
@@ -96,7 +97,7 @@ onAuthStateChanged(auth, async (user) => {
     postImageInput.value = "";
   });
 
-  // NAV buttons
+  // NAV BUTTONS
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
@@ -128,13 +129,14 @@ onAuthStateChanged(auth, async (user) => {
       `;
       postsContainer.appendChild(postDiv);
 
-      // BUTTONS
+      // LIKE BUTTON
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
+      // COMMENT BUTTON
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
@@ -148,6 +150,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       });
 
+      // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
@@ -157,6 +160,7 @@ onAuthStateChanged(auth, async (user) => {
         });
       }
 
+      // SHARE BUTTON
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {

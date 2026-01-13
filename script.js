@@ -1,58 +1,144 @@
-import { auth } from "./firebase-config.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { auth, db } from './index.html'; // Already initialized globally
 
-// Elements
-const signupBtn = document.getElementById("signupBtn");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const authContainer = document.getElementById("auth-container");
-const userInfo = document.getElementById("user-info");
-const userEmailSpan = document.getElementById("user-email");
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-// Sign up
-signupBtn.addEventListener("click", () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            alert("Sign Up successful!");
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc,
+  arrayUnion
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+// DOM elements
+const authSection = document.getElementById('auth-section');
+const appSection = document.getElementById('app-section');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const signupBtn = document.getElementById('signup-btn');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const authMsg = document.getElementById('auth-msg');
+const userEmailSpan = document.getElementById('user-email');
+
+const profileName = document.getElementById('profile-name');
+const profileTheme = document.getElementById('profile-theme');
+const profileMusic = document.getElementById('profile-music');
+const saveProfileBtn = document.getElementById('save-profile');
+
+const postText = document.getElementById('post-text');
+const postImage = document.getElementById('post-image');
+const postBtn = document.getElementById('post-btn');
+
+const feed = document.getElementById('feed');
+
+// ========== AUTH ==========
+signupBtn.addEventListener('click', () => {
+  createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(() => { authMsg.textContent = "Account created!"; })
+    .catch(err => { authMsg.textContent = err.message; });
 });
 
-// Login
-loginBtn.addEventListener("click", () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            alert("Login successful!");
-        })
-        .catch((error) => {
-            alert(error.message);
-        });
+loginBtn.addEventListener('click', () => {
+  signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(() => { authMsg.textContent = "Logged in!"; })
+    .catch(err => { authMsg.textContent = err.message; });
 });
 
-// Logout
-logoutBtn.addEventListener("click", () => {
-    signOut(auth).then(() => {
-        alert("Logged out!");
+logoutBtn.addEventListener('click', () => {
+  signOut(auth).then(() => { location.reload(); });
+});
+
+// Show/hide sections based on auth
+onAuthStateChanged(auth, user => {
+  if (user) {
+    authSection.classList.add('hidden');
+    appSection.classList.remove('hidden');
+    userEmailSpan.textContent = user.email;
+  } else {
+    authSection.classList.remove('hidden');
+    appSection.classList.add('hidden');
+  }
+});
+
+// ========== PROFILE ==========
+saveProfileBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userRef = doc(db, 'users', user.uid);
+  await updateDoc(userRef, {
+    displayName: profileName.value || "",
+    theme: profileTheme.value || "",
+    music: profileMusic.value || ""
+  }).catch(async () => {
+    await addDoc(collection(db, 'users'), {
+      uid: user.uid,
+      displayName: profileName.value || "",
+      theme: profileTheme.value || "",
+      music: profileMusic.value || ""
     });
+  });
 });
 
-// Monitor auth state
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        authContainer.style.display = "none";
-        userInfo.style.display = "block";
-        userEmailSpan.textContent = user.email;
-    } else {
-        authContainer.style.display = "block";
-        userInfo.style.display = "none";
-        userEmailSpan.textContent = "";
+// ========== POSTS ==========
+postBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  await addDoc(collection(db, 'posts'), {
+    userId: user.uid,
+    text: postText.value,
+    image: postImage.value || "",
+    likes: [],
+    timestamp: Date.now()
+  });
+
+  postText.value = "";
+  postImage.value = "";
+});
+
+// ========== FEED ==========
+const postsQuery = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
+onSnapshot(postsQuery, snapshot => {
+  feed.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const post = docSnap.data();
+    const postEl = document.createElement('div');
+    postEl.classList.add('feed-post');
+
+    const userEl = document.createElement('p');
+    userEl.textContent = `User: ${post.userId}`;
+    postEl.appendChild(userEl);
+
+    const textEl = document.createElement('p');
+    textEl.textContent = post.text;
+    postEl.appendChild(textEl);
+
+    if (post.image) {
+      const imgEl = document.createElement('img');
+      imgEl.src = post.image;
+      imgEl.style.maxWidth = "100%";
+      postEl.appendChild(imgEl);
     }
+
+    // Likes button
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = `Like (${post.likes.length || 0})`;
+    likeBtn.addEventListener('click', async () => {
+      const postRef = doc(db, 'posts', docSnap.id);
+      await updateDoc(postRef, { likes: arrayUnion(auth.currentUser.uid) });
+    });
+    postEl.appendChild(likeBtn);
+
+    feed.appendChild(postEl);
+  });
 });

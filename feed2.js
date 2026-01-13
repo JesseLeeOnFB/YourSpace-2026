@@ -1,4 +1,3 @@
-// feed.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, doc, getDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -19,66 +18,60 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM Elements
-const postInput = document.getElementById("postText");
-const postImageInput = document.getElementById("postImageInput");
-const postBtn = document.getElementById("postBtn");
-const postsContainer = document.getElementById("postsContainer");
-const trendingContainer = document.getElementById("trendingPost");
-const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const homeBtn = document.getElementById("homeBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const postBtn = document.getElementById("postBtn");
+  const postInput = document.getElementById("postText");
+  const postImageInput = document.getElementById("postImageInput");
+  const postsContainer = document.getElementById("postsContainer");
+  const trendingContainer = document.getElementById("trendingPost");
+  const profileBtn = document.getElementById("profileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const homeBtn = document.getElementById("homeBtn");
 
-// Ensure user is logged in
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    alert("You must be logged in");
-    window.location.href = "index.html";
-    return;
-  }
+  profileBtn.addEventListener("click", () => window.location.href = "profile.html");
+  homeBtn.addEventListener("click", () => window.location.href = "feed.html");
+  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
 
-  // -----------------------------
-  // Post creation
-  // -----------------------------
   postBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return alert("You must be logged in!");
+    const user = auth.currentUser;
+    if (!user) return alert("Login first");
 
-  const text = postInput.value.trim();
-  const file = document.getElementById("postImageInput").files[0];
+    const text = postInput.value.trim();
+    const file = postImageInput.files[0];
 
-  if (!text && !file) return alert("Write something or choose an image first!");
+    if (!text && !file) return alert("Write something or choose an image!");
 
-  try {
-    let imageURL = "";
-    if (file) {
-      const storageRef = ref(storage, `postImages/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      imageURL = await getDownloadURL(storageRef);
+    try {
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      const profile = userSnap.exists() ? userSnap.data() : {};
+
+      let imageURL = "";
+      if (file) {
+        const storageRef = ref(storage, `postImages/${user.uid}/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        imageURL = await getDownloadURL(storageRef);
+      }
+
+      await addDoc(collection(db, "posts"), {
+        text,
+        userId: user.uid,
+        displayName: profile.displayName || user.email,
+        photoURL: profile.photoURL || "",
+        postImage: imageURL,
+        createdAt: serverTimestamp(),
+        likes: 0,
+        comments: [],
+      });
+
+      postInput.value = "";
+      postImageInput.value = "";
+    } catch (err) {
+      console.error("Post failed:", err);
+      alert("Post failed: " + err.message);
     }
+  });
 
-    await addDoc(collection(db, "posts"), {
-      text,
-      userId: user.uid,
-      displayName: user.displayName || user.email,
-      photoURL: user.photoURL || "",
-      postImage: imageURL,
-      createdAt: serverTimestamp(),
-      likes: 0,
-      comments: [],
-    });
-
-    postInput.value = "";
-    document.getElementById("postImageInput").value = "";
-  } catch (err) {
-    console.error("Post failed:", err);
-    alert("Post failed: " + err.message);
-  }
-});
-
-  // -----------------------------
   // Display Feed
-  // -----------------------------
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
@@ -88,7 +81,6 @@ auth.onAuthStateChanged(async (user) => {
       postDiv.classList.add("post");
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-
       postDiv.innerHTML = `
         <p><strong>${data.displayName}</strong></p>
         <p>${data.text}</p>
@@ -97,35 +89,34 @@ auth.onAuthStateChanged(async (user) => {
           <button class="likeBtn">Like (${data.likes || 0})</button>
           <button class="commentBtn">Comment</button>
           <button class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
+          ${auth.currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
         </div>
         <div class="commentsContainer"></div>
       `;
       postsContainer.appendChild(postDiv);
 
-      // -----------------------------
-      // Button functionality
-      // -----------------------------
+      // Like
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: (data.likes || 0) + 1 });
       });
 
+      // Comment
       const commentBtn = postDiv.querySelector(".commentBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
         const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
+        const updatedComments = [...(data.comments || []), { text: commentText, user: auth.currentUser.uid }];
         await updateDoc(postRef, { comments: updatedComments });
-
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;
         commentsContainer.appendChild(commentEl);
       });
 
+      // Delete
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
@@ -135,6 +126,7 @@ auth.onAuthStateChanged(async (user) => {
         });
       }
 
+      // Share
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
@@ -150,9 +142,7 @@ auth.onAuthStateChanged(async (user) => {
     });
   });
 
-  // -----------------------------
-  // Trending Post (top liked in last hour)
-  // -----------------------------
+  // Trending post every hour
   setInterval(async () => {
     const postsSnap = await getDocs(collection(db, "posts"));
     let topPost = null;
@@ -162,11 +152,4 @@ auth.onAuthStateChanged(async (user) => {
     });
     trendingContainer.innerHTML = topPost ? `<strong>${topPost.displayName}</strong>: ${topPost.text} (Likes: ${topPost.likes || 0})` : "No posts yet";
   }, 3600*1000);
-
-  // -----------------------------
-  // Nav buttons
-  // -----------------------------
-  profileBtn.addEventListener("click", () => { window.location.href = "profile.html"; });
-  homeBtn.addEventListener("click", () => { window.location.href = "feed.html"; });
-  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
 });

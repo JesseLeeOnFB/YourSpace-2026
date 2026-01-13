@@ -41,41 +41,40 @@ auth.onAuthStateChanged(async (user) => {
   // Post creation
   // -----------------------------
   postBtn.addEventListener("click", async () => {
-    const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) return alert("Write something or select an image");
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in!");
 
-    let postImageURL = "";
-    if (postImageInput.files.length > 0) {
-      const file = postImageInput.files[0];
+  const text = postInput.value.trim();
+  const file = document.getElementById("postImageInput").files[0];
+
+  if (!text && !file) return alert("Write something or choose an image first!");
+
+  try {
+    let imageURL = "";
+    if (file) {
       const storageRef = ref(storage, `postImages/${user.uid}/${Date.now()}_${file.name}`);
-      try {
-        await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(storageRef);
-      } catch (err) {
-        console.error("Post image upload failed:", err);
-        alert("Failed to upload image: " + err.message);
-        return;
-      }
+      await uploadBytes(storageRef, file);
+      imageURL = await getDownloadURL(storageRef);
     }
 
-    try {
-      await addDoc(collection(db, "posts"), {
-        text,
-        postImage: postImageURL,
-        userId: user.uid,
-        displayName: user.displayName || user.email,
-        photoURL: user.photoURL || "",
-        createdAt: serverTimestamp(),
-        likes: 0,
-        comments: []
-      });
-      postInput.value = "";
-      postImageInput.value = "";
-    } catch (err) {
-      console.error("Post creation failed:", err);
-      alert("Post failed: " + err.message);
-    }
-  });
+    await addDoc(collection(db, "posts"), {
+      text,
+      userId: user.uid,
+      displayName: user.displayName || user.email,
+      photoURL: user.photoURL || "",
+      postImage: imageURL,
+      createdAt: serverTimestamp(),
+      likes: 0,
+      comments: [],
+    });
+
+    postInput.value = "";
+    document.getElementById("postImageInput").value = "";
+  } catch (err) {
+    console.error("Post failed:", err);
+    alert("Post failed: " + err.message);
+  }
+});
 
   // -----------------------------
   // Display Feed

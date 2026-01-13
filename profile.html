@@ -1,50 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css?v=1">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav>
-  <button id="homeBtn">Home</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <nav>
+    <button id="homeBtn">Home</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<h1>Your Profile</h1>
-
-<div id="profileContainer">
-  <div>
-    <img id="profilePic" src="default.png" alt="Profile Picture" class="profile-pic">
-    <input type="file" id="profilePicInput">
-  </div>
-  <div>
-    <label>Display Name:</label>
-    <input type="text" id="displayNameInput" placeholder="Your Name">
-  </div>
-  <div>
-    <label>Bio:</label>
-    <textarea id="bioInput" placeholder="Your Bio"></textarea>
-  </div>
-  <div>
-    <label>Location:</label>
-    <input type="text" id="locationInput" placeholder="Location">
-  </div>
-  <div>
-    <label>Music Embed (URL):</label>
-    <input type="text" id="musicInput" placeholder="YouTube / SoundCloud embed link">
-  </div>
-  <div>
-    <label>Custom HTML for background:</label>
-    <textarea id="customHtmlInput" placeholder="Custom HTML for your profile background"></textarea>
+  <div class="profile-header">
+    <img id="profileImage" class="profile-photo" src="default.png" alt="Profile Picture">
+    <div>
+      <h2 id="displayNameHeader">Display Name</h2>
+      <p id="bioHeader">Bio</p>
+      <p id="locationHeader">Location</p>
+    </div>
   </div>
 
-  <button id="saveProfileBtn">Save Profile</button>
-</div>
+  <div class="profile-inputs">
+    <label>Change Display Name</label>
+    <input type="text" id="displayNameInput" placeholder="Enter new display name">
 
-<h2>Your Posts</h2>
-<div id="profilePostsContainer"></div>
+    <label>Bio</label>
+    <input type="text" id="bioInput" placeholder="Enter your bio">
 
-<script type="module" src="profile.js?v=1"></script>
+    <label>Location</label>
+    <input type="text" id="locationInput" placeholder="Enter your location">
+
+    <label>Music URL (embed player)</label>
+    <input type="text" id="musicInput" placeholder="Enter music URL">
+
+    <label>Upload Profile Photo</label>
+    <input type="file" id="photoInput" accept="image/*">
+
+    <button id="saveProfileBtn">Save Profile</button>
+  </div>
+
+  <h2>Your Posts</h2>
+  <div class="posts-container" id="postsContainer"></div>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

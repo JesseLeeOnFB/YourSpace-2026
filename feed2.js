@@ -128,20 +128,24 @@ onAuthStateChanged(auth, async (user) => {
         await updateDoc(postRef, { likes: increment(1) });
       });
 
-      const commentBtn = postDiv.querySelector(".commentBtn");
-      const commentsContainer = postDiv.querySelector(".commentsContainer");
       commentBtn.addEventListener("click", async () => {
-        const commentText = prompt("Enter your comment:");
-        if (!commentText) return;
+  const commentText = prompt("Enter your comment:");
+  if (!commentText) return;
 
-        const postRef = doc(db, "posts", docSnap.id);
-        const updatedComments = [...(data.comments || []), { text: commentText, user: user.uid }];
-        await updateDoc(postRef, { comments: updatedComments });
+  const postRef = doc(db, "posts", docSnap.id);
 
-        const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
-        commentsContainer.appendChild(commentEl);
-      });
+  // Get latest post data
+  const latestSnap = await getDoc(postRef);
+  const latestData = latestSnap.exists() ? latestSnap.data() : {};
+
+  const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
+  await updateDoc(postRef, { comments: updatedComments });
+
+  // Render immediately
+  const commentEl = document.createElement("p");
+  commentEl.textContent = commentText;
+  commentsContainer.appendChild(commentEl);
+});
 
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {

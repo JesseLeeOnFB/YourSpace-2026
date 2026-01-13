@@ -3,32 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
+<title>Profile - YourSpace</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav>
-    <button onclick="window.location.href='feed.html'">Global Feed</button>
+    <a href="feed.html">Home</a>
+    <a href="profile.html">Profile</a>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="container">
-    <h2>My Profile</h2>
-
-    <div id="profileInfo">
-      <img id="profilePic" src="placeholder.png" alt="Profile Picture" width="120">
-      <input type="file" id="profileImageUpload">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <textarea id="bioInput" placeholder="Bio"></textarea>
-      <input type="text" id="locationInput" placeholder="Location">
-      <input type="text" id="musicInput" placeholder="Music URL (audio tag)">
-      <textarea id="themeInput" placeholder="Custom HTML/CSS Theme"></textarea>
-      <button id="saveProfileBtn">Save Profile</button>
-    </div>
-
-    <h3>My Posts</h3>
-    <div id="userPosts"></div>
-  </div>
+  <h1>Edit Profile</h1>
+  <input id="usernameEdit" placeholder="Username">
+  <textarea id="bioEdit" placeholder="Bio"></textarea>
+  <input id="locationEdit" placeholder="Location">
+  <input type="file" id="profilePicInput">
+  <input id="musicInput" placeholder="Music URL">
+  <textarea id="themeInput" placeholder="Custom HTML/CSS"></textarea>
+  <button id="saveProfileBtn">Save Profile</button>
 
   <script type="module" src="profile.js"></script>
 </body>

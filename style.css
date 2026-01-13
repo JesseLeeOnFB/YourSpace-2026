@@ -1,33 +1,31 @@
 body {
-  margin:0; padding:0;
-  background:#1e1e2f;
-  color:#f5f5f5;
+  background-color: #1e1e2f;
+  color: #eee;
   font-family: Arial, sans-serif;
 }
-
 .container {
-  max-width:800px; margin:20px auto; padding:0 10px;
+  width: 95%;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
 }
-
 input, textarea, button {
-  display:block; width:100%; margin:10px 0; padding:8px; border-radius:5px; border:none;
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
 }
-
-button { cursor:pointer; background:#007bff; color:#fff; }
-button:hover { background:#0056b3; }
-
-h1, h2 { text-align:center; }
-
-.post, .trending {
-  border:1px solid #444; border-radius:5px; padding:10px; margin-bottom:10px; background:#2a2a3a;
+button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
-
-.post img.profile-pic {
-  width:40px; height:40px; border-radius:50%; vertical-align:middle; margin-right:10px;
+button:hover {
+  background-color: #357abd;
 }
-
-.post img.post-img { max-width:100%; margin-top:10px; }
-
-.trending { border:2px solid gold; }
-
-#userPosts .post, #feed .post { margin-bottom:15px; }
+#profileDisplay img {
+  max-width: 150px;
+  border-radius: 10px;
+}

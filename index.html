@@ -1,33 +1,26 @@
-<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace-2026</title>
+<title>YourSpace 2026</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-  <h1>YourSpace</h1>
 
-  <div id="authSection">
+<h1>YourSpace 2026</h1>
+
+<div class="auth-container">
     <input type="text" id="username" placeholder="Username">
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
-    <button id="signupBtn">Sign Up</button>
-    <button id="loginBtn">Log In</button>
-  </div>
 
-  <div id="welcomeSection" style="display:none;">
-    <div class="navbar">
-      <button id="goProfile">Profile</button>
-      <button id="goFeed">Global Feed</button>
-      <button id="logoutBtn">Log Out</button>
-    </div>
-    <h2>Welcome, <span id="displayName"></span></h2>
-  </div>
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
 </div>
+
+<div id="errorMsg"></div>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -3,30 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
+<title>YourSpace 2026 - Global Feed</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1 style="color:red;">FEED PAGE LOADED</h1>
+
 <nav>
-    <button onclick="location.href='feed.html'">Global Feed</button>
-    <button onclick="location.href='profile.html'">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <a href="index.html">Home</a> |
+  <a href="profile.html">Profile</a> |
+  <button id="logoutBtn">Logout</button>
 </nav>
 
-<h2>Global Feed</h2>
+<h1>Global Feed</h1>
 
-<div class="new-post">
-    <input type="text" id="postContent" placeholder="What's up?">
-    <button id="publishBtn">Publish</button>
+<div id="postSection">
+  <textarea id="postText" placeholder="What's on your mind?"></textarea><br>
+  <button id="postBtn">Post</button>
 </div>
 
-<h3>Trending Post (Updated Hourly)</h3>
-<div id="trendingPost"></div>
+<div id="feedContainer">
+  <!-- Posts will appear here -->
+</div>
 
-<h3>All Posts</h3>
-<div id="postsContainer"></div>
-
-<script type="module" src="./feed.js"></script>
+<script type="module" src="feed.js"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
+// /YourSpace-2026/script.js
 console.log("🔥 script.js loaded");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -22,8 +22,6 @@ const db = getFirestore(app);
 // DOM
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const displayNameInput = document.getElementById("displayName");
@@ -32,22 +30,22 @@ const displayNameInput = document.getElementById("displayName");
 signupBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-  const displayName = displayNameInput.value.trim() || "Anonymous";
+  const displayName = displayNameInput.value.trim();
 
-  if (!email || !password) return alert("Enter email and password");
+  if (!email || !password || !displayName) return alert("Fill all fields");
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
 
-    await updateProfile(user, { displayName });
+    // Save displayName in Firestore
     await setDoc(doc(db, "users", user.uid), {
       displayName,
       bio: "",
+      location: "",
       photoURL: "",
       musicURL: "",
-      theme: "",
-      location: ""
+      themeCSS: ""
     });
 
     window.location.href = "feed.html";
@@ -60,7 +58,8 @@ signupBtn.addEventListener("click", async () => {
 loginBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-  if (!email || !password) return alert("Enter email and password");
+
+  if (!email || !password) return alert("Fill all fields");
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
@@ -68,10 +67,4 @@ loginBtn.addEventListener("click", async () => {
   } catch (err) {
     alert(err.message);
   }
-});
-
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
 });

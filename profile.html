@@ -7,26 +7,29 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-  <h1>Profile</h1>
-  <p id="profileEmail"></p>
-  <input type="text" id="username" placeholder="Username">
-  <input type="text" id="bio" placeholder="Bio">
-  <input type="text" id="location" placeholder="Location">
-  <input type="url" id="musicUrl" placeholder="Music URL (embed link)">
-  <input type="color" id="themeColor" placeholder="Theme/Background Color">
-  <input type="file" id="profilePic" accept="image/*">
-  <button id="saveProfileBtn">Save Profile</button>
+  <header>
+    <h1>YourSpace Profile</h1>
+    <button id="logoutBtn">Logout</button>
+  </header>
 
-  <div id="profileDisplay">
-    <h3 id="displayUsername"></h3>
-    <p id="displayBio"></p>
-    <p id="displayLocation"></p>
-    <img id="displayPic" src="" alt="Profile Pic">
-    <audio id="displayMusic" controls></audio>
-  </div>
-</div>
+  <main>
+    <section class="profile-section">
+      <h2>Profile Info</h2>
+      <label>Username:</label>
+      <input type="text" id="username" placeholder="Enter username">
 
-<script type="module" src="profile.js"></script>
+      <label>Bio:</label>
+      <textarea id="bio" placeholder="Enter bio"></textarea>
+
+      <label>Profile Photo:</label>
+      <input type="file" id="profilePicInput" accept="image/*">
+      <img id="profilePicDisplay" src="" alt="Profile Picture" style="width:150px;height:150px;display:block;margin-top:10px;">
+
+      <button id="saveProfileBtn">Save Profile</button>
+      <button id="uploadPhotoBtn">Upload Photo</button>
+    </section>
+  </main>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

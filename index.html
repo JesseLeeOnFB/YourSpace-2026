@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace-2026</title>
+  <title>YourSpace 2026</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>YourSpace</h1>
-    <div id="auth-section">
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Password" required>
+    <h1>YourSpace 2026</h1>
+
+    <!-- Auth -->
+    <div id="authContainer">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
       <button id="signupBtn">Sign Up</button>
       <button id="loginBtn">Login</button>
-      <p id="auth-msg"></p>
+    </div>
+
+    <!-- Welcome -->
+    <div id="welcomeContainer" style="display:none;">
+      <h2>Welcome, <span id="userEmail"></span>!</h2>
+      <button id="logoutBtn">Logout</button>
+      <a href="profile.html">Go to Profile</a>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

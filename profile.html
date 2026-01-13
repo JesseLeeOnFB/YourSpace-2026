@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile - YourSpace</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav>
@@ -13,14 +12,25 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <h1>Edit Profile</h1>
-  <input id="usernameEdit" placeholder="Username">
-  <textarea id="bioEdit" placeholder="Bio"></textarea>
-  <input id="locationEdit" placeholder="Location">
-  <input type="file" id="profilePicInput">
-  <input id="musicInput" placeholder="Music URL">
-  <textarea id="themeInput" placeholder="Custom HTML/CSS"></textarea>
-  <button id="saveProfileBtn">Save Profile</button>
+  <section id="profileSection">
+    <h1 id="profileUsername">Username</h1>
+    <img id="profilePic" src="placeholder.png" alt="Profile Picture" width="150"/>
+    <input type="file" id="profileImageInput"/>
+    <p>Bio:</p>
+    <textarea id="bioInput" placeholder="Enter your bio"></textarea>
+    <p>Location:</p>
+    <input type="text" id="locationInput" placeholder="City, State"/>
+    <p>Theme/Background HTML/CSS:</p>
+    <textarea id="themeInput" placeholder="Custom HTML/CSS for your profile"></textarea>
+    <p>Music URL (embedded player):</p>
+    <input type="text" id="musicInput" placeholder="Paste link to audio file"/>
+    <button id="saveProfileBtn">Save Profile</button>
+  </section>
+
+  <section id="userPostsSection">
+    <h2>Your Posts</h2>
+    <div id="userPostsContainer"></div>
+  </section>
 
   <script type="module" src="profile.js"></script>
 </body>

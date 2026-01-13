@@ -1,9 +1,10 @@
+<!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav>
@@ -11,32 +12,27 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <h1>Your Profile</h1>
+  <div class="profile-container">
+    <img id="profilePhoto" class="profile-picture" src="default.png" alt="Profile Photo">
 
-  <div id="profileContainer">
-    <img id="profilePic" class="profile-picture" src="default-avatar.png" alt="Profile Picture">
-    <input type="file" id="profilePicInput" accept="image/*">
-    
-    <label>Username / Display Name:</label>
-    <input type="text" id="displayName" placeholder="Your display name">
+    <div class="profile-info">
+      <h2 id="displayName">Your Name</h2>
+      <p id="bio">Your bio here...</p>
+      <p id="location">Location: </p>
+      <p id="music">Music: </p>
+    </div>
 
-    <label>Bio:</label>
-    <textarea id="bio" placeholder="Tell something about yourself"></textarea>
-
-    <label>Location:</label>
-    <input type="text" id="location" placeholder="Your location">
-
-    <label>Background HTML / CSS:</label>
-    <textarea id="backgroundHTML" placeholder="Add custom HTML/CSS for profile"></textarea>
-
-    <label>Music URL (embed link):</label>
-    <input type="text" id="musicURL" placeholder="Paste music embed URL">
-
-    <button id="saveProfileBtn">Save Profile</button>
+    <div>
+      <label>Change Profile Photo:</label>
+      <input type="file" id="photoUpload">
+      <button id="saveProfileBtn">Save Profile</button>
+    </div>
   </div>
 
-  <h2>Your Posts</h2>
-  <div id="userPostsContainer"></div>
+  <div class="profile-posts" id="profilePosts">
+    <h3>Your Posts</h3>
+    <div id="postsContainer"></div>
+  </div>
 
   <script type="module" src="profile.js?v=2"></script>
 </body>

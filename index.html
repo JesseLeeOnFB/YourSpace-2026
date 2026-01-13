@@ -1,29 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Yourspace</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yourspace</title>
+<link rel="stylesheet" href="style.css">
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.auth = auth; // make auth globally available
+  window.db = db; // make firestore globally available
+</script>
 </head>
 <body>
-    <div class="container">
-        <h1>Yourspace</h1>
+<div id="container">
 
-        <div id="auth-container">
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button id="signupBtn">Sign Up</button>
-            <button id="loginBtn">Login</button>
-        </div>
+  <!-- Login / Signup -->
+  <div id="auth-section">
+    <h1>Yourspace</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="signup-btn">Sign Up</button>
+    <button id="login-btn">Login</button>
+    <p id="auth-msg"></p>
+  </div>
 
-        <div id="user-info" style="display:none;">
-            <h2>Welcome, <span id="user-email"></span></h2>
-            <button id="logoutBtn">Logout</button>
-        </div>
-    </div>
+  <!-- Main App Section -->
+  <div id="app-section" class="hidden">
+    <header>
+      <h2>Welcome, <span id="user-email"></span></h2>
+      <button id="logout-btn">Logout</button>
+    </header>
 
-    <!-- Firebase SDKs -->
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="script.js"></script>
+    <!-- Profile -->
+    <section id="profile-section">
+      <h3>Your Profile</h3>
+      <input type="text" id="profile-name" placeholder="Display Name">
+      <input type="text" id="profile-theme" placeholder="Theme / Background (HTML/CSS)">
+      <input type="text" id="profile-music" placeholder="Music Link (placeholder)">
+      <button id="save-profile">Save Profile</button>
+    </section>
+
+    <!-- Post Creation -->
+    <section id="post-section">
+      <h3>Create a Post</h3>
+      <textarea id="post-text" placeholder="What's on your mind?"></textarea>
+      <input type="text" id="post-image" placeholder="Image Link (optional)">
+      <button id="post-btn">Post</button>
+    </section>
+
+    <!-- Feed -->
+    <section id="feed-section">
+      <h3>Public Feed</h3>
+      <div id="feed"></div>
+    </section>
+  </div>
+
+</div>
+
+<script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,155 +1,128 @@
-import { auth, db } from './index.html'; // Already initialized globally
-
+// 🔥 Firebase Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
+  getFirestore,
   collection,
   addDoc,
   query,
   orderBy,
   onSnapshot,
-  doc,
-  updateDoc,
-  arrayUnion
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// DOM elements
-const authSection = document.getElementById('auth-section');
-const appSection = document.getElementById('app-section');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const signupBtn = document.getElementById('signup-btn');
-const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
-const authMsg = document.getElementById('auth-msg');
-const userEmailSpan = document.getElementById('user-email');
+// 🔥 Firebase Config (USE YOUR OWN — this is a placeholder)
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
 
-const profileName = document.getElementById('profile-name');
-const profileTheme = document.getElementById('profile-theme');
-const profileMusic = document.getElementById('profile-music');
-const saveProfileBtn = document.getElementById('save-profile');
+// 🔥 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const postText = document.getElementById('post-text');
-const postImage = document.getElementById('post-image');
-const postBtn = document.getElementById('post-btn');
+// 🔗 DOM
+const authSection = document.getElementById("authSection");
+const appSection = document.getElementById("appSection");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const postBtn = document.getElementById("postBtn");
+const postText = document.getElementById("postText");
+const feed = document.getElementById("feed");
+const userEmail = document.getElementById("userEmail");
 
-const feed = document.getElementById('feed');
-
-// ========== AUTH ==========
-signupBtn.addEventListener('click', () => {
-  createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-    .then(() => { authMsg.textContent = "Account created!"; })
-    .catch(err => { authMsg.textContent = err.message; });
-});
-
-loginBtn.addEventListener('click', () => {
-  signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-    .then(() => { authMsg.textContent = "Logged in!"; })
-    .catch(err => { authMsg.textContent = err.message; });
-});
-
-logoutBtn.addEventListener('click', () => {
-  signOut(auth).then(() => { location.reload(); });
-});
-
-// Show/hide sections based on auth
+// 🧠 AUTH STATE
 onAuthStateChanged(auth, user => {
+  console.log("AUTH STATE:", user);
+
   if (user) {
-    authSection.classList.add('hidden');
-    appSection.classList.remove('hidden');
-    userEmailSpan.textContent = user.email;
+    authSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
+    userEmail.textContent = user.email;
+    loadPosts();
   } else {
-    authSection.classList.remove('hidden');
-    appSection.classList.add('hidden');
+    authSection.classList.remove("hidden");
+    appSection.classList.add("hidden");
   }
 });
 
-// ========== PROFILE ==========
-saveProfileBtn.addEventListener('click', async () => {
+// 📝 SIGN UP
+signupBtn.onclick = async () => {
+  await createUserWithEmailAndPassword(
+    auth,
+    emailInput.value,
+    passwordInput.value
+  );
+};
+
+// 🔐 LOG IN
+loginBtn.onclick = async () => {
+  await signInWithEmailAndPassword(
+    auth,
+    emailInput.value,
+    passwordInput.value
+  );
+};
+
+// 🚪 LOG OUT
+logoutBtn.onclick = async () => {
+  await signOut(auth);
+};
+
+// 🗨️ CREATE POST
+postBtn.onclick = async () => {
+  console.log("POST BUTTON CLICKED");
+
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user || !postText.value.trim()) return;
 
-  const userRef = doc(db, 'users', user.uid);
-  await updateDoc(userRef, {
-    displayName: profileName.value || "",
-    theme: profileTheme.value || "",
-    music: profileMusic.value || ""
-  }).catch(async () => {
-    await addDoc(collection(db, 'users'), {
-      uid: user.uid,
-      displayName: profileName.value || "",
-      theme: profileTheme.value || "",
-      music: profileMusic.value || ""
-    });
-  });
-});
+  console.log("About to write to Firestore");
 
-// ========== POSTS ==========
-postBtn.addEventListener('click', async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  await addDoc(collection(db, 'posts'), {
-    userId: user.uid,
+  await addDoc(collection(db, "posts"), {
     text: postText.value,
-    image: postImage.value || "",
-    likes: [],
-    timestamp: Date.now()
+    user: user.email,
+    createdAt: serverTimestamp()
   });
+
+  console.log("Firestore write finished");
 
   postText.value = "";
-  postImage.value = "";
-});
+};
 
-// ========== FEED ==========
-const postsQuery = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
-onSnapshot(postsQuery, snapshot => {
-  feed.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const postEl = document.createElement('div');
-    postEl.classList.add('feed-post');
+// 📰 LOAD FEED
+function loadPosts() {
+  const q = query(
+    collection(db, "posts"),
+    orderBy("createdAt", "desc")
+  );
 
-    const userEl = document.createElement('p');
-    userEl.textContent = `User: ${post.userId}`;
-    postEl.appendChild(userEl);
-
-    const textEl = document.createElement('p');
-    textEl.textContent = post.text;
-    postEl.appendChild(textEl);
-
-    if (post.image) {
-      const imgEl = document.createElement('img');
-      imgEl.src = post.image;
-      imgEl.style.maxWidth = "100%";
-      postEl.appendChild(imgEl);
-    }
-
-    // Likes button
-    const likeBtn = document.createElement('button');
-    likeBtn.textContent = `Like (${post.likes.length || 0})`;
-    likeBtn.addEventListener('click', async () => {
-      const postRef = doc(db, 'posts', docSnap.id);
-      await updateDoc(postRef, { likes: arrayUnion(auth.currentUser.uid) });
+  onSnapshot(q, snapshot => {
+    feed.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "post";
+      div.innerHTML = `
+        <strong>${data.user}</strong>
+        <p>${data.text}</p>
+        <div class="small">${data.createdAt?.toDate?.() || ""}</div>
+      `;
+      feed.appendChild(div);
     });
-    postEl.appendChild(likeBtn);
-
-    feed.appendChild(postEl);
   });
-});
-
+}

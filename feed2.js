@@ -98,14 +98,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
       postDiv.innerHTML = `
-        <p><strong>${data.displayName}</strong></p>
-        <p>${data.text}</p>
-        <button class="likeBtn">Like (${data.likes || 0})</button>
-        <button class="commentBtn">Comment</button>
-        <button class="shareBtn">Share</button>
-        <button class="deleteBtn">Delete</button>
-        <div class="commentsContainer"></div>
-      `;
+  <div class="postHeader">
+    <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
+    <strong>${data.displayName}</strong>
+  </div>
+
+  <p>${data.text || ""}</p>
+
+  ${data.imageURL ? `<img src="${data.imageURL}" class="postImage">` : ""}
+
+  <div class="postButtons">
+    <button class="likeBtn">Like (${data.likes || 0})</button>
+    <button class="commentBtn">Comment</button>
+    <button class="shareBtn">Share</button>
+    ${data.userId === auth.currentUser.uid ? `<button class="deleteBtn">Delete</button>` : ""}
+  </div>
+
+  <div class="comments"></div>
+`;
       postsContainer.appendChild(postDiv);
 
       // --- BUTTONS FOR EACH POST ---

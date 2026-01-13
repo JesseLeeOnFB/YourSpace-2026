@@ -68,3 +68,10 @@ nav button:hover {
   border-top: 1px solid #ccc;
   padding-top: 5px;
 }
+/* Profile picture */
+.profile-picture {
+  max-width: 150px;   /* shrink to a reasonable size */
+  max-height: 150px;
+  border-radius: 50%; /* circular */
+  object-fit: cover;  /* crop nicely */
+}

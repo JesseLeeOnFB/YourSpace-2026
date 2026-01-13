@@ -1,98 +1,92 @@
 console.log("🔥 profile.js loaded");
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-import { firebaseConfig } from "./firebase-config.js"; // replace if inlined
+const auth = getAuth();
+const db = getFirestore();
+const storage = getStorage();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-const profileUsername = document.getElementById("profileUsername");
-const profilePic = document.getElementById("profilePic");
-const profileImageInput = document.getElementById("profileImageInput");
+// DOM Elements
+const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
-const themeInput = document.getElementById("themeInput");
 const musicInput = document.getElementById("musicInput");
+const themeInput = document.getElementById("themeInput");
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicPreview = document.getElementById("profilePicPreview");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-const userPostsContainer = document.getElementById("userPostsContainer");
+const profilePostsContainer = document.getElementById("profilePostsContainer");
+const homeBtn = document.getElementById("homeBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-// Check if user is logged in
-auth.onAuthStateChanged(async user => {
-  if(!user){
-    window.location.href = "index.html";
-    return;
-  }
+// Navigate
+homeBtn.addEventListener("click", () => window.location.href = "feed.html");
+logoutBtn.addEventListener("click", async () => await auth.signOut());
 
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-
-  if(userSnap.exists()){
-    const data = userSnap.data();
-    profileUsername.textContent = data.username || user.email;
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-    themeInput.value = data.theme || "";
-    musicInput.value = data.music || "";
-    profilePic.src = data.photoURL || "placeholder.png";
-    document.body.style = data.theme || ""; // apply custom theme
-  }
-
-  loadUserPosts(user.uid);
+// Current user
+let currentUser;
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "index.html";
+  currentUser = user;
+  loadProfile();
 });
+
+// Load profile
+async function loadProfile() {
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  if (!userDoc.exists()) return console.error("User doc not found!");
+  const data = userDoc.data();
+
+  usernameInput.value = data.username || "";
+  bioInput.value = data.bio || "";
+  locationInput.value = data.location || "";
+  musicInput.value = data.music || "";
+  themeInput.value = data.theme || "";
+  profilePicPreview.src = data.photoUrl || "https://via.placeholder.com/150";
+
+  // Load user's posts
+  loadUserPosts();
+}
 
 // Save profile
 saveProfileBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if(!user) return;
+  let photoUrl = profilePicPreview.src;
 
-  let photoURL = profilePic.src;
-  if(profileImageInput.files[0]){
-    const storageRef = ref(storage, `users/${user.uid}/profilePic`);
-    await uploadBytes(storageRef, profileImageInput.files[0]);
-    photoURL = await getDownloadURL(storageRef);
-    profilePic.src = photoURL;
+  // Upload new photo if selected
+  if (profilePicInput.files[0]) {
+    const file = profilePicInput.files[0];
+    const storageRef = ref(storage, `profilePics/${currentUser.uid}`);
+    await uploadBytes(storageRef, file);
+    photoUrl = await getDownloadURL(storageRef);
   }
 
-  const data = {
-    username: profileUsername.textContent,
+  const updatedData = {
+    username: usernameInput.value,
     bio: bioInput.value,
     location: locationInput.value,
-    theme: themeInput.value,
     music: musicInput.value,
-    photoURL
+    theme: themeInput.value,
+    photoUrl
   };
 
-  await setDoc(doc(db, "users", user.uid), data, { merge: true });
-  alert("Profile saved!");
-  document.body.style = themeInput.value; // apply new theme
+  // Update Firestore
+  await setDoc(doc(db, "users", currentUser.uid), updatedData, { merge: true });
+
+  // Update auth displayName
+  await updateProfile(currentUser, { displayName: usernameInput.value });
+
+  alert("Profile updated!");
 });
 
 // Load user's posts
-function loadUserPosts(uid){
-  const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-  onSnapshot(q, snapshot => {
-    userPostsContainer.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const post = docSnap.data();
-      if(post.userId === uid){
-        const div = document.createElement("div");
-        div.classList.add("post");
-        div.innerHTML = `
-          <p>${post.content}</p>
-          ${post.imageURL ? `<img src="${post.imageURL}" />` : ""}
-        `;
-        userPostsContainer.appendChild(div);
-      }
-    });
-  });
-}
+async function loadUserPosts() {
+  profilePostsContainer.innerHTML = "";
 
-// Logout
-logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.href = "index.html"));
+  const querySnapshot = await getDoc(doc(db, "users", currentUser.uid));
+  // Optional: Add a proper query for posts by user if using separate "posts" collection
+  // We'll assume posts are in global "posts" collection with userId field
+  const postsRef = doc(db, "posts");
+  // We'll implement feed.js to properly fetch user posts too
+}

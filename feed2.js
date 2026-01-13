@@ -34,57 +34,60 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 // DOM elements
-const postInput = document.getElementById("postText");
-const postBtn = document.getElementById("postBtn");
-const postImageInput = document.getElementById("postImageInput");
-const postsContainer = document.getElementById("postsContainer");
-const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const homeBtn = document.getElementById("homeBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const postInput = document.getElementById("postText");
+  const postBtn = document.getElementById("postBtn");
+  const postImageInput = document.getElementById("postImageInput");
+  const postsContainer = document.getElementById("postsContainer");
+  const profileBtn = document.getElementById("profileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const homeBtn = document.getElementById("homeBtn");
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("You must be logged in");
-    window.location.href = "index.html";
-    return;
-  }
-
-  // POST BUTTON
-  postBtn.addEventListener("click", async () => {
-    const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
-
-    let postImageURL = "";
-    try {
-      if (postImageInput.files.length > 0) {
-        const file = postImageInput.files[0];
-        const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-        await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(storageRef);
-      }
-
-      // Fetch profile info
-      const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
-
-      await addDoc(collection(db, "posts"), {
-        text,
-        userId: auth.currentUser.uid,
-        displayName: profile.displayName || "Anonymous",
-        photoURL: profile.photoURL || "",
-        postImage: postImageURL,
-        likes: 0,
-        comments: [],
-        createdAt: serverTimestamp()
-      });
-
-      postInput.value = "";
-      postImageInput.value = "";
-    } catch (err) {
-      console.error("Post failed:", err);
-      alert("Post failed: " + err.message);
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("You must be logged in");
+      window.location.href = "index.html";
+      return;
     }
+
+    postBtn.addEventListener("click", async () => {
+      const text = postInput.value.trim();
+      if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
+
+      let postImageURL = "";
+      try {
+        if (postImageInput.files.length > 0) {
+          const file = postImageInput.files[0];
+          const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          postImageURL = await getDownloadURL(storageRef);
+        }
+
+        const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+        const profile = userSnap.exists() ? userSnap.data() : {};
+
+        await addDoc(collection(db, "posts"), {
+          text,
+          userId: auth.currentUser.uid,
+          displayName: profile.displayName || "Anonymous",
+          photoURL: profile.photoURL || "",
+          postImage: postImageURL,
+          likes: 0,
+          comments: [],
+          createdAt: serverTimestamp()
+        });
+
+        postInput.value = "";
+        postImageInput.value = "";
+      } catch (err) {
+        console.error("Post failed:", err);
+        alert("Post failed: " + err.message);
+      }
+    });
+
+    // ...rest of your code for listening to posts and nav buttons
   });
+});
 
   // NAV
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");

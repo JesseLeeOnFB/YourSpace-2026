@@ -1,8 +1,10 @@
 console.log("🔥 feed.js loaded");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, getDocs, doc, serverTimestamp, query, orderBy, updateDoc, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -21,67 +23,103 @@ const db = getFirestore(app);
 // DOM
 const postBtn = document.getElementById("postBtn");
 const postInput = document.getElementById("postText");
-const feedContainer = document.getElementById("feedContainer");
-const logoutBtn = document.getElementById("logoutBtn");
+const postsContainer = document.getElementById("postsContainer");
+const trendingPostDiv = document.getElementById("trendingPost");
+
 const profileBtn = document.getElementById("profileBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// Redirect if not logged in
-onAuthStateChanged(auth, user => {
-  if (!user) return window.location.href = "index.html";
-  loadPosts();
-});
+profileBtn.addEventListener("click", () => { window.location.href = "profile.html"; });
+logoutBtn.addEventListener("click", async () => { await auth.signOut(); window.location.href = "index.html"; });
 
-// Post
+// Create post
 postBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
+  if (!user) return alert("You must be logged in");
   const text = postInput.value.trim();
   if (!text) return alert("Write something first");
+
   try {
+    // Load user profile
+    const userDoc = await getDocs(collection(db, "users"));
+    let displayName = user.email;
+    let photoURL = "";
+    
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await docRef.get ? await docRef.get() : await getDocs(doc(db, "users", user.uid));
+    if (docSnap.exists()) {
+      displayName = docSnap.data().displayName || user.email;
+      photoURL = docSnap.data().photoURL || "";
+    }
+
     await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
-      displayName: user.displayName || "Anonymous",
-      createdAt: serverTimestamp(),
-      likes: 0
+      displayName,
+      photoURL,
+      likes: 0,
+      comments: [],
+      createdAt: serverTimestamp()
     });
+
     postInput.value = "";
     loadPosts();
-  } catch (err) { console.error(err); alert(err.message); }
+  } catch (err) {
+    console.error("POST ERROR:", err);
+    alert(err.message);
+  }
 });
 
-// Logout/Profile
-logoutBtn.addEventListener("click", () => signOut(auth).then(()=> window.location.href="index.html"));
-profileBtn.addEventListener("click", () => window.location.href="profile.html"));
-
-// Load Posts
+// Load posts
 async function loadPosts() {
-  feedContainer.innerHTML = "";
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
+  postsContainer.innerHTML = "";
+  const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  const querySnap = await getDocs(postsQuery);
+
+  let topPost = { likes: -1, element: null };
+
+  querySnap.forEach((docSnap) => {
+    const post = docSnap.data();
+    const postId = docSnap.id;
+
     const postDiv = document.createElement("div");
     postDiv.className = "post";
     postDiv.innerHTML = `
-      <strong>${data.displayName}</strong><br/>
-      ${data.text}<br/>
-      <button onclick="likePost('${docSnap.id}', ${data.likes})">Like (${data.likes || 0})</button>
-      <button onclick="deletePost('${docSnap.id}', '${data.userId}')">Delete</button>
+      <div class="postHeader">
+        <img src="${post.photoURL || 'https://via.placeholder.com/50'}" class="postProfilePic">
+        <strong>${post.displayName || post.userId}</strong>
+      </div>
+      <p>${post.text}</p>
+      <button class="likeBtn">Like (${post.likes})</button>
+      <button class="deleteBtn">Delete</button>
+      <div class="commentsSection"></div>
     `;
-    feedContainer.appendChild(postDiv);
+
+    // Like button
+    postDiv.querySelector(".likeBtn").addEventListener("click", async () => {
+      await updateDoc(doc(db, "posts", postId), { likes: (post.likes || 0) + 1 });
+      loadPosts();
+    });
+
+    // Delete button
+    postDiv.querySelector(".deleteBtn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (user.uid !== post.userId) return alert("Cannot delete someone else's post");
+      await deleteDoc(doc(db, "posts", postId));
+      loadPosts();
+    });
+
+    postsContainer.appendChild(postDiv);
+
+    if (post.likes > (topPost.likes || 0)) {
+      topPost = { likes: post.likes, element: postDiv.cloneNode(true) };
+    }
   });
+
+  trendingPostDiv.innerHTML = "";
+  if (topPost.element) trendingPostDiv.appendChild(topPost.element);
 }
 
-// Like/Delete functions
-window.likePost = async (postId, currentLikes) => {
-  const postRef = doc(db, "posts", postId);
-  await updateDoc(postRef, { likes: (currentLikes || 0) + 1 });
-  loadPosts();
-};
-
-window.deletePost = async (postId, postUserId) => {
-  const user = auth.currentUser;
-  if (user.uid !== postUserId) return alert("You can only delete your own posts");
-  await deleteDoc(doc(db, "posts", postId));
-  loadPosts();
-};
+// Refresh posts every minute
+setInterval(loadPosts, 60000);
+onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "index.html"; loadPosts(); });

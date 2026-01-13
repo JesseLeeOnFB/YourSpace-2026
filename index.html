@@ -3,134 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace 2026</title>
+  <title>YourSpace-2026</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* MySpace-inspired dark theme */
-    body {
-      background: linear-gradient(#1a1a1a, #0d0d0d);
-      color: #fff;
-      font-family: 'Verdana', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #111;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      color: #00ffcc;
-      font-family: 'Courier New', monospace;
-    }
-    button {
-      background-color: #00ffcc;
-      color: #111;
-      border: none;
-      padding: 5px 10px;
-      margin-left: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.8;
-    }
-    #login-signup {
-      display: flex;
-      gap: 5px;
-    }
-    main {
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-    .hidden { display: none; }
-    input, textarea {
-      width: 100%;
-      margin: 5px 0 15px 0;
-      padding: 5px;
-      background-color: #222;
-      color: #fff;
-      border: 1px solid #00ffcc;
-    }
-    .profile-section {
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #00ffcc;
-      background-color: #111;
-    }
-    .post {
-      border: 1px solid #00ffcc;
-      padding: 10px;
-      margin-bottom: 15px;
-      background-color: #111;
-    }
-    .post img { max-width: 100%; }
-    .post audio { width: 100%; margin-top: 5px; }
-  </style>
 </head>
 <body>
-  <header>
-    <h1>YourSpace 2026</h1>
+  <div class="container">
+    <h1>YourSpace</h1>
     <div id="auth-section">
-  <h3>Login / Sign Up</h3>
-  <label for="email-input">Email:</label>
-  <input type="email" id="email-input" placeholder="you@example.com">
-
-  <label for="password-input">Password:</label>
-  <input type="password" id="password-input" placeholder="Password">
-
-  <button type="button" id="login-btn">Log In</button>
-<button type="button" id="signup-btn">Sign Up</button>
-</div>
-  </header>
-
-  <main>
-    <!-- Welcome -->
-    <div id="welcome" class="hidden">
-      <h2>Welcome, <span id="username-display"></span></h2>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button id="signupBtn">Sign Up</button>
+      <button id="loginBtn">Login</button>
+      <p id="auth-msg"></p>
     </div>
+  </div>
 
-    <!-- Profile Customization -->
-    <div id="profile-section" class="profile-section hidden">
-      <h3>Profile Customization</h3>
-      <label>Username:</label>
-      <input type="text" id="username-input" placeholder="Your username">
-      <label>Background color/CSS:</label>
-      <input type="text" id="bg-input" placeholder="CSS color or gradient">
-      <label>Music URL:</label>
-      <input type="text" id="music-input" placeholder="Direct .mp3 or embed URL">
-      <button id="save-profile-btn">Save Profile</button>
-    </div>
-
-    <!-- Create Post -->
-    <div id="create-post-section" class="hidden">
-      <h3>Create a Post</h3>
-      <label>Title:</label>
-      <input type="text" id="post-title" placeholder="Post title">
-      <label>Content:</label>
-      <textarea id="post-content" rows="3" placeholder="Write something..."></textarea>
-      <label>Image URL (optional):</label>
-      <input type="text" id="post-image" placeholder="Direct image URL">
-      <label>Music URL (optional):</label>
-      <input type="text" id="post-music" placeholder="Direct .mp3 or embed URL">
-      <button id="create-post-btn">Create Post</button>
-    </div>
-
-    <!-- Feed -->
-    <div id="feed">
-      <h3>Feed</h3>
-      <div id="posts-container"></div>
-    </div>
-  </main>
-
-<script src="./script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-

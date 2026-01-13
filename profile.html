@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>YourSpace - Profile</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav>
-        <button id="homeBtn">Home</button>
-        <button id="logoutBtn">Logout</button>
-    </nav>
+  <nav>
+    <button id="homeBtn">Home</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-    <h1>Your Profile</h1>
+  <h1>YourSpace Profile</h1>
 
-    <div id="profileSection">
-        <img id="profilePhotoPreview" src="https://via.placeholder.com/150" alt="Profile Photo">
-        <input type="file" id="profilePhotoInput">
-        <br>
+  <div id="profileInfo">
+    <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
+    <h2 id="displayName">Username</h2>
+    <p id="bio">Bio: </p>
+    <p id="location">Location: </p>
+    <audio id="musicPlayer" controls>
+      <source id="musicSource" src="" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 
-        <label for="displayName">Display Name:</label>
-        <input type="text" id="displayName" placeholder="Your display name">
-        <br>
+  <div id="editProfile">
+    <h3>Edit Profile</h3>
+    <input type="text" id="newDisplayName" placeholder="Change username">
+    <input type="text" id="newBio" placeholder="Bio">
+    <input type="text" id="newLocation" placeholder="Location">
+    <input type="text" id="newMusic" placeholder="Music URL">
+    <input type="file" id="newProfilePic">
+    <button id="saveProfileBtn">Save Profile</button>
+  </div>
 
-        <label for="bio">Bio:</label>
-        <textarea id="bio" placeholder="Write something about yourself"></textarea>
-        <br>
+  <h2>Your Posts</h2>
+  <div id="postsContainer"></div>
 
-        <label for="musicURL">Music URL (embed player link):</label>
-        <input type="text" id="musicURL" placeholder="https://...">
-        <br>
-
-        <label for="themeHTML">Profile Theme HTML/CSS:</label>
-        <textarea id="themeHTML" placeholder="<style>body{background:#000;}</style>"></textarea>
-        <br>
-
-        <button id="saveProfileBtn">Save Profile</button>
-    </div>
-
-    <script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

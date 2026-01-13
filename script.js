@@ -1,6 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -18,55 +28,50 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupBtn = document.getElementById("signupBtn");
-  const loginBtn = document.getElementById("const signupBtn = document.getElementById("signupBtn");
+  const loginBtn = document.getElementById("loginBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const usernameInput = document.getElementById("username");
 
+  // SIGN UP
   signupBtn.addEventListener("click", async () => {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
     const displayName = usernameInput.value.trim();
 
-    if (!email || !password || !displayName) return alert("Fill all fields");
+    if (!email || !password || !displayName) {
+      alert("Fill all fields");
+      return;
+    }
 
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
       await updateProfile(userCred.user, { displayName });
-      await setDoc(doc(db, "users", userCred.user.uid), { displayName, bio: "", photoURL: "", musicURL: "", theme: "" });
-      alert("Account created!");
+
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        displayName,
+        bio: "",
+        photoURL: "",
+        musicURL: "",
+        createdAt: serverTimestamp()
+      });
+
       window.location.href = "feed.html";
     } catch (err) {
       alert(err.message);
     }
   });
 
+  // LOGIN
   loginBtn.addEventListener("click", async () => {
-    signupBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!email || !password) {
-    alert("Enter email and password");
-    return;
-  }
-
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-
-    // create user profile doc
-    await setDoc(doc(db, "users", userCred.user.uid), {
-      displayName: email.split("@")[0],
-      createdAt: serverTimestamp()
-    });
-
-    window.location.href = "feed.html";
-  } catch (err) {
-    alert(err.message);
-  }
-});
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("Enter email and password");
+      return;
+    }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);

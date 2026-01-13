@@ -1,48 +1,58 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #111;
-  color: #eee;
-  margin: 0;
-  padding: 0;
+  background-color: #1c1c1c;
+  color: #f0f0f0;
+  display: flex;
+  justify-content: center;
 }
 
 .container {
+  width: 90%;
   max-width: 600px;
-  margin: auto;
-  padding: 20px;
+  margin-top: 20px;
 }
 
 input, textarea, button {
-  display: block;
   width: 100%;
-  margin: 10px 0;
   padding: 10px;
+  margin: 6px 0;
   border-radius: 5px;
   border: none;
 }
 
-input, textarea {
-  background-color: #222;
-  color: #eee;
-}
-
 button {
-  background-color: #0057ff;
-  color: #fff;
-  cursor: pointer;
+  background-color: #0073e6;
+  color: white;
+  font-weight: bold;
 }
 
 button:hover {
-  background-color: #1a73ff;
-}
-
-#feed {
-  margin-top: 20px;
+  background-color: #005bb5;
+  cursor: pointer;
 }
 
 .post {
-  background-color: #222;
+  background-color: #292929;
   padding: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
   border-radius: 5px;
+}
+
+.post img {
+  max-width: 100%;
+}
+
+.audio-player {
+  width: 100%;
+}
+
+.comment-section {
+  margin-top: 10px;
+}
+
+.comment {
+  background-color: #3a3a3a;
+  padding: 5px;
+  border-radius: 3px;
+  margin: 4px 0;
 }

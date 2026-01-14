@@ -1,1 +1,243 @@
+/* -------------------------
+   Global
+-------------------------- */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+}
 
+h2 {
+  margin: 10px 0;
+}
+
+/* -------------------------
+   Navbar
+-------------------------- */
+.navbar {
+  display: flex;
+  justify-content: flex-start;
+  background-color: #222;
+  padding: 10px;
+}
+
+.navbar button {
+  margin-right: 10px;
+  padding: 8px 15px;
+  color: #fff;
+  background-color: #444;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.navbar button:hover {
+  background-color: #555;
+}
+
+/* -------------------------
+   Create Post
+-------------------------- */
+.createPost {
+  background-color: #fff;
+  padding: 15px;
+  margin: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+#createPost textarea {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+#createPost input[type="file"] {
+  margin-bottom: 10px;
+}
+
+#createPost button {
+  padding: 8px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0077ff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#createPost button:hover {
+  background-color: #005bb5;
+}
+
+.notifications {
+  margin-bottom: 10px;
+}
+
+.notifications label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+/* -------------------------
+   Feed
+-------------------------- */
+.feed {
+  margin: 15px;
+}
+
+.post {
+  background-color: #fff;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.postProfilePic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.postMedia {
+  max-width: 100%;
+  max-height: 400px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.post video.postMedia {
+  display: block;
+  margin: 10px 0;
+}
+
+.postButtons {
+  margin-top: 10px;
+}
+
+.postButtons button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #eee;
+  transition: background 0.2s;
+}
+
+.postButtons button:hover {
+  background-color: #ddd;
+}
+
+/* -------------------------
+   Comments
+-------------------------- */
+.commentsContainer {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.comment {
+  padding: 5px 0;
+  border-top: 1px solid #eee;
+}
+
+/* -------------------------
+   Profile Page
+-------------------------- */
+.profilePage {
+  max-width: 700px;
+  margin: 15px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.profileHeader img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.profileHeader .profileInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileHeader .profileInfo h2 {
+  margin: 0 0 5px 0;
+}
+
+.profileHeader .profileInfo p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.profileActions button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #0077ff;
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.profileActions button:hover {
+  background-color: #005bb5;
+}
+
+/* -------------------------
+   Top 10 Friends Box
+-------------------------- */
+.topFriends {
+  margin-top: 20px;
+}
+
+.topFriends h3 {
+  margin-bottom: 8px;
+}
+
+.topFriends ul {
+  list-style: none;
+  padding: 0;
+}
+
+.topFriends li {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}

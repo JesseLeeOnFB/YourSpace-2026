@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <button id="homeBtn">Home</button>
-    <button id="logoutBtn">Logout</button>
-  </header>
 
-  <main>
-    <section id="profileInfo">
-      <h2>My Profile</h2>
+<body class="profile-page">
 
-      <div id="pfpContainer">
-        <img id="profilePfpImg" src="default-avatar.png" style="width:120px;height:120px;border-radius:50%;">
-        <input type="file" id="profilePfpInput" accept="image/*">
-        <button id="savePfpBtn">Save Profile Picture</button>
-      </div>
+<nav>
+  <button id="homeBtn">Home</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-      <!-- Optional profile fields -->
-      <div id="profileDetails">
-        <label>Display Name: <input type="text" id="displayNameInput"></label>
-        <label>Bio: <textarea id="bioInput"></textarea></label>
-        <label>Location: <input type="text" id="locationInput"></label>
-      </div>
-    </section>
-  </main>
+<div class="profile-card">
+  <img id="profilePic" class="profile-picture" src="default-avatar.png" />
 
-  <script type="module" src="profile.js"></script>
+  <h2 id="displayName">Username</h2>
+  <p id="bioText">This is your bio.</p>
+
+  <div class="profile-edit">
+    <label>Change Profile Picture</label>
+    <input type="file" id="profilePicInput" accept="image/*" />
+
+    <label>Bio</label>
+    <textarea id="bioInput" rows="3"></textarea>
+
+    <button id="saveProfileBtn">Save Profile</button>
+  </div>
+</div>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

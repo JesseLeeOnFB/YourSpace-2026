@@ -7,31 +7,47 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Section -->
-  <section class="profileSection">
+  <!-- Profile Info Section -->
+  <section class="profileInfo">
     <h2>Your Profile</h2>
     
-    <!-- Profile Picture Upload -->
-    <div class="profilePictureContainer">
-      <img id="profilePicPreview" src="" alt="Profile Picture" style="display:none;">
-      <input type="file" id="profilePicInput" accept="image/*">
-    </div>
-
-    <!-- Profile Info Inputs -->
-    <div class="profileInfo">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="locationInput" placeholder="Location">
-      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
-    </div>
+    <!-- Profile Picture -->
+    <img id="profilePhotoPreview" class="profilePhotoPreview" src="" alt="Profile Photo">
+    <input type="file" id="profilePhotoInput" accept="image/*">
+    
+    <!-- User Info -->
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="locationInput" placeholder="Location">
+    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+    <input type="text" id="musicInput" placeholder="Embedded Music URL">
 
     <button id="saveProfileBtn">Save Profile</button>
+  </section>
+
+  <!-- Top 10 Friends Section -->
+  <section class="topFriends">
+    <h3>Top 10 Friends</h3>
+    <ul id="topFriendsList">
+      <li>Friend 1</li>
+      <li>Friend 2</li>
+      <li>Friend 3</li>
+      <li>Friend 4</li>
+      <li>Friend 5</li>
+      <li>Friend 6</li>
+      <li>Friend 7</li>
+      <li>Friend 8</li>
+      <li>Friend 9</li>
+      <li>Friend 10</li>
+    </ul>
+    <button id="editFriendsBtn">Edit Top Friends</button>
   </section>
 
   <script type="module" src="profile.js"></script>

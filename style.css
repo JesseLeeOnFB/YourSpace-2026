@@ -1,72 +1,159 @@
-/* ------------------------
-   GLOBAL
-------------------------- */
+/* ------------------------------
+   GLOBAL STYLES
+--------------------------------*/
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
-  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f2f2f2;
+  color: #111;
 }
 
-h2, h3 {
-  text-align: center;
-}
-
-button {
-  cursor: pointer;
-  background-color: #007bff;
-  border: none;
-  color: #fff;
-  padding: 8px 16px;
+h1, h2, h3, h4 {
   margin: 5px 0;
-  border-radius: 4px;
-  font-size: 16px;
 }
 
-button:hover {
-  background-color: #0056b3;
-}
-
-input, textarea {
-  font-size: 16px;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  width: 90%;
-  max-width: 400px;
-  display: block;
-  margin: 5px auto;
-}
-
-textarea {
-  resize: vertical;
-}
-
-/* ------------------------
-   NAV BAR
-------------------------- */
+/* ------------------------------
+   NAVBAR
+--------------------------------*/
 .navbar {
-  background-color: #007bff;
-  padding: 10px;
-  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #222;
+  padding: 10px 0;
 }
 
 .navbar button {
-  margin: 0 5px;
+  color: #fff;
+  background-color: #444;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
-/* ------------------------
-   FEED
-------------------------- */
-.feed {
-  max-width: 700px;
+.navbar button:hover {
+  background-color: #666;
+}
+
+/* ------------------------------
+   PROFILE PAGE
+--------------------------------*/
+.profileContainer {
+  max-width: 900px;
   margin: 20px auto;
-  padding: 10px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
 
-#createPost {
+.profilePhoto {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #333;
+  display: block;
+  margin: 0 auto 15px auto;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.profileInfo input, .profileInfo textarea {
+  width: 90%;
+  max-width: 400px;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.profileInfo button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profileInfo button:hover {
+  background-color: #555;
+}
+
+/* ------------------------------
+   TOP 10 FRIENDS
+--------------------------------*/
+.topFriendsContainer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #eee;
+  border-radius: 10px;
+}
+
+.topFriendsContainer h3 {
+  margin-bottom: 10px;
+}
+
+.topFriendsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.friendItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+  text-align: center;
+}
+
+.friendItem img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+/* ------------------------------
+   EMBEDDED MUSIC PLAYER
+--------------------------------*/
+.musicPlayerSection {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.musicPlayerSection iframe {
+  width: 100%;
+  max-width: 400px;
+  height: 80px;
+  border: none;
+  border-radius: 10px;
+}
+
+/* ------------------------------
+   FEED SECTION (KEPT INTACT)
+--------------------------------*/
+.feed {
+  max-width: 900px;
+  margin: 20px auto;
+}
+
+.feed h2 {
+  margin-bottom: 10px;
 }
 
 #postsContainer {
@@ -75,124 +162,64 @@ textarea {
   gap: 15px;
 }
 
-.post {
+.postItem {
   background-color: #fff;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
-}
-
-.post .postHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.post .postHeader img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.post img, .post video {
-  max-width: 100%;
-  border-radius: 6px;
-  margin-top: 10px;
-}
-
-.post .postActions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.post .comments {
-  margin-top: 10px;
-  padding-left: 10px;
-  border-left: 2px solid #ccc;
-}
-
-/* ------------------------
-   PROFILE PAGE
-------------------------- */
-.profileSection {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 10px;
-  background-color: #fff;
-  border-radius: 6px;
+  padding: 15px;
+  border-radius: 10px;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-.profilePhotoContainer {
-  text-align: center;
-  margin-bottom: 20px;
+.postItem img, .postItem video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-top: 10px;
 }
 
-.profilePhoto {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #007bff;
-  display: block;
-  margin: 0 auto 10px;
+/* ------------------------------
+   BUTTONS FOR POSTS
+--------------------------------*/
+.postButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.profileInfo input,
-.profileInfo textarea {
-  display: block;
-  width: 90%;
-  max-width: 400px;
-  margin: 5px auto;
-  padding: 8px;
-  font-size: 16px;
+.postButtons button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #333;
+  color: #fff;
+  transition: 0.2s;
 }
 
-.profileInfo button {
-  display: block;
-  margin: 10px auto;
-  padding: 8px 20px;
-  font-size: 16px;
+.postButtons button:hover {
+  background-color: #555;
 }
 
-.friendsSection ul {
-  list-style: none;
-  padding: 0;
-  max-width: 400px;
-  margin: 10px auto;
-}
-
-.friendsSection li {
-  padding: 4px 0;
-}
-
-.musicPlayerSection {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.musicPlayerSection audio {
-  width: 90%;
-  max-width: 400px;
-}
-
-/* ------------------------
+/* ------------------------------
    RESPONSIVE
-------------------------- */
-@media (max-width: 600px) {
-  .post img, .post video {
-    width: 100%;
-    height: auto;
+--------------------------------*/
+@media screen and (max-width: 600px) {
+  .profileContainer {
+    margin: 10px;
+    padding: 15px;
   }
-
+  
   .profilePhoto {
     width: 120px;
     height: 120px;
   }
-
-  input, textarea, button {
-    width: 95%;
+  
+  .friendItem {
+    width: 50px;
+  }
+  
+  .friendItem img {
+    width: 45px;
+    height: 45px;
   }
 }

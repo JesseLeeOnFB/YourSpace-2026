@@ -1,189 +1,142 @@
-/* -------------------- GENERAL -------------------- */
+/* -------------------- Global -------------------- */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f2f2f2;
+  background-color: #f2f2f2;
   color: #333;
 }
 
 h2 {
-  margin: 0 0 10px 0;
+  margin: 10px 0;
 }
 
-/* -------------------- NAVBAR -------------------- */
+button {
+  cursor: pointer;
+  padding: 6px 12px;
+  margin: 4px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+/* -------------------- Navbar -------------------- */
 .navbar {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  background: #2c3e50;
+  background-color: #222;
+  color: white;
   padding: 10px;
+  gap: 10px;
 }
 
 .navbar button {
-  margin-right: 10px;
-  padding: 8px 14px;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  background-color: #444;
 }
 
-.navbar button:hover {
-  background: #2980b9;
-}
-
-/* -------------------- CREATE POST -------------------- */
+/* -------------------- Create Post -------------------- */
 .createPost {
-  background: #fff;
+  background-color: white;
   padding: 15px;
-  margin: 15px auto;
+  margin: 10px auto;
   max-width: 600px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-#createPost textarea,
-#createPost input[type="text"] {
+.createPost textarea {
   width: 100%;
   padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  resize: vertical;
 }
 
-#createPost button {
-  background: #27ae60;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+.createPost input[type="file"] {
+  margin-top: 10px;
 }
 
-#createPost button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.createPost .notifications {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-.notifications label {
-  margin-right: 10px;
-  font-size: 14px;
+#createPostBtn {
+  margin-top: 10px;
 }
 
-/* -------------------- FEED -------------------- */
+/* -------------------- Feed -------------------- */
 .feed {
   max-width: 600px;
-  margin: 15px auto;
+  margin: 10px auto;
 }
 
 .post {
-  background: #fff;
+  background-color: white;
+  padding: 10px;
   margin-bottom: 15px;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-.post p {
-  margin: 5px 0;
-}
-
-.post img.postMedia,
-.post video.postMedia {
-  width: 100%;
-  height: auto;
-  max-height: 400px;
   border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.postMedia {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
   margin: 10px 0;
+  border-radius: 6px;
 }
 
 .postActions {
   display: flex;
+  gap: 10px;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
 }
 
-.postActions button {
-  padding: 5px 10px;
+.commentsContainer {
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  padding: 5px;
   border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background: #ecf0f1;
-  transition: background 0.2s;
 }
 
-.postActions button:hover {
-  background: #bdc3c7;
+.commentsContainer p {
+  margin: 2px 0;
+  font-size: 0.9em;
 }
 
-/* -------------------- COMMENTS -------------------- */
-.commentsSection {
-  margin-top: 10px;
-  border-top: 1px solid #ddd;
-  padding-top: 5px;
-}
-
-.commentsSection p {
-  font-size: 14px;
-  margin: 4px 0;
-}
-
-/* -------------------- PROFILE PAGE -------------------- */
+/* -------------------- Profile Page -------------------- */
 .profileInfo {
-  background: #fff;
-  max-width: 500px;
-  margin: 20px auto;
+  background-color: white;
+  max-width: 600px;
+  margin: 10px auto;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.profileInfo input,
+.profileInfo input, 
 .profileInfo textarea {
-  width: 100%;
   padding: 8px;
-  margin: 5px 0 10px 0;
   border-radius: 4px;
   border: 1px solid #ccc;
+  width: 100%;
 }
 
-.profileInfo button {
-  background: #27ae60;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.profileInfo button:hover {
-  background: #1e8449;
-}
-
-.profileInfo img {
-  display: block;
-  max-width: 150px;
-  max-height: 150px;
-  margin: 10px 0;
+#profilePhotoPreview {
+  max-width: 200px;
+  max-height: 200px;
+  margin-top: 10px;
   border-radius: 50%;
-  object-fit: cover;
-}
-
-/* -------------------- RESPONSIVE -------------------- */
-@media (max-width: 700px) {
-  .createPost, .feed, .profileInfo {
-    margin: 10px;
-  }
-
-  .navbar {
-    flex-wrap: wrap;
-  }
-
-  .navbar button {
-    margin-bottom: 5px;
-  }
+  display: block;
 }

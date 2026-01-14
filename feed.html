@@ -1,40 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Feed</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-  <button id="homeBtn" type="button">Home</button>
-  <button id="profileBtn" type="button">Profile</button>
-  <button id="logoutBtn" type="button">Logout</button>
-</nav>
+  <!-- Navigation -->
+  <nav>
+    <button id="homeBtn" type="button">Home</button>
+    <button id="profileBtn" type="button">Profile</button>
+    <button id="logoutBtn" type="button">Logout</button>
+  </nav>
 
-<h1>YourSpace Feed</h1>
+  <h1>YourSpace Feed</h1>
 
-<div id="postContainer">
-  <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
-  <input type="file" id="postImageInput" accept="image/*,video/*">
-  <img id="imagePreview" style="display:none; max-width:200px; margin-top:10px;">
-  <video id="videoPreview" style="display:none; max-width:300px; margin-top:10px;" controls></video>
-  <button id="postBtn" type="button">Post</button>
-</div>
+  <!-- Post Creation Section -->
+  <div id="postContainer">
+    <textarea id="postText" placeholder="Write something..." rows="3"></textarea>
 
-<div id="notificationContainer" style="margin-top:15px;">
-  <label>
-    <input type="checkbox" id="emailNotify"> Email notifications
-  </label>
-  <label>
-    <input type="checkbox" id="browserNotify"> Browser notifications
-  </label>
-</div>
+    <div class="mediaInputs">
+      <label>
+        Attach Image:
+        <input type="file" id="postImageInput" accept="image/*">
+      </label>
+      <img id="imagePreview" style="display:none; max-width:300px; margin-top:10px; border-radius:8px;">
 
-<div id="postsContainer"></div>
+      <label>
+        Attach Video:
+        <input type="file" id="postVideoInput" accept="video/mp4">
+      </label>
+      <video id="videoPreview" style="display:none; max-width:300px; margin-top:10px;" controls></video>
+    </div>
 
-<script type="module" src="feed.js"></script>
+    <!-- Notification Options -->
+    <div id="notifications">
+      <label>
+        <input type="checkbox" id="notifyEmail"> Email Notifications
+      </label>
+      <label>
+        <input type="checkbox" id="notifyBrowser"> Browser Notifications
+      </label>
+    </div>
+
+    <button id="postBtn" type="button">Post</button>
+  </div>
+
+  <!-- Posts Feed -->
+  <div id="postsContainer"></div>
+
+  <script type="module" src="feed.js"></script>
 </body>
 </html>

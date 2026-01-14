@@ -2,9 +2,19 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, query, orderBy,
-  onSnapshot, doc, getDoc, updateDoc, deleteDoc,
-  serverTimestamp, increment, arrayUnion
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  increment,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
@@ -17,6 +27,7 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -28,6 +39,7 @@ const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
 const imagePreview = document.getElementById("imagePreview");
 const postsContainer = document.getElementById("postsContainer");
+
 const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
@@ -35,23 +47,25 @@ const homeBtn = document.getElementById("homeBtn");
 /* -------------------- Image Preview -------------------- */
 postImageInput.addEventListener("change", () => {
   const file = postImageInput.files[0];
-  if (!file) {
-    imagePreview.style.display = "none";
+  if (file) {
+    imagePreview.src = URL.createObjectURL(file);
+    imagePreview.style.display = "block";
+  } else {
     imagePreview.src = "";
-    return;
+    imagePreview.style.display = "none";
   }
-  imagePreview.src = URL.createObjectURL(file);
-  imagePreview.style.display = "block";
 });
 
-/* -------------------- Auth -------------------- */
+/* -------------------- Auth Listener -------------------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
+    // Stay safe: don't redirect immediately on iOS reload quirks
+    console.log("No user logged in, redirecting...");
     window.location.href = "index.html";
     return;
   }
 
-  // Navigation
+  // -------------------- Navigation --------------------
   profileBtn.onclick = () => (window.location.href = "profile.html");
   homeBtn.onclick = () => (window.location.href = "feed.html");
   logoutBtn.onclick = async () => {
@@ -59,13 +73,13 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = "index.html";
   };
 
-  /* -------------------- CREATE POST -------------------- */
+  // -------------------- Create Post --------------------
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     const file = postImageInput.files[0];
 
     if (!text && !file) {
-      alert("Write something or attach an image.");
+      alert("Write something or attach an image!");
       return;
     }
 
@@ -73,53 +87,56 @@ onAuthStateChanged(auth, async (user) => {
     let postImageURL = "";
 
     try {
-      // 1️⃣ Upload image first (if exists)
+      // Upload image if exists
       if (file) {
         const safeName = encodeURIComponent(file.name);
         const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
-        const snapshot = await uploadBytes(storageRef, file, { contentType: file.type || "image/jpeg" });
+
+        const snapshot = await uploadBytes(storageRef, file, {
+          contentType: file.type || "image/jpeg"
+        });
         postImageURL = await getDownloadURL(snapshot.ref);
       }
 
-      // 2️⃣ Get user profile
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
+      // Fetch user profile
+      const profileSnap = await getDoc(doc(db, "users", user.uid));
+      const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
-      // 3️⃣ Add post to Firestore
+      // Add post to Firestore
       await addDoc(collection(db, "posts"), {
         text,
-        postImage: postImageURL,
+        postImage: postImageURL || null,
         userId: user.uid,
-        displayName: profile.displayName || "Anonymous",
-        photoURL: profile.photoURL || "",
+        displayName: profileData.displayName || "Anonymous",
+        photoURL: profileData.photoURL || "",
         likes: 0,
         comments: [],
         createdAt: serverTimestamp()
       });
 
-      // Reset UI
+      // Reset inputs
       postInput.value = "";
       postImageInput.value = "";
+      imagePreview.src = "";
       imagePreview.style.display = "none";
 
     } catch (err) {
-      console.error("Post failed:", err);
-      alert("Failed to post. Check console for details.");
+      console.error("Failed to post:", err);
+      alert("Failed to post. Check console for errors.");
     } finally {
       postBtn.disabled = false;
     }
   };
 
-  /* -------------------- LOAD FEED -------------------- */
+  // -------------------- Load Feed --------------------
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
-    snapshot.forEach((docSnap) => {
+
+    snapshot.forEach(docSnap => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.className = "post";
-
-      const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
 
       postDiv.innerHTML = `
         <div class="postHeader">
@@ -127,39 +144,27 @@ onAuthStateChanged(auth, async (user) => {
           <strong>${data.displayName}</strong>
         </div>
         <p>${data.text || ""}</p>
-        ${imageHTML}
+        ${data.postImage ? `<img src="${data.postImage}" class="postImage">` : ""}
         <div class="postButtons">
-          <button class="likeBtn">Like (${data.likes || 0})</button>
-          <button class="commentBtn">Comment</button>
-          ${data.userId === user.uid ? '<button class="deleteBtn">Delete</button>' : ''}
+          <button type="button" class="likeBtn">Like (${data.likes || 0})</button>
+          ${data.userId === user.uid ? '<button type="button" class="deleteBtn">Delete</button>' : ''}
         </div>
-        <div class="commentsContainer"></div>
       `;
 
       postsContainer.appendChild(postDiv);
 
-      // Like button
+      // Like
       postDiv.querySelector(".likeBtn").onclick = async () => {
-        await updateDoc(doc(db, "posts", docSnap.id), { likes: increment(1) });
-      };
-
-      // Comment button
-      postDiv.querySelector(".commentBtn").onclick = async () => {
-        const commentText = prompt("Enter your comment:");
-        if (!commentText) return;
         await updateDoc(doc(db, "posts", docSnap.id), {
-          comments: arrayUnion({ text: commentText, user: user.uid })
+          likes: increment(1)
         });
-        const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
-        postDiv.querySelector(".commentsContainer").appendChild(commentEl);
       };
 
-      // Delete button
+      // Delete
       const delBtn = postDiv.querySelector(".deleteBtn");
       if (delBtn) {
         delBtn.onclick = async () => {
-          if (confirm("Delete post?")) {
+          if (confirm("Delete this post?")) {
             await deleteDoc(doc(db, "posts", docSnap.id));
           }
         };

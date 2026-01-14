@@ -7,17 +7,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="loginContainer">
+  <div class="authContainer">
     <h1>YourSpace</h1>
 
-    <div class="authForm">
-      <h2>Login</h2>
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
-      <button id="loginBtn">Login</button>
-    </div>
-
-    <div class="authForm">
+    <!-- Sign Up Form -->
+    <div class="signupSection">
       <h2>Sign Up</h2>
       <input type="text" id="signupUsername" placeholder="Username">
       <input type="email" id="signupEmail" placeholder="Email">
@@ -25,8 +19,16 @@
       <button id="signupBtn">Sign Up</button>
     </div>
 
+    <!-- Log In Form -->
+    <div class="loginSection">
+      <h2>Log In</h2>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button id="loginBtn">Log In</button>
+    </div>
   </div>
 
+  <!-- Firebase JS SDK -->
   <script type="module" src="script.js"></script>
 </body>
 </html>

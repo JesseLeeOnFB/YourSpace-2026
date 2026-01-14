@@ -119,20 +119,20 @@ onAuthStateChanged(auth, async (user) => {
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
 
       postDiv.innerHTML = `
-        <div class="postHeader">
-          <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
-          <strong>${data.displayName}</strong>
-        </div>
-        <p>${data.text || ""}</p>
-        ${imageHTML}
-        <div class="postButtons">
-          <button class="likeBtn">Like (${data.likes || 0})</button>
-          <button class="commentBtn">Comment</button>
-          <button class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
-        </div>
-        <div class="commentsContainer"></div>
-      `;
+  <div class="postHeader">
+    <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
+    <strong>${data.displayName}</strong>
+  </div>
+  <p>${data.text || ""}</p>
+  ${imageHTML}
+  <div class="postButtons">
+    <button class="likeBtn" type="button">Like (${data.likes || 0})</button>
+    <button class="commentBtn" type="button">Comment</button>
+    <button class="shareBtn" type="button">Share</button>
+    ${user.uid === data.userId ? '<button class="deleteBtn" type="button">Delete</button>' : ''}
+  </div>
+  <div class="commentsContainer"></div>
+`;
       postsContainer.appendChild(postDiv);
 
       // COMMENTS CONTAINER

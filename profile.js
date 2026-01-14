@@ -1,7 +1,7 @@
 // profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 /* -------------------- Firebase Init -------------------- */
@@ -23,107 +23,119 @@ const storage = getStorage(app);
 const homeBtn = document.getElementById("homeBtn");
 const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-
-const profilePic = document.getElementById("profilePic");
 const profilePicInput = document.getElementById("profilePicInput");
+const profilePicPreview = document.getElementById("profilePicPreview");
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const musicInput = document.getElementById("musicInput");
+const musicPlayer = document.getElementById("musicPlayer");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
+const addFriendInput = document.getElementById("addFriendInput");
+const addFriendBtn = document.getElementById("addFriendBtn");
+const friendsList = document.getElementById("friendsList");
 
-const friendsContainer = document.getElementById("friendsContainer");
-
-/* -------------------- Auth State -------------------- */
+/* -------------------- Auth & Nav -------------------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  const uid = user.uid;
-
   // Nav buttons
-  homeBtn.onclick = () => window.location.href = "feed.html";
-  profileBtn.onclick = () => window.location.href = "profile.html";
+  homeBtn.onclick = () => (window.location.href = "feed.html");
+  profileBtn.onclick = () => (window.location.href = "profile.html");
   logoutBtn.onclick = async () => {
     await signOut(auth);
     window.location.href = "index.html";
   };
 
-  /* -------------------- Load Profile -------------------- */
-  const userDocRef = doc(db, "users", uid);
+  // Load profile
+  const userDocRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userDocRef);
+  const profile = userSnap.exists() ? userSnap.data() : {};
 
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    usernameInput.value = data.username || "";
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-    musicInput.value = data.music || "";
-    if (data.profilePic) profilePic.src = data.profilePic;
+  if (profile.username) usernameInput.value = profile.username;
+  if (profile.bio) bioInput.value = profile.bio;
+  if (profile.location) locationInput.value = profile.location;
+  if (profile.musicURL) {
+    musicInput.value = profile.musicURL;
+    musicPlayer.innerHTML = `<iframe width="300" height="80" src="${profile.musicURL}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   }
+  if (profile.profilePicURL) profilePicPreview.src = profile.profilePicURL;
 
-  /* -------------------- Upload Profile Picture -------------------- */
-  profilePicInput.onchange = async () => {
+  // Load top friends
+  friendsList.innerHTML = "";
+  if (profile.topFriends && profile.topFriends.length > 0) {
+    profile.topFriends.forEach(f => {
+      const fEl = document.createElement("p");
+      fEl.textContent = f;
+      friendsList.appendChild(fEl);
+    });
+  }
+});
+
+/* -------------------- Profile Picture Preview -------------------- */
+profilePicInput.addEventListener("change", () => {
+  const file = profilePicInput.files[0];
+  if (!file) return;
+  profilePicPreview.src = URL.createObjectURL(file);
+});
+
+/* -------------------- Save Profile -------------------- */
+saveProfileBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  saveProfileBtn.disabled = true;
+
+  try {
+    let profilePicURL = "";
     const file = profilePicInput.files[0];
-    if (!file) return;
-
-    try {
+    if (file) {
       let contentType = file.type;
       if (!contentType) {
-        const ext = file.name.split(".").pop().toLowerCase();
+        const ext = file.name.split('.').pop().toLowerCase();
         if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
       }
-
-      const storageRef = ref(storage, `profileImages/${uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
-      const snapshot = await uploadBytes(storageRef, file, { contentType });
-      const url = await getDownloadURL(snapshot.ref);
-      profilePic.src = url;
-
-      // Save immediately to Firestore
-      await setDoc(userDocRef, { profilePic: url }, { merge: true });
-    } catch (err) {
-      console.error("Profile pic upload failed:", err);
-      alert("Failed to upload profile picture.");
+      const fileRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
+      const snapshot = await uploadBytes(fileRef, file, { contentType });
+      profilePicURL = await getDownloadURL(snapshot.ref);
     }
-  };
 
-  /* -------------------- Save Profile Info -------------------- */
-  saveProfileBtn.onclick = async () => {
-    try {
-      await setDoc(userDocRef, {
-        username: usernameInput.value,
-        bio: bioInput.value,
-        location: locationInput.value,
-        music: musicInput.value
-      }, { merge: true });
-      alert("Profile updated!");
-    } catch (err) {
-      console.error("Failed to save profile:", err);
-      alert("Failed to save profile.");
-    }
-  };
+    await setDoc(doc(db, "users", user.uid), {
+      username: usernameInput.value,
+      bio: bioInput.value,
+      location: locationInput.value,
+      musicURL: musicInput.value,
+      profilePicURL
+    }, { merge: true });
 
-  /* -------------------- Load Top 10 Friends -------------------- */
-  try {
-    const usersCol = collection(db, "users");
-    const usersSnap = await getDocs(usersCol);
-    friendsContainer.innerHTML = "";
-
-    let friends = [];
-    usersSnap.forEach(docSnap => {
-      if (docSnap.id !== uid) friends.push({ id: docSnap.id, ...docSnap.data() });
-    });
-
-    // Top 10 only
-    friends.slice(0,10).forEach(friend => {
-      const div = document.createElement("div");
-      div.className = "friendBox";
-      div.textContent = friend.username || "Anonymous";
-      friendsContainer.appendChild(div);
-    });
+    alert("Profile saved successfully!");
   } catch (err) {
-    console.error("Failed to load friends:", err);
+    console.error(err);
+    alert("Failed to save profile. Check console.");
+  } finally {
+    saveProfileBtn.disabled = false;
+  }
+});
+
+/* -------------------- Add Friend -------------------- */
+addFriendBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  const friendName = addFriendInput.value.trim();
+  if (!friendName) return;
+  try {
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, {
+      topFriends: arrayUnion(friendName)
+    });
+    const fEl = document.createElement("p");
+    fEl.textContent = friendName;
+    friendsList.appendChild(fEl);
+    addFriendInput.value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add friend.");
   }
 });

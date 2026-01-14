@@ -5,7 +5,12 @@ import {
   getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc,
   updateDoc, deleteDoc, serverTimestamp, increment, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // Firebase config
 const firebaseConfig = {

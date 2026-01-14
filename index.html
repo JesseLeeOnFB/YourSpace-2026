@@ -3,33 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Login / Signup</title>
+  <title>YourSpace Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="authContainer">
-    <h1>Welcome to YourSpace</h1>
+  <section class="authSection">
+    <h1>YourSpace</h1>
 
-    <!-- Signup Section -->
-    <div class="signupSection">
-      <h2>Sign Up</h2>
-      <input type="text" id="signupUsername" placeholder="Username">
-      <input type="email" id="signupEmail" placeholder="Email">
-      <input type="password" id="signupPassword" placeholder="Password">
+    <div class="authForm">
+      <input type="text" id="username" placeholder="Username (Sign up only)">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+
       <button id="signupBtn">Sign Up</button>
-    </div>
-
-    <!-- Login Section -->
-    <div class="loginSection">
-      <h2>Log In</h2>
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
       <button id="loginBtn">Log In</button>
     </div>
 
-    <!-- Messages -->
-    <div id="authMessage" style="color:red; margin-top:10px;"></div>
-  </div>
+    <p id="authMessage"></p>
+  </section>
 
   <script type="module" src="script.js"></script>
 </body>

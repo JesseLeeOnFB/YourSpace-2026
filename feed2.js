@@ -13,11 +13,11 @@ import {
   orderBy,
   onSnapshot,
   doc,
-  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  increment
+  increment,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getStorage,
@@ -37,6 +37,7 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -57,10 +58,13 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Create post
+  // ---- CREATE POST ----
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
+    if (!text && postImageInput.files.length === 0) {
+      alert("Write something or attach an image!");
+      return;
+    }
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
@@ -70,6 +74,7 @@ onAuthStateChanged(auth, async (user) => {
       postImageURL = await getDownloadURL(storageRef);
     }
 
+    // Fetch profile info
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
@@ -88,57 +93,103 @@ onAuthStateChanged(auth, async (user) => {
     postImageInput.value = "";
   });
 
-  // Navigation buttons
+  // ---- NAV BUTTONS ----
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
 
-  // Listen to posts
+  // ---- LISTEN TO POSTS ----
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
+
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
-      const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+      // Post header
+      const headerDiv = document.createElement("div");
+      headerDiv.classList.add("postHeader");
+      const profileImg = document.createElement("img");
+      profileImg.src = data.photoURL || "default-avatar.png";
+      profileImg.classList.add("postProfilePic");
+      const displayNameEl = document.createElement("strong");
+      displayNameEl.textContent = data.displayName || "Anonymous";
+      headerDiv.appendChild(profileImg);
+      headerDiv.appendChild(displayNameEl);
 
-      postDiv.innerHTML = `
-        <div class="postHeader">
-          <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
-          <strong>${data.displayName}</strong>
-        </div>
-        <p>${data.text || ""}</p>
-        ${imageHTML}
-        <div class="postButtons">
-          <button type="button" class="likeBtn">Like (${data.likes || 0})</button>
-          <button type="button" class="commentBtn">Comment</button>
-          <button type="button" class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button type="button" class="deleteBtn">Delete</button>' : ''}
-        </div>
-        <div class="commentsContainer"></div>
-      `;
+      // Post text
+      const textP = document.createElement("p");
+      textP.textContent = data.text || "";
 
-      postsContainer.appendChild(postDiv);
+      // Post image
+      let imgEl = null;
+      if (data.postImage) {
+        imgEl = document.createElement("img");
+        imgEl.src = data.postImage;
+        imgEl.classList.add("postImage");
+      }
 
-      // Get comments container
-      const commentsContainer = postDiv.querySelector(".commentsContainer");
-      (data.comments || []).forEach(c => {
+      // Post buttons
+      const buttonsDiv = document.createElement("div");
+      buttonsDiv.classList.add("postButtons");
+
+      const likeBtn = document.createElement("button");
+      likeBtn.type = "button";
+      likeBtn.classList.add("likeBtn");
+      likeBtn.textContent = `Like (${data.likes || 0})`;
+
+      const commentBtn = document.createElement("button");
+      commentBtn.type = "button";
+      commentBtn.classList.add("commentBtn");
+      commentBtn.textContent = "Comment";
+
+      const shareBtn = document.createElement("button");
+      shareBtn.type = "button";
+      shareBtn.classList.add("shareBtn");
+      shareBtn.textContent = "Share";
+
+      buttonsDiv.appendChild(likeBtn);
+      buttonsDiv.appendChild(commentBtn);
+      buttonsDiv.appendChild(shareBtn);
+
+      // Delete button only if user owns post
+      let deleteBtn = null;
+      if (user.uid === data.userId) {
+        deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.classList.add("deleteBtn");
+        deleteBtn.textContent = "Delete";
+        buttonsDiv.appendChild(deleteBtn);
+      }
+
+      // Comments container
+      const commentsContainer = document.createElement("div");
+      commentsContainer.classList.add("commentsContainer");
+      (data.comments || []).forEach((c) => {
         const commentEl = document.createElement("p");
         commentEl.textContent = c.text;
         commentsContainer.appendChild(commentEl);
       });
 
-      // Like button
-      const likeBtn = postDiv.querySelector(".likeBtn");
+      // Append everything
+      postDiv.appendChild(headerDiv);
+      postDiv.appendChild(textP);
+      if (imgEl) postDiv.appendChild(imgEl);
+      postDiv.appendChild(buttonsDiv);
+      postDiv.appendChild(commentsContainer);
+      postsContainer.appendChild(postDiv);
+
+      // ---- BUTTON FUNCTIONALITY ----
+
+      // Like
       likeBtn.addEventListener("click", async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       });
 
-      // Comment button
-      const commentBtn = postDiv.querySelector(".commentBtn");
+      // Comment
       commentBtn.addEventListener("click", async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
@@ -155,8 +206,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       });
 
-      // Delete button
-      const deleteBtn = postDiv.querySelector(".deleteBtn");
+      // Delete
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
           if (confirm("Delete this post?")) {
@@ -165,8 +215,7 @@ onAuthStateChanged(auth, async (user) => {
         });
       }
 
-      // Share button
-      const shareBtn = postDiv.querySelector(".shareBtn");
+      // Share
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
@@ -174,6 +223,7 @@ onAuthStateChanged(auth, async (user) => {
           prompt("Copy this link to share:", window.location.href);
         }
       });
+
     });
   });
 });

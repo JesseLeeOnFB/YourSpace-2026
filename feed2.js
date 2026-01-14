@@ -56,30 +56,49 @@ onAuthStateChanged(auth, (user) => {
   logoutBtn.onclick = () => signOut(auth);
 
   /* ---------- CREATE POST ---------- */
-  postBtn.onclick = async () => {
-    const text = postText.value.trim();
-    if (!text && postImageInput.files.length === 0) return;
+postBtn.addEventListener("click", async () => {
+  const text = postInput.value.trim();
+  const file = postImageInput.files[0];
 
-    let imageURL = "";
-    if (postImageInput.files.length > 0) {
-      const file = postImageInput.files[0];
-      const imgRef = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(imgRef, file);
-      imageURL = await getDownloadURL(imgRef);
+  if (!text && !file) {
+    alert("Write something or attach an image!");
+    return;
+  }
+
+  let postImageURL = "";
+
+  // Upload image if it exists
+  if (file) {
+    try {
+      const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+      const uploadResult = await uploadBytes(storageRef, file);
+      postImageURL = await getDownloadURL(storageRef);
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Failed to upload image. Check console.");
+      return; // Stop post if image fails
     }
+  }
 
-    await addDoc(collection(db, "posts"), {
-      text,
-      postImage: imageURL,
-      userId: user.uid,
-      likes: 0,
-      comments: [],
-      createdAt: serverTimestamp()
-    });
+  // Fetch user profile
+  const profileSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+  const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
-    postText.value = "";
-    postImageInput.value = "";
-  };
+  // Add post
+  await addDoc(collection(db, "posts"), {
+    text: text || "",
+    userId: auth.currentUser.uid,
+    displayName: profileData.displayName || "Anonymous",
+    photoURL: profileData.photoURL || "",
+    postImage: postImageURL,
+    likes: 0,
+    comments: [],
+    createdAt: serverTimestamp()
+  });
+
+  postInput.value = "";
+  postImageInput.value = "";
+});
 
   /* ---------- FEED ---------- */
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));

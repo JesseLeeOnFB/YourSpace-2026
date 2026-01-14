@@ -1,14 +1,14 @@
+// script.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  onAuthStateChanged
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Firebase config
+/* -------------------- Firebase Init -------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -22,53 +22,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM elements
+/* -------------------- DOM -------------------- */
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const usernameInput = document.getElementById("username");
 
-// Auto redirect if already logged in
-onAuthStateChanged(auth, (user) => {
-  if (user) window.location.href = "feed.html";
-});
-
-// Sign Up
-signupBtn.addEventListener("click", async () => {
+/* -------------------- SIGNUP -------------------- */
+signupBtn.onclick = async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
   const displayName = usernameInput.value.trim();
+
   if (!email || !password || !displayName) return alert("Fill all fields!");
 
   try {
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(userCred.user, { displayName });
 
+    // Create Firestore profile
     await setDoc(doc(db, "users", userCred.user.uid), {
       displayName,
       bio: "",
       location: "",
-      photoURL: "",
+      profileHTML: "",
+      profileTheme: "",
+      profileMusicURL: "",
       createdAt: serverTimestamp()
     });
 
+    alert("Account created! Redirecting to feed...");
     window.location.href = "feed.html";
+
   } catch (err) {
+    console.error("Signup failed:", err);
     alert(err.message);
   }
-});
+};
 
-// Login
-loginBtn.addEventListener("click", async () => {
+/* -------------------- LOGIN -------------------- */
+loginBtn.onclick = async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
   if (!email || !password) return alert("Enter email and password!");
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
     window.location.href = "feed.html";
   } catch (err) {
+    console.error("Login failed:", err);
     alert(err.message);
   }
-});
+};

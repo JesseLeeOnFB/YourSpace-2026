@@ -7,46 +7,64 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <section class="profileSection">
-    <h2>Your Profile</h2>
+  <!-- Profile Layout -->
+  <section class="profile">
     
-    <!-- Profile Picture -->
-    <div class="profilePicContainer">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px; max-height:150px;">
-      <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Picture</button>
+    <!-- Sidebar -->
+    <div class="profileSidebar">
+      <img id="profilePhoto" src="" alt="Profile Picture">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+      <button id="saveProfilePhotoBtn">Save Photo</button>
+
+      <h3 id="displayName">Username</h3>
+      <input type="text" id="editUsername" placeholder="Change username">
+
+      <h4>Bio</h4>
+      <textarea id="editBio" placeholder="Write something about yourself..."></textarea>
+
+      <h4>Location</h4>
+      <input type="text" id="editLocation" placeholder="Enter location">
+
+      <h4>Top 10 Friends</h4>
+      <div class="topFriends">
+        <ul id="topFriendsList">
+          <!-- Friends will populate here -->
+        </ul>
+        <input type="text" id="addFriendInput" placeholder="Add a friend">
+        <button id="addFriendBtn">Add Friend</button>
+      </div>
+
+      <h4>Theme / Background</h4>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="theme-dark">Dark</option>
+        <option value="theme-light">Light</option>
+      </select>
+
+      <h4>Music</h4>
+      <input type="text" id="profileMusicURL" placeholder="Paste music embed URL">
+      <button id="saveMusicBtn">Save Music</button>
+      <div id="musicEmbed" style="margin-top:10px;">
+        <!-- Embedded music will appear here -->
+      </div>
     </div>
 
-    <!-- User Info -->
-    <div class="userInfo">
-      <label>Username:</label>
-      <input type="text" id="displayName" placeholder="Enter username">
-
-      <label>Bio:</label>
-      <textarea id="bio" rows="3" placeholder="Tell us about yourself"></textarea>
-
-      <label>Location:</label>
-      <input type="text" id="location" placeholder="Your location">
-
-      <h3>Top 10 Friends</h3>
-      <ul id="top10FriendsList"></ul>
-      <input type="text" id="addFriendInput" placeholder="Add friend by username">
-      <button id="addFriendBtn">Add Friend</button>
+    <!-- Main Content -->
+    <div class="profileContent">
+      <h2>Your Posts</h2>
+      <div id="profilePostsContainer">
+        <!-- User posts will populate here -->
+      </div>
     </div>
 
-    <!-- Notifications -->
-    <div class="notifications">
-      <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
-      <label><input type="checkbox" id="notifyBrowser"> Browser notifications</label>
-    </div>
-
-    <button id="saveProfileBtn">Save Profile</button>
   </section>
 
   <script type="module" src="profile.js"></script>

@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <nav>
   <button id="homeBtn">Home</button>
   <button id="logoutBtn">Logout</button>
@@ -14,24 +15,17 @@
 
 <h1>Your Profile</h1>
 
-<div id="profileInfo">
-  <img id="profileImg" src="default-avatar.png" class="profile-picture" alt="Profile Picture">
-  <input type="file" id="photoInput">
+<div id="profileContainer">
+  <img id="profileImage" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
+  <input type="file" id="profileImageInput" accept="image/*">
+  
   <input type="text" id="displayName" placeholder="Display Name">
-  <textarea id="bio" placeholder="Bio"></textarea>
+  <input type="text" id="bio" placeholder="Bio">
   <input type="text" id="location" placeholder="Location">
-  <input type="text" id="musicURL" placeholder="Music URL (YouTube/SoundCloud)">
-  <button id="saveProfile">Save Profile</button>
+  
+  <button id="saveBtn">Save Profile</button>
 </div>
 
-<h3>Custom Profile Code</h3>
-<textarea id="customCode" placeholder="Paste HTML/CSS here"></textarea>
-<button id="saveCustom">Save</button>
-<div id="customProfileDiv"></div>
-
-<h2>Your Posts</h2>
-<div id="userPostsContainer"></div>
-
-<script type="module" src="profile.js"></script>
+<script type="module" src="profile2.js"></script>
 </body>
 </html>

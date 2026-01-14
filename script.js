@@ -1,9 +1,4 @@
-// script.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// Your Firebase config
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,60 +10,51 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 // Sign Up
-const signupBtn = document.getElementById("signupBtn");
-signupBtn.addEventListener("click", async () => {
+document.getElementById("signupBtn").addEventListener("click", async () => {
   const username = document.getElementById("signupUsername").value.trim();
   const email = document.getElementById("signupEmail").value.trim();
   const password = document.getElementById("signupPassword").value.trim();
 
-  if (!username || !email || !password) {
-    alert("All fields are required for sign up.");
-    return;
-  }
+  if (!username || !email || !password) return alert("All fields are required");
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
 
-    // Save initial profile info to Firestore
-    await setDoc(doc(db, "users", user.uid), {
+    await db.collection("users").doc(user.uid).set({
       username: username,
       bio: "",
       location: "",
       music: "",
-      createdAt: new Date()
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    alert("Sign up successful! Redirecting to feed...");
+    alert("Sign up successful!");
     window.location.href = "feed.html";
-  } catch (error) {
-    console.error(error);
-    alert("Sign up failed: " + error.message);
+  } catch (err) {
+    console.error(err);
+    alert("Sign up failed: " + err.message);
   }
 });
 
 // Log In
-const loginBtn = document.getElementById("loginBtn");
-loginBtn.addEventListener("click", async () => {
+document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value.trim();
 
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
-  }
+  if (!email || !password) return alert("Please enter both email and password");
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
-    alert("Login successful! Redirecting to feed...");
+    await auth.signInWithEmailAndPassword(email, password);
+    alert("Login successful!");
     window.location.href = "feed.html";
-  } catch (error) {
-    console.error(error);
-    alert("Login failed: " + error.message);
+  } catch (err) {
+    console.error(err);
+    alert("Login failed: " + err.message);
   }
 });

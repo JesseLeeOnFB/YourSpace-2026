@@ -1,9 +1,9 @@
-/* -------------------- GLOBAL -------------------- */
+/* -------------------- General -------------------- */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f0f2f5;
+  background-color: #f5f5f5;
   color: #333;
 }
 
@@ -11,44 +11,48 @@ h2 {
   margin-top: 0;
 }
 
-/* -------------------- NAVBAR -------------------- */
+button {
+  cursor: pointer;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #1976d2;
+  color: white;
+  margin: 4px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0f5ca8;
+}
+
+/* -------------------- Nav Bar -------------------- */
 .navbar {
   display: flex;
   justify-content: flex-start;
-  background-color: #4267B2;
+  gap: 8px;
   padding: 10px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.navbar button {
-  margin-right: 10px;
-  padding: 8px 12px;
-  border: none;
-  background-color: #fff;
-  color: #4267B2;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.navbar button:hover {
-  background-color: #e4e6eb;
-}
-
-/* -------------------- CREATE POST -------------------- */
+/* -------------------- Create Post -------------------- */
 .createPost {
   background-color: #fff;
-  margin: 20px auto;
+  margin: 10px;
   padding: 15px;
-  border-radius: 8px;
-  max-width: 600px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .createPost textarea {
   width: 100%;
-  resize: none;
   padding: 8px;
-  border-radius: 5px;
+  resize: vertical;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
@@ -56,216 +60,114 @@ h2 {
   margin-top: 10px;
 }
 
-.createPost button {
-  margin-top: 10px;
-  padding: 10px 15px;
-  background-color: #4267B2;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.createPost button:disabled {
-  background-color: #999;
-  cursor: not-allowed;
-}
-
 .createPost .notifications {
   margin-top: 10px;
 }
 
-.createPost .notifications label {
-  margin-right: 15px;
-  font-size: 14px;
+#createPostBtn {
+  margin-top: 10px;
 }
 
-/* -------------------- FEED -------------------- */
+/* -------------------- Feed -------------------- */
 .feed {
-  max-width: 600px;
-  margin: 20px auto;
+  margin: 10px;
 }
 
 .post {
   background-color: #fff;
-  padding: 15px;
   margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.1);
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.post strong {
-  font-size: 16px;
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.post p {
-  font-size: 14px;
-  margin: 5px 0;
+.postProfilePic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.postMedia {
-  display: block;
+/* -------------------- Post Media -------------------- */
+.postImage {
   max-width: 100%;
   max-height: 400px;
-  margin: 10px 0;
-  border-radius: 5px;
+  display: block;
+  margin-top: 10px;
+  border-radius: 6px;
 }
 
+.postVideo {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin-top: 10px;
+  border-radius: 6px;
+}
+
+/* -------------------- Post Buttons -------------------- */
 .postButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .postButtons button {
-  padding: 5px 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  background-color: #1976d2;
   font-size: 14px;
 }
 
 .postButtons button:hover {
-  background-color: #e4e6eb;
+  background-color: #0f5ca8;
 }
 
+/* -------------------- Comments -------------------- */
 .commentsContainer {
   margin-top: 10px;
   padding-left: 10px;
-  border-left: 2px solid #ccc;
+  border-left: 2px solid #ddd;
 }
 
 .commentsContainer p {
   margin: 4px 0;
-  font-size: 13px;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  padding: 6px;
+  border-radius: 4px;
 }
 
-/* -------------------- PROFILE PAGE -------------------- */
+/* -------------------- Profile Page -------------------- */
 .profilePage {
-  max-width: 700px;
-  margin: 20px auto;
+  margin: 10px;
   background-color: #fff;
   padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.profileHeader {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
+.profilePage input,
+.profilePage textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
-.profileHeader img {
+.profilePage img.profilePic {
   width: 100px;
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
-}
-
-.profileHeader input[type="file"] {
-  margin-top: 5px;
-}
-
-.profileDetails label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.profileDetails input,
-.profileDetails textarea {
-  width: 100%;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.profileDetails textarea {
-  resize: none;
-}
-
-.profileDetails button {
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: #4267B2;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.profileDetails button:hover {
-  background-color: #365899;
-}
-
-/* -------------------- FRIENDS / TOP 10 -------------------- */
-.topFriends {
-  margin-top: 15px;
-}
-
-.topFriends h3 {
   margin-bottom: 10px;
 }
 
-.topFriendsList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.topFriendsList div {
-  width: 60px;
-  text-align: center;
-}
-
-.topFriendsList img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* -------------------- EMBEDDED MUSIC -------------------- */
-.musicEmbed {
-  margin-top: 15px;
-}
-
-.musicEmbed iframe {
-  width: 100%;
-  height: 60px;
-  border: none;
-  border-radius: 5px;
-}
-
-/* -------------------- SEARCH USERS -------------------- */
-.searchUsers {
-  max-width: 600px;
-  margin: 20px auto;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.searchUsers input {
-  width: 100%;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.searchUsers button {
-  margin-top: 8px;
-  padding: 6px 12px;
-  background-color: #4267B2;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.searchUsers button:hover {
-  background-color: #365899;
+/* -------------------- Misc -------------------- */
+img, video {
+  display: block;
 }

@@ -1,9 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+// profile.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.30.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.30.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.30.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.30.0/firebase-storage.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,138 +15,113 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-// DOM elements
+// --- Elements ---
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicDisplay = document.getElementById("profilePicDisplay");
+const saveProfilePicBtn = document.getElementById("saveProfilePicBtn");
+
 const usernameInput = document.getElementById("usernameInput");
 const locationInput = document.getElementById("locationInput");
 const bioInput = document.getElementById("bioInput");
 const musicInput = document.getElementById("musicInput");
-const profilePhotoInput = document.getElementById("profilePhotoInput");
-const profilePhotoPreview = document.getElementById("profilePhotoPreview");
 const saveProfileInfoBtn = document.getElementById("saveProfileInfoBtn");
-const saveProfilePhotoBtn = document.getElementById("saveProfilePhotoBtn");
 
-const topFriendsList = document.getElementById("topFriendsList");
-const friendSearchInput = document.getElementById("friendSearchInput");
-const friendSearchBtn = document.getElementById("friendSearchBtn");
-const friendSearchResults = document.getElementById("friendSearchResults");
+const friendsList = document.getElementById("friendsList");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const searchResults = document.getElementById("searchResults");
 
-// NAVIGATION
-document.getElementById("homeBtn").addEventListener("click", () => { window.location.href = "feed.html"; });
-document.getElementById("profileBtn").addEventListener("click", () => { window.location.href = "profile.html"; });
-document.getElementById("logoutBtn").addEventListener("click", async () => { 
+// --- Navigation ---
+document.getElementById("homeBtn").addEventListener("click", () => window.location.href = "feed.html");
+document.getElementById("profileBtn").addEventListener("click", () => window.location.href = "profile.html");
+document.getElementById("logoutBtn").addEventListener("click", async () => {
   await auth.signOut();
   window.location.href = "index.html";
 });
 
-// AUTH STATE
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href = "index.html"; return; }
-  loadProfile(user.uid);
-});
+// --- Load profile ---
+onAuthStateChanged(auth, async user => {
+  if (!user) return window.location.href = "index.html";
 
-// LOAD PROFILE
-async function loadProfile(uid) {
-  const userDoc = doc(db, "users", uid);
-  const userSnap = await getDoc(userDoc);
+  const userRef = doc(db, "users", user.uid);
+  const docSnap = await getDoc(userRef);
 
-  if (userSnap.exists()) {
-    const data = userSnap.data();
+  if (docSnap.exists()) {
+    const data = docSnap.data();
     usernameInput.value = data.username || "";
     locationInput.value = data.location || "";
     bioInput.value = data.bio || "";
     musicInput.value = data.music || "";
+    profilePicDisplay.src = data.profilePic || "defaultProfile.png";
 
-    if (data.profilePhoto) profilePhotoPreview.src = data.profilePhoto;
-
-    // Top 10 friends
-    topFriendsList.innerHTML = "";
-    const friends = data.topFriends || [];
-    friends.forEach(f => {
-      const li = document.createElement("li");
-      li.textContent = f;
-      topFriendsList.appendChild(li);
-    });
+    // Load friends
+    friendsList.innerHTML = "";
+    if (data.friends && data.friends.length) {
+      data.friends.slice(0,10).forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = f;
+        friendsList.appendChild(li);
+      });
+    }
   } else {
-    // create empty document if doesn't exist
-    await setDoc(userDoc, { topFriends: [] });
+    await setDoc(userRef, { username: "", location: "", bio: "", music: "", profilePic: "", friends: [] });
   }
-}
+});
 
-// SAVE PROFILE INFO
+// --- Save profile picture ---
+saveProfilePicBtn.addEventListener("click", async () => {
+  if (!auth.currentUser) return alert("Not signed in");
+  const file = profilePicInput.files[0];
+  if (!file) return alert("Select a file first");
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!["jpg","jpeg","png","gif"].includes(ext)) return alert("Invalid image type");
+
+  const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+  const snapshot = await uploadBytes(storageRef, file, { contentType: file.type });
+  const downloadURL = await getDownloadURL(snapshot.ref);
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), { profilePic: downloadURL });
+  profilePicDisplay.src = downloadURL;
+  alert("Profile picture updated!");
+});
+
+// --- Save profile info ---
 saveProfileInfoBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-  const userDoc = doc(db, "users", user.uid);
-  await updateDoc(userDoc, {
+  if (!auth.currentUser) return alert("Not signed in");
+
+  const updates = {
     username: usernameInput.value,
     location: locationInput.value,
     bio: bioInput.value,
     music: musicInput.value
-  });
+  };
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), updates);
   alert("Profile info saved!");
 });
 
-// SAVE PROFILE PHOTO
-saveProfilePhotoBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-  const file = profilePhotoInput.files[0];
-  if (!file) { alert("Select a photo first."); return; }
+// --- Search users ---
+searchBtn.addEventListener("click", async () => {
+  const queryText = searchInput.value.trim().toLowerCase();
+  if (!queryText) return;
 
-  let contentType = file.type || "image/jpeg";
-  const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
-  try {
-    const snapshot = await uploadBytes(storageRef, file, { contentType });
-    const downloadURL = await getDownloadURL(snapshot.ref);
+  const q = query(collection(db, "users"), where("username", ">=", queryText), where("username", "<=", queryText + "\uf8ff"));
+  const snapshot = await getDocs(q);
 
-    const userDoc = doc(db, "users", user.uid);
-    await updateDoc(userDoc, { profilePhoto: downloadURL });
-
-    profilePhotoPreview.src = downloadURL;
-    alert("Profile photo saved!");
-  } catch (err) {
-    console.error("Photo upload failed:", err);
-    alert("Photo upload failed. Check console.");
-  }
-});
-
-// FRIEND SEARCH
-friendSearchBtn.addEventListener("click", async () => {
-  const searchText = friendSearchInput.value.trim();
-  friendSearchResults.innerHTML = "";
-  if (!searchText) return;
-
-  const usersCol = collection(db, "users");
-  const q = query(usersCol, where("username", "==", searchText));
-  const querySnap = await getDocs(q);
-
-  if (querySnap.empty) {
-    friendSearchResults.textContent = "No users found.";
-    return;
-  }
-
-  querySnap.forEach(docSnap => {
-    const userData = docSnap.data();
-    const uid = docSnap.id;
-    if (uid === auth.currentUser.uid) return; // skip self
-
+  searchResults.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
     const div = document.createElement("div");
-    div.textContent = userData.username;
-
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "Add Friend";
-    addBtn.addEventListener("click", async () => {
-      const userDoc = doc(db, "users", auth.currentUser.uid);
-      await updateDoc(userDoc, { topFriends: arrayUnion(userData.username) });
-      loadProfile(auth.currentUser.uid); // refresh
-      alert(`Friend request sent to ${userData.username}`);
+    div.classList.add("searchResult");
+    div.textContent = data.username;
+    div.addEventListener("click", () => {
+      window.location.href = `profileView.html?uid=${docSnap.id}`;
     });
-
-    div.appendChild(addBtn);
-    friendSearchResults.appendChild(div);
+    searchResults.appendChild(div);
   });
 });

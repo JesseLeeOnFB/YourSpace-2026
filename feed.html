@@ -7,31 +7,34 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
+  <!-- Nav Bar -->
+  <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Post Creation Section -->
-  <section id="createPost">
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
+  <!-- Create Post Section -->
+  <section class="createPost">
+    <h2>Create a Post</h2>
+    <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
     <input type="file" id="postFileInput" accept="image/*,video/*">
-    <div id="filePreview" style="display:none;"></div>
-    <div id="notificationOptions">
-      <label><input type="checkbox" id="emailNotify"> Email Notifications</label>
-      <label><input type="checkbox" id="browserNotify"> Browser Notifications</label>
+    <img id="imagePreview" src="" style="display:none; max-width: 300px; max-height: 300px; margin-top: 10px;">
+    
+    <div class="notifications">
+      <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
+      <label><input type="checkbox" id="notifyBrowser"> Browser notifications</label>
     </div>
+
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- Feed -->
-  <section id="feed">
+  <!-- Feed Section -->
+  <section class="feed">
+    <h2>Feed</h2>
     <div id="postsContainer"></div>
   </section>
 
-  <!-- Firebase & Feed JS -->
   <script type="module" src="feed.js"></script>
 </body>
 </html>

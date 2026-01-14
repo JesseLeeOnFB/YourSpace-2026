@@ -91,7 +91,7 @@ onAuthStateChanged(auth, async (user) => {
         if (!contentType.startsWith("image/")) contentType = "image/jpeg";
 
         const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
+const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
 
         const snapshot = await uploadBytes(storageRef, file, { contentType });
         postImageURL = await getDownloadURL(snapshot.ref);

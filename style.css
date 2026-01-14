@@ -1,243 +1,260 @@
-/* -------------------------
-   Global
--------------------------- */
-body {
-  font-family: Arial, sans-serif;
+/* ----------------------------
+   Reset & Base Styles
+---------------------------- */
+* {
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f0f2f5;
   color: #333;
+  line-height: 1.5;
+  min-height: 100vh;
 }
 
-h2 {
-  margin: 10px 0;
-}
-
-/* -------------------------
+/* ----------------------------
    Navbar
--------------------------- */
+---------------------------- */
 .navbar {
   display: flex;
   justify-content: flex-start;
-  background-color: #222;
-  padding: 10px;
+  gap: 10px;
+  background-color: #4267B2;
+  padding: 10px 20px;
 }
 
 .navbar button {
-  margin-right: 10px;
-  padding: 8px 15px;
-  color: #fff;
-  background-color: #444;
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
+  background-color: white;
+  color: #4267B2;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
+  transition: 0.2s;
 }
 
 .navbar button:hover {
-  background-color: #555;
-}
-
-/* -------------------------
-   Create Post
--------------------------- */
-.createPost {
-  background-color: #fff;
-  padding: 15px;
-  margin: 15px;
-  border-radius: 6px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-#createPost textarea {
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  padding: 8px;
-  font-size: 14px;
-  resize: vertical;
-  margin-bottom: 10px;
-}
-
-#createPost input[type="file"] {
-  margin-bottom: 10px;
-}
-
-#createPost button {
-  padding: 8px 15px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4px;
-  background-color: #0077ff;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#createPost button:hover {
-  background-color: #005bb5;
-}
-
-.notifications {
-  margin-bottom: 10px;
-}
-
-.notifications label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 3px;
-}
-
-/* -------------------------
-   Feed
--------------------------- */
-.feed {
-  margin: 15px;
-}
-
-.post {
-  background-color: #fff;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-.postHeader {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.postProfilePic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-.postMedia {
-  max-width: 100%;
-  max-height: 400px;
-  margin-top: 10px;
-  border-radius: 4px;
-}
-
-.post video.postMedia {
-  display: block;
-  margin: 10px 0;
-}
-
-.postButtons {
-  margin-top: 10px;
-}
-
-.postButtons button {
-  margin-right: 5px;
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background-color: #eee;
-  transition: background 0.2s;
-}
-
-.postButtons button:hover {
   background-color: #ddd;
 }
 
-/* -------------------------
-   Comments
--------------------------- */
-.commentsContainer {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #555;
-}
-
-.comment {
-  padding: 5px 0;
-  border-top: 1px solid #eee;
-}
-
-/* -------------------------
-   Profile Page
--------------------------- */
-.profilePage {
-  max-width: 700px;
-  margin: 15px auto;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 6px;
+/* ----------------------------
+   Create Post Section
+---------------------------- */
+.createPost {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.profileHeader {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
+.createPost h2 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
 }
 
-.profileHeader img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 15px;
+.createPost textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
 }
 
-.profileHeader .profileInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.profileHeader .profileInfo h2 {
-  margin: 0 0 5px 0;
-}
-
-.profileHeader .profileInfo p {
-  margin: 2px 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.profileActions button {
+.createPost input[type="file"] {
   margin-top: 10px;
-  padding: 6px 12px;
-  font-size: 14px;
-  cursor: pointer;
+}
+
+.createPost img, .createPost video {
+  margin-top: 10px;
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 6px;
+  display: block;
+}
+
+.createPost .notifications {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.createPost .notifications label {
+  font-size: 0.9rem;
+}
+
+.createPost button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #4267B2;
+  color: white;
   border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.createPost button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.createPost button:hover:not(:disabled) {
+  background-color: #365899;
+}
+
+/* ----------------------------
+   Feed Section
+---------------------------- */
+.feed {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.feed h2 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.post {
+  background-color: white;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+.post strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  color: #4267B2;
+}
+
+.post p {
+  margin-bottom: 10px;
+}
+
+.post img, .post video {
+  max-width: 100%;
+  max-height: 400px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.post div {
+  display: flex;
+  gap: 10px;
+}
+
+.post button {
+  border: none;
+  background-color: #eee;
+  padding: 5px 10px;
   border-radius: 4px;
-  background-color: #0077ff;
-  color: #fff;
-  transition: background 0.2s;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
 }
 
-.profileActions button:hover {
-  background-color: #005bb5;
+.post button:hover {
+  background-color: #ddd;
 }
 
-/* -------------------------
-   Top 10 Friends Box
--------------------------- */
-.topFriends {
-  margin-top: 20px;
+/* ----------------------------
+   Profile Page Layout
+---------------------------- */
+.profile {
+  max-width: 800px;
+  margin: 20px auto;
+  display: flex;
+  gap: 20px;
 }
 
-.topFriends h3 {
-  margin-bottom: 8px;
+.profile .profileSidebar {
+  flex: 1;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.topFriends ul {
+.profile .profileContent {
+  flex: 2;
+}
+
+.profile .profileSidebar img {
+  width: 100%;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.profile .profileSidebar h3 {
+  margin-bottom: 5px;
+}
+
+.profile .topFriends {
+  margin-top: 15px;
+}
+
+.profile .topFriends h4 {
+  margin-bottom: 5px;
+}
+
+.profile .topFriends ul {
   list-style: none;
-  padding: 0;
 }
 
-.topFriends li {
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
+.profile .topFriends li {
+  margin-bottom: 5px;
+}
+
+/* ----------------------------
+   Themes / Customization
+---------------------------- */
+body.theme-dark {
+  background-color: #18191A;
+  color: #E4E6EB;
+}
+
+body.theme-dark .navbar {
+  background-color: #242526;
+}
+
+body.theme-dark .createPost,
+body.theme-dark .feed .post,
+body.theme-dark .profile .profileSidebar,
+body.theme-dark .profile .profileContent {
+  background-color: #242526;
+  color: #E4E6EB;
+}
+
+body.theme-dark .createPost button,
+body.theme-dark .post button {
+  background-color: #3A3B3C;
+  color: white;
+}
+
+body.theme-dark .createPost button:hover,
+body.theme-dark .post button:hover {
+  background-color: #4E4F50;
+}
+
+/* ----------------------------
+   Media Queries
+---------------------------- */
+@media (max-width: 700px) {
+  .profile {
+    flex-direction: column;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
 }

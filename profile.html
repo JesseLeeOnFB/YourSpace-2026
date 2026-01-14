@@ -7,58 +7,60 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Page -->
-  <section class="profilePage">
+  <!-- Profile Section -->
+  <section class="profile">
+    <h2>Your Profile</h2>
 
-    <!-- Profile Header -->
-    <div class="profileHeader">
-      <img id="profilePhoto" src="https://via.placeholder.com/100" alt="Profile Photo">
-      <div>
-        <input type="file" id="profilePhotoInput" accept="image/*">
-      </div>
+    <!-- Profile Picture -->
+    <div class="profilePicContainer">
+      <img id="profilePicPreview" src="default-avatar.png" alt="Profile Picture" style="max-width:150px; max-height:150px; border-radius:50%;">
+      <input type="file" id="profilePicInput" accept="image/*">
     </div>
 
-    <!-- Profile Details -->
-    <div class="profileDetails">
-      <label for="username">Username:</label>
-      <input type="text" id="username" placeholder="Enter your username">
+    <!-- Basic Info -->
+    <label>Display Name:</label>
+    <input type="text" id="displayName" placeholder="Enter your display name">
 
-      <label for="bio">Bio:</label>
-      <textarea id="bio" rows="3" placeholder="Enter your bio"></textarea>
+    <label>Bio:</label>
+    <textarea id="bio" rows="3" placeholder="Write a short bio"></textarea>
 
-      <label for="location">Location:</label>
-      <input type="text" id="location" placeholder="Enter your location">
+    <label>Location:</label>
+    <input type="text" id="location" placeholder="Your location">
 
-      <label for="music">Embedded Music URL (Spotify / YouTube):</label>
-      <input type="text" id="music" placeholder="Paste embed URL">
-
-      <button id="saveProfileBtn">Save Profile</button>
-    </div>
+    <label>Embedded Music URL:</label>
+    <input type="text" id="musicURL" placeholder="Paste your music link here">
 
     <!-- Top 10 Friends -->
-    <div class="topFriends">
-      <h3>Top 10 Friends</h3>
-      <div class="topFriendsList" id="topFriendsList">
-        <!-- Dynamically filled -->
+    <fieldset>
+      <legend>Top 10 Friends</legend>
+      <div class="topFriendsContainer">
+        <input type="text" class="topFriendInput" placeholder="Friend 1">
+        <input type="text" class="topFriendInput" placeholder="Friend 2">
+        <input type="text" class="topFriendInput" placeholder="Friend 3">
+        <input type="text" class="topFriendInput" placeholder="Friend 4">
+        <input type="text" class="topFriendInput" placeholder="Friend 5">
+        <input type="text" class="topFriendInput" placeholder="Friend 6">
+        <input type="text" class="topFriendInput" placeholder="Friend 7">
+        <input type="text" class="topFriendInput" placeholder="Friend 8">
+        <input type="text" class="topFriendInput" placeholder="Friend 9">
+        <input type="text" class="topFriendInput" placeholder="Friend 10">
       </div>
+    </fieldset>
+
+    <!-- Notification Preferences -->
+    <div class="notifications">
+      <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
+      <label><input type="checkbox" id="notifyBrowser"> Browser notifications</label>
     </div>
 
-  </section>
-
-  <!-- Search Users -->
-  <section class="searchUsers">
-    <h3>Find Friends</h3>
-    <input type="text" id="searchUserInput" placeholder="Search by username or email">
-    <button id="searchUserBtn">Search</button>
-    <div id="searchResults"></div>
+    <!-- Save Button -->
+    <button id="saveProfileBtn">Save Profile</button>
   </section>
 
   <script type="module" src="profile.js"></script>

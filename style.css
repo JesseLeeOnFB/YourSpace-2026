@@ -3,112 +3,108 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f2f2f2;
+  background: #f2f2f2;
   color: #333;
 }
 
 h2 {
-  margin: 10px 0;
+  margin-top: 0;
 }
 
 /* -------------------- Navbar -------------------- */
 .navbar {
-  display: flex;
-  gap: 10px;
   background-color: #3b5998;
   color: white;
+  display: flex;
+  gap: 10px;
   padding: 10px;
 }
 
 .navbar button {
-  background-color: white;
+  background: white;
   color: #3b5998;
   border: none;
-  padding: 8px 12px;
+  padding: 5px 12px;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .navbar button:hover {
-  background-color: #ddd;
+  background: #ddd;
 }
 
 /* -------------------- Create Post Section -------------------- */
 .createPost {
-  background-color: white;
+  background: white;
+  margin: 10px;
   padding: 15px;
-  margin: 15px auto;
-  width: 90%;
-  max-width: 600px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
 }
 
 .createPost textarea {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
-  resize: vertical;
   border: 1px solid #ccc;
+  resize: none;
+  font-size: 14px;
 }
 
 .createPost input[type="file"] {
   margin-top: 10px;
 }
 
-.createPost .notifications {
-  margin: 10px 0;
-}
-
-.createPost button {
+.createPost img#imagePreview {
+  display: block;
+  max-width: 300px;
+  max-height: 300px;
   margin-top: 10px;
-  padding: 8px 12px;
-  background-color: #3b5998;
-  color: white;
-  border: none;
   border-radius: 4px;
-  cursor: pointer;
+  object-fit: cover;
 }
 
-.createPost button:disabled {
-  background-color: #888;
-  cursor: not-allowed;
+.createPost video {
+  max-width: 100%;
+  max-height: 300px;
+  margin-top: 10px;
+  border-radius: 4px;
 }
 
 /* -------------------- Feed -------------------- */
 .feed {
-  width: 90%;
-  max-width: 600px;
-  margin: 0 auto 30px auto;
+  margin: 10px;
 }
 
 .post {
-  background-color: white;
+  background: white;
+  padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
 }
 
 .postHeader {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 10px;
 }
 
-.postHeader .avatar {
+.postAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.postMedia {
+.postImage, .postVideo {
   width: 100%;
   max-height: 400px;
+  margin: 10px 0;
+  border-radius: 8px;
   object-fit: contain;
-  margin-top: 10px;
-  border-radius: 4px;
 }
 
 .postActions {
@@ -118,15 +114,16 @@ h2 {
 }
 
 .postActions button {
-  background-color: #eee;
+  cursor: pointer;
+  background: #eee;
   border: none;
   padding: 5px 10px;
   border-radius: 4px;
-  cursor: pointer;
+  font-weight: bold;
 }
 
 .postActions button:hover {
-  background-color: #ddd;
+  background: #ddd;
 }
 
 /* -------------------- Comments -------------------- */
@@ -138,79 +135,69 @@ h2 {
 
 .comment {
   margin-bottom: 5px;
-  font-size: 0.9em;
+  font-size: 14px;
 }
 
 /* -------------------- Profile Page -------------------- */
 .profilePage {
-  width: 90%;
   max-width: 600px;
   margin: 20px auto;
-  background-color: white;
+  background: white;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
 }
 
-.profilePage h2 {
-  text-align: center;
-}
-
-.profilePage img.profilePic {
-  display: block;
-  margin: 0 auto 10px auto;
-  width: 120px;
-  height: 120px;
+.profileAvatar {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
+  margin-bottom: 10px;
 }
 
-.profilePage input, .profilePage textarea {
+.profileInfo input,
+.profileInfo textarea {
   width: 100%;
-  margin: 5px 0;
-  padding: 8px;
+  padding: 6px;
+  margin-bottom: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-.profilePage button {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  background-color: #3b5998;
-  color: white;
+.profileActions button {
+  padding: 8px 15px;
   border: none;
   border-radius: 4px;
+  background: #3b5998;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
 }
 
-.profilePage button:hover {
-  background-color: #2d4373;
+.profileActions button:hover {
+  background: #2d4373;
 }
 
-/* -------------------- Top 10 Friends Box -------------------- */
-.topFriends {
+/* -------------------- Notifications Checkboxes -------------------- */
+.notifications {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  gap: 15px;
   margin-top: 10px;
 }
 
-.topFriends .friend {
-  flex: 1 1 30%;
-  text-align: center;
-  background-color: #eee;
-  padding: 5px;
-  border-radius: 4px;
+.notifications label {
+  font-size: 13px;
 }
 
 /* -------------------- Responsive -------------------- */
-@media (max-width: 600px) {
-  .postMedia {
-    max-height: 300px;
+@media (max-width: 500px) {
+  .postImage, .postVideo {
+    max-height: 250px;
   }
-
-  .createPost, .feed, .profilePage {
-    width: 95%;
+  .postAvatar {
+    width: 35px;
+    height: 35px;
   }
 }

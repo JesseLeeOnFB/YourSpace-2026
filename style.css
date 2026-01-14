@@ -1,0 +1,166 @@
+/* ====== GENERAL ====== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+/* ====== NAVBAR ====== */
+.navbar {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+}
+
+.navbar button {
+  background-color: #555;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navbar button:hover {
+  background-color: #777;
+}
+
+/* ====== CREATE POST SECTION ====== */
+.createPost {
+  padding: 20px;
+  background-color: #fff;
+  margin: 20px;
+  border-radius: 8px;
+}
+
+.createPost textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.createPost input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.createPost button {
+  padding: 10px 15px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.createPost button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.createPost .notifications {
+  margin: 10px 0;
+}
+
+.createPost .notifications label {
+  margin-right: 10px;
+}
+
+/* ====== FEED ====== */
+.feed {
+  padding: 20px;
+}
+
+.post {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.postHeader .postProfilePhoto {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.postUsername {
+  font-weight: bold;
+}
+
+.postContent p {
+  margin: 5px 0;
+}
+
+/* Media sizing */
+.postMedia {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+/* Buttons */
+.postActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.postActions button {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #eee;
+}
+
+.postActions button:hover {
+  background-color: #ddd;
+}
+
+/* COMMENTS */
+.commentsSection {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.comment {
+  padding: 5px 0;
+  font-size: 0.9em;
+}
+
+/* ====== IMAGE PREVIEW ====== */
+#createPost img#imagePreview {
+  display: block;
+  margin-top: 10px;
+  max-width: 300px;
+  max-height: 300px;
+  border-radius: 5px;
+}
+
+/* ====== RESPONSIVE ====== */
+@media screen and (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+  }
+  .postMedia {
+    max-height: 250px;
+  }
+}

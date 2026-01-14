@@ -5,9 +5,11 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc,
   setDoc,
-  arrayUnion
+  collection,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getStorage,
@@ -16,7 +18,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-/* -------------------- Firebase Init -------------------- */
+/* -------------------- Firebase Config -------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -32,16 +34,21 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 /* -------------------- DOM -------------------- */
+const profilePhoto = document.getElementById("profilePhoto");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
 const usernameInput = document.getElementById("username");
 const bioInput = document.getElementById("bio");
 const locationInput = document.getElementById("location");
-const pfpInput = document.getElementById("pfpInput");
-const pfpPreview = document.getElementById("pfpPreview");
+const musicInput = document.getElementById("music");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-const top10Input = document.getElementById("top10Friends");
-const musicInput = document.getElementById("musicEmbed");
-const themeInput = document.getElementById("themeSelect");
 
+const topFriendsList = document.getElementById("topFriendsList");
+
+const searchInput = document.getElementById("searchUserInput");
+const searchBtn = document.getElementById("searchUserBtn");
+const searchResults = document.getElementById("searchResults");
+
+const profileBtn = document.getElementById("profileBtn");
 const homeBtn = document.getElementById("homeBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
@@ -54,72 +61,80 @@ onAuthStateChanged(auth, async (user) => {
 
   // Nav
   homeBtn.onclick = () => (window.location.href = "feed.html");
+  profileBtn.onclick = () => (window.location.href = "profile.html");
   logoutBtn.onclick = async () => {
     await signOut(auth);
     window.location.href = "index.html";
   };
 
-  // Load user profile
   const userDocRef = doc(db, "users", user.uid);
+
+  // Load profile
   const userSnap = await getDoc(userDocRef);
   if (userSnap.exists()) {
     const data = userSnap.data();
     usernameInput.value = data.displayName || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
-    top10Input.value = data.top10 ? data.top10.join(", ") : "";
-    musicInput.value = data.musicEmbed || "";
-    themeInput.value = data.theme || "";
-    if (data.photoURL) {
-      pfpPreview.src = data.photoURL;
-      pfpPreview.style.display = "block";
-    }
-  }
+    musicInput.value = data.music || "";
+    profilePhoto.src = data.photoURL || "https://via.placeholder.com/100";
 
-  // Profile picture preview
-  pfpInput.addEventListener("change", () => {
-    const file = pfpInput.files[0];
-    if (!file) {
-      pfpPreview.style.display = "none";
-      return;
-    }
-    pfpPreview.src = URL.createObjectURL(file);
-    pfpPreview.style.display = "block";
-  });
+    // Top 10 friends
+    topFriendsList.innerHTML = "";
+    (data.topFriends || []).forEach(friend => {
+      const f = document.createElement("div");
+      f.textContent = friend;
+      topFriendsList.appendChild(f);
+    });
+  }
 
   // Save profile
   saveProfileBtn.onclick = async () => {
     saveProfileBtn.disabled = true;
-    try {
-      let photoURL = "";
+    let photoURL = profilePhoto.src;
 
-      if (pfpInput.files[0]) {
-        const file = pfpInput.files[0];
-        let contentType = file.type || "image/jpeg";
-        const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${safeName}`);
-        const snapshot = await uploadBytes(storageRef, file, { contentType });
-        photoURL = await getDownloadURL(snapshot.ref);
+    // If a new photo selected, upload
+    if (profilePhotoInput.files.length > 0) {
+      const file = profilePhotoInput.files[0];
+      let contentType = file.type;
+      if (!contentType) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
       }
-
-      const top10Array = top10Input.value.split(",").map(t => t.trim()).filter(Boolean);
-
-      await setDoc(userDocRef, {
-        displayName: usernameInput.value || "Anonymous",
-        bio: bioInput.value || "",
-        location: locationInput.value || "",
-        photoURL: photoURL || pfpPreview.src || "",
-        top10: top10Array,
-        musicEmbed: musicInput.value || "",
-        theme: themeInput.value || ""
-      }, { merge: true });
-
-      alert("Profile saved!");
-    } catch (err) {
-      console.error("Error saving profile:", err);
-      alert("Failed to save profile. Check console.");
-    } finally {
-      saveProfileBtn.disabled = false;
+      const fileRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
+      const snapshot = await uploadBytes(fileRef, file, { contentType });
+      photoURL = await getDownloadURL(snapshot.ref);
     }
+
+    // Save profile fields
+    await setDoc(userDocRef, {
+      displayName: usernameInput.value,
+      bio: bioInput.value,
+      location: locationInput.value,
+      music: musicInput.value,
+      photoURL: photoURL,
+      topFriends: (userSnap.exists() ? userSnap.data().topFriends : []) || []
+    }, { merge: true });
+
+    alert("Profile saved!");
+    saveProfileBtn.disabled = false;
+    profilePhoto.src = photoURL;
   };
+
+  // Search users
+  searchBtn.onclick = async () => {
+    const term = searchInput.value.trim().toLowerCase();
+    if (!term) return;
+    const usersCol = collection(db, "users");
+    const q = query(usersCol, where("displayName", ">=", term), where("displayName", "<=", term + "\uf8ff"));
+    const snap = await getDocs(q);
+    searchResults.innerHTML = "";
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.textContent = data.displayName + " (" + (data.location || "Unknown") + ")";
+      searchResults.appendChild(div);
+    });
+  };
+
 });

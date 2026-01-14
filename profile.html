@@ -10,55 +10,43 @@
   <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Section -->
-  <section class="profilePage">
-    <div class="profileHeader">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <div class="profileInfo">
-        <h2 id="displayName">Your Name</h2>
-        <p id="bio">Your bio goes here</p>
-        <p id="location">Location</p>
-      </div>
-    </div>
-
-    <!-- Upload Profile Picture -->
-    <div class="profileActions">
+  <section class="profileSection">
+    <h2>Your Profile</h2>
+    
+    <!-- Profile Picture -->
+    <div class="profilePicContainer">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px; max-height:150px;">
       <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Profile Picture</button>
+      <button id="saveProfilePicBtn">Save Picture</button>
     </div>
 
-    <!-- Editable Bio and Location -->
-    <div class="profileActions">
-      <textarea id="bioInput" placeholder="Write your bio..." rows="3"></textarea>
-      <input type="text" id="locationInput" placeholder="Your location">
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
+    <!-- User Info -->
+    <div class="userInfo">
+      <label>Username:</label>
+      <input type="text" id="displayName" placeholder="Enter username">
 
-    <!-- Embedded Music -->
-    <div class="profileActions">
-      <input type="text" id="musicInput" placeholder="Paste music embed code or URL">
-      <button id="saveMusicBtn">Save Music</button>
-      <div id="musicContainer" style="margin-top:10px;"></div>
-    </div>
+      <label>Bio:</label>
+      <textarea id="bio" rows="3" placeholder="Tell us about yourself"></textarea>
 
-    <!-- Top 10 Friends Box -->
-    <div class="topFriends">
+      <label>Location:</label>
+      <input type="text" id="location" placeholder="Your location">
+
       <h3>Top 10 Friends</h3>
-      <ul id="topFriendsList">
-        <!-- List populated dynamically -->
-      </ul>
+      <ul id="top10FriendsList"></ul>
+      <input type="text" id="addFriendInput" placeholder="Add friend by username">
+      <button id="addFriendBtn">Add Friend</button>
     </div>
 
-    <!-- Custom HTML / Theme / Animation -->
-    <div class="profileActions">
-      <textarea id="customHtmlInput" placeholder="Add custom HTML or CSS" rows="5"></textarea>
-      <button id="saveCustomHtmlBtn">Save Customization</button>
-      <div id="customHtmlContainer" style="margin-top:10px;"></div>
+    <!-- Notifications -->
+    <div class="notifications">
+      <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
+      <label><input type="checkbox" id="notifyBrowser"> Browser notifications</label>
     </div>
+
+    <button id="saveProfileBtn">Save Profile</button>
   </section>
 
   <script type="module" src="profile.js"></script>

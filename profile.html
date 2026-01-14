@@ -10,54 +10,39 @@
   <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- Profile Section -->
-  <section class="profile">
-    <h2>Your Profile</h2>
-
+  <section class="profilePage">
+    <h2>My Profile</h2>
+    
     <!-- Profile Picture -->
-    <div class="profilePicContainer">
-      <img id="profilePicPreview" src="default-avatar.png" alt="Profile Picture" style="max-width:150px; max-height:150px; border-radius:50%;">
-      <input type="file" id="profilePicInput" accept="image/*">
-    </div>
+    <img src="" id="profilePic" class="profilePic" alt="Profile Picture">
+    <input type="file" id="profilePicInput" accept="image/*">
 
-    <!-- Basic Info -->
-    <label>Display Name:</label>
-    <input type="text" id="displayName" placeholder="Enter your display name">
+    <!-- Username / Bio / Location -->
+    <label>Username</label>
+    <input type="text" id="usernameInput" placeholder="Enter username">
 
-    <label>Bio:</label>
-    <textarea id="bio" rows="3" placeholder="Write a short bio"></textarea>
+    <label>Bio</label>
+    <textarea id="bioInput" rows="3" placeholder="Write something about yourself"></textarea>
 
-    <label>Location:</label>
-    <input type="text" id="location" placeholder="Your location">
+    <label>Location</label>
+    <input type="text" id="locationInput" placeholder="Enter location">
 
-    <label>Embedded Music URL:</label>
-    <input type="text" id="musicURL" placeholder="Paste your music link here">
+    <!-- Embedded Music -->
+    <label>Music URL (Spotify / YouTube / etc.)</label>
+    <input type="text" id="musicInput" placeholder="Paste your embed link">
 
     <!-- Top 10 Friends -->
-    <fieldset>
-      <legend>Top 10 Friends</legend>
-      <div class="topFriendsContainer">
-        <input type="text" class="topFriendInput" placeholder="Friend 1">
-        <input type="text" class="topFriendInput" placeholder="Friend 2">
-        <input type="text" class="topFriendInput" placeholder="Friend 3">
-        <input type="text" class="topFriendInput" placeholder="Friend 4">
-        <input type="text" class="topFriendInput" placeholder="Friend 5">
-        <input type="text" class="topFriendInput" placeholder="Friend 6">
-        <input type="text" class="topFriendInput" placeholder="Friend 7">
-        <input type="text" class="topFriendInput" placeholder="Friend 8">
-        <input type="text" class="topFriendInput" placeholder="Friend 9">
-        <input type="text" class="topFriendInput" placeholder="Friend 10">
-      </div>
-    </fieldset>
-
-    <!-- Notification Preferences -->
-    <div class="notifications">
-      <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
-      <label><input type="checkbox" id="notifyBrowser"> Browser notifications</label>
-    </div>
+    <h3>Top 10 Friends</h3>
+    <ul id="topFriendsList">
+      <!-- Dynamically populated -->
+    </ul>
+    <input type="text" id="newFriendInput" placeholder="Add friend by username">
+    <button id="addFriendBtn">Add Friend</button>
 
     <!-- Save Button -->
     <button id="saveProfileBtn">Save Profile</button>

@@ -8,7 +8,7 @@
 </head>
 <body class="default">
 
-  <!-- Navigation Bar -->
+  <!-- Navigation -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
@@ -17,48 +17,46 @@
 
   <!-- Profile Section -->
   <section class="profileSection">
-    <h2>Your Profile</h2>
-    <div class="profilePhotoWrapper">
-      <img id="profilePhoto" src="" alt="Profile Photo" class="profilePhoto">
+    <h2>My Profile</h2>
+
+    <!-- Profile Picture -->
+    <div class="profilePhotoSection">
+      <img id="profilePhotoDisplay" src="" alt="Profile Photo" class="profilePhoto">
       <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Photo</button>
+      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
     </div>
 
+    <!-- Profile Info -->
     <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
+      <input type="text" id="musicInput" placeholder="YouTube Music URL">
       <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
-  </section>
 
-  <!-- Top 10 Friends Section -->
-  <section class="friendsSection">
-    <h3>Top 10 Friends</h3>
-    <ul id="friendsList"></ul>
-    <input type="text" id="addFriendInput" placeholder="Add friend by username">
-    <button id="addFriendBtn">Add Friend</button>
-  </section>
+    <!-- Music Player -->
+    <div class="musicPlayerSection"></div>
 
-  <!-- Customization Section -->
-  <section class="customizationSection">
-    <h3>Profile Customization</h3>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-    <button id="applyThemeBtn">Apply Theme</button>
-  </section>
+    <!-- Top 10 Friends -->
+    <div class="topFriendsSection">
+      <h3>Top 10 Friends</h3>
+      <ul id="topFriendsList"></ul>
+      <input type="text" id="addFriendInput" placeholder="Add friend by username">
+      <button id="addFriendBtn">Add Friend</button>
+    </div>
 
-  <!-- Search Users Section -->
-  <section class="searchSection">
-    <h3>Search Users</h3>
-    <input type="text" id="searchUserInput" placeholder="Search username">
-    <button id="searchUserBtn">Search</button>
-    <ul id="searchResults"></ul>
+    <!-- Customization -->
+    <div class="customizationSection">
+      <h3>Profile Theme</h3>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+      <button id="saveThemeBtn">Apply Theme</button>
+    </div>
   </section>
 
   <script type="module" src="profile.js"></script>

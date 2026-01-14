@@ -15,12 +15,12 @@
 
 <h1>YourSpace Feed</h1>
 
-<!-- Use a form with enctype multipart/form-data for mobile uploads -->
-<form id="postForm">
-  <input type="text" id="postText" placeholder="Write something..." autocomplete="off">
-  <input type="file" id="postImageInput" accept="image/*" capture="environment">
+<div id="postContainer">
+  <input type="text" id="postText" placeholder="Write something...">
+  <!-- Corrected input: no 'capture', accept images -->
+  <input type="file" id="postImageInput" accept="image/*">
   <button id="postBtn" type="button">Post</button>
-</form>
+</div>
 
 <div id="postsContainer"></div>
 

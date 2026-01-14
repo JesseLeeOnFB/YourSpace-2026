@@ -1,3 +1,4 @@
+// feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -42,6 +43,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+// DOM elements
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -50,18 +52,19 @@ const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+// Ensure user is logged in
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // Navigation
+  // Navigation buttons
   profileBtn.onclick = () => window.location.href = "profile.html";
   logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   homeBtn.onclick = () => window.location.href = "feed.html";
 
-  // Create post
+  // --- POST CREATION ---
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     let postImageURL = "";
@@ -81,7 +84,7 @@ onAuthStateChanged(auth, async (user) => {
         postImageURL = await getDownloadURL(uploadSnap.ref);
       } catch (err) {
         console.error("Image upload failed:", err);
-        alert("Image upload failed. Only text will post.");
+        alert("Image upload failed. Text will still post.");
       }
     }
 
@@ -89,6 +92,7 @@ onAuthStateChanged(auth, async (user) => {
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
+    // Add post to Firestore
     await addDoc(collection(db, "posts"), {
       text,
       userId: user.uid,
@@ -100,21 +104,26 @@ onAuthStateChanged(auth, async (user) => {
       createdAt: serverTimestamp()
     });
 
+    // Reset inputs
     postInput.value = "";
     postImageInput.value = "";
   };
 
-  // Listen to posts
+  // --- LISTEN TO POSTS ---
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
+    const scrollY = window.scrollY;
     postsContainer.innerHTML = "";
 
-    snapshot.forEach(docSnap => {
+    snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
-      const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+      const imageHTML = data.postImage
+        ? `<img src="${data.postImage}" class="postImage">`
+        : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -130,24 +139,27 @@ onAuthStateChanged(auth, async (user) => {
         </div>
         <div class="commentsContainer"></div>
       `;
-      postsContainer.appendChild(postDiv);
 
+      postsContainer.appendChild(postDiv);
       const commentsContainer = postDiv.querySelector(".commentsContainer");
 
+      // Render existing comments
       (data.comments || []).forEach(c => {
         const commentEl = document.createElement("p");
         commentEl.textContent = c.text;
         commentsContainer.appendChild(commentEl);
       });
 
-      // Like
+      // LIKE button
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
+        data.likes = (data.likes || 0) + 1;
+        likeBtn.textContent = `Like (${data.likes})`;
       };
 
-      // Comment
+      // COMMENT button
       const commentBtn = postDiv.querySelector(".commentBtn");
       commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
@@ -159,7 +171,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       };
 
-      // Delete
+      // DELETE button
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.onclick = async () => {
@@ -169,7 +181,7 @@ onAuthStateChanged(auth, async (user) => {
         };
       }
 
-      // Share
+      // SHARE button
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.onclick = () => {
         if (navigator.share) {
@@ -179,5 +191,8 @@ onAuthStateChanged(auth, async (user) => {
         }
       };
     });
+
+    // Keep scroll position
+    window.scrollTo(0, scrollY);
   });
 });

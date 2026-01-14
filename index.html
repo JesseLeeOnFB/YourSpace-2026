@@ -7,91 +7,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>YourSpace</h1>
+  <div class="login-container">
+    <h1>YourSpace</h1>
 
-  <!-- Login Section -->
-  <section id="loginSection">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button id="loginBtn">Login</button>
-  </section>
+    <div class="input-group">
+      <input type="text" id="usernameInput" placeholder="Username">
+    </div>
+    <div class="input-group">
+      <input type="email" id="emailInput" placeholder="Email">
+    </div>
+    <div class="input-group">
+      <input type="password" id="passwordInput" placeholder="Password">
+    </div>
 
-  <!-- Signup Section -->
-  <section id="signupSection">
-    <h2>Sign Up</h2>
-    <input type="text" id="signupUsername" placeholder="Username">
-    <input type="email" id="signupEmail" placeholder="Email">
-    <input type="password" id="signupPassword" placeholder="Password">
-    <button id="signupBtn">Sign Up</button>
-  </section>
+    <div class="button-group">
+      <button id="loginBtn">Log In</button>
+      <button id="signupBtn">Sign Up</button>
+    </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-firestore.js";
+    <div id="message" style="color:red; margin-top:10px;"></div>
+  </div>
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-      authDomain: "yourspace-2026.firebaseapp.com",
-      projectId: "yourspace-2026",
-      storageBucket: "yourspace-2026.firebasestorage.app",
-      messagingSenderId: "72667267302",
-      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-      measurementId: "G-FZ4GFXWGSS"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // LOGIN
-    const loginBtn = document.getElementById("loginBtn");
-    loginBtn.addEventListener("click", async () => {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        alert("Login successful!");
-        window.location.href = "feed.html";
-      } catch(err) {
-        console.error(err);
-        alert("Login failed. Check console.");
-      }
-    });
-
-    // SIGNUP
-    const signupBtn = document.getElementById("signupBtn");
-    signupBtn.addEventListener("click", async () => {
-      const email = document.getElementById("signupEmail").value;
-      const password = document.getElementById("signupPassword").value;
-      const username = document.getElementById("signupUsername").value;
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Create user doc in Firestore
-        await setDoc(doc(db, "users", user.uid), {
-          username: username,
-          bio: "",
-          location: "",
-          profilePhoto: "",
-          createdAt: new Date()
-        });
-
-        alert("Sign up successful!");
-        window.location.href = "feed.html";
-      } catch(err) {
-        console.error(err);
-        alert("Sign up failed. Check console.");
-      }
-    });
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 // profile.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-storage.js";
 
-// Your Firebase config
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,114 +15,111 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
+// DOM elements
 const profilePhotoInput = document.getElementById("profilePhotoInput");
 const profilePhotoPreview = document.getElementById("profilePhotoPreview");
+const savePhotoBtn = document.getElementById("savePhotoBtn");
+
 const usernameInput = document.getElementById("usernameInput");
 const locationInput = document.getElementById("locationInput");
 const bioInput = document.getElementById("bioInput");
 const musicInput = document.getElementById("musicInput");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-const topFriendsList = document.getElementById("topFriendsList");
-const editFriendsBtn = document.getElementById("editFriendsBtn");
+const saveInfoBtn = document.getElementById("saveInfoBtn");
 
-let currentUser = null;
+const friendsContainer = document.getElementById("friendsContainer");
 
-// Auth listener
-onAuthStateChanged(auth, async user => {
-  if (user) {
-    currentUser = user;
-    await loadProfile();
-  } else {
+// -----------------------------
+// Load current profile
+// -----------------------------
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
     window.location.href = "index.html";
+    return;
   }
-});
 
-// Load profile from Firestore
-async function loadProfile() {
-  const userDoc = doc(db, "users", currentUser.uid);
-  const snapshot = await getDoc(userDoc);
-  
-  if (snapshot.exists()) {
-    const data = snapshot.data();
-    usernameInput.value = data.username || "";
+  const userDocRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userDocRef);
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    usernameInput.value = data.displayName || "";
     locationInput.value = data.location || "";
     bioInput.value = data.bio || "";
     musicInput.value = data.music || "";
-    if (data.profilePhotoURL) profilePhotoPreview.src = data.profilePhotoURL;
-
-    if (Array.isArray(data.topFriends)) {
-      topFriendsList.innerHTML = "";
-      data.topFriends.forEach(friend => {
-        const li = document.createElement("li");
-        li.textContent = friend;
-        topFriendsList.appendChild(li);
-      });
-    }
-  }
-}
-
-// Profile photo preview
-profilePhotoInput.addEventListener("change", () => {
-  const file = profilePhotoInput.files[0];
-  if (file) {
-    profilePhotoPreview.src = URL.createObjectURL(file);
+    profilePhotoPreview.src = data.photoURL || "";
+    renderFriends(data.topFriends || []);
+  } else {
+    // Create new document if missing
+    await setDoc(userDocRef, { displayName: "", location: "", bio: "", music: "", photoURL: "", topFriends: [] });
   }
 });
 
-// Save profile button
-saveProfileBtn.addEventListener("click", async () => {
-  saveProfileBtn.disabled = true;
-  let profilePhotoURL = profilePhotoPreview.src;
+// -----------------------------
+// Save Profile Photo
+// -----------------------------
+savePhotoBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user || !profilePhotoInput.files[0]) return;
 
+  const file = profilePhotoInput.files[0];
+  let contentType = file.type;
+  if (!contentType) {
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
+  }
+
+  const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
   try {
-    // Upload profile photo if a new file is selected
-    const file = profilePhotoInput.files[0];
-    if (file) {
-      let contentType = file.type;
-      if (!contentType) {
-        const ext = file.name.split(".").pop().toLowerCase();
-        if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
-      }
-      const storageRef = ref(storage, `profileImages/${currentUser.uid}/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(storageRef, file, { contentType });
-      profilePhotoURL = await getDownloadURL(snapshot.ref);
-    }
+    const snapshot = await uploadBytes(storageRef, file, { contentType });
+    const photoURL = await getDownloadURL(snapshot.ref);
 
-    // Save all profile data to Firestore
-    const userDoc = doc(db, "users", currentUser.uid);
-    await setDoc(userDoc, {
-      username: usernameInput.value,
+    // Save photoURL to Firestore
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, { photoURL });
+
+    profilePhotoPreview.src = photoURL;
+    alert("Profile photo saved!");
+  } catch (err) {
+    console.error("Error uploading photo:", err);
+    alert("Failed to save profile photo");
+  }
+});
+
+// -----------------------------
+// Save Profile Info
+// -----------------------------
+saveInfoBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userDocRef = doc(db, "users", user.uid);
+  try {
+    await updateDoc(userDocRef, {
+      displayName: usernameInput.value,
       location: locationInput.value,
       bio: bioInput.value,
-      music: musicInput.value,
-      profilePhotoURL,
-      topFriends: Array.from(topFriendsList.querySelectorAll("li")).map(li => li.textContent)
-    }, { merge: true });
-
-    alert("Profile saved successfully!");
-  } catch (error) {
-    console.error("Error saving profile:", error);
-    alert("Failed to save profile. Check console.");
-  } finally {
-    saveProfileBtn.disabled = false;
-  }
-});
-
-// Edit top friends
-editFriendsBtn.addEventListener("click", () => {
-  const friendNames = prompt("Enter Top 10 friends, comma-separated:", 
-    Array.from(topFriendsList.querySelectorAll("li")).map(li => li.textContent).join(", "));
-  if (friendNames !== null) {
-    topFriendsList.innerHTML = "";
-    friendNames.split(",").slice(0,10).forEach(name => {
-      const li = document.createElement("li");
-      li.textContent = name.trim();
-      topFriendsList.appendChild(li);
+      music: musicInput.value
     });
+    alert("Profile info saved!");
+  } catch (err) {
+    console.error("Error saving info:", err);
+    alert("Failed to save profile info");
   }
 });
+
+// -----------------------------
+// Render Top 10 Friends
+// -----------------------------
+function renderFriends(friends) {
+  friendsContainer.innerHTML = "";
+  friends.forEach(friend => {
+    const div = document.createElement("div");
+    div.textContent = friend.displayName || "Unknown";
+    friendsContainer.appendChild(div);
+  });
+}

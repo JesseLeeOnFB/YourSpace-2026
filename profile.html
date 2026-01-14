@@ -7,36 +7,58 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar -->
+
+  <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <section class="profile-container">
-    <div class="profile-header">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <div class="profile-info">
-        <input type="file" id="profilePicInput" accept="image/*">
-        <input type="text" id="usernameInput" placeholder="Username">
-        <input type="text" id="locationInput" placeholder="Location">
+  <!-- Profile Page -->
+  <section class="profilePage">
+
+    <!-- Profile Header -->
+    <div class="profileHeader">
+      <img id="profilePhoto" src="https://via.placeholder.com/100" alt="Profile Photo">
+      <div>
+        <input type="file" id="profilePhotoInput" accept="image/*">
       </div>
     </div>
 
-    <textarea id="bioInput" placeholder="Your bio..." rows="3"></textarea>
+    <!-- Profile Details -->
+    <div class="profileDetails">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="Enter your username">
 
-    <h3>Top 10 Friends</h3>
-    <div class="top-friends" id="topFriendsContainer">
-      <!-- Friends added dynamically -->
+      <label for="bio">Bio:</label>
+      <textarea id="bio" rows="3" placeholder="Enter your bio"></textarea>
+
+      <label for="location">Location:</label>
+      <input type="text" id="location" placeholder="Enter your location">
+
+      <label for="music">Embedded Music URL (Spotify / YouTube):</label>
+      <input type="text" id="music" placeholder="Paste embed URL">
+
+      <button id="saveProfileBtn">Save Profile</button>
     </div>
-    <input type="text" id="addFriendInput" placeholder="Add friend username">
-    <button id="addFriendBtn">Add Friend</button>
 
-    <h3>Custom HTML / Embedded Music</h3>
-    <textarea id="customHTMLInput" placeholder="Paste custom HTML or embed music here..." rows="5"></textarea>
+    <!-- Top 10 Friends -->
+    <div class="topFriends">
+      <h3>Top 10 Friends</h3>
+      <div class="topFriendsList" id="topFriendsList">
+        <!-- Dynamically filled -->
+      </div>
+    </div>
 
-    <button id="saveProfileBtn">Save Profile</button>
+  </section>
+
+  <!-- Search Users -->
+  <section class="searchUsers">
+    <h3>Find Friends</h3>
+    <input type="text" id="searchUserInput" placeholder="Search by username or email">
+    <button id="searchUserBtn">Search</button>
+    <div id="searchResults"></div>
   </section>
 
   <script type="module" src="profile.js"></script>

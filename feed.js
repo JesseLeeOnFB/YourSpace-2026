@@ -93,11 +93,12 @@ onAuthStateChanged(auth, async (user) => {
         const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
 
         // Force lowercase MIME type with fallback
-        let contentType = file.type.toLowerCase();
-        if (!contentType) {
-          if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
-          if (["mp4","mov","webm"].includes(ext)) contentType = "video/mp4";
-        }
+        let contentType = let contentType = file.type;
+if (!contentType) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
+  if (["mp4","mov","webm"].includes(ext)) contentType = "video/mp4";
+}
 
         const snapshot = await uploadBytes(storageRef, file, { contentType });
         mediaURL = await getDownloadURL(snapshot.ref);

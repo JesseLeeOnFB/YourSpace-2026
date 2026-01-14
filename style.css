@@ -170,7 +170,43 @@ nav button:hover {
     font-size: 16px;
   }
 
-  #postContainer input[type="text"] {
+  #postContainer i/* ==============================
+   FEED IMAGE SIZE FIX (GLOBAL)
+   ============================== */
+
+.post {
+  max-width: 560px;
+  margin: 16px auto;
+  padding: 12px;
+  background: #111;
+  border-radius: 12px;
+}
+
+/* Force feed images to behave */
+.post img,
+.postImage {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+
+  /* 🔥 THIS IS THE KEY */
+  max-height: 320px;
+
+  object-fit: contain;
+
+  margin-top: 10px;
+  border-radius: 10px;
+  background: #000;
+}
+
+/* Mobile tuning */
+@media (max-width: 600px) {
+  .post img,
+  .postImage {
+    max-height: 260px;
+  }
+}nput[type="text"] {
     font-size: 16px;
   }
 }

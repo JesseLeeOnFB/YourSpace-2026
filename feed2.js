@@ -137,29 +137,40 @@ onAuthStateChanged(auth, async (user) => {
       });
 
       // Like
-      likeBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const postRef = doc(db, "posts", docSnap.id);
-        await updateDoc(postRef, { likes: increment(1) });
-      });
+ // LIKE BUTTON
+likeBtn.addEventListener("click", async () => {
+  const postRef = doc(db, "posts", docSnap.id);
+  try {
+    await updateDoc(postRef, { likes: increment(1) });
+  } catch (error) {
+    console.error("Failed to like post:", error);
+    alert("You cannot like this post. Check permissions.");
+  }
+});
 
-      // Comment
-      commentBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const commentText = prompt("Enter your comment:");
-        if (!commentText) return;
+// COMMENT BUTTON
+const commentsContainer = postDiv.querySelector(".commentsContainer");
+commentBtn.addEventListener("click", async () => {
+  const commentText = prompt("Enter your comment:");
+  if (!commentText) return;
 
-        const postRef = doc(db, "posts", docSnap.id);
-        const latestSnap = await getDoc(postRef);
-        const latestData = latestSnap.exists() ? latestSnap.data() : {};
-        const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
-        await updateDoc(postRef, { comments: updatedComments });
+  const postRef = doc(db, "posts", docSnap.id);
+  try {
+    const latestSnap = await getDoc(postRef);
+    const latestData = latestSnap.exists() ? latestSnap.data() : {};
+    const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
 
-        // Render immediately
-        const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
-        commentsContainer.appendChild(commentEl);
-      });
+    await updateDoc(postRef, { comments: updatedComments });
+
+    // Immediately render
+    const commentEl = document.createElement("p");
+    commentEl.textContent = commentText;
+    commentsContainer.appendChild(commentEl);
+  } catch (error) {
+    console.error("Failed to comment:", error);
+    alert("You cannot comment on this post. Check permissions.");
+  }
+});
 
       // Delete
       if (deleteBtn) {

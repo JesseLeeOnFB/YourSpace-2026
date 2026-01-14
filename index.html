@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Login</title>
+  <title>YourSpace Login / Signup</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="login-container">
-    <h1>YourSpace</h1>
+  <div class="authContainer">
+    <h1>Welcome to YourSpace</h1>
 
-    <div class="input-group">
+    <!-- Signup Section -->
+    <div class="signupSection">
+      <h2>Sign Up</h2>
       <input type="text" id="usernameInput" placeholder="Username">
-    </div>
-    <div class="input-group">
       <input type="email" id="emailInput" placeholder="Email">
-    </div>
-    <div class="input-group">
       <input type="password" id="passwordInput" placeholder="Password">
-    </div>
-
-    <div class="button-group">
-      <button id="loginBtn">Log In</button>
       <button id="signupBtn">Sign Up</button>
     </div>
 
-    <div id="message" style="color:red; margin-top:10px;"></div>
+    <!-- Login Section -->
+    <div class="loginSection">
+      <h2>Log In</h2>
+      <input type="email" id="emailInputLogin" placeholder="Email">
+      <input type="password" id="passwordInputLogin" placeholder="Password">
+      <button id="loginBtn">Log In</button>
+    </div>
+
+    <!-- Message / Errors -->
+    <div id="message"></div>
   </div>
 
   <script type="module" src="script.js"></script>

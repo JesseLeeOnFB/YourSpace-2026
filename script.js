@@ -1,13 +1,8 @@
-// ---------------------------
-// Import Firebase modules
-// ---------------------------
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// Firebase SDK imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-// ---------------------------
 // Firebase config
-// ---------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -18,60 +13,54 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// ---------------------------
 // Initialize Firebase
-// ---------------------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-// ---------------------------
-// DOM elements
-// ---------------------------
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
+// Grab DOM elements
 const loginBtn = document.getElementById("loginBtn");
-
-const signupUsername = document.getElementById("signupUsername");
-const signupEmail = document.getElementById("signupEmail");
-const signupPassword = document.getElementById("signupPassword");
 const signupBtn = document.getElementById("signupBtn");
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const usernameInput = document.getElementById("usernameInput");
+const messageDiv = document.getElementById("message");
 
-// ---------------------------
-// Login
-// ---------------------------
+// Login handler
 loginBtn.addEventListener("click", async () => {
+  messageDiv.textContent = "";
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-    console.log("Login successful:", userCredential.user.email);
-    window.location.href = "feed.html";
-  } catch (error) {
-    console.error("Login failed:", error);
-    alert("Login failed: " + error.message);
+    const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    console.log("Login successful:", userCredential.user.uid);
+    window.location.href = "feed.html"; // Redirect to feed
+  } catch (err) {
+    console.error("Login error:", err);
+    messageDiv.textContent = "Login failed. Check email/password.";
   }
 });
 
-// ---------------------------
-// Sign Up
-// ---------------------------
+// Signup handler
 signupBtn.addEventListener("click", async () => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
-    console.log("Sign up successful:", userCredential.user.email);
+  messageDiv.textContent = "";
+  if (!usernameInput.value) {
+    messageDiv.textContent = "Please enter a username.";
+    return;
+  }
 
-    // Create Firestore user doc with username
-    const userRef = doc(db, "users", userCredential.user.uid);
-    await setDoc(userRef, {
-      username: signupUsername.value || "Anonymous",
-      bio: "",
-      location: "",
-      music: "",
-      topFriends: []
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    console.log("Signup successful:", userCredential.user.uid);
+
+    // Save username to Firestore
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    const db = getFirestore(app);
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      username: usernameInput.value,
+      createdAt: new Date()
     });
 
-    window.location.href = "feed.html";
-  } catch (error) {
-    console.error("Sign up failed:", error);
-    alert("Sign up failed: " + error.message);
+    window.location.href = "feed.html"; // Redirect to feed
+  } catch (err) {
+    console.error("Signup error:", err);
+    messageDiv.textContent = "Signup failed. Check console.";
   }
 });

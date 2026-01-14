@@ -73,16 +73,24 @@ onAuthStateChanged(auth, async (user) => {
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
-      try {
-        const file = postImageInput.files[0];
-        const safeFileName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(snapshot.ref);
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        alert("Image upload failed. Text will still post.");
-      }
+  try {
+    const file = postImageInput.files[0];
+    console.log("Uploading file:", file.name, file.size, file.type); // debug
+
+    const safeFileName = encodeURIComponent(file.name);
+    const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
+
+    const snapshot = await uploadBytes(storageRef, file);
+    console.log("Upload successful", snapshot);
+
+    postImageURL = await getDownloadURL(snapshot.ref);
+    console.log("Download URL:", postImageURL);
+
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    alert("Image upload failed. Text will still post.");
+  }
+}
     }
 
     // Fetch user profile

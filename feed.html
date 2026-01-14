@@ -7,19 +7,19 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Create Post Section -->
+  <!-- Create Post -->
   <section class="createPost">
     <h2>Create a Post</h2>
     <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
     <input type="file" id="postFileInput" accept="image/*,video/*">
-    <img id="imagePreview" src="" style="display:none; max-width: 300px; max-height: 300px; margin-top: 10px;">
+    <img id="imagePreview" src="" style="display:none; max-width:300px; max-height:300px; margin-top:10px;">
+    <video id="videoPreview" controls style="display:none; max-width:300px; max-height:300px; margin-top:10px;"></video>
     
     <div class="notifications">
       <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
@@ -29,7 +29,7 @@
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- Feed Section -->
+  <!-- Feed -->
   <section class="feed">
     <h2>Feed</h2>
     <div id="postsContainer"></div>

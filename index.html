@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace 2026</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Welcome to YourSpace</h1>
+  <div class="loginContainer">
+    <h1>YourSpace</h1>
 
-<div id="authContainer">
-  <input type="text" id="username" placeholder="Username">
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+    <div class="authForm">
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button id="loginBtn">Login</button>
+    </div>
 
-  <button id="signupBtn">Sign Up</button>
-  <button id="loginBtn">Login</button>
-</div>
+    <div class="authForm">
+      <h2>Sign Up</h2>
+      <input type="text" id="signupUsername" placeholder="Username">
+      <input type="email" id="signupEmail" placeholder="Email">
+      <input type="password" id="signupPassword" placeholder="Password">
+      <button id="signupBtn">Sign Up</button>
+    </div>
 
-<script type="module" src="script.js"></script>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>

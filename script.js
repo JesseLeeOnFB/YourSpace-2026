@@ -1,10 +1,7 @@
 // script.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile
+import { 
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -13,10 +10,9 @@ const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com", // <-- must be .appspot.com
+  storageBucket: "yourspace-2026.appspot.com",
   messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -49,9 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
         theme: "",
         createdAt: serverTimestamp()
       });
-      alert("Account created!");
       window.location.href = "feed.html";
     } catch (err) {
+      console.error(err);
       alert(err.message);
     }
   });
@@ -67,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "feed.html";
     } catch (err) {
+      console.error(err);
       alert(err.message);
     }
   });

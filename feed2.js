@@ -23,7 +23,7 @@ import {
 import {
   getStorage,
   ref,
-  uploadBytesResumable,
+  uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
@@ -38,6 +38,7 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -52,13 +53,14 @@ const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+// Wait for auth
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // NAV
+  // Navigation buttons
   profileBtn.onclick = () => window.location.href = "profile.html";
   logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   homeBtn.onclick = () => window.location.href = "feed.html";
@@ -66,45 +68,31 @@ onAuthStateChanged(auth, async (user) => {
   // POST CREATION
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
-    const file = postImageInput.files[0];
     let postImageURL = "";
 
-    if (!text && !file) {
+    if (!text && postImageInput.files.length === 0) {
       alert("Write something or attach an image!");
       return;
+    }
+
+    // Handle image upload
+    if (postImageInput.files.length > 0) {
+      try {
+        const file = postImageInput.files[0];
+        const safeName = encodeURIComponent(file.name); // iOS-safe
+        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
+        const uploadSnap = await uploadBytes(storageRef, file);
+        postImageURL = await getDownloadURL(uploadSnap.ref);
+        console.log("Image uploaded successfully:", postImageURL);
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        alert("Image upload failed. Only text will post.");
+      }
     }
 
     // Fetch user profile
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
-
-    // Upload image first if exists
-    if (file) {
-      try {
-        const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        await new Promise((resolve, reject) => {
-          uploadTask.on(
-            'state_changed',
-            null,
-            (error) => {
-              console.error("Image upload failed:", error);
-              alert("Image upload failed: " + error.message);
-              reject(error);
-            },
-            async () => {
-              postImageURL = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log("Image uploaded:", postImageURL);
-              resolve();
-            }
-          );
-        });
-      } catch (err) {
-        console.log("Image upload skipped due to error, posting text only.");
-      }
-    }
 
     // Add post to Firestore
     await addDoc(collection(db, "posts"), {
@@ -125,15 +113,15 @@ onAuthStateChanged(auth, async (user) => {
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
+    const scrollY = window.scrollY;
     postsContainer.innerHTML = "";
 
-    snapshot.forEach(docSnap => {
+    snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -152,19 +140,26 @@ onAuthStateChanged(auth, async (user) => {
       postsContainer.appendChild(postDiv);
 
       const commentsContainer = postDiv.querySelector(".commentsContainer");
+
+      // Render existing comments
       (data.comments || []).forEach(c => {
         const commentEl = document.createElement("p");
         commentEl.textContent = c.text;
         commentsContainer.appendChild(commentEl);
       });
 
-      // BUTTONS
-      postDiv.querySelector(".likeBtn").onclick = async () => {
+      // LIKE BUTTON
+      const likeBtn = postDiv.querySelector(".likeBtn");
+      likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
+        data.likes = (data.likes || 0) + 1;
+        likeBtn.textContent = `Like (${data.likes})`;
         await updateDoc(postRef, { likes: increment(1) });
       };
 
-      postDiv.querySelector(".commentBtn").onclick = async () => {
+      // COMMENT BUTTON
+      const commentBtn = postDiv.querySelector(".commentBtn");
+      commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
         const postRef = doc(db, "posts", docSnap.id);
@@ -174,6 +169,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       };
 
+      // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.onclick = async () => {
@@ -183,7 +179,9 @@ onAuthStateChanged(auth, async (user) => {
         };
       }
 
-      postDiv.querySelector(".shareBtn").onclick = () => {
+      // SHARE BUTTON
+      const shareBtn = postDiv.querySelector(".shareBtn");
+      shareBtn.onclick = () => {
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
         } else {
@@ -191,5 +189,7 @@ onAuthStateChanged(auth, async (user) => {
         }
       };
     });
+
+    window.scrollTo(0, scrollY);
   });
 });

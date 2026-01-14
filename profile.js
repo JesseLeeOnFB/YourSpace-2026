@@ -1,112 +1,89 @@
-// profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-/* -------------------- Firebase Init -------------------- */
+// --- Firebase config ---
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com",
+  storageBucket: "yourspace-2026.firebasestorage.app",
   messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(
-  app,
-  "gs://yourspace-2026.firebasestorage.app"
-);
-
-/* -------------------- DOM -------------------- */
-const homeBtn = document.getElementById("homeBtn");
-const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+const storage = getStorage(app);
 
 const usernameInput = document.getElementById("usernameInput");
 const locationInput = document.getElementById("locationInput");
 const bioInput = document.getElementById("bioInput");
 const musicInput = document.getElementById("musicInput");
-
-const profileImageInput = document.getElementById("profileImageInput");
-const profileImagePreview = document.getElementById("profileImagePreview");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
+const profilePhotoPreview = document.getElementById("profilePhotoPreview");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-const topFriendsList = document.getElementById("topFriendsList");
+// Preview new profile photo
+profilePhotoInput.addEventListener("change", () => {
+  const file = profilePhotoInput.files[0];
+  if (!file) {
+    profilePhotoPreview.src = "";
+    return;
+  }
+  profilePhotoPreview.src = URL.createObjectURL(file);
+});
 
-/* -------------------- Auth & Navigation -------------------- */
-onAuthStateChanged(auth, async (user) => {
+// Load user data
+onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // Nav buttons
-  homeBtn.onclick = () => window.location.href = "feed.html";
-  profileBtn.onclick = () => window.location.href = "profile.html";
-  logoutBtn.onclick = async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  };
+  const userDocRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userDocRef);
 
-  // Load profile info
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
   if (userSnap.exists()) {
     const data = userSnap.data();
     usernameInput.value = data.username || "";
     locationInput.value = data.location || "";
     bioInput.value = data.bio || "";
     musicInput.value = data.music || "";
-    if (data.profileImage) profileImagePreview.src = data.profileImage;
-    if (Array.isArray(data.topFriends)) {
-      topFriendsList.innerHTML = "";
-      data.topFriends.forEach(friend => {
-        const li = document.createElement("li");
-        li.textContent = friend;
-        topFriendsList.appendChild(li);
-      });
-    }
+    if (data.profilePhoto) profilePhotoPreview.src = data.profilePhoto;
   }
 
-  // Image preview
-  profileImageInput.addEventListener("change", () => {
-    const file = profileImageInput.files[0];
-    if (!file) return;
-    profileImagePreview.src = URL.createObjectURL(file);
-  });
-
-  // Save profile
   saveProfileBtn.onclick = async () => {
     saveProfileBtn.disabled = true;
 
-    try {
-      let profileImageURL = profileImagePreview.src;
+    let profilePhotoURL = profilePhotoPreview.src || null;
 
-      // Upload new image if selected
-      const file = profileImageInput.files[0];
+    try {
+      // If a new file is selected, upload it
+      const file = profilePhotoInput.files[0];
       if (file) {
         let contentType = file.type;
         if (!contentType) {
-          const ext = file.name.split('.').pop().toLowerCase();
-          if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (["jpg", "jpeg", "png", "gif"].includes(ext)) contentType = "image/jpeg";
         }
-        const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
+
+        const safeName = encodeURIComponent(file.name);
+        const storageRef = ref(storage, `yourspace-2026.appspot.com/profileImages/${user.uid}/${Date.now()}_${safeName}`);
         const snapshot = await uploadBytes(storageRef, file, { contentType });
-        profileImageURL = await getDownloadURL(snapshot.ref);
+        profilePhotoURL = await getDownloadURL(snapshot.ref);
       }
 
-      // Update Firestore
-      await setDoc(userRef, {
-        username: usernameInput.value,
-        location: locationInput.value,
-        bio: bioInput.value,
-        music: musicInput.value,
-        profileImage: profileImageURL,
+      // Save all profile info to Firestore
+      await setDoc(userDocRef, {
+        username: usernameInput.value.trim(),
+        location: locationInput.value.trim(),
+        bio: bioInput.value.trim(),
+        music: musicInput.value.trim(),
+        profilePhoto: profilePhotoURL
       }, { merge: true });
 
       alert("Profile saved!");

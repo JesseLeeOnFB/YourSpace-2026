@@ -1,14 +1,12 @@
 // profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore, doc, getDoc, updateDoc, arrayUnion
+import { 
+  getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-/* -------------------- Firebase Init -------------------- */
+// -------------------- Firebase Init --------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -17,96 +15,101 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-/* -------------------- DOM Elements -------------------- */
-const profilePicInput = document.getElementById("profilePicInput");
-const profilePicPreview = document.getElementById("profilePicPreview");
+// -------------------- DOM --------------------
 const displayNameInput = document.getElementById("displayName");
 const bioInput = document.getElementById("bio");
 const locationInput = document.getElementById("location");
-const musicInput = document.getElementById("musicURL");
-const topFriendsInputs = Array.from(document.querySelectorAll(".topFriendInput"));
-const notifyEmail = document.getElementById("notifyEmail");
-const notifyBrowser = document.getElementById("notifyBrowser");
+const musicInput = document.getElementById("musicEmbed");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
+const profilePhotoPreview = document.getElementById("profilePhotoPreview");
+const topFriendsInputs = document.querySelectorAll(".topFriendInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
+
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-/* -------------------- Auth -------------------- */
+// -------------------- Auth --------------------
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // Navigation
-  homeBtn.onclick = () => window.location.href = "feed.html";
+  // Nav buttons
   logoutBtn.onclick = async () => {
     await signOut(auth);
     window.location.href = "index.html";
   };
+  homeBtn.onclick = () => (window.location.href = "feed.html");
 
-  // Load profile data
-  const userRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userRef);
-  const data = userSnap.exists() ? userSnap.data() : {};
+  const userDocRef = doc(db, "users", user.uid);
 
-  displayNameInput.value = data.displayName || "";
-  bioInput.value = data.bio || "";
-  locationInput.value = data.location || "";
-  musicInput.value = data.musicURL || "";
-  profilePicPreview.src = data.photoURL || "default-avatar.png";
+  // Load user data
+  const userSnap = await getDoc(userDocRef);
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    displayNameInput.value = data.displayName || "";
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
+    musicInput.value = data.musicEmbed || "";
+    profilePhotoPreview.src = data.photoURL || "default-avatar.png";
 
-  if (data.topFriends && Array.isArray(data.topFriends)) {
-    topFriendsInputs.forEach((input, i) => {
-      input.value = data.topFriends[i] || "";
-    });
+    if (Array.isArray(data.topFriends)) {
+      topFriendsInputs.forEach((input, idx) => {
+        input.value = data.topFriends[idx] || "";
+      });
+    }
   }
 
-  notifyEmail.checked = !!data.notifyEmail;
-  notifyBrowser.checked = !!data.notifyBrowser;
-
-  /* -------------------- Profile Picture Upload -------------------- */
-  profilePicInput.addEventListener("change", async () => {
-    const file = profilePicInput.files[0];
+  // Preview new photo
+  profilePhotoInput.onchange = () => {
+    const file = profilePhotoInput.files[0];
     if (!file) return;
-    profilePicPreview.src = URL.createObjectURL(file);
-  });
+    profilePhotoPreview.src = URL.createObjectURL(file);
+  };
 
-  /* -------------------- Save Profile Button -------------------- */
+  // Save profile
   saveProfileBtn.onclick = async () => {
     saveProfileBtn.disabled = true;
-
     try {
-      let photoURL = data.photoURL || "";
-      const file = profilePicInput.files[0];
-      if (file) {
-        let contentType = file.type || "image/jpeg";
-        const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
+      let photoURL = profilePhotoPreview.src;
+
+      // Upload new profile photo if selected
+      if (profilePhotoInput.files.length > 0) {
+        const file = profilePhotoInput.files[0];
+        let contentType = file.type;
+        if (!contentType) {
+          const ext = file.name.split(".").pop().toLowerCase();
+          if (["jpg", "jpeg", "png", "gif"].includes(ext)) contentType = "image/jpeg";
+        }
+
+        const filePath = `profileImages/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`;
+        const storageRef = ref(storage, filePath);
         const snapshot = await uploadBytes(storageRef, file, { contentType });
         photoURL = await getDownloadURL(snapshot.ref);
       }
 
-      const topFriends = topFriendsInputs.map(input => input.value.trim()).filter(Boolean);
+      const topFriends = Array.from(topFriendsInputs).map(i => i.value.trim()).filter(v => v);
 
-      await updateDoc(userRef, {
+      // Save all fields to Firestore
+      await setDoc(userDocRef, {
         displayName: displayNameInput.value.trim() || "Anonymous",
         bio: bioInput.value.trim() || "",
         location: locationInput.value.trim() || "",
-        musicURL: musicInput.value.trim() || "",
+        musicEmbed: musicInput.value.trim() || "",
         photoURL,
-        topFriends,
-        notifyEmail: notifyEmail.checked,
-        notifyBrowser: notifyBrowser.checked
-      });
+        topFriends
+      }, { merge: true });
 
-      alert("Profile saved successfully!");
+      alert("Profile saved!");
     } catch (err) {
-      console.error("Profile save failed:", err);
+      console.error(err);
       alert("Failed to save profile. Check console.");
     } finally {
       saveProfileBtn.disabled = false;

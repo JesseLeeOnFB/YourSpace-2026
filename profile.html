@@ -6,53 +6,66 @@
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Nav Bar -->
+<body class="default">
+
+  <!-- Navigation -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- Profile Section -->
   <section class="profileSection">
-    <h2>My Profile</h2>
+    <h2>Your Profile</h2>
 
-    <!-- Profile Photo -->
+    <!-- Profile Photo Upload -->
     <div class="profilePhotoSection">
-      <img id="profilePhotoPreview" class="profilePhoto" src="" alt="Profile Photo">
+      <img id="profilePhotoPreview" src="" alt="Profile Photo" class="profilePhoto">
       <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Photo</button>
+      <button id="savePhotoBtn">Save Profile Photo</button>
     </div>
 
     <!-- Profile Info -->
     <div class="profileInfo">
+      <label>Username:</label>
       <input type="text" id="usernameInput" placeholder="Username">
+      <label>Location:</label>
       <input type="text" id="locationInput" placeholder="Location">
+      <label>Bio:</label>
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
-      <button id="saveProfileInfoBtn">Save Profile Info</button>
+      <label>Embedded Music URL:</label>
+      <input type="text" id="musicInput" placeholder="Music URL">
+      <button id="saveInfoBtn">Save Profile Info</button>
     </div>
+  </section>
 
-    <!-- Customization Section -->
-    <div class="customizationSection">
-      <h3>Theme / Background</h3>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="dark">Dark</option>
-        <option value="neon">Neon</option>
-        <option value="animated">Animated</option>
-      </select>
-    </div>
+  <!-- Customization Section -->
+  <section class="customizationSection">
+    <h3>Profile Customization</h3>
+    <label for="themeSelect">Theme:</label>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="animated">Animated</option>
+    </select>
+  </section>
 
-    <!-- Top 10 Friends -->
-    <div class="friendsSection">
-      <h3>Top 10 Friends</h3>
-      <ul id="top10FriendsList"></ul>
-      <input type="text" id="addFriendInput" placeholder="Add Friend by Username">
-      <button id="addFriendBtn">Add Friend</button>
-    </div>
+  <!-- Top Friends Section -->
+  <section class="topFriendsSection">
+    <h3>Top 10 Friends</h3>
+    <ul id="topFriendsList"></ul>
 
+    <input type="text" id="addFriendInput" placeholder="Enter friend's username">
+    <button id="addFriendBtn">Add Friend</button>
+  </section>
+
+  <!-- Music Player Section -->
+  <section class="musicPlayerSection">
+    <h3>Music Player</h3>
+    <audio id="musicPlayer" controls>
+      Your browser does not support the audio element.
+    </audio>
   </section>
 
   <script type="module" src="profile.js"></script>

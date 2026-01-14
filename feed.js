@@ -1,19 +1,7 @@
 // feed.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  updateDoc,
-  increment,
-  arrayUnion,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, onSnapshot, serverTimestamp, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 /* -------------------- Firebase Init -------------------- */
@@ -25,33 +13,33 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
 /* -------------------- DOM -------------------- */
-const postInput = document.getElementById("postText");
+const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
+const postBtn = document.getElementById("postBtn");
 const imagePreview = document.getElementById("imagePreview");
 const postsContainer = document.getElementById("postsContainer");
-const postBtn = document.getElementById("postBtn");
-
+const notifyEmail = document.getElementById("notifyEmail");
+const notifyBrowser = document.getElementById("notifyBrowser");
 const homeBtn = document.getElementById("homeBtn");
 const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-const notifyEmail = document.getElementById("notifyEmail");
-const notifyBrowser = document.getElementById("notifyBrowser");
-
-/* -------------------- Auth & Nav -------------------- */
+/* -------------------- Auth -------------------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
+  const uid = user.uid;
+
+  // Nav buttons
   homeBtn.onclick = () => window.location.href = "feed.html";
   profileBtn.onclick = () => window.location.href = "profile.html";
   logoutBtn.onclick = async () => {
@@ -60,148 +48,168 @@ onAuthStateChanged(auth, async (user) => {
   };
 
   /* -------------------- Image/Video Preview -------------------- */
-  postFileInput.onchange = () => {
+  postFileInput.addEventListener("change", () => {
     const file = postFileInput.files[0];
     if (!file) {
       imagePreview.style.display = "none";
       return;
     }
-
-    const url = URL.createObjectURL(file);
-    imagePreview.src = url;
+    imagePreview.src = URL.createObjectURL(file);
     imagePreview.style.display = "block";
-  };
+  });
 
-  /* -------------------- CREATE POST -------------------- */
+  /* -------------------- Create Post -------------------- */
   postBtn.onclick = async () => {
-    const text = postInput.value.trim();
+    const text = postText.value.trim();
     const file = postFileInput.files[0];
 
     if (!text && !file) {
-      alert("Write something or attach a file.");
+      alert("Write something or attach an image/video.");
       return;
     }
 
     postBtn.disabled = true;
 
     try {
-      let postMediaURL = "";
-      let mediaType = "";
+      let postImageURL = null;
+      let postVideoURL = null;
 
       // Upload file if exists
       if (file) {
         let contentType = file.type;
         if (!contentType) {
-          const ext = file.name.split('.').pop().toLowerCase();
+          const ext = file.name.split(".").pop().toLowerCase();
           if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
           if (["mp4","mov","webm"].includes(ext)) contentType = "video/mp4";
         }
-        mediaType = contentType.startsWith("image") ? "postImage" : "postVideo";
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
+
+        const storageRef = ref(storage, `posts/${uid}/${Date.now()}_${encodeURIComponent(file.name)}`);
         const snapshot = await uploadBytes(storageRef, file, { contentType });
-        postMediaURL = await getDownloadURL(snapshot.ref);
+        const url = await getDownloadURL(snapshot.ref);
+
+        if (contentType.startsWith("image")) postImageURL = url;
+        if (contentType.startsWith("video")) postVideoURL = url;
       }
 
-      // Get user profile
-      const userSnap = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDoc(doc(db, "users", user.uid));
+      // Get current user profile
+      const userSnap = await getDoc(doc(db, "users", uid));
       const profile = userSnap.exists() ? userSnap.data() : {};
 
-      // Create post in Firestore
-      const postData = {
+      // Create post document
+      await addDoc(collection(db, "posts"), {
+        userId: uid,
+        displayName: profile.username || "Anonymous",
+        profilePic: profile.profilePic || "",
         text: text || null,
-        userId: user.uid,
-        displayName: profile.displayName || "Anonymous",
-        photoURL: profile.photoURL || "",
+        postImage: postImageURL,
+        postVideo: postVideoURL,
         likes: 0,
         dislikes: 0,
         comments: [],
-        createdAt: serverTimestamp()
-      };
-      if (postMediaURL) postData[mediaType] = postMediaURL;
+        mentions: extractMentions(text),
+        createdAt: serverTimestamp(),
+        notifyEmail: notifyEmail.checked,
+        notifyBrowser: notifyBrowser.checked
+      });
 
-      await addDoc(collection(db, "posts"), postData);
-
-      // Reset inputs
-      postInput.value = "";
+      // Reset
+      postText.value = "";
       postFileInput.value = "";
       imagePreview.style.display = "none";
-      notifyEmail.checked = false;
-      notifyBrowser.checked = false;
-
     } catch (err) {
-      console.error(err);
+      console.error("Post creation failed:", err);
       alert("Post creation failed. Check console.");
     } finally {
       postBtn.disabled = false;
     }
   };
 
-  /* -------------------- LOAD FEED -------------------- */
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  /* -------------------- Load Feed -------------------- */
+  const q = collection(db, "posts");
   onSnapshot(q, (snapshot) => {
     postsContainer.innerHTML = "";
 
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
+    snapshot.docs
+      .sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0))
+      .forEach(docSnap => {
+        const data = docSnap.data();
+        const postDiv = document.createElement("div");
+        postDiv.className = "post";
 
-      const post = document.createElement("div");
-      post.className = "post";
+        let mediaHTML = "";
+        if (data.postImage) mediaHTML += `<img src="${data.postImage}" class="postMedia">`;
+        if (data.postVideo) mediaHTML += `<video src="${data.postVideo}" class="postMedia" controls></video>`;
 
-      let mediaHTML = "";
-      if (data.postImage) mediaHTML = `<img src="${data.postImage}" class="postMedia">`;
-      if (data.postVideo) mediaHTML = `<video src="${data.postVideo}" class="postMedia" controls></video>`;
+        // Post HTML
+        postDiv.innerHTML = `
+          <div class="postHeader">
+            <img src="${data.profilePic || ''}" class="postProfilePic">
+            <strong>${data.displayName}</strong>
+          </div>
+          <p>${data.text || ""}</p>
+          ${mediaHTML}
+          <div class="postButtons">
+            <button class="likeBtn">👍 (${data.likes || 0})</button>
+            <button class="dislikeBtn">🖕 (${data.dislikes || 0})</button>
+            <button class="commentBtn">💬 (${data.comments?.length || 0})</button>
+            <button class="shareBtn">Share</button>
+            ${data.userId === uid ? `<button class="deleteBtn">Delete</button>` : ""}
+          </div>
+          <div class="commentsContainer"></div>
+        `;
 
-      post.innerHTML = `
-        <strong>${data.displayName}</strong>
-        <p>${data.text || ""}</p>
-        ${mediaHTML}
-        <div class="postActions">
-          <button class="likeBtn">👍 (${data.likes || 0})</button>
-          <button class="dislikeBtn">🖕 (${data.dislikes || 0})</button>
-          <button class="commentBtn">💬 Comment</button>
-          <button class="shareBtn">Share</button>
-          ${data.userId === user.uid ? `<button class="deleteBtn">Delete</button>` : ""}
-        </div>
-        <div class="commentsContainer"></div>
-      `;
+        postsContainer.appendChild(postDiv);
 
-      postsContainer.appendChild(post);
-
-      // Like
-      post.querySelector(".likeBtn").onclick = async () => {
-        await updateDoc(doc(db, "posts", docSnap.id), { likes: increment(1) });
-      };
-
-      // Dislike
-      post.querySelector(".dislikeBtn").onclick = async () => {
-        await updateDoc(doc(db, "posts", docSnap.id), { dislikes: increment(1) });
-      };
-
-      // Delete
-      const delBtn = post.querySelector(".deleteBtn");
-      if (delBtn) delBtn.onclick = async () => {
-        if (confirm("Delete post?")) await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).deleteDoc(doc(db, "posts", docSnap.id));
-      };
-
-      // Comment
-      const commentBtn = post.querySelector(".commentBtn");
-      const commentsContainer = post.querySelector(".commentsContainer");
-      commentBtn.onclick = () => {
-        const commentBox = document.createElement("textarea");
-        commentBox.placeholder = "Write a comment...";
-        const submitBtn = document.createElement("button");
-        submitBtn.textContent = "Post";
-        commentsContainer.appendChild(commentBox);
-        commentsContainer.appendChild(submitBtn);
-
-        submitBtn.onclick = async () => {
-          const commentText = commentBox.value.trim();
-          if (!commentText) return;
-          await updateDoc(doc(db, "posts", docSnap.id), { comments: arrayUnion({ text: commentText, userId: user.uid, displayName: profile.displayName || "Anonymous" }) });
-          commentBox.remove();
-          submitBtn.remove();
+        // Like button
+        postDiv.querySelector(".likeBtn").onclick = async () => {
+          await updateDoc(doc(db, "posts", docSnap.id), { likes: increment(1) });
         };
-      };
-    });
+
+        // Dislike button
+        postDiv.querySelector(".dislikeBtn").onclick = async () => {
+          await updateDoc(doc(db, "posts", docSnap.id), { dislikes: increment(1) });
+        };
+
+        // Delete button
+        const delBtn = postDiv.querySelector(".deleteBtn");
+        if (delBtn) delBtn.onclick = async () => {
+          if (confirm("Delete post?")) await doc(db, "posts", docSnap.id).delete();
+        };
+
+        // Comment button
+        const commentBtn = postDiv.querySelector(".commentBtn");
+        const commentsContainer = postDiv.querySelector(".commentsContainer");
+
+        commentBtn.onclick = () => {
+          const commentBox = document.createElement("textarea");
+          commentBox.placeholder = "Write a comment...";
+          const submitBtn = document.createElement("button");
+          submitBtn.textContent = "Post";
+
+          submitBtn.onclick = async () => {
+            const commentText = commentBox.value.trim();
+            if (!commentText) return;
+
+            await updateDoc(doc(db, "posts", docSnap.id), {
+              comments: arrayUnion({ userId: uid, text: commentText, createdAt: serverTimestamp() })
+            });
+            commentBox.remove();
+            submitBtn.remove();
+          };
+
+          commentsContainer.appendChild(commentBox);
+          commentsContainer.appendChild(submitBtn);
+        };
+      });
   });
 });
+
+/* -------------------- Utility -------------------- */
+function extractMentions(text) {
+  if (!text) return [];
+  const regex = /@(\w+)/g;
+  const mentions = [];
+  let match;
+  while ((match = regex.exec(text)) !== null) mentions.push(match[1]);
+  return mentions;
+}

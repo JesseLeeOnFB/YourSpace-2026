@@ -114,18 +114,24 @@ section {
   margin-bottom: 20px;
 }
 
+/* ------------------------
+   PROFILE PAGE IMAGES
+------------------------- */
 .profilePhoto {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 50%;
+  width: 150px;          /* fixed width */
+  height: 150px;         /* fixed height */
+  object-fit: cover;     /* crop nicely without distortion */
+  border-radius: 50%;    /* circle profile pic */
   border: 2px solid #007bff;
-  margin-bottom: 10px;
+  display: block;
+  margin: 0 auto 10px;   /* center on page */
 }
 
-.profileSection input,
-.profileSection textarea {
-  max-width: 100%;
+.profileSection img {
+  max-width: 100%;       /* scale to container */
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 .profileSection button {

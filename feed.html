@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YourSpace Feed</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Quick preview styling */
+  #imagePreview {
+    display: none;
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+  }
+</style>
 </head>
 <body>
 <nav>
@@ -17,8 +26,8 @@
 
 <div id="postContainer">
   <input type="text" id="postText" placeholder="Write something...">
-  <!-- Corrected input: no 'capture', accept images -->
-  <input type="file" id="postImageInput" accept="image/*">
+  <input type="file" id="postImageInput" accept="image/*" capture="environment">
+  <img id="imagePreview" alt="Image Preview">
   <button id="postBtn" type="button">Post</button>
 </div>
 
@@ -28,5 +37,23 @@
 <div id="trendingPost"></div>
 
 <script type="module" src="feed2.js"></script>
+<script>
+  // Image preview
+  const postImageInput = document.getElementById("postImageInput");
+  const imagePreview = document.getElementById("imagePreview");
+
+  postImageInput.addEventListener("change", () => {
+    if (postImageInput.files && postImageInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = "block";
+      };
+      reader.readAsDataURL(postImageInput.files[0]);
+    } else {
+      imagePreview.style.display = "none";
+    }
+  });
+</script>
 </body>
 </html>

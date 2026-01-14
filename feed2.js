@@ -69,15 +69,19 @@ postBtn.onclick = async () => {
   let postImageURL = "";
 
   try {
-    if (file) {
-      const fileExt = file.name.split('.').pop();
-      const safeName = encodeURIComponent(file.name);
-      const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
-      
-      // uploadBytes works fine for small files; resumable can be used for large
-      const snapshot = await uploadBytes(storageRef, file, { contentType: file.type });
-      postImageURL = await getDownloadURL(snapshot.ref);
-    }
+   if (file) {
+  const fileExt = file.name.split('.').pop().toLowerCase();
+  const safeName = encodeURIComponent(file.name);
+  const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
+
+  // Upload image with proper content type fallback
+  const snapshot = await uploadBytes(storageRef, file, { 
+    contentType: file.type || "image/jpeg" 
+  });
+
+  // Get the public URL
+  postImageURL = await getDownloadURL(snapshot.ref);
+}
 
     // Get profile info
     const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));

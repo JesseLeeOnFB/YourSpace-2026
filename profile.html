@@ -14,145 +14,26 @@
   </nav>
 
   <!-- Profile Section -->
-  <section class="profileInfo">
+  <section class="profileSection">
     <h2>Your Profile</h2>
+    
+    <!-- Profile Picture Upload -->
+    <div class="profilePictureContainer">
+      <img id="profilePicPreview" src="" alt="Profile Picture" style="display:none;">
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
 
-    <!-- Profile Photo -->
-    <label>Profile Photo</label>
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    <img id="profilePhotoPreview" src="" alt="Profile Photo" style="display:none;">
+    <!-- Profile Info Inputs -->
+    <div class="profileInfo">
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="locationInput" placeholder="Location">
+      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
+    </div>
 
-    <!-- Username, Bio, Location, Music -->
-    <input type="text" id="usernameInput" placeholder="Username">
-    <input type="text" id="locationInput" placeholder="Location">
-    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-    <input type="text" id="musicInput" placeholder="Embedded Music URL">
-
-    <!-- Top 10 Friends -->
-    <label>Top 10 Friends (comma-separated)</label>
-    <input type="text" id="top10FriendsInput" placeholder="Friend1, Friend2, Friend3,...">
-
-    <!-- Save Profile Button -->
     <button id="saveProfileBtn">Save Profile</button>
   </section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
-    // -------------------- Firebase Init --------------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-      authDomain: "yourspace-2026.firebaseapp.com",
-      projectId: "yourspace-2026",
-      storageBucket: "yourspace-2026.appspot.com",
-      messagingSenderId: "72667267302",
-      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    // -------------------- DOM --------------------
-    const usernameInput = document.getElementById("usernameInput");
-    const locationInput = document.getElementById("locationInput");
-    const bioInput = document.getElementById("bioInput");
-    const musicInput = document.getElementById("musicInput");
-    const profilePhotoInput = document.getElementById("profilePhotoInput");
-    const profilePhotoPreview = document.getElementById("profilePhotoPreview");
-    const top10FriendsInput = document.getElementById("top10FriendsInput");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-    const homeBtn = document.getElementById("homeBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    // -------------------- Auth & Navigation --------------------
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      homeBtn.onclick = () => window.location.href = "feed.html";
-      logoutBtn.onclick = async () => {
-        await signOut(auth);
-        window.location.href = "index.html";
-      };
-
-      // Load existing profile data
-      const userDocRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userDocRef);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        usernameInput.value = data.username || "";
-        locationInput.value = data.location || "";
-        bioInput.value = data.bio || "";
-        musicInput.value = data.music || "";
-        top10FriendsInput.value = (data.top10Friends || []).join(", ");
-        if (data.photoURL) {
-          profilePhotoPreview.src = data.photoURL;
-          profilePhotoPreview.style.display = "block";
-        }
-      }
-    });
-
-    // -------------------- Profile Photo Preview --------------------
-    profilePhotoInput.addEventListener("change", () => {
-      const file = profilePhotoInput.files[0];
-      if (!file) {
-        profilePhotoPreview.style.display = "none";
-        return;
-      }
-      profilePhotoPreview.src = URL.createObjectURL(file);
-      profilePhotoPreview.style.display = "block";
-    });
-
-    // -------------------- Save Profile --------------------
-    saveProfileBtn.onclick = async () => {
-      const user = auth.currentUser;
-      if (!user) return alert("User not authenticated");
-
-      saveProfileBtn.disabled = true;
-
-      let photoURL = profilePhotoPreview.src || "";
-
-      try {
-        // Upload photo if new file selected
-        const file = profilePhotoInput.files[0];
-        if (file) {
-          const fileExt = file.name.split('.').pop().toLowerCase();
-          let contentType = file.type;
-          if (!contentType) {
-            if (["jpg","jpeg","png","gif"].includes(fileExt)) contentType = "image/jpeg";
-          }
-
-          const safeName = encodeURIComponent(file.name);
-          const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${safeName}`);
-          const snapshot = await uploadBytes(storageRef, file, { contentType });
-          photoURL = await getDownloadURL(snapshot.ref);
-        }
-
-        // Save profile data
-        await setDoc(doc(db, "users", user.uid), {
-          username: usernameInput.value.trim(),
-          location: locationInput.value.trim(),
-          bio: bioInput.value.trim(),
-          music: musicInput.value.trim(),
-          photoURL,
-          top10Friends: top10FriendsInput.value.split(",").map(f => f.trim()).filter(f => f)
-        }, { merge: true });
-
-        alert("Profile saved successfully!");
-      } catch (err) {
-        console.error(err);
-        alert("Error saving profile. Check console.");
-      } finally {
-        saveProfileBtn.disabled = false;
-      }
-    };
-  </script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

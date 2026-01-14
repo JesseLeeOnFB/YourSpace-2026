@@ -7,25 +7,38 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <nav>
-  <button id="homeBtn">Home</button>
-  <button id="logoutBtn">Logout</button>
+  <button id="homeBtn" type="button">Home</button>
+  <button id="feedBtn" type="button">Feed</button>
+  <button id="logoutBtn" type="button">Logout</button>
 </nav>
 
 <h1>Your Profile</h1>
 
 <div id="profileContainer">
-  <img id="profileImage" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
-  <input type="file" id="profileImageInput" accept="image/*">
-  
-  <input type="text" id="displayName" placeholder="Display Name">
-  <input type="text" id="bio" placeholder="Bio">
-  <input type="text" id="location" placeholder="Location">
-  
-  <button id="saveBtn">Save Profile</button>
+  <img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
+  <input type="file" id="profilePicInput" accept="image/*">
+  <button id="updatePicBtn">Update Picture</button>
+
+  <p>
+    <label>Display Name: </label>
+    <input type="text" id="displayName">
+  </p>
+  <p>
+    <label>Bio: </label>
+    <textarea id="bio" rows="3"></textarea>
+  </p>
+  <p>
+    <label>Location: </label>
+    <input type="text" id="location">
+  </p>
+  <p>
+    <label>Music URL: </label>
+    <input type="text" id="musicURL">
+  </p>
+  <button id="updateProfileBtn">Save Profile</button>
 </div>
 
-<script type="module" src="profile2.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

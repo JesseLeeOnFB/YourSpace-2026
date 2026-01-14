@@ -1,7 +1,11 @@
+const postFileInput = document.getElementById("postFileInput");
+const postBtn = document.getElementById("postBtn");
+const postInput = document.getElementById("postText");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+console.log("File input element:", postFileInput);
 
 // -------------------- Firebase Init --------------------
 const firebaseConfig = {

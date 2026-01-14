@@ -1,9 +1,7 @@
-// Import Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.29.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.29.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.29.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -14,74 +12,68 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth = getAuth();
+const db = getFirestore();
 
-// Elements
-const signupUsername = document.getElementById("signupUsername");
-const signupEmail = document.getElementById("signupEmail");
-const signupPassword = document.getElementById("signupPassword");
+const usernameInput = document.getElementById("username");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const signupBtn = document.getElementById("signupBtn");
-
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
 const loginBtn = document.getElementById("loginBtn");
-
 const authMessage = document.getElementById("authMessage");
 
-// Signup
+// SIGN UP
 signupBtn.addEventListener("click", async () => {
-  authMessage.textContent = "";
-  if (!signupUsername.value || !signupEmail.value || !signupPassword.value) {
-    authMessage.textContent = "Please fill out all signup fields.";
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const username = usernameInput.value.trim();
+
+  if (!email || !password || !username) {
+    authMessage.textContent = "All fields required for sign up!";
     return;
   }
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
-    const user = userCredential.user;
 
-    // Update display name
-    await updateProfile(user, { displayName: signupUsername.value });
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
     // Create user doc in Firestore
     await setDoc(doc(db, "users", user.uid), {
-      username: signupUsername.value,
-      email: signupEmail.value,
-      createdAt: new Date(),
+      username,
       bio: "",
       location: "",
       music: "",
-      top10Friends: []
+      theme: "default",
+      profilePhotoURL: "",
+      topFriends: []
     });
 
-    authMessage.style.color = "green";
-    authMessage.textContent = "Signup successful! Redirecting to feed...";
-    setTimeout(() => { window.location.href = "feed.html"; }, 1000);
-
+    authMessage.textContent = "Sign up successful!";
+    window.location.href = "feed.html";
   } catch (err) {
     console.error(err);
-    authMessage.style.color = "red";
-    authMessage.textContent = "Signup failed: " + err.message;
+    authMessage.textContent = `Sign up failed: ${err.message}`;
   }
 });
 
-// Login
+// LOG IN
 loginBtn.addEventListener("click", async () => {
-  authMessage.textContent = "";
-  if (!loginEmail.value || !loginPassword.value) {
-    authMessage.textContent = "Please fill out all login fields.";
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    authMessage.textContent = "Enter email and password!";
     return;
   }
+
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-    authMessage.style.color = "green";
-    authMessage.textContent = "Login successful! Redirecting to feed...";
-    setTimeout(() => { window.location.href = "feed.html"; }, 500);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    authMessage.textContent = "Login successful!";
+    window.location.href = "feed.html";
   } catch (err) {
     console.error(err);
-    authMessage.style.color = "red";
-    authMessage.textContent = "Login failed: " + err.message;
+    authMessage.textContent = `Login failed: ${err.message}`;
   }
 });

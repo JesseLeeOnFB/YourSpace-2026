@@ -1,4 +1,13 @@
+// ---------------------------
+// Import Firebase modules
+// ---------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+// ---------------------------
 // Firebase config
+// ---------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -9,52 +18,60 @@ const firebaseConfig = {
   measurementId: "G-FZ4GFXWGSS"
 };
 
+// ---------------------------
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+// ---------------------------
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Sign Up
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  const username = document.getElementById("signupUsername").value.trim();
-  const email = document.getElementById("signupEmail").value.trim();
-  const password = document.getElementById("signupPassword").value.trim();
+// ---------------------------
+// DOM elements
+// ---------------------------
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
 
-  if (!username || !email || !password) return alert("All fields are required");
+const signupUsername = document.getElementById("signupUsername");
+const signupEmail = document.getElementById("signupEmail");
+const signupPassword = document.getElementById("signupPassword");
+const signupBtn = document.getElementById("signupBtn");
 
+// ---------------------------
+// Login
+// ---------------------------
+loginBtn.addEventListener("click", async () => {
   try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-
-    await db.collection("users").doc(user.uid).set({
-      username: username,
-      bio: "",
-      location: "",
-      music: "",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    alert("Sign up successful!");
+    const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
+    console.log("Login successful:", userCredential.user.email);
     window.location.href = "feed.html";
-  } catch (err) {
-    console.error(err);
-    alert("Sign up failed: " + err.message);
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Login failed: " + error.message);
   }
 });
 
-// Log In
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-
-  if (!email || !password) return alert("Please enter both email and password");
-
+// ---------------------------
+// Sign Up
+// ---------------------------
+signupBtn.addEventListener("click", async () => {
   try {
-    await auth.signInWithEmailAndPassword(email, password);
-    alert("Login successful!");
+    const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
+    console.log("Sign up successful:", userCredential.user.email);
+
+    // Create Firestore user doc with username
+    const userRef = doc(db, "users", userCredential.user.uid);
+    await setDoc(userRef, {
+      username: signupUsername.value || "Anonymous",
+      bio: "",
+      location: "",
+      music: "",
+      topFriends: []
+    });
+
     window.location.href = "feed.html";
-  } catch (err) {
-    console.error(err);
-    alert("Login failed: " + err.message);
+  } catch (error) {
+    console.error("Sign up failed:", error);
+    alert("Sign up failed: " + error.message);
   }
 });

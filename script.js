@@ -1,6 +1,7 @@
-// Firebase SDK imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+// script.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -16,8 +17,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Grab DOM elements
+// DOM elements
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
 const emailInput = document.getElementById("emailInput");
@@ -25,42 +27,68 @@ const passwordInput = document.getElementById("passwordInput");
 const usernameInput = document.getElementById("usernameInput");
 const messageDiv = document.getElementById("message");
 
-// Login handler
-loginBtn.addEventListener("click", async () => {
-  messageDiv.textContent = "";
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    console.log("Login successful:", userCredential.user.uid);
-    window.location.href = "feed.html"; // Redirect to feed
-  } catch (err) {
-    console.error("Login error:", err);
-    messageDiv.textContent = "Login failed. Check email/password.";
-  }
-});
+// Helper function to show messages
+function showMessage(msg, color="red") {
+  messageDiv.textContent = msg;
+  messageDiv.style.color = color;
+}
 
-// Signup handler
+// SIGN UP
 signupBtn.addEventListener("click", async () => {
-  messageDiv.textContent = "";
-  if (!usernameInput.value) {
-    messageDiv.textContent = "Please enter a username.";
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const username = usernameInput.value.trim();
+
+  if (!email || !password || !username) {
+    showMessage("Please fill all fields.");
     return;
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    console.log("Signup successful:", userCredential.user.uid);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    // Save username to Firestore
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-    const db = getFirestore(app);
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      username: usernameInput.value,
-      createdAt: new Date()
+    // Set display name
+    await updateProfile(user, { displayName: username });
+
+    // Create Firestore user doc
+    await setDoc(doc(db, "users", user.uid), {
+      username: username,
+      email: email,
+      createdAt: new Date().toISOString(),
+      bio: "",
+      location: "",
+      music: "",
+      topFriends: []
     });
 
-    window.location.href = "feed.html"; // Redirect to feed
+    showMessage("Signup successful!", "green");
+    // Redirect to feed
+    window.location.href = "feed.html";
   } catch (err) {
     console.error("Signup error:", err);
-    messageDiv.textContent = "Signup failed. Check console.";
+    showMessage(err.message);
+  }
+});
+
+// LOGIN
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    showMessage("Please enter email and password.");
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    showMessage(`Welcome back, ${user.displayName || "User"}!`, "green");
+    // Redirect to feed
+    window.location.href = "feed.html";
+  } catch (err) {
+    console.error("Login error:", err);
+    showMessage(err.message);
   }
 });

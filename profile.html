@@ -15,35 +15,27 @@
   </nav>
 
   <!-- Profile Section -->
-  <section class="profilePage">
-    <h2>My Profile</h2>
+  <section class="profileInfo">
+    <h2>Your Profile</h2>
 
-    <!-- Profile Photo -->
-    <img id="profileAvatar" class="profileAvatar" src="" alt="Profile Picture">
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    
-    <!-- Profile Info -->
-    <div class="profileInfo">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="locationInput" placeholder="Location">
-      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
-    </div>
+    <!-- Profile Picture -->
+    <img id="profileImagePreview" src="default-profile.png" alt="Profile Picture">
+    <input type="file" id="profileImageInput" accept="image/*">
 
-    <!-- Top 10 Friends Box -->
-    <div class="friendsBox">
-      <h3>Top 10 Friends</h3>
-      <ul id="topFriendsList">
-        <!-- Friend list items go here -->
-      </ul>
-      <input type="text" id="addFriendInput" placeholder="Add friend by username">
-      <button id="addFriendBtn">Add Friend</button>
-    </div>
+    <!-- Editable Info -->
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="locationInput" placeholder="Location">
+    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+    <input type="text" id="musicInput" placeholder="Embedded Music URL">
 
     <!-- Save Button -->
-    <div class="profileActions">
-      <button id="saveProfileBtn">Save Profile</button>
-    </div>
+    <button id="saveProfileBtn">Save Profile</button>
+
+    <!-- Top 10 Friends -->
+    <h3>Top 10 Friends</h3>
+    <ul id="topFriendsList">
+      <!-- Dynamically populated -->
+    </ul>
   </section>
 
   <script type="module" src="profile.js"></script>

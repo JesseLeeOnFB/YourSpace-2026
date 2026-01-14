@@ -67,34 +67,17 @@ postBtn.onclick = async () => {
   }
 
   if (postImageInput.files.length > 0) {
+  try {
     const file = postImageInput.files[0];
-    console.log("Selected file:", file);
-    console.log("File type:", file.type);
-
-    try {
-      const metadata = {
-        contentType: file.type || "image/jpeg"
-      };
-
-      const storageRef = ref(
-        storage,
-        `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`
-      );
-
-      console.log("Uploading to:", storageRef.fullPath);
-
-      const uploadSnap = await uploadBytes(storageRef, file, metadata);
-      console.log("Upload success");
-
-      postImageURL = await getDownloadURL(uploadSnap.ref);
-      console.log("Download URL:", postImageURL);
-
-    } catch (err) {
-      console.error("UPLOAD FAILED:", err);
-      alert("UPLOAD FAILED — check console");
-      return; // stop execution if upload fails
-    }
+    const safeName = encodeURIComponent(file.name);
+    const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
+    const uploadSnap = await uploadBytes(storageRef, file);
+    postImageURL = await getDownloadURL(uploadSnap.ref);
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    alert("Image upload failed. Only text will post.");
   }
+}
 
   console.log("Creating Firestore post");
 

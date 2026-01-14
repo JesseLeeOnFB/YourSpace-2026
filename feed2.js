@@ -56,56 +56,30 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Navigation buttons
-postBtn.onclick = async () => {
-  console.log("POST CLICKED");
+ if (postImageInput.files.length > 0) {
+  const file = postImageInput.files[0];
 
-  const text = postInput.value.trim();
-  let postImageURL = "";
+  const storageRef = ref(
+    storage,
+    `posts/${user.uid}/${Date.now()}_${file.name}`
+  );
 
-  console.log("Text:", text);
-  console.log("Files:", postImageInput.files);
-
-  if (!text && postImageInput.files.length === 0) {
-    alert("Write something or attach an image!");
-    return;
-  }
-
-  if (postImageInput.files.length > 0) {
-  try {
-    const file = postImageInput.files[0];
-    const safeName = encodeURIComponent(file.name);
-    const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
-    const uploadSnap = await uploadBytes(storageRef, file);
-    postImageURL = await getDownloadURL(uploadSnap.ref);
-  } catch (err) {
-    console.error("Image upload failed:", err);
-    alert("Image upload failed. Only text will post.");
-  }
-}
-
-  console.log("Creating Firestore post");
-
-  const profileSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-  const profileData = profileSnap.exists() ? profileSnap.data() : {};
-
-  await addDoc(collection(db, "posts"), {
-    text,
-    userId: auth.currentUser.uid,
-    displayName: profileData.displayName || "Anonymous",
-    photoURL: profileData.photoURL || "",
-    postImage: postImageURL,
-    likes: 0,
-    comments: [],
-    createdAt: serverTimestamp()
+  const uploadTask = uploadBytesResumable(storageRef, file, {
+    contentType: "image/jpeg"
   });
 
-  console.log("POST CREATED");
-
-  postInput.value = "";
-  postImageInput.value = "";
-  imagePreview.style.display = "none";
-};
+  await new Promise((resolve, reject) => {
+    uploadTask.on(
+      "state_changed",
+      null,
+      (error) => reject(error),
+      async () => {
+        postImageURL = await getDownloadURL(uploadTask.snapshot.ref);
+        resolve();
+      }
+    );
+  });
+}
 
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));

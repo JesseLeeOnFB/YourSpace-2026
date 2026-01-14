@@ -15,35 +15,47 @@
   </nav>
 
   <!-- Profile Section -->
-  <section class="profilePage">
-    <div class="profileHeader">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+  <section class="profileSection">
+    <h2>Your Profile</h2>
+
+    <!-- Profile Picture -->
+    <div class="profilePicContainer">
+      <img id="profilePicPreview" src="" alt="Profile Picture">
       <input type="file" id="profilePicInput" accept="image/*">
     </div>
 
+    <!-- Profile Info -->
     <div class="profileInfo">
-      <label>Username:</label>
-      <input type="text" id="usernameInput" placeholder="Enter username">
-
-      <label>Bio:</label>
-      <textarea id="bioInput" placeholder="Write a short bio..." rows="3"></textarea>
-
-      <label>Location:</label>
-      <input type="text" id="locationInput" placeholder="City, Country">
-
-      <label>Embedded Music (URL or Embed Code):</label>
-      <textarea id="musicInput" placeholder="Paste your embedded music URL or code..." rows="2"></textarea>
-
-      <button id="saveProfileBtn">Save Profile</button>
+      <label>Username:
+        <input type="text" id="usernameInput" placeholder="Enter username">
+      </label>
+      <label>Bio:
+        <textarea id="bioInput" rows="3" placeholder="Write a short bio"></textarea>
+      </label>
+      <label>Location:
+        <input type="text" id="locationInput" placeholder="Enter your location">
+      </label>
     </div>
 
-    <!-- Top Friends Box -->
+    <!-- Embedded Music -->
+    <div class="embeddedMusic">
+      <label>Embed Music URL:
+        <input type="text" id="musicInput" placeholder="Paste a music link (Spotify, YouTube, etc.)">
+      </label>
+      <div id="musicPlayer"></div>
+    </div>
+
+    <!-- Top 10 Friends -->
     <div class="topFriends">
       <h3>Top 10 Friends</h3>
-      <div id="friendsContainer">
-        <!-- Friends will be loaded here dynamically -->
+      <div id="friendsList">
+        <!-- Friends entries will be dynamically loaded -->
       </div>
+      <input type="text" id="addFriendInput" placeholder="Enter friend's username">
+      <button id="addFriendBtn">Add Friend</button>
     </div>
+
+    <button id="saveProfileBtn">Save Profile</button>
   </section>
 
   <script type="module" src="profile.js"></script>

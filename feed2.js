@@ -116,11 +116,11 @@ onAuthStateChanged(auth, async (user) => {
         <p>${data.text || ""}</p>
         ${imageHTML}
         <div class="postButtons">
-          <button class="likeBtn">Like (${data.likes || 0})</button>
-          <button class="commentBtn">Comment</button>
-          <button class="shareBtn">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
-        </div>
+  <button type="button" class="likeBtn">Like (${data.likes || 0})</button>
+  <button type="button" class="commentBtn">Comment</button>
+  <button type="button" class="shareBtn">Share</button>
+  ${user.uid === data.userId ? '<button type="button" class="deleteBtn">Delete</button>' : ''}
+</div>
         <div class="commentsContainer"></div>
       `;
       postsContainer.appendChild(postDiv);

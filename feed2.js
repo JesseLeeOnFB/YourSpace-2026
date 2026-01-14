@@ -100,12 +100,15 @@ onAuthStateChanged(auth, async (user) => {
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
-    postsContainer.innerHTML = "";
+  const scrollY = window.scrollY;
+  postsContainer.innerHTML = "";
 
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const postDiv = document.createElement("div");
-      postDiv.classList.add("post");
+  snapshot.forEach((docSnap) => {
+    // build each post
+  });
+
+  window.scrollTo(0, scrollY);
+});
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
       postDiv.innerHTML = `

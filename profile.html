@@ -2,63 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="default">
 
-  <!-- Navigation -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
+    <button id="feedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Section -->
+  <!-- PROFILE SECTION -->
   <section class="profileSection">
-    <h2>My Profile</h2>
 
-    <!-- Profile Picture -->
-    <div class="profilePhotoSection">
-      <img id="profilePhotoDisplay" src="" alt="Profile Photo" class="profilePhoto">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
-    </div>
+    <h2>Your Profile</h2>
 
-    <!-- Profile Info -->
-    <div class="profileInfo">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="locationInput" placeholder="Location">
-      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="YouTube Music URL">
-      <button id="saveProfileInfoBtn">Save Profile Info</button>
-    </div>
+    <!-- PROFILE PHOTO -->
+    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
 
-    <!-- Music Player -->
-    <div class="musicPlayerSection"></div>
+    <input type="file" id="profilePhotoInput" accept="image/*">
+    <button id="saveProfilePhotoBtn">Save Profile Photo</button>
 
-    <!-- Top 10 Friends -->
-    <div class="topFriendsSection">
-      <h3>Top 10 Friends</h3>
-      <ul id="topFriendsList"></ul>
-      <input type="text" id="addFriendInput" placeholder="Add friend by username">
-      <button id="addFriendBtn">Add Friend</button>
-    </div>
+    <!-- PROFILE INFO -->
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="locationInput" placeholder="Location">
+    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
 
-    <!-- Customization -->
-    <div class="customizationSection">
-      <h3>Profile Theme</h3>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="dark">Dark</option>
-        <option value="neon">Neon</option>
-        <option value="animated">Animated</option>
-      </select>
-      <button id="saveThemeBtn">Apply Theme</button>
-    </div>
+    <button id="saveProfileBtn">Save Profile Info</button>
+
   </section>
 
+  <!-- MUSIC PLAYER -->
+  <section class="profileSection musicPlayerSection">
+    <h2>Music Player</h2>
+
+    <input type="text" id="musicInput" placeholder="Paste YouTube link here">
+    <button id="saveMusicBtn">Save Music</button>
+
+    <iframe id="musicPlayer" allow="autoplay"></iframe>
+  </section>
+
+  <!-- TOP 10 FRIENDS -->
+  <section class="profileSection topFriendsSection">
+    <h2>Top 10 Friends</h2>
+    <ul id="topFriendsList">
+      <!-- Filled later -->
+    </ul>
+  </section>
+
+  <!-- PROFILE SCRIPT -->
   <script type="module" src="profile.js"></script>
+
 </body>
 </html>

@@ -76,14 +76,12 @@ onAuthStateChanged(auth, async (user) => {
       try {
         const file = postImageInput.files[0];
         const safeFileName = encodeURIComponent(file.name);
-        const safeFileName = encodeURIComponent(file.name);
-const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
+        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
         const snapshot = await uploadBytes(storageRef, file);
-postImageURL = await getDownloadURL(snapshot.ref);
+        postImageURL = await getDownloadURL(snapshot.ref);
       } catch (err) {
         console.error("Image upload failed:", err);
-        alert("Image upload failed. Posting text only.");
-        postImageURL = "";
+        alert("Image upload failed. Text will still post.");
       }
     }
 
@@ -109,6 +107,7 @@ postImageURL = await getDownloadURL(snapshot.ref);
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
+    const scrollY = window.scrollY;
     postsContainer.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
@@ -148,10 +147,12 @@ postImageURL = await getDownloadURL(snapshot.ref);
       likeBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const postRef = doc(db, "posts", docSnap.id);
-        // increment UI immediately
-        const currentLikes = data.likes || 0;
-        data.likes = currentLikes + 1;
+
+        // Increment UI immediately
+        data.likes = (data.likes || 0) + 1;
         likeBtn.textContent = `Like (${data.likes})`;
+
+        // Update Firestore
         await updateDoc(postRef, { likes: increment(1) });
       });
 
@@ -174,7 +175,8 @@ postImageURL = await getDownloadURL(snapshot.ref);
       // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
-        deleteBtn.addEventListener("click", async () => {
+        deleteBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
           if (confirm("Delete this post?")) {
             await deleteDoc(doc(db, "posts", docSnap.id));
           }
@@ -192,5 +194,8 @@ postImageURL = await getDownloadURL(snapshot.ref);
         }
       });
     });
+
+    // Keep scroll position
+    window.scrollTo(0, scrollY);
   });
 });

@@ -1,3 +1,4 @@
+// feed.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
@@ -8,7 +9,6 @@ import {
   orderBy,
   onSnapshot,
   doc,
-  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp,
@@ -26,7 +26,6 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -35,14 +34,13 @@ const storage = getStorage(app);
 /* -------------------- DOM -------------------- */
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
-const postFileInput = document.getElementById("postFileInput");
+const postFileInput = document.getElementById("postFileInput"); // image/video
 const imagePreview = document.getElementById("imagePreview");
 const postsContainer = document.getElementById("postsContainer");
+
 const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
-const notifyEmail = document.getElementById("notifyEmail");
-const notifyBrowser = document.getElementById("notifyBrowser");
+const logoutBtn = document.getElementById("logoutBtn");
 
 /* -------------------- Image/Video Preview -------------------- */
 postFileInput.addEventListener("change", () => {
@@ -51,16 +49,23 @@ postFileInput.addEventListener("change", () => {
     imagePreview.style.display = "none";
     return;
   }
-  imagePreview.src = URL.createObjectURL(file);
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (file.type.startsWith("image/")) {
+    imagePreview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="max-width:200px; max-height:200px;">`;
+  } else if (file.type.startsWith("video/")) {
+    imagePreview.innerHTML = `<video src="${URL.createObjectURL(file)}" style="max-width:200px; max-height:200px;" controls></video>`;
+  }
   imagePreview.style.display = "block";
-  imagePreview.style.maxWidth = "300px";
-  imagePreview.style.maxHeight = "300px";
 });
 
-/* -------------------- Auth & Nav -------------------- */
+/* -------------------- Auth -------------------- */
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "index.html";
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
 
+  // Navigation buttons
   profileBtn.onclick = () => window.location.href = "profile.html";
   homeBtn.onclick = () => window.location.href = "feed.html";
   logoutBtn.onclick = async () => {
@@ -68,46 +73,55 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = "index.html";
   };
 
-  /* -------------------- Create Post -------------------- */
+  /* -------------------- CREATE POST -------------------- */
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     const file = postFileInput.files[0];
 
-    if (!text && !file) return alert("Write something or attach an image/video.");
+    if (!text && !file) {
+      alert("Write something or attach an image/video!");
+      return;
+    }
 
     postBtn.disabled = true;
-    let mediaURL = "";
 
+    let mediaURL = "";
     try {
       if (file) {
-        const ext = file.name.split(".").pop().toLowerCase();
+        const ext = file.name.split('.').pop().toLowerCase();
         const safeName = encodeURIComponent(file.name);
         const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
 
-        const snapshot = await uploadBytes(storageRef, file, { 
-          contentType: file.type || (ext === "jpeg" || ext === "jpg" ? "image/jpeg" : "video/mp4") 
-        });
+        // Force lowercase MIME type with fallback
+        let contentType = file.type.toLowerCase();
+        if (!contentType) {
+          if (["jpg","jpeg","png","gif"].includes(ext)) contentType = "image/jpeg";
+          if (["mp4","mov","webm"].includes(ext)) contentType = "video/mp4";
+        }
+
+        const snapshot = await uploadBytes(storageRef, file, { contentType });
         mediaURL = await getDownloadURL(snapshot.ref);
       }
 
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
+      // Get user profile
+      const userSnap = await doc(db, "users", auth.currentUser.uid).get();
+      const profile = userSnap.exists ? userSnap.data() : {};
 
+      // Add post
       await addDoc(collection(db, "posts"), {
         text: text || null,
         postImage: mediaURL || null,
-        userId: user.uid,
+        userId: auth.currentUser.uid,
         displayName: profile.displayName || "Anonymous",
         photoURL: profile.photoURL || "",
         likes: 0,
         dislikes: 0,
         comments: [],
         mentions: [],
-        createdAt: serverTimestamp(),
-        notifyEmail: notifyEmail.checked,
-        notifyBrowser: notifyBrowser.checked
+        createdAt: serverTimestamp()
       });
 
+      // Reset inputs
       postInput.value = "";
       postFileInput.value = "";
       imagePreview.style.display = "none";
@@ -119,67 +133,61 @@ onAuthStateChanged(auth, async (user) => {
     }
   };
 
-  /* -------------------- Feed -------------------- */
+  /* -------------------- FEED -------------------- */
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(q, (snapshot) => {
     postsContainer.innerHTML = "";
+
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
 
-      const postDiv = document.createElement("div");
-      postDiv.className = "post";
+      const postEl = document.createElement("div");
+      postEl.className = "post";
 
-      const mediaHTML = data.postImage ? `<img src="${data.postImage}" style="max-width:300px; max-height:300px;">` : "";
+      let mediaHTML = "";
+      if (data.postImage) {
+        if (data.postImage.endsWith(".mp4") || data.postImage.endsWith(".mov") || data.postImage.endsWith(".webm")) {
+          mediaHTML = `<video src="${data.postImage}" controls style="max-width:400px; max-height:300px;"></video>`;
+        } else {
+          mediaHTML = `<img src="${data.postImage}" style="max-width:400px; max-height:300px;">`;
+        }
+      }
 
-      postDiv.innerHTML = `
-        <div>
+      postEl.innerHTML = `
+        <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
           <strong>${data.displayName}</strong>
         </div>
         <p>${data.text || ""}</p>
         ${mediaHTML}
-        <div>
+        <div class="postButtons">
           <button class="likeBtn">👍 (${data.likes || 0})</button>
           <button class="dislikeBtn">🖕 (${data.dislikes || 0})</button>
           <button class="commentBtn">💬</button>
-          <button class="shareBtn">Share</button>
-          ${data.userId === user.uid ? '<button class="deleteBtn">Delete</button>' : ''}
+          <button class="shareBtn">🔗</button>
+          ${auth.currentUser.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
         </div>
         <div class="commentsContainer"></div>
       `;
-      postsContainer.appendChild(postDiv);
+      postsContainer.appendChild(postEl);
 
-      // Like
-      postDiv.querySelector(".likeBtn").onclick = async () => {
+      // Button actions
+      postEl.querySelector(".likeBtn").onclick = async () => {
         await updateDoc(doc(db, "posts", docSnap.id), { likes: increment(1) });
       };
-
-      // Dislike
-      postDiv.querySelector(".dislikeBtn").onclick = async () => {
+      postEl.querySelector(".dislikeBtn").onclick = async () => {
         await updateDoc(doc(db, "posts", docSnap.id), { dislikes: increment(1) });
       };
-
-      // Delete
-      const del = postDiv.querySelector(".deleteBtn");
-      if (del) {
-        del.onclick = async () => {
-          if (confirm("Delete post?")) {
-            await deleteDoc(doc(db, "posts", docSnap.id));
-          }
-        };
-      }
-
-      // Comment (prompt example)
-      postDiv.querySelector(".commentBtn").onclick = async () => {
-        const text = prompt("Enter comment:");
-        if (!text) return;
+      postEl.querySelector(".deleteBtn")?.addEventListener("click", async () => {
+        if (confirm("Delete this post?")) await deleteDoc(doc(db, "posts", docSnap.id));
+      });
+      postEl.querySelector(".commentBtn")?.addEventListener("click", async () => {
+        const commentText = prompt("Enter comment:");
+        if (!commentText) return;
         await updateDoc(doc(db, "posts", docSnap.id), {
-          comments: arrayUnion({ user: user.uid, text })
+          comments: arrayUnion({ text: commentText, user: auth.currentUser.uid })
         });
-        const commentEl = document.createElement("p");
-        commentEl.textContent = text;
-        postDiv.querySelector(".commentsContainer").appendChild(commentEl);
-      };
+      });
     });
   });
 });

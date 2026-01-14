@@ -5,38 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Login</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase App -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  ...
-  <script src="script.js"></script>
-</body>
-  <div class="authContainer">
-    <h1>YourSpace</h1>
+  <h1>YourSpace</h1>
 
-    <!-- Sign Up Form -->
-    <div class="signupSection">
-      <h2>Sign Up</h2>
-      <input type="text" id="signupUsername" placeholder="Username">
-      <input type="email" id="signupEmail" placeholder="Email">
-      <input type="password" id="signupPassword" placeholder="Password">
-      <button id="signupBtn">Sign Up</button>
-    </div>
+  <section class="authSection">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button id="loginBtn">Log In</button>
 
-    <!-- Log In Form -->
-    <div class="loginSection">
-      <h2>Log In</h2>
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
-      <button id="loginBtn">Log In</button>
-    </div>
-  </div>
+    <h2>Sign Up</h2>
+    <input type="text" id="signupUsername" placeholder="Username">
+    <input type="email" id="signupEmail" placeholder="Email">
+    <input type="password" id="signupPassword" placeholder="Password">
+    <button id="signupBtn">Sign Up</button>
+  </section>
 
-  <!-- Firebase JS SDK -->
   <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -55,52 +55,56 @@ onAuthStateChanged(auth, async (user) => {
   };
 
   /* -------------------- POST CREATION -------------------- */
-  postBtn.onclick = async () => {
-    const text = postInput.value.trim();
-    const file = postImageInput.files[0];
-    if (!text && !file) return alert("Write something or attach an image!");
+postBtn.onclick = async () => {
+  const text = postInput.value.trim();
+  const file = postImageInput.files[0];
 
-    postBtn.disabled = true;
-    let postImageURL = "";
+  if (!text && !file) {
+    alert("Write something or attach an image.");
+    return;
+  }
 
-    try {
-      // Upload image if exists
-      if (file) {
-        const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
+  postBtn.disabled = true;
 
-        const snapshot = await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(snapshot.ref);
-      }
+  let postImageURL = "";
 
-      // Get profile
-      const userSnap = await getDoc(doc(db, "users", user.uid));
-      const profile = userSnap.exists() ? userSnap.data() : {};
-
-      // Add post
-      await addDoc(collection(db, "posts"), {
-        text,
-        postImage: postImageURL,
-        userId: user.uid,
-        displayName: profile.displayName || "Anonymous",
-        photoURL: profile.photoURL || "",
-        likes: 0,
-        comments: [],
-        createdAt: serverTimestamp()
-      });
-
-      // Reset inputs
-      postInput.value = "";
-      postImageInput.value = "";
-      imagePreview.style.display = "none";
-
-    } catch (err) {
-      console.error("Post failed:", err);
-      alert("Post failed. Check console.");
-    } finally {
-      postBtn.disabled = false;
+  try {
+    if (file) {
+      const fileExt = file.name.split('.').pop();
+      const safeName = encodeURIComponent(file.name);
+      const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${safeName}`);
+      
+      // uploadBytes works fine for small files; resumable can be used for large
+      const snapshot = await uploadBytes(storageRef, file, { contentType: file.type });
+      postImageURL = await getDownloadURL(snapshot.ref);
     }
-  };
+
+    // Get profile info
+    const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+    const profile = userSnap.exists() ? userSnap.data() : {};
+
+    await addDoc(collection(db, "posts"), {
+      text,
+      postImage: postImageURL,
+      userId: auth.currentUser.uid,
+      displayName: profile.displayName || "Anonymous",
+      photoURL: profile.photoURL || "",
+      likes: 0,
+      comments: [],
+      createdAt: serverTimestamp()
+    });
+
+    postInput.value = "";
+    postImageInput.value = "";
+    imagePreview.style.display = "none";
+
+  } catch (err) {
+    console.error("Post creation failed:", err);
+    alert("Failed to post image. Check console for details.");
+  } finally {
+    postBtn.disabled = false;
+  }
+};
 
   /* -------------------- FEED LISTENER -------------------- */
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));

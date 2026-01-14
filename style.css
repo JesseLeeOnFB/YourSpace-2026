@@ -1,205 +1,198 @@
 /* ------------------------
-   GLOBAL STYLES
+   GLOBAL
 ------------------------- */
-* {
-  box-sizing: border-box;
+body {
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
-}
-
-body {
-  background-color: #f8f9fa;
+  background-color: #f5f5f5;
   color: #222;
-  line-height: 1.5;
-  min-height: 100vh;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+h2, h3 {
+  text-align: center;
 }
 
 button {
   cursor: pointer;
   background-color: #007bff;
-  color: white;
   border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  margin-top: 5px;
-  transition: background 0.2s;
+  color: #fff;
+  padding: 8px 16px;
+  margin: 5px 0;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-input, textarea, select {
-  width: 100%;
-  padding: 8px;
-  margin: 5px 0 10px;
+input, textarea {
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 4px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  width: 90%;
+  max-width: 400px;
+  display: block;
+  margin: 5px auto;
 }
 
-textarea { resize: vertical; }
+textarea {
+  resize: vertical;
+}
 
 /* ------------------------
-   NAVIGATION BAR
+   NAV BAR
 ------------------------- */
 .navbar {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 15px;
-  background-color: #343a40;
+  background-color: #007bff;
+  padding: 10px;
+  text-align: center;
 }
 
 .navbar button {
-  background-color: #17a2b8;
-  color: white;
-}
-
-.navbar button:hover {
-  background-color: #138496;
+  margin: 0 5px;
 }
 
 /* ------------------------
-   SECTIONS
+   FEED
 ------------------------- */
-section {
-  max-width: 900px;
+.feed {
+  max-width: 700px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 10px;
+}
+
+#createPost {
+  margin-bottom: 20px;
+}
+
+#postsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post {
   background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
 }
 
-/* ------------------------
-   FEED POSTS
-------------------------- */
-.feed .post {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  background-color: #fefefe;
+.post .postHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.feed .post h4 {
-  font-weight: 600;
-  margin-bottom: 5px;
+.post .postHeader img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.feed .post img,
-.feed .post video {
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  border-radius: 8px;
+.post img, .post video {
+  max-width: 100%;
+  border-radius: 6px;
   margin-top: 10px;
 }
 
-.feed .post button {
-  margin-right: 10px;
+.post .postActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.post .comments {
+  margin-top: 10px;
+  padding-left: 10px;
+  border-left: 2px solid #ccc;
 }
 
 /* ------------------------
-   PROFILE SECTION
+   PROFILE PAGE
 ------------------------- */
-.profilePhotoSection {
+.profileSection {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.profilePhotoContainer {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* ------------------------
-   PROFILE PAGE IMAGES
-------------------------- */
 .profilePhoto {
-  width: 150px;          /* fixed width */
-  height: 150px;         /* fixed height */
-  object-fit: cover;     /* crop nicely without distortion */
-  border-radius: 50%;    /* circle profile pic */
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
   border: 2px solid #007bff;
   display: block;
-  margin: 0 auto 10px;   /* center on page */
+  margin: 0 auto 10px;
 }
 
-.profileSection img {
-  max-width: 100%;       /* scale to container */
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 10px;
+.profileInfo input,
+.profileInfo textarea {
+  display: block;
+  width: 90%;
+  max-width: 400px;
+  margin: 5px auto;
+  padding: 8px;
+  font-size: 16px;
 }
 
-.profileSection button {
-  margin-top: 10px;
+.profileInfo button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 20px;
+  font-size: 16px;
 }
 
-/* ------------------------
-   MUSIC PLAYER
-------------------------- */
-.musicPlayerSection audio {
-  width: 100%;
-  margin-top: 10px;
-}
-
-/* ------------------------
-   TOP FRIENDS
-------------------------- */
-.topFriendsSection ul {
+.friendsSection ul {
   list-style: none;
   padding: 0;
+  max-width: 400px;
+  margin: 10px auto;
 }
 
-.topFriendsSection li {
-  padding: 8px 5px;
-  border-bottom: 1px solid #eee;
+.friendsSection li {
+  padding: 4px 0;
 }
 
-/* ------------------------
-   NOTIFICATIONS / CREATE POST
-------------------------- */
-.createPost textarea {
-  width: 100%;
-  resize: vertical;
+.musicPlayerSection {
+  text-align: center;
+  margin-top: 20px;
 }
 
-.createPost input[type="file"] {
-  margin: 10px 0;
-}
-
-.notifications label {
-  display: inline-block;
-  margin-right: 15px;
-  font-size: 0.9em;
-}
-
-/* ------------------------
-   THEMES
-------------------------- */
-body.default { background-color: #f8f9fa; color: #222; }
-body.dark { background-color: #121212; color: #eee; }
-body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
-body.animated { animation: bgPulse 10s infinite alternate; }
-
-@keyframes bgPulse {
-  0% { background-color: #ff9; }
-  50% { background-color: #9ff; }
-  100% { background-color: #f9f; }
+.musicPlayerSection audio {
+  width: 90%;
+  max-width: 400px;
 }
 
 /* ------------------------
    RESPONSIVE
 ------------------------- */
-@media (max-width: 768px) {
-  .navbar { flex-direction: column; gap: 5px; }
-  .feed .post img, .feed .post video { max-width: 100%; }
-  section { padding: 15px; margin: 10px; }
-}
+@media (max-width: 600px) {
+  .post img, .post video {
+    width: 100%;
+    height: auto;
+  }
 
-@media (max-width: 480px) {
-  .profilePhoto { width: 120px; height: 120px; }
+  .profilePhoto {
+    width: 120px;
+    height: 120px;
+  }
+
+  input, textarea, button {
+    width: 95%;
+  }
 }

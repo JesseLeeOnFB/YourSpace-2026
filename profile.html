@@ -14,56 +14,45 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Info -->
+  <!-- Profile Section -->
   <section class="profileSection">
-    <h2>Profile Info</h2>
+    <h2>My Profile</h2>
 
+    <!-- Profile Photo -->
     <div class="profilePhotoSection">
-      <img id="profilePhotoPreview" src="" alt="Profile Photo" class="profilePhoto">
+      <img id="profilePhotoPreview" class="profilePhoto" src="" alt="Profile Photo">
       <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+      <button id="saveProfilePhotoBtn">Save Photo</button>
     </div>
 
+    <!-- Profile Info -->
     <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
       <input type="text" id="musicInput" placeholder="Embedded Music URL">
-      <button id="saveProfileBtn">Save Profile Info</button>
+      <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
+    <!-- Customization Section -->
+    <div class="customizationSection">
+      <h3>Theme / Background</h3>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+    </div>
+
+    <!-- Top 10 Friends -->
     <div class="friendsSection">
       <h3>Top 10 Friends</h3>
-      <div id="topFriendsContainer"></div>
+      <ul id="top10FriendsList"></ul>
+      <input type="text" id="addFriendInput" placeholder="Add Friend by Username">
+      <button id="addFriendBtn">Add Friend</button>
     </div>
-  </section>
 
-  <!-- Customization Section -->
-  <section class="customizationSection">
-    <h2>Profile Customization</h2>
-    <label>Background Image URL:</label>
-    <input type="text" id="bgImageInput" placeholder="Paste image URL">
-    
-    <label>Background Color:</label>
-    <input type="color" id="bgColorInput">
-
-    <label>Theme:</label>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-
-    <button id="saveCustomizationBtn">Save Customization</button>
-  </section>
-
-  <!-- Embedded Music Player -->
-  <section class="musicPlayerSection">
-    <h2>Music Player</h2>
-    <audio id="musicPlayer" controls>
-      Your browser does not support the audio element.
-    </audio>
   </section>
 
   <script type="module" src="profile.js"></script>

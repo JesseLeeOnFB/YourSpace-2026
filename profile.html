@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<nav>
-  <button id="homeBtn">Home</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <header>
+    <button id="homeBtn">Home</button>
+    <button id="logoutBtn">Logout</button>
+  </header>
 
-<h1>Your Profile</h1>
+  <main>
+    <section id="profileInfo">
+      <h2>My Profile</h2>
 
-<div id="profileContainer">
-  <img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
-  <input type="file" id="profilePicInput" accept="image/*">
-  
-  <input type="text" id="displayName" placeholder="Display Name">
-  <textarea id="bio" placeholder="Bio"></textarea>
-  <input type="text" id="location" placeholder="Location">
-  <textarea id="customHTML" placeholder="Custom HTML / Theme"></textarea>
-  <textarea id="musicEmbed" placeholder="Music Embed Code"></textarea>
-  
-  <button id="saveBtn">Save Changes</button>
-</div>
+      <div id="pfpContainer">
+        <img id="profilePfpImg" src="default-avatar.png" style="width:120px;height:120px;border-radius:50%;">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="savePfpBtn">Save Profile Picture</button>
+      </div>
 
-<script type="module" src="profile.js"></script>
+      <!-- Optional profile fields -->
+      <div id="profileDetails">
+        <label>Display Name: <input type="text" id="displayNameInput"></label>
+        <label>Bio: <textarea id="bioInput"></textarea></label>
+        <label>Location: <input type="text" id="locationInput"></label>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

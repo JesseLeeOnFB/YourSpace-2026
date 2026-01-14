@@ -27,7 +27,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// ------------------- Firebase Config -------------------
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -43,7 +43,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ------------------- DOM Elements -------------------
+// DOM elements
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -52,7 +52,6 @@ const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-// ------------------- Auth & Page Setup -------------------
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
@@ -64,7 +63,7 @@ onAuthStateChanged(auth, async (user) => {
   logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   homeBtn.onclick = () => window.location.href = "feed.html";
 
-  // ------------------- Post Creation -------------------
+  // POST CREATION
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     let postImageURL = "";
@@ -74,17 +73,21 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
-    // Handle image upload
+    // Image upload
     if (postImageInput.files.length > 0) {
       try {
         const file = postImageInput.files[0];
-        const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
+
+        // Use exact path for storage rules to allow
+        const storageRef = ref(storage, `posts/${user.uid}/${file.name}`);
+
         const uploadSnap = await uploadBytes(storageRef, file);
         postImageURL = await getDownloadURL(uploadSnap.ref);
+
+        console.log("Image uploaded successfully:", postImageURL);
       } catch (err) {
         console.error("Image upload failed:", err);
-        alert("Image upload failed. Only text will post.");
+        alert("Image upload failed. Text-only post will still go through.");
       }
     }
 
@@ -104,21 +107,23 @@ onAuthStateChanged(auth, async (user) => {
       createdAt: serverTimestamp()
     });
 
+    // Clear inputs
     postInput.value = "";
     postImageInput.value = "";
   };
 
-  // ------------------- Listen to Posts -------------------
+  // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
 
-    snapshot.forEach((docSnap) => {
+    snapshot.forEach(docSnap => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -146,15 +151,14 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       });
 
-      // ------------------- Buttons -------------------
+      // LIKE button
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
-        data.likes = (data.likes || 0) + 1;
-        likeBtn.textContent = `Like (${data.likes})`;
         await updateDoc(postRef, { likes: increment(1) });
       };
 
+      // COMMENT button
       const commentBtn = postDiv.querySelector(".commentBtn");
       commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
@@ -166,6 +170,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       };
 
+      // DELETE button
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.onclick = async () => {
@@ -175,6 +180,7 @@ onAuthStateChanged(auth, async (user) => {
         };
       }
 
+      // SHARE button
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.onclick = () => {
         if (navigator.share) {

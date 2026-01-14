@@ -60,7 +60,9 @@ onAuthStateChanged(auth, async (user) => {
   // CREATE POST
   postBtn.addEventListener("click", async () => {
     const text = postInput.value.trim();
-    if (!text && postImageInput.files.length === 0) return alert("Write something or attach an image!");
+    if (!text && postImageInput.files.length === 0) {
+      return alert("Write something or attach an image!");
+    }
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
@@ -70,7 +72,7 @@ onAuthStateChanged(auth, async (user) => {
       postImageURL = await getDownloadURL(storageRef);
     }
 
-    // Fetch user profile
+    // Get user profile info
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
@@ -89,7 +91,7 @@ onAuthStateChanged(auth, async (user) => {
     postImageInput.value = "";
   });
 
-  // NAVIGATION
+  // NAV BUTTONS
   profileBtn.addEventListener("click", () => window.location.href = "profile.html");
   logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
   homeBtn.addEventListener("click", () => window.location.href = "feed.html");
@@ -105,6 +107,7 @@ onAuthStateChanged(auth, async (user) => {
       postDiv.classList.add("post");
 
       const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
+
       postDiv.innerHTML = `
         <div class="postHeader">
           <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
@@ -113,66 +116,56 @@ onAuthStateChanged(auth, async (user) => {
         <p>${data.text || ""}</p>
         ${imageHTML}
         <div class="postButtons">
-          <button class="likeBtn" type="button">Like (${data.likes || 0})</button>
-          <button class="commentBtn" type="button">Comment</button>
-          <button class="shareBtn" type="button">Share</button>
-          ${user.uid === data.userId ? '<button class="deleteBtn" type="button">Delete</button>' : ''}
+          <button class="likeBtn">Like (${data.likes || 0})</button>
+          <button class="commentBtn">Comment</button>
+          <button class="shareBtn">Share</button>
+          ${user.uid === data.userId ? '<button class="deleteBtn">Delete</button>' : ''}
         </div>
         <div class="commentsContainer"></div>
       `;
       postsContainer.appendChild(postDiv);
 
-      // BUTTONS
+      // Select buttons and comments container
       const likeBtn = postDiv.querySelector(".likeBtn");
       const commentBtn = postDiv.querySelector(".commentBtn");
       const shareBtn = postDiv.querySelector(".shareBtn");
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       const commentsContainer = postDiv.querySelector(".commentsContainer");
 
-      // Render existing comments
+      // Populate existing comments
       (data.comments || []).forEach(c => {
         const commentEl = document.createElement("p");
         commentEl.textContent = c.text;
         commentsContainer.appendChild(commentEl);
       });
 
-      // Like
- // LIKE BUTTON
-likeBtn.addEventListener("click", async () => {
-  const postRef = doc(db, "posts", docSnap.id);
-  try {
-    await updateDoc(postRef, { likes: increment(1) });
-  } catch (error) {
-    console.error("Failed to like post:", error);
-    alert("You cannot like this post. Check permissions.");
-  }
-});
+      // LIKE BUTTON
+      likeBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const postRef = doc(db, "posts", docSnap.id);
+        await updateDoc(postRef, { likes: increment(1) });
+      });
 
-// COMMENT BUTTON
-const commentsContainer = postDiv.querySelector(".commentsContainer");
-commentBtn.addEventListener("click", async () => {
-  const commentText = prompt("Enter your comment:");
-  if (!commentText) return;
+      // COMMENT BUTTON
+      commentBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const commentText = prompt("Enter your comment:");
+        if (!commentText) return;
 
-  const postRef = doc(db, "posts", docSnap.id);
-  try {
-    const latestSnap = await getDoc(postRef);
-    const latestData = latestSnap.exists() ? latestSnap.data() : {};
-    const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
+        const postRef = doc(db, "posts", docSnap.id);
+        const latestSnap = await getDoc(postRef);
+        const latestData = latestSnap.exists() ? latestSnap.data() : {};
 
-    await updateDoc(postRef, { comments: updatedComments });
+        const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
+        await updateDoc(postRef, { comments: updatedComments });
 
-    // Immediately render
-    const commentEl = document.createElement("p");
-    commentEl.textContent = commentText;
-    commentsContainer.appendChild(commentEl);
-  } catch (error) {
-    console.error("Failed to comment:", error);
-    alert("You cannot comment on this post. Check permissions.");
-  }
-});
+        // Render immediately
+        const commentEl = document.createElement("p");
+        commentEl.textContent = commentText;
+        commentsContainer.appendChild(commentEl);
+      });
 
-      // Delete
+      // DELETE BUTTON
       if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
           if (confirm("Delete this post?")) {
@@ -181,7 +174,7 @@ commentBtn.addEventListener("click", async () => {
         });
       }
 
-      // Share
+      // SHARE BUTTON
       shareBtn.addEventListener("click", () => {
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });

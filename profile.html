@@ -7,47 +7,44 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
+    <button id="feedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Info Section -->
-  <section class="profileInfo">
+  <section class="profileSection">
     <h2>Your Profile</h2>
     
-    <!-- Profile Picture -->
-    <img id="profilePhotoPreview" class="profilePhotoPreview" src="" alt="Profile Photo">
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    
-    <!-- User Info -->
-    <input type="text" id="usernameInput" placeholder="Username">
-    <input type="text" id="locationInput" placeholder="Location">
-    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-    <input type="text" id="musicInput" placeholder="Embedded Music URL">
+    <!-- Profile Image -->
+    <div class="profileImageUpload">
+      <img id="profilePhotoPreview" src="" alt="Profile Photo" style="max-width:150px; max-height:150px; display:block;">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+      <button id="savePhotoBtn">Save Photo</button>
+    </div>
 
-    <button id="saveProfileBtn">Save Profile</button>
-  </section>
+    <!-- Profile Info -->
+    <div class="profileInfo">
+      <label>Username</label>
+      <input type="text" id="usernameInput" placeholder="Username">
+      
+      <label>Location</label>
+      <input type="text" id="locationInput" placeholder="Location">
+      
+      <label>Bio</label>
+      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+      
+      <label>Embedded Music URL</label>
+      <input type="text" id="musicInput" placeholder="Music URL">
+      
+      <button id="saveInfoBtn">Save Info</button>
+    </div>
 
-  <!-- Top 10 Friends Section -->
-  <section class="topFriends">
-    <h3>Top 10 Friends</h3>
-    <ul id="topFriendsList">
-      <li>Friend 1</li>
-      <li>Friend 2</li>
-      <li>Friend 3</li>
-      <li>Friend 4</li>
-      <li>Friend 5</li>
-      <li>Friend 6</li>
-      <li>Friend 7</li>
-      <li>Friend 8</li>
-      <li>Friend 9</li>
-      <li>Friend 10</li>
-    </ul>
-    <button id="editFriendsBtn">Edit Top Friends</button>
+    <!-- Top 10 Friends -->
+    <div class="topFriends">
+      <h3>Top 10 Friends</h3>
+      <div id="friendsContainer"></div>
+    </div>
   </section>
 
   <script type="module" src="profile.js"></script>

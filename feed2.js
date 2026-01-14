@@ -79,7 +79,7 @@ onAuthStateChanged(auth, async (user) => {
         const safeFileName = encodeURIComponent(file.name);
 const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
         const snapshot = await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(snapshot.ref);
+postImageURL = await getDownloadURL(snapshot.ref);
       } catch (err) {
         console.error("Image upload failed:", err);
         alert("Image upload failed. Posting text only.");

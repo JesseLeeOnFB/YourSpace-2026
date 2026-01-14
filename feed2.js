@@ -81,41 +81,33 @@ onAuthStateChanged(auth, async (user) => {
         postImageURL = await getDownloadURL(snapshot.ref);
       } catch (err) {
         console.error("Image upload failed:", err);
-        alert("Image upload failed. Check console for details.");
-        return;
+        alert("Image upload failed. Posting text only.");
+        postImageURL = "";
       }
     }
 
-    try {
-      // Fetch user profile
-      const profileSnap = await getDoc(doc(db, "users", user.uid));
-      const profileData = profileSnap.exists() ? profileSnap.data() : {};
+    // Fetch user profile
+    const profileSnap = await getDoc(doc(db, "users", user.uid));
+    const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
-      // Add post
-      await addDoc(collection(db, "posts"), {
-        text,
-        userId: user.uid,
-        displayName: profileData.displayName || "Anonymous",
-        photoURL: profileData.photoURL || "",
-        postImage: postImageURL,
-        likes: 0,
-        comments: [],
-        createdAt: serverTimestamp()
-      });
+    await addDoc(collection(db, "posts"), {
+      text,
+      userId: user.uid,
+      displayName: profileData.displayName || "Anonymous",
+      photoURL: profileData.photoURL || "",
+      postImage: postImageURL,
+      likes: 0,
+      comments: [],
+      createdAt: serverTimestamp()
+    });
 
-      postInput.value = "";
-      postImageInput.value = "";
-    } catch (err) {
-      console.error("Post creation failed:", err);
-      alert("Post creation failed. Check console for details.");
-    }
+    postInput.value = "";
+    postImageInput.value = "";
   });
 
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
-    // preserve scroll position
-    const scrollY = window.scrollY;
     postsContainer.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
@@ -152,22 +144,30 @@ onAuthStateChanged(auth, async (user) => {
 
       // LIKE BUTTON
       const likeBtn = postDiv.querySelector(".likeBtn");
-      likeBtn.addEventListener("click", async () => {
+      likeBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
         const postRef = doc(db, "posts", docSnap.id);
-        // Update Firestore
+        // increment UI immediately
+        const currentLikes = data.likes || 0;
+        data.likes = currentLikes + 1;
+        likeBtn.textContent = `Like (${data.likes})`;
         await updateDoc(postRef, { likes: increment(1) });
       });
 
       // COMMENT BUTTON
       const commentBtn = postDiv.querySelector(".commentBtn");
-      commentBtn.addEventListener("click", async () => {
+      commentBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
 
         const postRef = doc(db, "posts", docSnap.id);
         const commentObj = { text: commentText, user: user.uid };
-
         await updateDoc(postRef, { comments: arrayUnion(commentObj) });
+
+        const commentEl = document.createElement("p");
+        commentEl.textContent = commentText;
+        commentsContainer.appendChild(commentEl);
       });
 
       // DELETE BUTTON
@@ -182,7 +182,8 @@ onAuthStateChanged(auth, async (user) => {
 
       // SHARE BUTTON
       const shareBtn = postDiv.querySelector(".shareBtn");
-      shareBtn.addEventListener("click", () => {
+      shareBtn.addEventListener("click", (e) => {
+        e.preventDefault();
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
         } else {
@@ -190,7 +191,5 @@ onAuthStateChanged(auth, async (user) => {
         }
       });
     });
-
-    window.scrollTo(0, scrollY);
   });
 });

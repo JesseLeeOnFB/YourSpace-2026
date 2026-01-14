@@ -7,51 +7,43 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
+  <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- PROFILE SECTION -->
-  <section class="profile">
-    <h2>Profile</h2>
+  <!-- Profile Picture Section -->
+  <section class="profilePicSection">
+    <h2>Profile Picture</h2>
+    <img id="profilePicDisplay" src="defaultProfile.png" alt="Profile Picture" class="profilePic">
+    <input type="file" id="profilePicInput" accept="image/*">
+    <button id="saveProfilePicBtn">Save Profile Picture</button>
+  </section>
 
-    <div class="profilePhotoSection">
-      <img id="profilePhotoPreview" src="" alt="Profile Photo" style="max-width:150px; max-height:150px;">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Photo</button>
-    </div>
+  <!-- Profile Info Section -->
+  <section class="profileInfoSection">
+    <h2>Profile Info</h2>
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="locationInput" placeholder="Location">
+    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+    <input type="text" id="musicInput" placeholder="Embedded Music URL">
+    <button id="saveProfileInfoBtn">Save Profile Info</button>
+  </section>
 
-    <div class="profileInfo">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="locationInput" placeholder="Location">
-      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
-      <button id="saveProfileInfoBtn">Save Profile Info</button>
-    </div>
+  <!-- Top 10 Friends -->
+  <section class="friendsSection">
+    <h2>Top 10 Friends</h2>
+    <ul id="friendsList"></ul>
+  </section>
 
-    <!-- Top 10 Friends Box -->
-    <div class="topFriends">
-      <h3>Top 10 Friends</h3>
-      <ul id="topFriendsList"></ul>
-    </div>
-
-    <!-- Friend Search -->
-    <div class="friendSearch">
-      <h3>Add Friends</h3>
-      <input type="text" id="friendSearchInput" placeholder="Search username...">
-      <button id="friendSearchBtn">Search</button>
-      <div id="friendSearchResults"></div>
-    </div>
-
-    <!-- Custom HTML / Theme -->
-    <div class="customProfileHTML">
-      <h3>Custom HTML / Themes</h3>
-      <textarea id="customHTMLInput" rows="5" placeholder="Paste your HTML for profile customization"></textarea>
-      <button id="saveCustomHTMLBtn">Save Custom HTML</button>
-    </div>
+  <!-- Search People -->
+  <section class="searchSection">
+    <h2>Search People</h2>
+    <input type="text" id="searchInput" placeholder="Enter username">
+    <button id="searchBtn">Search</button>
+    <div id="searchResults"></div>
   </section>
 
   <script type="module" src="profile.js"></script>

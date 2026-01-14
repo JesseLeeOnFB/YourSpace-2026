@@ -72,8 +72,12 @@ onAuthStateChanged(auth, async (user) => {
         const file = postImageInput.files[0];
         const safeName = encodeURIComponent(file.name);
         const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
-        const uploadSnap = await uploadBytes(storageRef, file);
-        postImageURL = await getDownloadURL(uploadSnap.ref);
+        const metadata = {
+  contentType: file.type || "image/jpeg"
+};
+
+const uploadSnap = await uploadBytes(storageRef, file, metadata);
+postImageURL = await getDownloadURL(uploadSnap.ref);
       } catch (err) {
         console.error("Image upload failed:", err);
         alert("Image upload failed. Only text will post.");

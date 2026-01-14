@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <nav>
   <button id="homeBtn" type="button">Home</button>
   <button id="profileBtn" type="button">Profile</button>
@@ -17,14 +16,15 @@
 <h1>YourSpace Feed</h1>
 
 <div id="postContainer">
-  <input id="postText" type="text" placeholder="Write something..." />
-  <input id="postImageInput" type="file" accept="image/*" />
+  <input type="text" id="postText" placeholder="Write something...">
+  <input type="file" id="postImageInput" accept="image/*">
   <button id="postBtn" type="button">Post</button>
 </div>
 
-<hr />
-
 <div id="postsContainer"></div>
+
+<h2>Trending Post (hourly)</h2>
+<div id="trendingPost"></div>
 
 <script type="module" src="feed2.js"></script>
 </body>

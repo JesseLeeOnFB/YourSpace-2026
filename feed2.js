@@ -76,7 +76,8 @@ onAuthStateChanged(auth, async (user) => {
       try {
         const file = postImageInput.files[0];
         const safeFileName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
+        const safeFileName = encodeURIComponent(file.name);
+const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
         const snapshot = await uploadBytes(storageRef, file);
         postImageURL = await getDownloadURL(snapshot.ref);
       } catch (err) {

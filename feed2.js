@@ -1,4 +1,3 @@
-// feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
@@ -43,7 +42,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM elements
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -51,22 +49,6 @@ const postsContainer = document.getElementById("postsContainer");
 const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
-
-// Optional: show preview of selected image
-const imagePreview = document.createElement("img");
-imagePreview.style.maxWidth = "200px";
-imagePreview.style.display = "none";
-postImageInput.parentNode.insertBefore(imagePreview, postImageInput.nextSibling);
-
-postImageInput.addEventListener("change", () => {
-  const file = postImageInput.files[0];
-  if (file) {
-    imagePreview.src = URL.createObjectURL(file);
-    imagePreview.style.display = "block";
-  } else {
-    imagePreview.style.display = "none";
-  }
-});
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -79,7 +61,7 @@ onAuthStateChanged(auth, async (user) => {
   logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   homeBtn.onclick = () => window.location.href = "feed.html";
 
-  // POST CREATION
+  // Create post
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     let postImageURL = "";
@@ -89,6 +71,7 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
+    // Upload image if exists
     if (postImageInput.files.length > 0) {
       try {
         const file = postImageInput.files[0];
@@ -102,6 +85,7 @@ onAuthStateChanged(auth, async (user) => {
       }
     }
 
+    // Get user profile info
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
@@ -118,10 +102,9 @@ onAuthStateChanged(auth, async (user) => {
 
     postInput.value = "";
     postImageInput.value = "";
-    imagePreview.style.display = "none";
   };
 
-  // LISTEN TO POSTS
+  // Listen to posts
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
@@ -157,14 +140,16 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       });
 
-      // LIKE
-      postDiv.querySelector(".likeBtn").onclick = async () => {
+      // Like
+      const likeBtn = postDiv.querySelector(".likeBtn");
+      likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
         await updateDoc(postRef, { likes: increment(1) });
       };
 
-      // COMMENT
-      postDiv.querySelector(".commentBtn").onclick = async () => {
+      // Comment
+      const commentBtn = postDiv.querySelector(".commentBtn");
+      commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
         if (!commentText) return;
         const postRef = doc(db, "posts", docSnap.id);
@@ -174,7 +159,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       };
 
-      // DELETE
+      // Delete
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.onclick = async () => {
@@ -184,8 +169,9 @@ onAuthStateChanged(auth, async (user) => {
         };
       }
 
-      // SHARE
-      postDiv.querySelector(".shareBtn").onclick = () => {
+      // Share
+      const shareBtn = postDiv.querySelector(".shareBtn");
+      shareBtn.onclick = () => {
         if (navigator.share) {
           navigator.share({ title: "YourSpace Post", text: data.text, url: window.location.href });
         } else {

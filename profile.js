@@ -1,33 +1,17 @@
 // profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  deleteDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Firebase config
+/* -------------------- Firebase Init -------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
+  storageBucket: "yourspace-2026.appspot.com",
   messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -35,100 +19,82 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM
-const profileImg = document.getElementById("profileImg");
-const photoInput = document.getElementById("photoInput");
-const displayNameInput = document.getElementById("displayName");
-const bioInput = document.getElementById("bio");
-const locationInput = document.getElementById("location");
-const musicInput = document.getElementById("musicURL");
-const saveProfileBtn = document.getElementById("saveProfile");
-const customCodeInput = document.getElementById("customCode");
-const saveCustomBtn = document.getElementById("saveCustom");
-const customProfileDiv = document.getElementById("customProfileDiv");
-const userPostsContainer = document.getElementById("userPostsContainer");
-const homeBtn = document.getElementById("homeBtn");
+/* -------------------- DOM -------------------- */
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicPreview = document.getElementById("profilePicPreview");
+const displayNameInput = document.getElementById("displayNameInput");
+const bioInput = document.getElementById("bioInput");
+const saveBtn = document.getElementById("saveProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const homeBtn = document.getElementById("homeBtn");
 
+/* -------------------- Image Preview -------------------- */
+profilePicInput.addEventListener("change", () => {
+  const file = profilePicInput.files[0];
+  if (!file) {
+    profilePicPreview.style.display = "none";
+    return;
+  }
+  profilePicPreview.src = URL.createObjectURL(file);
+  profilePicPreview.style.display = "block";
+});
+
+/* -------------------- Auth & Load Profile -------------------- */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("You must be logged in");
     window.location.href = "index.html";
     return;
   }
 
-  // Load profile
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  if (userDoc.exists()) {
-    const data = userDoc.data();
-    displayNameInput.value = data.displayName || "";
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-    musicInput.value = data.musicURL || "";
-    if (data.photoURL) profileImg.src = data.photoURL;
-    if (data.customCode) customProfileDiv.innerHTML = data.customCode;
-  }
+  // Navigation
+  homeBtn.onclick = () => (window.location.href = "feed.html");
+  logoutBtn.onclick = async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  };
 
-  // Save profile
-  saveProfileBtn.addEventListener("click", async () => {
-    const updates = {
-      displayName: displayNameInput.value,
-      bio: bioInput.value,
-      location: locationInput.value,
-      musicURL: musicInput.value
-    };
-    if (photoInput.files.length > 0) {
-      const file = photoInput.files[0];
-      const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`);
-      await uploadBytes(storageRef, file);
-      updates.photoURL = await getDownloadURL(storageRef);
-      profileImg.src = updates.photoURL;
-    }
-    await setDoc(doc(db, "users", user.uid), updates, { merge: true });
-    alert("Profile updated!");
-  });
+  // Load profile data
+  const userDocRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userDocRef);
+  const userData = userSnap.exists() ? userSnap.data() : {};
 
-  // Save custom HTML
-  saveCustomBtn.addEventListener("click", async () => {
-    const customHTML = customCodeInput.value;
-    customProfileDiv.innerHTML = customHTML;
-    await setDoc(doc(db, "users", user.uid), { customCode: customHTML }, { merge: true });
-    alert("Custom profile updated!");
-  });
+  displayNameInput.value = userData.displayName || "";
+  bioInput.value = userData.bio || "";
+  profilePicPreview.src = userData.photoURL || "default-avatar.png";
+  profilePicPreview.style.display = "block";
 
-  // Load user posts
-  const postsQuery = query(collection(db, "posts"), where("userId", "==", user.uid));
-  onSnapshot(postsQuery, (snapshot) => {
-    userPostsContainer.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      const postDiv = document.createElement("div");
-      postDiv.classList.add("post");
-      const imageHTML = data.postImage ? `<img src="${data.postImage}" class="postImage">` : "";
-      postDiv.innerHTML = `
-        <div class="postHeader">
-          <img src="${data.photoURL || 'default-avatar.png'}" class="postProfilePic">
-          <strong>${data.displayName}</strong>
-        </div>
-        <p>${data.text || ""}</p>
-        ${imageHTML}
-        <div class="postButtons">
-          <button class="deleteBtn">Delete</button>
-        </div>
-      `;
-      userPostsContainer.appendChild(postDiv);
+  /* -------------------- Save Profile -------------------- */
+  saveBtn.onclick = async () => {
+    saveBtn.disabled = true;
+    let photoURL = userData.photoURL || "";
 
-      // Delete
-      const deleteBtn = postDiv.querySelector(".deleteBtn");
-      deleteBtn.addEventListener("click", async () => {
-        if (confirm("Delete this post?")) {
-          await deleteDoc(doc(db, "posts", docSnap.id));
-        }
+    try {
+      // Upload new profile pic if selected
+      if (profilePicInput.files.length > 0) {
+        const file = profilePicInput.files[0];
+        const safeName = encodeURIComponent(file.name);
+        const storageRef = ref(storage, `profilePictures/${user.uid}/${Date.now()}_${safeName}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        photoURL = await getDownloadURL(snapshot.ref);
+      }
+
+      // Update Firestore
+      await updateDoc(userDocRef, {
+        displayName: displayNameInput.value.trim(),
+        bio: bioInput.value.trim(),
+        photoURL,
+        updatedAt: serverTimestamp()
       });
-    });
-  });
 
-  // NAV buttons
-  homeBtn.addEventListener("click", () => window.location.href = "feed.html");
-  logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
+      // Update Firebase Auth profile
+      await updateProfile(user, { displayName: displayNameInput.value.trim(), photoURL });
+
+      alert("Profile updated!");
+    } catch (err) {
+      console.error("Profile update failed:", err);
+      alert("Failed to update profile. Check console.");
+    } finally {
+      saveBtn.disabled = false;
+    }
+  };
 });

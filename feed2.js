@@ -81,10 +81,7 @@ onAuthStateChanged(auth, async (user) => {
     const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
 
     const snapshot = await uploadBytes(storageRef, file);
-    console.log("Upload successful", snapshot);
-
-    postImageURL = await getDownloadURL(snapshot.ref);
-    console.log("Download URL:", postImageURL);
+postImageURL = await getDownloadURL(snapshot.ref);
 
   } catch (err) {
     console.error("Image upload failed:", err);

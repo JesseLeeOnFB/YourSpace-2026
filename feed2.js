@@ -1,18 +1,38 @@
 // feed2.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { 
-  getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc,
-  updateDoc, deleteDoc, serverTimestamp, increment, arrayUnion 
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  increment,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com", // MUST match your Firebase console
+  storageBucket: "yourspace-2026.appspot.com",
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
   measurementId: "G-FZ4GFXWGSS"
@@ -23,6 +43,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+// DOM elements
 const postInput = document.getElementById("postText");
 const postBtn = document.getElementById("postBtn");
 const postImageInput = document.getElementById("postImageInput");
@@ -31,18 +52,19 @@ const profileBtn = document.getElementById("profileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+// Auth check
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  // NAVIGATION
+  // NAV buttons
   profileBtn.onclick = () => window.location.href = "profile.html";
   logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
   homeBtn.onclick = () => window.location.href = "feed.html";
 
-  // POST CREATION
+  // CREATE POST
   postBtn.onclick = async () => {
     const text = postInput.value.trim();
     let postImageURL = "";
@@ -56,24 +78,17 @@ onAuthStateChanged(auth, async (user) => {
     if (postImageInput.files.length > 0) {
       try {
         const file = postImageInput.files[0];
-        console.log("Uploading file:", file.name);
-
         const safeName = encodeURIComponent(file.name);
-        const path = `posts/${user.uid}/${Date.now()}_${safeName}`;
-        console.log("Storage path:", path);
-
-        const storageRef = ref(storage, path);
+        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
         const uploadSnap = await uploadBytes(storageRef, file);
         postImageURL = await getDownloadURL(uploadSnap.ref);
-
-        console.log("Image uploaded, URL:", postImageURL);
       } catch (err) {
-        console.error("Image upload failed", err.code, err.message);
+        console.error("Image upload failed:", err.code, err.message);
         alert("Image upload failed. Only text will post.");
       }
     }
 
-    // FETCH PROFILE DATA
+    // Fetch user profile
     const profileSnap = await getDoc(doc(db, "users", user.uid));
     const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
@@ -97,7 +112,7 @@ onAuthStateChanged(auth, async (user) => {
   onSnapshot(postsQuery, (snapshot) => {
     postsContainer.innerHTML = "";
 
-    snapshot.forEach(docSnap => {
+    snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       const postDiv = document.createElement("div");
       postDiv.classList.add("post");
@@ -122,21 +137,23 @@ onAuthStateChanged(auth, async (user) => {
 
       const commentsContainer = postDiv.querySelector(".commentsContainer");
 
-      // RENDER EXISTING COMMENTS
+      // Render existing comments
       (data.comments || []).forEach(c => {
         const commentEl = document.createElement("p");
         commentEl.textContent = c.text;
         commentsContainer.appendChild(commentEl);
       });
 
-      // BUTTONS
+      // LIKE
       const likeBtn = postDiv.querySelector(".likeBtn");
       likeBtn.onclick = async () => {
         const postRef = doc(db, "posts", docSnap.id);
+        data.likes = (data.likes || 0) + 1;
+        likeBtn.textContent = `Like (${data.likes})`;
         await updateDoc(postRef, { likes: increment(1) });
-        likeBtn.textContent = `Like (${(data.likes || 0) + 1})`;
       };
 
+      // COMMENT
       const commentBtn = postDiv.querySelector(".commentBtn");
       commentBtn.onclick = async () => {
         const commentText = prompt("Enter your comment:");
@@ -148,6 +165,7 @@ onAuthStateChanged(auth, async (user) => {
         commentsContainer.appendChild(commentEl);
       };
 
+      // DELETE
       const deleteBtn = postDiv.querySelector(".deleteBtn");
       if (deleteBtn) {
         deleteBtn.onclick = async () => {
@@ -157,6 +175,7 @@ onAuthStateChanged(auth, async (user) => {
         };
       }
 
+      // SHARE
       const shareBtn = postDiv.querySelector(".shareBtn");
       shareBtn.onclick = () => {
         if (navigator.share) {

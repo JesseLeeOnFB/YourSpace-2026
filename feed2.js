@@ -135,12 +135,17 @@ onAuthStateChanged(auth, async (user) => {
       });
 
       // LIKE BUTTON
-      const likeBtn = postDiv.querySelector(".likeBtn");
-      likeBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const postRef = doc(db, "posts", docSnap.id);
-        await updateDoc(postRef, { likes: increment(1) });
-      });
+      likeBtn.addEventListener("click", async () => {
+  const postRef = doc(db, "posts", docSnap.id);
+
+  // Increment UI immediately
+  const currentLikes = data.likes || 0;
+  data.likes = currentLikes + 1; // update local variable
+  likeBtn.textContent = `Like (${data.likes})`;
+
+  // Update Firestore
+  await updateDoc(postRef, { likes: increment(1) });
+});
 
       // COMMENT BUTTON
       const commentBtn = postDiv.querySelector(".commentBtn");

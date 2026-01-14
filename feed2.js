@@ -148,24 +148,24 @@ onAuthStateChanged(auth, async (user) => {
 });
 
       // COMMENT BUTTON
-      const commentBtn = postDiv.querySelector(".commentBtn");
-      commentBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const commentText = prompt("Enter your comment:");
-        if (!commentText) return;
+      import { arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        const postRef = doc(db, "posts", docSnap.id);
-        const latestSnap = await getDoc(postRef);
-        const latestData = latestSnap.exists() ? latestSnap.data() : {};
+const commentBtn = postDiv.querySelector(".commentBtn");
+commentBtn.addEventListener("click", async () => {
+  const commentText = prompt("Enter your comment:");
+  if (!commentText) return;
 
-        const updatedComments = [...(latestData.comments || []), { text: commentText, user: user.uid }];
-        await updateDoc(postRef, { comments: updatedComments });
+  const postRef = doc(db, "posts", docSnap.id);
 
-        // Render immediately
-        const commentEl = document.createElement("p");
-        commentEl.textContent = commentText;
-        commentsContainer.appendChild(commentEl);
-      });
+  const commentObj = { text: commentText, user: user.uid };
+  
+  await updateDoc(postRef, { comments: arrayUnion(commentObj) });
+
+  // Render immediately
+  const commentEl = document.createElement("p");
+  commentEl.textContent = commentText;
+  commentsContainer.appendChild(commentEl);
+});
 
       // DELETE BUTTON
       const deleteBtn = postDiv.querySelector(".deleteBtn");

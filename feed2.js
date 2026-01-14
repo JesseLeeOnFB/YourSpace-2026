@@ -73,21 +73,16 @@ onAuthStateChanged(auth, async (user) => {
 
     let postImageURL = "";
     if (postImageInput.files.length > 0) {
-  try {
-    const file = postImageInput.files[0];
-    console.log("Uploading file:", file.name, file.size, file.type); // debug
-
-    const safeFileName = encodeURIComponent(file.name);
-    const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
-
-    const snapshot = await uploadBytes(storageRef, file);
-postImageURL = await getDownloadURL(snapshot.ref);
-
-  } catch (err) {
-    console.error("Image upload failed:", err);
-    alert("Image upload failed. Text will still post.");
-  }
-}
+      try {
+        const file = postImageInput.files[0];
+        const safeFileName = encodeURIComponent(file.name); // sanitize filename
+        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeFileName}`);
+        await uploadBytes(storageRef, file); // upload file
+        postImageURL = await getDownloadURL(storageRef); // get public URL
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        alert("Image upload failed. Only text will post.");
+      }
     }
 
     // Fetch user profile
@@ -152,12 +147,8 @@ postImageURL = await getDownloadURL(snapshot.ref);
       likeBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const postRef = doc(db, "posts", docSnap.id);
-
-        // Increment UI immediately
         data.likes = (data.likes || 0) + 1;
         likeBtn.textContent = `Like (${data.likes})`;
-
-        // Update Firestore
         await updateDoc(postRef, { likes: increment(1) });
       });
 
@@ -169,8 +160,7 @@ postImageURL = await getDownloadURL(snapshot.ref);
         if (!commentText) return;
 
         const postRef = doc(db, "posts", docSnap.id);
-        const commentObj = { text: commentText, user: user.uid };
-        await updateDoc(postRef, { comments: arrayUnion(commentObj) });
+        await updateDoc(postRef, { comments: arrayUnion({ text: commentText, user: user.uid }) });
 
         const commentEl = document.createElement("p");
         commentEl.textContent = commentText;
@@ -200,7 +190,6 @@ postImageURL = await getDownloadURL(snapshot.ref);
       });
     });
 
-    // Keep scroll position
     window.scrollTo(0, scrollY);
   });
 });

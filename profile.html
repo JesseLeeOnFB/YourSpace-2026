@@ -16,36 +16,34 @@
 
   <!-- Profile Section -->
   <section class="profilePage">
-    <h2>My Profile</h2>
-    
-    <!-- Profile Picture -->
-    <img src="" id="profilePic" class="profilePic" alt="Profile Picture">
-    <input type="file" id="profilePicInput" accept="image/*">
+    <div class="profileHeader">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
 
-    <!-- Username / Bio / Location -->
-    <label>Username</label>
-    <input type="text" id="usernameInput" placeholder="Enter username">
+    <div class="profileInfo">
+      <label>Username:</label>
+      <input type="text" id="usernameInput" placeholder="Enter username">
 
-    <label>Bio</label>
-    <textarea id="bioInput" rows="3" placeholder="Write something about yourself"></textarea>
+      <label>Bio:</label>
+      <textarea id="bioInput" placeholder="Write a short bio..." rows="3"></textarea>
 
-    <label>Location</label>
-    <input type="text" id="locationInput" placeholder="Enter location">
+      <label>Location:</label>
+      <input type="text" id="locationInput" placeholder="City, Country">
 
-    <!-- Embedded Music -->
-    <label>Music URL (Spotify / YouTube / etc.)</label>
-    <input type="text" id="musicInput" placeholder="Paste your embed link">
+      <label>Embedded Music (URL or Embed Code):</label>
+      <textarea id="musicInput" placeholder="Paste your embedded music URL or code..." rows="2"></textarea>
 
-    <!-- Top 10 Friends -->
-    <h3>Top 10 Friends</h3>
-    <ul id="topFriendsList">
-      <!-- Dynamically populated -->
-    </ul>
-    <input type="text" id="newFriendInput" placeholder="Add friend by username">
-    <button id="addFriendBtn">Add Friend</button>
+      <button id="saveProfileBtn">Save Profile</button>
+    </div>
 
-    <!-- Save Button -->
-    <button id="saveProfileBtn">Save Profile</button>
+    <!-- Top Friends Box -->
+    <div class="topFriends">
+      <h3>Top 10 Friends</h3>
+      <div id="friendsContainer">
+        <!-- Friends will be loaded here dynamically -->
+      </div>
+    </div>
   </section>
 
   <script type="module" src="profile.js"></script>

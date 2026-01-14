@@ -52,59 +52,72 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // Navigation buttons
-  profileBtn.onclick = () => window.location.href = "profile.html";
-  logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "index.html");
-  homeBtn.onclick = () => window.location.href = "feed.html";
+postBtn.onclick = async () => {
+  console.log("POST CLICKED");
 
-  // POST CREATION
-  postBtn.onclick = async () => {
-    const text = postInput.value.trim();
-    let postImageURL = "";
+  const text = postInput.value.trim();
+  let postImageURL = "";
 
-    if (!text && postImageInput.files.length === 0) {
-      alert("Write something or attach an image!");
-      return;
+  console.log("Text:", text);
+  console.log("Files:", postImageInput.files);
+
+  if (!text && postImageInput.files.length === 0) {
+    alert("Write something or attach an image!");
+    return;
+  }
+
+  if (postImageInput.files.length > 0) {
+    const file = postImageInput.files[0];
+    console.log("Selected file:", file);
+    console.log("File type:", file.type);
+
+    try {
+      const metadata = {
+        contentType: file.type || "image/jpeg"
+      };
+
+      const storageRef = ref(
+        storage,
+        `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`
+      );
+
+      console.log("Uploading to:", storageRef.fullPath);
+
+      const uploadSnap = await uploadBytes(storageRef, file, metadata);
+      console.log("Upload success");
+
+      postImageURL = await getDownloadURL(uploadSnap.ref);
+      console.log("Download URL:", postImageURL);
+
+    } catch (err) {
+      console.error("UPLOAD FAILED:", err);
+      alert("UPLOAD FAILED — check console");
+      return; // stop execution if upload fails
     }
+  }
 
-    // Upload image if selected
-    if (postImageInput.files.length > 0) {
-      try {
-        const file = postImageInput.files[0];
-        const safeName = encodeURIComponent(file.name);
-        const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
-        const metadata = {
-  contentType: "image/jpeg"
+  console.log("Creating Firestore post");
+
+  const profileSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+  const profileData = profileSnap.exists() ? profileSnap.data() : {};
+
+  await addDoc(collection(db, "posts"), {
+    text,
+    userId: auth.currentUser.uid,
+    displayName: profileData.displayName || "Anonymous",
+    photoURL: profileData.photoURL || "",
+    postImage: postImageURL,
+    likes: 0,
+    comments: [],
+    createdAt: serverTimestamp()
+  });
+
+  console.log("POST CREATED");
+
+  postInput.value = "";
+  postImageInput.value = "";
+  imagePreview.style.display = "none";
 };
-
-const uploadSnap = await uploadBytes(storageRef, file, metadata);
-postImageURL = await getDownloadURL(uploadSnap.ref);
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        alert("Image upload failed. Only text will post.");
-      }
-    }
-
-    // Fetch user profile
-    const profileSnap = await getDoc(doc(db, "users", user.uid));
-    const profileData = profileSnap.exists() ? profileSnap.data() : {};
-
-    // Add post to Firestore
-    await addDoc(collection(db, "posts"), {
-      text,
-      userId: user.uid,
-      displayName: profileData.displayName || "Anonymous",
-      photoURL: profileData.photoURL || "",
-      postImage: postImageURL,
-      likes: 0,
-      comments: [],
-      createdAt: serverTimestamp()
-    });
-
-    postInput.value = "";
-    postImageInput.value = "";
-    imagePreview.src = "";
-    imagePreview.style.display = "none";
-  };
 
   // LISTEN TO POSTS
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));

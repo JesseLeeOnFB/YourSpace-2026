@@ -7,64 +7,36 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Nav Bar -->
+  <!-- Navbar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Layout -->
-  <section class="profile">
-    
-    <!-- Sidebar -->
-    <div class="profileSidebar">
-      <img id="profilePhoto" src="" alt="Profile Picture">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Photo</button>
-
-      <h3 id="displayName">Username</h3>
-      <input type="text" id="editUsername" placeholder="Change username">
-
-      <h4>Bio</h4>
-      <textarea id="editBio" placeholder="Write something about yourself..."></textarea>
-
-      <h4>Location</h4>
-      <input type="text" id="editLocation" placeholder="Enter location">
-
-      <h4>Top 10 Friends</h4>
-      <div class="topFriends">
-        <ul id="topFriendsList">
-          <!-- Friends will populate here -->
-        </ul>
-        <input type="text" id="addFriendInput" placeholder="Add a friend">
-        <button id="addFriendBtn">Add Friend</button>
-      </div>
-
-      <h4>Theme / Background</h4>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="theme-dark">Dark</option>
-        <option value="theme-light">Light</option>
-      </select>
-
-      <h4>Music</h4>
-      <input type="text" id="profileMusicURL" placeholder="Paste music embed URL">
-      <button id="saveMusicBtn">Save Music</button>
-      <div id="musicEmbed" style="margin-top:10px;">
-        <!-- Embedded music will appear here -->
+  <section class="profile-container">
+    <div class="profile-header">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+      <div class="profile-info">
+        <input type="file" id="profilePicInput" accept="image/*">
+        <input type="text" id="usernameInput" placeholder="Username">
+        <input type="text" id="locationInput" placeholder="Location">
       </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="profileContent">
-      <h2>Your Posts</h2>
-      <div id="profilePostsContainer">
-        <!-- User posts will populate here -->
-      </div>
-    </div>
+    <textarea id="bioInput" placeholder="Your bio..." rows="3"></textarea>
 
+    <h3>Top 10 Friends</h3>
+    <div class="top-friends" id="topFriendsContainer">
+      <!-- Friends added dynamically -->
+    </div>
+    <input type="text" id="addFriendInput" placeholder="Add friend username">
+    <button id="addFriendBtn">Add Friend</button>
+
+    <h3>Custom HTML / Embedded Music</h3>
+    <textarea id="customHTMLInput" placeholder="Paste custom HTML or embed music here..." rows="5"></textarea>
+
+    <button id="saveProfileBtn">Save Profile</button>
   </section>
 
   <script type="module" src="profile.js"></script>

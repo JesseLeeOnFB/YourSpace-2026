@@ -6,22 +6,21 @@
   <title>YourSpace Feed</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
-
-  <!-- NAVBAR -->
+<body>
+  <!-- Nav Bar -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- CREATE POST SECTION -->
+  <!-- Create Post Section -->
   <section class="createPost">
     <h2>Create a Post</h2>
     <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
     <input type="file" id="postFileInput" accept="image/*,video/*">
-    <img id="imagePreview" src="" style="display:none; max-width: 400px; max-height: 300px; margin-top: 10px;">
-    <video id="videoPreview" controls style="display:none; max-width: 400px; max-height: 300px; margin-top: 10px;"></video>
+    <img id="imagePreview" src="" style="display:none; max-width: 300px; max-height: 300px; margin-top: 10px;">
+    <video id="videoPreview" style="display:none; max-width: 300px; max-height: 300px; margin-top: 10px;" controls></video>
 
     <div class="notifications">
       <label><input type="checkbox" id="notifyEmail"> Email notifications</label>
@@ -31,33 +30,11 @@
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- FEED POSTS -->
+  <!-- Feed Section -->
   <section class="feed">
     <h2>Feed</h2>
     <div id="postsContainer"></div>
   </section>
-
-  <template id="postTemplate">
-    <div class="post">
-      <div class="postHeader">
-        <img src="" alt="Profile Pic" class="postProfilePic">
-        <strong class="postUsername">Anonymous</strong>
-      </div>
-      <div class="postContent">
-        <p class="postText"></p>
-        <img class="postImage" src="" style="display:none;">
-        <video class="postVideo" controls style="display:none;"></video>
-      </div>
-      <div class="postActions">
-        <button class="likeBtn">👍</button>
-        <button class="dislikeBtn">🖕</button>
-        <button class="commentBtn">Comment</button>
-        <button class="shareBtn">Share</button>
-        <button class="deleteBtn">Delete</button>
-      </div>
-      <div class="commentsSection"></div>
-    </div>
-  </template>
 
   <script type="module" src="feed.js"></script>
 </body>

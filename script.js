@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// -------------------- Firebase Config --------------------
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -22,63 +22,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// -------------------- DOM Elements --------------------
-const signupBtn = document.getElementById("signupBtn");
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const usernameInput = document.getElementById("username");
+document.addEventListener("DOMContentLoaded", () => {
+  const signupBtn = document.getElementById("signupBtn");
+  const loginBtn = document.getElementById("loginBtn");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const usernameInput = document.getElementById("username");
 
-// -------------------- SIGNUP --------------------
-signupBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  const displayName = usernameInput.value.trim();
+  // -------------------- SIGN UP --------------------
+  signupBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const displayName = usernameInput.value.trim();
 
-  if (!email || !password || !displayName) {
-    alert("Please fill in all fields!");
-    return;
-  }
+    if (!email || !password || !displayName) {
+      return alert("Please fill all fields.");
+    }
 
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    // Update display name in Firebase Auth
-    await updateProfile(userCred.user, { displayName });
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCred.user, { displayName });
+      
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        displayName,
+        bio: "",
+        profilePicture: "",
+        theme: "",
+        musicEmbed: "",
+        createdAt: serverTimestamp()
+      });
 
-    // Create Firestore user document
-    await setDoc(doc(db, "users", userCred.user.uid), {
-      displayName,
-      bio: "",
-      photoURL: "",
-      musicURL: "",
-      theme: "",
-      createdAt: serverTimestamp()
-    });
+      alert("Account created successfully!");
+      window.location.href = "feed.html";
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  });
 
-    alert("Account created successfully!");
-    window.location.href = "feed.html"; // redirect to feed page
+  // -------------------- LOGIN --------------------
+  loginBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-  } catch (err) {
-    console.error("Signup error:", err);
-    alert(err.message);
-  }
-});
+    if (!email || !password) return alert("Enter email and password.");
 
-// -------------------- LOGIN --------------------
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!email || !password) {
-    alert("Enter both email and password!");
-    return;
-  }
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "feed.html"; // redirect to feed page
-  } catch (err) {
-    console.error("Login error:", err);
-    alert(err.message);
-  }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "feed.html";
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  });
 });

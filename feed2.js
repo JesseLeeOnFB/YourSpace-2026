@@ -73,7 +73,7 @@ onAuthStateChanged(auth, async (user) => {
         const safeName = encodeURIComponent(file.name);
         const storageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${safeName}`);
         const metadata = {
-  contentType: file.type || "image/jpeg"
+  contentType: "image/jpeg"
 };
 
 const uploadSnap = await uploadBytes(storageRef, file, metadata);

@@ -12,13 +12,20 @@
   <button id="logoutBtn">Logout</button>
 </nav>
 
-<h1 id="displayName">Profile</h1>
-<img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
-<p id="bio"></p>
-<p id="location"></p>
+<h1>Your Profile</h1>
 
-<input type="file" id="profilePicInput" accept="image/*">
-<button id="updateProfileBtn">Update Profile</button>
+<div id="profileContainer">
+  <img id="profilePic" src="default-avatar.png" alt="Profile Picture" style="max-width:150px;">
+  <input type="file" id="profilePicInput" accept="image/*">
+  
+  <input type="text" id="displayName" placeholder="Display Name">
+  <textarea id="bio" placeholder="Bio"></textarea>
+  <input type="text" id="location" placeholder="Location">
+  <textarea id="customHTML" placeholder="Custom HTML / Theme"></textarea>
+  <textarea id="musicEmbed" placeholder="Music Embed Code"></textarea>
+  
+  <button id="saveBtn">Save Changes</button>
+</div>
 
 <script type="module" src="profile.js"></script>
 </body>

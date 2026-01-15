@@ -1,197 +1,194 @@
-/* ==========================
-   Global Styles
-========================== */
-
+/* =====================
+   GLOBAL STYLES
+===================== */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #fff;
-    color: #111;
-}
-
-h2 {
-    margin-top: 0;
-}
-
-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #1976d2;
-    color: #fff;
-    transition: background-color 0.2s ease;
-}
-
-button:hover {
-    background-color: #0d47a1;
-}
-
-input, textarea, select {
-    padding: 6px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    box-sizing: border-box;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #000;
 }
 
 a {
-    color: #1976d2;
-    text-decoration: none;
+  text-decoration: none;
+  color: inherit;
 }
 
-a:hover {
-    text-decoration: underline;
+button {
+  cursor: pointer;
+  padding: 8px 12px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: #fff;
+  transition: 0.2s;
 }
 
-/* ==========================
-   Navbar
-========================== */
+button:hover {
+  background-color: #2980b9;
+}
+
+button:active {
+  background-color: #1c5980;
+}
+
+input, textarea, select {
+  width: 100%;
+  max-width: 400px;
+  padding: 6px 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* =====================
+   NAVBAR
+===================== */
 .navbar {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f2f2f2;
-    border-bottom: 1px solid #ccc;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ccc;
 }
 
-/* ==========================
-   Feed
-========================== */
-.feed {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 10px;
+.navbar button {
+  margin: 0;
 }
 
-.feed .post {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    background-color: #fafafa;
-}
-
-.feed .post img,
-.feed .post video {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-top: 10px;
-}
-
-/* ==========================
-   Create Post Section
-========================== */
-.createPost {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-/* ==========================
-   Profile Page
-========================== */
+/* =====================
+   PROFILE PAGE
+===================== */
 .profileSection {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fafafa;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fafafa;
 }
 
-.profilePhoto {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #1976d2;
-    display: block;
-    margin-bottom: 10px;
+.profileSection h2 {
+  text-align: center;
 }
 
-.profileInputs {
-    display: flex;
-    flex-direction: column;
+.profilePicContainer {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-.profileInputs label {
-    font-weight: bold;
-    margin-top: 10px;
+.profilePicContainer img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  display: block;
+  margin: 0 auto 10px;
 }
 
-.profileInputs input,
-.profileInputs textarea,
-.profileInputs select {
-    margin-top: 5px;
+#profilePicInput {
+  display: block;
+  margin: 0 auto;
 }
 
-/* ==========================
-   Top Friends Section
-========================== */
-.topFriendsSection {
-    margin-top: 15px;
+/* =====================
+   FEED PAGE
+===================== */
+.createPost, .feed {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #fafafa;
+  border: 1px solid #ccc;
 }
 
-.topFriendsSection input {
-    width: 100%;
+.createPost textarea {
+  resize: vertical;
 }
 
-/* ==========================
-   Music Player
-========================== */
-.musicPlayerSection iframe {
-    width: 100%;
-    height: 80px;
-    margin-top: 10px;
-    border: none;
+.feedPost {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
-/* ==========================
-   Theme Classes
-========================== */
-body.default { background-color: #fff; color: #111; }
+.feedPost img, .feedPost video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.feedPost video {
+  display: block;
+}
+
+/* USERNAME LINK IN FEED */
+.feedPost .usernameLink {
+  font-weight: bold;
+  cursor: pointer;
+  color: #3498db;
+}
+
+.feedPost .usernameLink:hover {
+  text-decoration: underline;
+}
+
+/* POST BUTTONS (LIKE/DISLIKE/COMMENT/SHARE/DELETE) */
+.feedPost .postButtons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.feedPost .postButtons button {
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 0.9rem;
+}
+
+.feedPost .postButtons button:hover {
+  background-color: #2980b9;
+}
+
+/* =====================
+   THEMES
+===================== */
+body.default { background-color: #fff; color: #000; }
 body.dark { background-color: #111; color: #eee; }
 body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
 body.animated { animation: bgPulse 5s infinite alternate; }
 
 @keyframes bgPulse {
-    0% { background-color: #ff9; }
-    50% { background-color: #9ff; }
-    100% { background-color: #f9f; }
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
 }
 
-/* ==========================
-   Responsive
-========================== */
-@media screen and (max-width: 600px) {
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 768px) {
+  .profileSection, .createPost, .feed {
+    margin: 10px;
+    padding: 10px;
+  }
 
-    .feed, .createPost, .profileSection {
-        margin: 10px;
-        padding: 10px;
-    }
+  input, textarea, select, button {
+    width: 100%;
+    max-width: 100%;
+  }
 
-    .profilePhoto {
-        width: 120px;
-        height: 120px;
-    }
-
-    button {
-        width: 100%;
-        margin-top: 5px;
-    }
+  .feedPost .postButtons {
+    flex-direction: column;
+  }
 }

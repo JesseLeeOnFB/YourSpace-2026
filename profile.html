@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="default">
@@ -15,42 +15,60 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profile-container">
+  <!-- PROFILE HEADER -->
+  <section class="profile-header">
+    <div class="profile-pic-container">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+      <button id="saveProfilePicBtn">Save Profile Photo</button>
+    </div>
+    <div class="profile-info">
+      <input type="text" id="displayName" placeholder="Display Name">
+      <input type="text" id="bio" placeholder="Bio">
+      <input type="text" id="location" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
+  </section>
 
-    <!-- PROFILE HEADER -->
-    <section class="profile-header">
-      <div class="profile-pic-wrapper">
-        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput" accept="image/*">
-      </div>
+  <!-- THEME SELECTOR -->
+  <section class="theme-selector">
+    <h3>Choose Theme:</h3>
+    <select id="themeSelect">
+      <option value="">Default</option>
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="neon">Neon</option>
+      <option value="animated">Animated</option>
+      <option value="blue">Blue</option>
+      <option value="red">Red</option>
+      <option value="gradient">Gradient</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
+  </section>
 
-      <div class="profile-info">
-        <input type="text" id="displayName" placeholder="Display Name">
-        <textarea id="bio" placeholder="Bio"></textarea>
-        <input type="text" id="location" placeholder="Location">
-        <input type="text" id="music" placeholder="Music link">
-        <button id="saveProfileBtn">Save Profile</button>
-        <button id="saveMusicBtn">Save Music</button>
-      </div>
-    </section>
+  <!-- MUSIC PLAYER -->
+  <section class="music-player">
+    <h3>Music</h3>
+    <input type="text" id="musicLink" placeholder="YouTube / Spotify / SoundCloud URL">
+    <button id="saveMusicBtn">Save Music</button>
+    <div id="musicContainer"></div>
+  </section>
 
-    <!-- TOP FRIENDS -->
-    <section class="top-friends-section">
-      <h3>Top Friends</h3>
-      <div id="topFriendsContainer"></div>
-      <input type="text" id="topFriendInput" placeholder="Add top friend by username">
-      <button id="addTopFriendBtn">Add Top Friend</button>
-    </section>
+  <!-- TOP FRIENDS -->
+  <section class="top-friends">
+    <h3>Top Friends</h3>
+    <div id="topFriendsContainer"></div>
+    <input type="text" id="addTopFriendInput" placeholder="Add friend username">
+    <button id="addTopFriendBtn">Add to Top Friends</button>
+  </section>
 
-    <!-- WALL COMMENTS -->
-    <section class="wall-comments-section">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="newComment" placeholder="Write a comment..."></textarea>
-      <button id="postCommentBtn">Post Comment</button>
-    </section>
-
-  </main>
+  <!-- WALL / COMMENTS -->
+  <section class="wall-comments">
+    <h3>Friends Wall</h3>
+    <div id="wallContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Leave a note on the wall"></textarea>
+    <button id="postWallCommentBtn">Post Comment</button>
+  </section>
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>

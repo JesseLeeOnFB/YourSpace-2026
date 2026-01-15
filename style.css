@@ -1,86 +1,196 @@
-/* =========================
-   GLOBAL
-========================= */
+/* ===== GENERAL STYLES ===== */
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  font-family: Arial, sans-serif;
+  padding: 0;
+  background-color: #f7f7f7;
+  color: #222;
 }
 
-button {
-  cursor: pointer;
+h2, h3 {
+  margin: 10px 0;
 }
 
-/* =========================
-   NAV BAR
-========================= */
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+/* ===== BODY THEMES ===== */
+body.default { background-color: #fff; color: #000; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
+
+@keyframes bgPulse {
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
+}
+
+/* ===== NAVBAR ===== */
 .navbar {
   display: flex;
-  gap: 10px;
+  justify-content: flex-start;
+  background-color: #333;
   padding: 10px;
-  background: #222;
 }
 
 .navbar button {
-  color: white;
-  background: #444;
+  color: #fff;
+  background-color: #444;
   border: none;
+  margin-right: 8px;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-/* =========================
-   PROFILE
-========================= */
+.navbar button:hover {
+  background-color: #555;
+}
+
+/* ===== INPUTS & BUTTONS ===== */
+input, textarea, select, button {
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  margin: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ===== PROFILE ===== */
 .profilePhoto {
   width: 150px;
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
+  border: 2px solid #007bff;
   display: block;
   margin-bottom: 10px;
 }
 
-.profileSection,
-.customizationSection {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
-  border: 1px solid #ccc;
+.profileSection input, .profileSection textarea {
+  margin-bottom: 10px;
+}
+
+/* ===== MUSIC PLAYER ===== */
+#musicPlayerContainer iframe {
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
   border-radius: 8px;
 }
 
-/* =========================
-   FEED MEDIA FIX (CRITICAL)
-========================= */
-#postsContainer img,
-#postsContainer video {
-  width: 100%;
+/* ===== TOP FRIENDS ===== */
+.topFriendsSection div {
+  padding: 5px 8px;
+  margin: 3px 0;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+/* ===== FEED ===== */
+.feed .createPost {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed textarea {
+  resize: vertical;
+}
+
+#imagePreview {
   max-width: 100%;
-  max-height: 420px;
-  object-fit: contain;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.userPostsSection .userPost,
+.feed .post {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 10px;
-  display: block;
-  margin: 10px auto;
+  background-color: #fafafa;
 }
 
-/* MOBILE */
-@media (max-width: 600px) {
-  #postsContainer img,
-  #postsContainer video {
-    max-height: 280px;
+.userPostsSection img,
+.userPostsSection video,
+.feed img,
+.feed video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Post buttons */
+.post button {
+  margin-right: 5px;
+  margin-top: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+/* ===== SEARCH ===== */
+.searchSection input {
+  width: calc(100% - 110px);
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.searchSection button {
+  width: 100px;
+  display: inline-block;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .profilePhoto {
+    width: 120px;
+    height: 120px;
   }
-}
 
-/* =========================
-   THEMES
-========================= */
-body.default { background: #fff; color: #000; }
-body.dark { background: #111; color: #eee; }
-body.neon { background: #000; color: #0f0; }
-body.animated { animation: bgPulse 5s infinite alternate; }
+  #musicPlayerContainer iframe {
+    height: 150px;
+  }
 
-@keyframes bgPulse {
-  0% { background: #ff9; }
-  50% { background: #9ff; }
-  100% { background: #f9f; }
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar button {
+    margin-bottom: 5px;
+  }
+
+  section {
+    margin: 10px;
+    padding: 10px;
+  }
 }

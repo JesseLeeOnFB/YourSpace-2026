@@ -1,187 +1,45 @@
-/* ===== GLOBAL STYLES ===== */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+body.default {
+  font-family: Arial, sans-serif;
   background-color: #f0f2f5;
-  color: #111;
+  margin:0;
+  padding:0;
 }
 
-button {
-  cursor: pointer;
-  background-color: #1877f2;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  margin: 4px 0;
-  font-size: 0.95rem;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background-color: #145dbf;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 6px;
-  margin: 4px 0 12px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-}
-
-/* ===== NAVBAR ===== */
 .navbar {
-  display: flex;
-  gap: 10px;
-  padding: 12px;
-  background-color: #4267b2;
-  color: white;
+  display:flex;
+  justify-content:space-around;
+  background-color:#4267B2;
+  color:white;
+  padding:10px;
 }
 
 .navbar button {
-  background-color: #fff;
-  color: #4267b2;
+  background:none;
+  border:none;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.navbar button:hover {
-  background-color: #e4e6eb;
+.createPost, .feed, .profile-section {
+  max-width:600px;
+  margin:20px auto;
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ===== MAIN LAYOUT ===== */
-main {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 12px;
+#createPost img, .feed img, .feed video, .profile-section img {
+  max-width:100%;
+  border-radius:10px;
 }
 
-/* ===== PROFILE PAGE ===== */
-.profile-page main.profile-main {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.profile-section {
-  background-color: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.profile-section h2 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 1.3rem;
-}
-
-/* Profile Picture */
-.profile-pic-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-#profilePicDisplay {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #1877f2;
-}
-
-/* Top Friends List */
-#topFriendsList {
-  list-style: none;
-  padding-left: 0;
-}
-
-#topFriendsList li {
-  padding: 4px 6px;
-  border-bottom: 1px solid #eee;
-}
-
-/* Wall Comments */
-.wall-comment {
-  padding: 6px 8px;
-  margin-bottom: 6px;
-  background-color: #f0f2f5;
-  border-radius: 6px;
-}
-
-/* Music Player */
-#musicPlayerContainer iframe {
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-/* ===== FEED ===== */
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.feed-post {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.feed-post .post-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.feed-post .post-header img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.feed-post img, .feed-post video {
-  width: 100%;
-  max-height: 400px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-top: 8px;
-}
-
-.feed-post .post-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-/* ===== CREATE POST ===== */
-.createPost {
-  background-color: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 24px;
-}
-
-#createPost input[type="file"] {
-  padding: 4px 0;
-}
-
-/* ===== RESPONSIVE ===== */
-@media screen and (max-width: 600px) {
-  main {
-    margin: 12px;
-  }
-  #profilePicDisplay {
-    width: 100px;
-    height: 100px;
-  }
-  .feed-post img, .feed-post video {
-    max-height: 250px;
-  }
+.profile-pic {
+  width:150px;
+  height:150px;
+  object-fit:cover;
+  border-radius:50%;
+  display:block;
+  margin-bottom:10px;
 }

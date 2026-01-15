@@ -2,28 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
+<body class="auth-page">
 
-  <div class="login-container">
+  <div class="auth-container">
     <h1>YourSpace</h1>
 
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
 
-    <button id="loginBtn">Login</button>
-
-    <p>No account? <a href="signup.html">Create one</a></p>
+    <button id="loginBtn">Log In</button>
   </div>
 
-  <!-- Firebase core -->
-  <script type="module" src="firebase.js"></script>
-
-  <!-- Login logic -->
   <script type="module" src="script.js"></script>
-
 </body>
 </html>

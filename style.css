@@ -1,290 +1,127 @@
-/* =====================
-   GENERAL RESET
-===================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-}
-
+/* Base styles */
 body.default {
-    background-color: #f0f2f5;
-    color: #222;
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-/* =====================
-   NAVBAR
-===================== */
 .navbar {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 15px;
-    padding: 10px 20px;
-    background-color: #4267B2;
-    color: #fff;
-    font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+  background: #242424;
+  display: flex;
+  gap: 15px;
+  padding: 10px 20px;
 }
 
 .navbar button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #fff;
-    color: #4267B2;
-    font-weight: bold;
-    transition: 0.2s;
+  color: #fff;
+  background: #444;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .navbar button:hover {
-    background-color: #d9e6ff;
+  background: #666;
 }
 
-/* =====================
-   CARD CONTAINERS
-===================== */
-.card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 15px;
-    margin: 15px auto;
-    width: 90%;
-    max-width: 800px;
+/* Feed container */
+.feed .post, .createPost {
+  background: #fff;
+  margin: 15px auto;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 600px;
 }
 
-/* =====================
-   PROFILE PAGE
-===================== */
-.profilePicContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 15px;
+.feed img, .feed video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Profile container */
+.profileContainer {
+  max-width: 600px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profilePicSection {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .profilePic {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    border: 3px solid #4267B2;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #444;
+  margin-bottom: 10px;
 }
 
-.profileFields label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: bold;
+.profileContainer label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-.profileFields input, 
-.profileFields textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
+.profileContainer input[type="text"], .profileContainer textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-.profileFields button {
-    margin-top: 5px;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: #4267B2;
-    color: #fff;
-    font-weight: bold;
-    transition: 0.2s;
+.profileContainer button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #242424;
+  color: #fff;
+  cursor: pointer;
 }
 
-.profileFields button:hover {
-    background-color: #365899;
+.profileContainer button:hover {
+  background: #444;
 }
 
-/* MUSIC PLAYER */
-#musicPlayerContainer iframe {
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 8px;
+/* Wall comments */
+.wallCommentsSection {
+  max-width: 600px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* COMMENTS / WALL */
-.comments textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
+.wallComment {
+  background: #f9f9f9;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
 }
 
-.comments button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: #4267B2;
-    color: #fff;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.comments button:hover {
-    background-color: #365899;
-}
-
-.comment.card {
-    background-color: #f5f6f7;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-}
-
-/* =====================
-   FEED PAGE
-===================== */
-.createPost {
-    width: 90%;
-    max-width: 800px;
-    margin: 15px auto;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.createPost textarea {
-    width: 100%;
-    border-radius: 6px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-}
-
-.createPost button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: #4267B2;
-    color: #fff;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.createPost button:hover {
-    background-color: #365899;
-}
-
-#imagePreview {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    margin-top: 10px;
-    border-radius: 8px;
-}
-
-.feed .post {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.feed .post img,
-.feed .post video {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-top: 8px;
-}
-
-.postActions {
-    display: flex;
-    justify-content: flex-start;
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
     gap: 10px;
-    margin-top: 8px;
-}
+  }
 
-.postActions button {
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    border: none;
-    background-color: #4267B2;
-    color: #fff;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.postActions button:hover {
-    background-color: #365899;
-}
-
-/* =====================
-   INPUTS / THEMES
-===================== */
-input, textarea {
-    font-family: inherit;
-    font-size: 14px;
-}
-
-button {
-    font-family: inherit;
-    font-size: 14px;
-}
-
-/* =====================
-   RESPONSIVE
-===================== */
-@media screen and (max-width: 600px) {
-    .card, .createPost {
-        width: 95%;
-    }
-}
-
-/* =====================
-   PRESET THEMES
-===================== */
-body.dark {
-    background-color: #1e1e1e;
-    color: #eee;
-}
-
-body.neon {
-    background-color: #111;
-    color: #0ff;
-}
-
-body.blue {
-    background-color: #d0e6ff;
-    color: #003366;
-}
-
-body.red {
-    background-color: #ffd0d0;
-    color: #660000;
-}
-
-body.gradient {
-    background: linear-gradient(120deg,#ff7f50,#1e90ff);
-    color: #fff;
-}
-
-/* Animated theme */
-@keyframes rainbowText {
-    0%{color:red}20%{color:orange}40%{color:yellow}60%{color:green}80%{color:blue}100%{color:violet}
-}
-
-body.animated {
-    background-color: #000;
-    animation: rainbowText 5s linear infinite;
+  .feed .post, .profileContainer, .wallCommentsSection {
+    margin: 10px;
+    padding: 15px;
+  }
 }

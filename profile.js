@@ -1,66 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="default">
+// profile.js
+document.addEventListener("DOMContentLoaded", () => {
 
-  <!-- NAVIGATION BAR -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+  // --------------------
+  // NAVIGATION BUTTONS
+  // --------------------
+  const homeBtn = document.getElementById("homeBtn");
+  const profileBtn = document.getElementById("profileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  <!-- PROFILE SECTION -->
-  <section class="profileSection">
-    <h2>Your Profile</h2>
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "feed.html";
+    });
+  }
 
-    <!-- PROFILE PICTURE -->
-    <div class="profilePicContainer">
-      <img id="profilePicImg" src="default_profile.png" alt="Profile Picture">
-      <input type="file" id="profilePicInput" accept="image/*">
-    </div>
+  if (profileBtn) {
+    profileBtn.addEventListener("click", () => {
+      window.location.href = "profile.html";
+    });
+  }
 
-    <!-- BASIC INFO -->
-    <label>Display Name:</label>
-    <input type="text" id="displayName" placeholder="Your display name">
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      // Replace with your authentication sign-out logic
+      alert("Logged out (placeholder)");
+      window.location.href = "index.html";
+    });
+  }
 
-    <label>Username:</label>
-    <input type="text" id="username" placeholder="Your username">
+  // --------------------
+  // ELEMENTS
+  // --------------------
+  const bioInput = document.getElementById("bio");
+  const locationInput = document.getElementById("location");
+  const musicInput = document.getElementById("music");
+  const topFriendsInput = document.getElementById("topFriends");
+  const themeSelect = document.getElementById("themeSelect");
+  const profilePicInput = document.getElementById("profilePicInput");
+  const profilePicDisplay = document.getElementById("profilePicDisplay");
 
-    <label>Bio:</label>
-    <textarea id="bio" rows="3" placeholder="Tell people about yourself"></textarea>
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+  const saveThemeBtn = document.getElementById("saveThemeBtn");
 
-    <label>Location:</label>
-    <input type="text" id="location" placeholder="Where are you?">
+  // --------------------
+  // LOAD PROFILE DATA (mock)
+  // --------------------
+  let currentProfile = JSON.parse(localStorage.getItem("userProfile")) || {
+    bio: "Hello, I’m Jesse",
+    location: "Ohio, USA",
+    music: "",
+    topFriends: "",
+    theme: "default",
+    profilePic: ""
+  };
 
-    <!-- MUSIC -->
-    <label>Music Player (YouTube link):</label>
-    <input type="text" id="music" placeholder="YouTube link">
-    <button id="saveMusicBtn">Save Music</button>
+  function loadProfile() {
+    bioInput.value = currentProfile.bio;
+    locationInput.value = currentProfile.location;
+    musicInput.value = currentProfile.music;
+    topFriendsInput.value = currentProfile.topFriends;
+    themeSelect.value = currentProfile.theme;
 
-    <!-- THEME SELECT -->
-    <label>Theme:</label>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
+    document.body.className = currentProfile.theme;
 
-    <!-- TOP FRIENDS -->
-    <label>Top 10 Friends (comma-separated usernames):</label>
-    <input type="text" id="topFriendsInput" placeholder="DanielleW, JohnD, ...">
+    if (currentProfile.profilePic) {
+      profilePicDisplay.src = currentProfile.profilePic;
+      profilePicDisplay.style.display = "block";
+    } else {
+      profilePicDisplay.style.display = "none";
+    }
+  }
 
-    <!-- SAVE PROFILE INFO -->
-    <button id="saveProfileBtn">Save Profile</button>
-  </section>
+  loadProfile();
 
-  <script type="module" src="profile.js"></script>
-</body>
-</html>
+  // --------------------
+  // SAVE PROFILE INFO
+  // --------------------
+  saveProfileBtn.addEventListener("click", () => {
+    currentProfile.bio = bioInput.value;
+    currentProfile.location = locationInput.value;
+    currentProfile.music = musicInput.value;
+    currentProfile.topFriends = topFriendsInput.value;
+
+    localStorage.setItem("userProfile", JSON.stringify(currentProfile));
+    alert("Profile saved successfully!");
+    loadProfile();
+  });
+
+  // --------------------
+  // SAVE THEME
+  // --------------------
+  saveThemeBtn.addEventListener("click", () => {
+    const selectedTheme = themeSelect.value;
+    currentProfile.theme = selectedTheme;
+    document.body.className = selectedTheme;
+    localStorage.setItem("userProfile", JSON.stringify(currentProfile));
+    alert(`Theme changed to ${selectedTheme}`);
+  });
+
+  // --------------------
+  // PROFILE PICTURE UPLOAD
+  // --------------------
+  profilePicInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      currentProfile.profilePic = event.target.result;
+      profilePicDisplay.src = event.target.result;
+      profilePicDisplay.style.display = "block";
+      localStorage.setItem("userProfile", JSON.stringify(currentProfile));
+      alert("Profile picture updated!");
+    };
+    reader.readAsDataURL(file);
+  });
+
+});

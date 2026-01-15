@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>YourSpace Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="default">
 
 <nav class="navbar">
@@ -13,61 +14,56 @@
   <button id="logoutBtn">Logout</button>
 </nav>
 
-<main class="profileContainer">
+<section class="profileSection">
 
-  <!-- PROFILE HEADER -->
-  <section class="profileHeader">
-    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    <button id="savePhotoBtn">Save Profile Photo</button>
-  </section>
+  <h2>Your Profile</h2>
 
-  <!-- PROFILE INFO -->
-  <section class="profileInfo">
-    <input id="usernameInput" placeholder="Username">
-    <input id="locationInput" placeholder="Location">
-    <textarea id="bioInput" placeholder="Bio"></textarea>
-    <input id="musicInput" placeholder="YouTube Music URL">
-    <button id="saveProfileBtn">Save Profile</button>
-  </section>
+  <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
 
-  <!-- MUSIC PLAYER -->
-  <section class="musicSection">
-    <h3>Music</h3>
-    <iframe id="musicPlayer" frameborder="0" allow="autoplay"></iframe>
-  </section>
+  <input type="file" id="profilePhotoInput" accept="image/*">
+  <button id="saveProfilePhotoBtn">Save Profile Photo</button>
 
-  <!-- TOP FRIENDS -->
-  <section class="friendsSection">
-    <h3>Top 10 Friends</h3>
-    <div id="topFriendsList"></div>
-  </section>
+  <input type="text" id="usernameInput" placeholder="Username">
+  <input type="text" id="locationInput" placeholder="Location">
+  <textarea id="bioInput" placeholder="Bio"></textarea>
 
-  <!-- THEMES -->
-  <section class="customizationSection">
-    <h3>Theme</h3>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
-  </section>
+  <input type="text" id="musicInput" placeholder="YouTube Music URL">
+  <button id="saveProfileBtn">Save Profile</button>
 
-  <!-- CUSTOM HTML -->
-  <section class="customHTMLSection">
-    <h3>MySpace Custom HTML</h3>
-    <textarea id="customHTMLInput" rows="6"
-      placeholder="Paste HTML/CSS here (advanced users)"></textarea>
-    <button id="saveHTMLBtn">Save Custom Code</button>
-  </section>
+</section>
 
-  <section class="customRenderSection">
-    <div id="customProfileContent"></div>
-  </section>
+<section class="customizationSection">
 
-</main>
+  <h3>Profile Theme</h3>
+
+  <select id="themeSelect">
+    <option value="default">Default</option>
+    <option value="dark">Dark</option>
+    <option value="neon">Neon</option>
+    <option value="animated">Animated</option>
+  </select>
+
+  <button id="saveThemeBtn">Save Theme</button>
+
+</section>
+
+<section class="customizationSection">
+
+  <h3>YourSpace Custom Profile HTML</h3>
+
+  <textarea
+    id="customHTMLInput"
+    rows="6"
+    placeholder="Customize your profile with HTML & CSS (advanced users)">
+  </textarea>
+
+  <button id="saveCustomHTMLBtn">Save Custom HTML</button>
+
+</section>
+
+<section class="musicPlayerSection">
+  <div id="musicPlayer"></div>
+</section>
 
 <script type="module" src="profile.js"></script>
 </body>

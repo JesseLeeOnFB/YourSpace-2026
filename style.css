@@ -1,79 +1,194 @@
-/* GLOBAL */
-* {
-  box-sizing: border-box;
-}
-
+/* =====================
+   GLOBAL STYLES
+===================== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  background-color: #fff;
+  color: #000;
 }
 
-/* NAV */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  padding: 8px 12px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: #fff;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+button:active {
+  background-color: #1c5980;
+}
+
+input, textarea, select {
+  width: 100%;
+  max-width: 400px;
+  padding: 6px 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* =====================
+   NAVBAR
+===================== */
 .navbar {
   display: flex;
+  justify-content: flex-start;
   gap: 10px;
   padding: 10px;
-  background: #111;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ccc;
 }
 
 .navbar button {
-  color: white;
-  background: #333;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  margin: 0;
 }
 
-/* FEED MEDIA (DO NOT BREAK) */
-.feed img,
-.feed video {
+/* =====================
+   PROFILE PAGE
+===================== */
+.profileSection {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fafafa;
+}
+
+.profileSection h2 {
+  text-align: center;
+}
+
+.profilePicContainer {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.profilePicContainer img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+#profilePicInput {
+  display: block;
+  margin: 0 auto;
+}
+
+/* =====================
+   FEED PAGE
+===================== */
+.createPost, .feed {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.createPost textarea {
+  resize: vertical;
+}
+
+.feedPost {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.feedPost img, .feedPost video {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-}
-
-/* PROFILE */
-.profileContainer {
-  max-width: 600px;
-  margin: auto;
-  padding: 15px;
-}
-
-/* PROFILE PHOTO */
-.profilePhotoSection {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#profilePicDisplay {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #333;
-  display: none;
-  margin-bottom: 10px;
-}
-
-/* PROFILE INFO */
-.profileInfo textarea,
-.profileInfo input {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
-}
-
-/* BACKGROUND */
-.profileBackground {
-  background: rgba(255,255,255,0.9);
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-.profileBackground input,
-.profileBackground button {
-  width: 100%;
   margin-top: 8px;
+}
+
+.feedPost video {
+  display: block;
+}
+
+/* USERNAME LINK IN FEED */
+.feedPost .usernameLink {
+  font-weight: bold;
+  cursor: pointer;
+  color: #3498db;
+}
+
+.feedPost .usernameLink:hover {
+  text-decoration: underline;
+}
+
+/* POST BUTTONS (LIKE/DISLIKE/COMMENT/SHARE/DELETE) */
+.feedPost .postButtons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.feedPost .postButtons button {
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 0.9rem;
+}
+
+.feedPost .postButtons button:hover {
+  background-color: #2980b9;
+}
+
+/* =====================
+   THEMES
+===================== */
+body.default { background-color: #fff; color: #000; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
+
+@keyframes bgPulse {
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 768px) {
+  .profileSection, .createPost, .feed {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  input, textarea, select, button {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .feedPost .postButtons {
+    flex-direction: column;
+  }
 }

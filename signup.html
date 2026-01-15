@@ -3,28 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Sign Up</title>
+  <title>YourSpace Sign Up</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="signup-body">
+<body class="default">
 
-  <div class="signup-container">
-    <h1>Create Account</h1>
+  <section class="auth-container">
+    <h1>Create YourSpace Account</h1>
     <form id="signupForm">
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Enter your email" required>
-
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter your password" required>
-
-      <label for="displayName">Display Name</label>
-      <input type="text" id="displayName" placeholder="Enter display name" required>
-
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Sign Up</button>
     </form>
-
     <p>Already have an account? <a href="index.html">Login</a></p>
-  </div>
+  </section>
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="signup.js"></script>

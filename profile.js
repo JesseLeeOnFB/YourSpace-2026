@@ -1,119 +1,85 @@
-// profile.js
 document.addEventListener("DOMContentLoaded", () => {
 
-  // --------------------
-  // NAVIGATION BUTTONS
-  // --------------------
-  const homeBtn = document.getElementById("homeBtn");
-  const profileBtn = document.getElementById("profileBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  /* ---------------- NAV ---------------- */
+  document.getElementById("homeBtn")?.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
 
-  if (homeBtn) {
-    homeBtn.addEventListener("click", () => {
-      window.location.href = "feed.html";
-    });
-  }
+  document.getElementById("profileBtn")?.addEventListener("click", () => {
+    window.location.href = "profile.html";
+  });
 
-  if (profileBtn) {
-    profileBtn.addEventListener("click", () => {
-      window.location.href = "profile.html";
-    });
-  }
+  document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "index.html";
+  });
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      // Replace with your authentication sign-out logic
-      alert("Logged out (placeholder)");
-      window.location.href = "index.html";
-    });
-  }
+  /* ---------------- ELEMENTS ---------------- */
+  const bioInput = document.getElementById("bioInput");
+  const locationInput = document.getElementById("locationInput");
+  const musicInput = document.getElementById("musicInput");
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-  // --------------------
-  // ELEMENTS
-  // --------------------
-  const bioInput = document.getElementById("bio");
-  const locationInput = document.getElementById("location");
-  const musicInput = document.getElementById("music");
-  const topFriendsInput = document.getElementById("topFriends");
-  const themeSelect = document.getElementById("themeSelect");
   const profilePicInput = document.getElementById("profilePicInput");
   const profilePicDisplay = document.getElementById("profilePicDisplay");
+  const saveProfilePicBtn = document.getElementById("saveProfilePicBtn");
 
-  const saveProfileBtn = document.getElementById("saveProfileBtn");
-  const saveThemeBtn = document.getElementById("saveThemeBtn");
+  const topFriendsInput = document.getElementById("topFriendsInput");
+  const saveTopFriendsBtn = document.getElementById("saveTopFriendsBtn");
 
-  // --------------------
-  // LOAD PROFILE DATA (mock)
-  // --------------------
-  let currentProfile = JSON.parse(localStorage.getItem("userProfile")) || {
-    bio: "Hello, I’m Jesse",
-    location: "Ohio, USA",
-    music: "",
-    topFriends: "",
-    theme: "default",
-    profilePic: ""
-  };
+  /* ---------------- LOAD SAVED DATA ---------------- */
+  bioInput.value = localStorage.getItem("bio") || "";
+  locationInput.value = localStorage.getItem("location") || "";
+  musicInput.value = localStorage.getItem("music") || "";
+  topFriendsInput.value = localStorage.getItem("topFriends") || "";
 
-  function loadProfile() {
-    bioInput.value = currentProfile.bio;
-    locationInput.value = currentProfile.location;
-    musicInput.value = currentProfile.music;
-    topFriendsInput.value = currentProfile.topFriends;
-    themeSelect.value = currentProfile.theme;
-
-    document.body.className = currentProfile.theme;
-
-    if (currentProfile.profilePic) {
-      profilePicDisplay.src = currentProfile.profilePic;
-      profilePicDisplay.style.display = "block";
-    } else {
-      profilePicDisplay.style.display = "none";
-    }
+  const savedPic = localStorage.getItem("profilePic");
+  if (savedPic) {
+    profilePicDisplay.src = savedPic;
+    profilePicDisplay.style.display = "block";
   }
 
-  loadProfile();
-
-  // --------------------
-  // SAVE PROFILE INFO
-  // --------------------
+  /* ---------------- SAVE PROFILE INFO ---------------- */
   saveProfileBtn.addEventListener("click", () => {
-    currentProfile.bio = bioInput.value;
-    currentProfile.location = locationInput.value;
-    currentProfile.music = musicInput.value;
-    currentProfile.topFriends = topFriendsInput.value;
-
-    localStorage.setItem("userProfile", JSON.stringify(currentProfile));
-    alert("Profile saved successfully!");
-    loadProfile();
+    localStorage.setItem("bio", bioInput.value);
+    localStorage.setItem("location", locationInput.value);
+    localStorage.setItem("music", musicInput.value);
+    alert("Profile saved!");
   });
 
-  // --------------------
-  // SAVE THEME
-  // --------------------
-  saveThemeBtn.addEventListener("click", () => {
-    const selectedTheme = themeSelect.value;
-    currentProfile.theme = selectedTheme;
-    document.body.className = selectedTheme;
-    localStorage.setItem("userProfile", JSON.stringify(currentProfile));
-    alert(`Theme changed to ${selectedTheme}`);
-  });
-
-  // --------------------
-  // PROFILE PICTURE UPLOAD
-  // --------------------
-  profilePicInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
+  /* ---------------- PROFILE PIC PREVIEW ---------------- */
+  profilePicInput.addEventListener("change", () => {
+    const file = profilePicInput.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(event) {
-      currentProfile.profilePic = event.target.result;
-      profilePicDisplay.src = event.target.result;
+    reader.onload = (e) => {
+      profilePicDisplay.src = e.target.result;
       profilePicDisplay.style.display = "block";
-      localStorage.setItem("userProfile", JSON.stringify(currentProfile));
-      alert("Profile picture updated!");
     };
     reader.readAsDataURL(file);
+  });
+
+  /* ---------------- SAVE PROFILE PIC ---------------- */
+  saveProfilePicBtn.addEventListener("click", () => {
+    const file = profilePicInput.files[0];
+    if (!file) {
+      alert("Please choose a photo first.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      localStorage.setItem("profilePic", e.target.result);
+      alert("Profile picture saved!");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------------- TOP FRIENDS ---------------- */
+  saveTopFriendsBtn.addEventListener("click", () => {
+    localStorage.setItem("topFriends", topFriendsInput.value);
+    alert("Top friends saved!");
   });
 
 });

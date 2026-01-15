@@ -1,61 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="default">
 
-<!-- NAV BAR -->
-<nav class="navbar">
+  <!-- NAVIGATION -->
+  <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-</nav>
+  </nav>
 
-<!-- PROFILE HEADER -->
-<section class="profile-header card">
-    <div class="profile-pic-container">
-        <img id="profilePicDisplay" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput" accept="image/*">
-    </div>
-    <div class="profile-info">
-        <h2 id="usernameDisplay">Username</h2>
-        <p>Location: <span id="locationDisplay">Unknown</span></p>
-        <textarea id="bio" placeholder="Your bio here"></textarea>
+  <main class="profile-main">
+    <section class="profile-info">
+      <h2>Profile</h2>
+      <div class="profile-pic-container">
+        <img id="profilePic" src="default-pfp.png" alt="Profile Picture">
+        <input type="file" id="pfpInput" accept="image/*">
+        <button id="savePfpBtn">Save Profile Picture</button>
+      </div>
+
+      <div class="profile-fields">
+        <label>Display Name:</label>
+        <input type="text" id="displayName">
+        <label>Bio:</label>
+        <textarea id="bio"></textarea>
+        <label>Location:</label>
+        <input type="text" id="location">
+        <label>Music Link:</label>
+        <input type="text" id="music">
         <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
-</section>
+      </div>
 
-<!-- MUSIC PLAYER -->
-<section class="profile-music card">
-    <h3>Music Player</h3>
-    <input type="text" id="music" placeholder="Paste YouTube, Spotify, SoundCloud link">
-    <button id="saveMusicBtn">Save Music</button>
-    <div class="music-container">
-        <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-</section>
+      <div class="profile-theme">
+        <label>Theme:</label>
+        <select id="themeSelect">
+          <option value="">Default</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="neon">Neon</option>
+          <option value="animated">Animated</option>
+          <option value="blue">Blue</option>
+          <option value="red">Red</option>
+          <option value="gradient">Gradient</option>
+        </select>
+        <button id="saveThemeBtn">Save Theme</button>
+      </div>
+    </section>
 
-<!-- TOP FRIENDS -->
-<section class="top-friends card">
-    <h3>Top Friends</h3>
-    <input type="text" id="topFriends" placeholder="Enter friend usernames separated by commas">
-    <button id="saveTopFriendsBtn">Save Top Friends</button>
-    <div class="top-friends-list" id="topFriendsList"></div>
-</section>
+    <section class="top-friends">
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer"></div>
+      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
+      <button id="addTopFriendBtn">Add to Top Friends</button>
+    </section>
 
-<!-- WALL / PROFILE COMMENTS -->
-<section class="profile-wall card">
-    <h3>Wall</h3>
-    <textarea id="wallInput" placeholder="Leave a message..."></textarea>
-    <button id="submitWallComment">Post Comment</button>
-    <div id="wallCommentsContainer"></div>
-</section>
+    <section class="wall-comments">
+      <h3>Wall Comments</h3>
+      <input type="text" id="wallCommentInput" placeholder="Leave a comment...">
+      <button id="postWallCommentBtn">Post Comment</button>
+      <div id="wallCommentsContainer"></div>
+    </section>
+  </main>
 
-<script type="module" src="firebase.js"></script>
-<script type="module" src="profile.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

@@ -6,36 +6,33 @@
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
-  <!-- Navigation -->
+<body>
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
+    <button id="feedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Section -->
   <section class="profileSection">
-    <h2>Your Profile</h2>
-    
-    <!-- Profile Picture -->
-    <div class="profilePhotoSection">
-      <img id="profileImage" src="defaultProfile.png" class="profilePhoto">
-      <input type="file" id="profilePicInput" accept="image/*">
+    <h2>Profile</h2>
+    <div class="profilePhotoContainer">
+      <img id="profilePhoto" src="" alt="Profile Photo">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
     </div>
 
-    <!-- Profile Info -->
     <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL (YouTube etc.)">
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
+      <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
-    <!-- Theme Selection -->
-    <div class="themeSection">
-      <label for="themeSelect">Select Theme:</label>
+    <div class="profileThemeSection">
+      <h3>Theme</h3>
       <select id="themeSelect">
+        <option value="">Select Theme</option>
         <option value="default">Default</option>
         <option value="dark">Dark</option>
         <option value="neon">Neon</option>
@@ -44,25 +41,15 @@
       <button id="saveThemeBtn">Save Theme</button>
     </div>
 
-    <!-- Save Profile Info -->
-    <button id="saveProfileBtn">Save Profile Info</button>
-  </section>
-
-  <!-- Top Friends Section -->
-  <section class="topFriendsSection">
-    <h2>Top Friends</h2>
-    <div id="topFriendsContainer"></div>
-
-    <div class="addFriendSection">
-      <input type="text" id="addFriendInput" placeholder="Enter username to add">
-      <button id="sendFriendRequestBtn">Send Friend Request</button>
+    <div class="topFriendsSection">
+      <h3>Top Friends</h3>
+      <ul id="topFriendsList"></ul>
     </div>
-  </section>
 
-  <!-- Friend Requests Section -->
-  <section class="friendRequestsSection">
-    <h2>Incoming Friend Requests</h2>
-    <div id="friendRequestsContainer"></div>
+    <section class="friendRequestsSection">
+      <h3>Friend Requests</h3>
+      <ul id="friendRequestsList"></ul>
+    </section>
   </section>
 
   <script type="module" src="profile.js"></script>

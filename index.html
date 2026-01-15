@@ -9,14 +9,16 @@
 <body class="default">
 
   <div class="login-container">
-    <h2>YourSpace Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email" required>
-    <input type="password" id="loginPassword" placeholder="Password" required>
+    <h1>Login to YourSpace</h1>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
     <button id="loginBtn">Login</button>
-    <p id="loginError" style="color:red;"></p>
+    <p>Don't have an account? <a href="signup.html">Sign up</a></p>
   </div>
 
+  <!-- Firebase Config -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="login.js"></script>
+
 </body>
 </html>

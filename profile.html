@@ -1,52 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="default">
 
-  <!-- NAV BAR -->
-  <nav class="navbar">
+<!-- NAV BAR -->
+<nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-  </nav>
+</nav>
 
-  <!-- PROFILE INFO -->
-  <section class="profileContainer">
-    <h2>Profile</h2>
-    <div class="profilePicSection">
-      <img id="profilePicDisplay" src="" alt="Profile Picture" class="profilePic">
-      <input type="file" id="savePfpBtn" accept="image/*">
+<!-- PROFILE HEADER -->
+<section class="profile-header card">
+    <div class="profile-pic-container">
+        <img id="profilePicDisplay" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePicInput" accept="image/*">
     </div>
+    <div class="profile-info">
+        <h2 id="usernameDisplay">Username</h2>
+        <p>Location: <span id="locationDisplay">Unknown</span></p>
+        <textarea id="bio" placeholder="Your bio here"></textarea>
+        <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
+</section>
 
-    <label>Bio:</label>
-    <textarea id="bioInput" placeholder="Write something about yourself"></textarea>
-
-    <label>Location:</label>
-    <input type="text" id="locationInput" placeholder="City, Country">
-
-    <label>Top Friends (comma separated):</label>
-    <input type="text" id="topFriendsInput" placeholder="Add top 10 friends">
-
-    <label>Music Player (YouTube, SoundCloud, Spotify links):</label>
-    <input type="text" id="musicInput" placeholder="Paste music link here">
+<!-- MUSIC PLAYER -->
+<section class="profile-music card">
+    <h3>Music Player</h3>
+    <input type="text" id="music" placeholder="Paste YouTube, Spotify, SoundCloud link">
     <button id="saveMusicBtn">Save Music</button>
+    <div class="music-container">
+        <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+</section>
 
-    <button id="saveProfileBtn">Save Profile Info</button>
-  </section>
+<!-- TOP FRIENDS -->
+<section class="top-friends card">
+    <h3>Top Friends</h3>
+    <input type="text" id="topFriends" placeholder="Enter friend usernames separated by commas">
+    <button id="saveTopFriendsBtn">Save Top Friends</button>
+    <div class="top-friends-list" id="topFriendsList"></div>
+</section>
 
-  <!-- WALL COMMENTS -->
-  <section class="wallCommentsSection">
-    <h3>Wall Comments</h3>
+<!-- WALL / PROFILE COMMENTS -->
+<section class="profile-wall card">
+    <h3>Wall</h3>
+    <textarea id="wallInput" placeholder="Leave a message..."></textarea>
+    <button id="submitWallComment">Post Comment</button>
     <div id="wallCommentsContainer"></div>
-    <textarea id="wallCommentInput" placeholder="Leave a comment"></textarea>
-    <button id="postWallCommentBtn">Post Comment</button>
-  </section>
+</section>
 
-  <script type="module" src="profile.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

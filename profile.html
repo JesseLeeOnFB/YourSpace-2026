@@ -9,55 +9,58 @@
 
 <body class="default">
 
-<nav class="navbar">
-  <button id="homeBtn">Home</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <!-- NAV BAR -->
+  <nav class="navbar">
+    <button id="navHome">Home</button>
+    <button id="navFeed">Feed</button>
+    <button id="navLogout">Logout</button>
+  </nav>
 
-<section class="profileSection">
-  <h2>Your Profile</h2>
+  <main class="profilePage">
 
-  <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
+    <!-- PROFILE HEADER -->
+    <section class="profileHeader">
+      <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+    </section>
 
-  <input type="file" id="profilePhotoInput" accept="image/*">
-  <button id="savePhotoBtn">Save Profile Photo</button>
+    <!-- PROFILE INFO -->
+    <section class="profileSection">
+      <label>Username</label>
+      <input id="usernameInput" type="text">
 
-  <input id="usernameInput" placeholder="Username">
-  <input id="locationInput" placeholder="Location">
-  <textarea id="bioInput" placeholder="Bio"></textarea>
-  <input id="musicInput" placeholder="YouTube Music URL">
+      <label>Bio</label>
+      <textarea id="bioInput"></textarea>
 
-  <button id="saveProfileBtn">Save Profile</button>
-</section>
+      <label>Location</label>
+      <input id="locationInput" type="text">
 
-<section class="customizationSection">
-  <h3>Theme</h3>
-  <select id="themeSelect">
-    <option value="default">Default</option>
-    <option value="dark">Dark</option>
-    <option value="neon">Neon</option>
-    <option value="animated">Animated</option>
-  </select>
-  <button id="saveThemeBtn">Save Theme</button>
-</section>
+      <button id="saveProfileBtn">Save Profile</button>
+    </section>
 
-<section class="friendsSection">
-  <h3>Find Friends</h3>
-  <input id="friendSearchInput" placeholder="Search username">
-  <button id="searchFriendBtn">Search</button>
-  <div id="searchResults"></div>
-</section>
+    <!-- THEME -->
+    <section class="customizationSection">
+      <label>Profile Theme</label>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+      <button id="saveThemeBtn">Save Theme</button>
+    </section>
 
-<section class="topFriendsSection">
-  <h3>Top 10 Friends</h3>
-  <ul id="topFriendsList"></ul>
-</section>
+    <!-- MUSIC -->
+    <section class="musicPlayerSection">
+      <label>Music (YouTube URL)</label>
+      <input id="musicInput" type="text">
+      <button id="saveMusicBtn">Save Music</button>
+      <div id="musicPlayer"></div>
+    </section>
 
-<section class="userPostsSection">
-  <h3>Your Posts</h3>
-  <div id="userPosts"></div>
-</section>
+  </main>
 
-<script type="module" src="profile.js"></script>
+  <!-- ⚠️ THIS IS CRITICAL -->
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

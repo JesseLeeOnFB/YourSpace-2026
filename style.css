@@ -1,143 +1,97 @@
-/* ===============================
-   YourSpace Full Site Styles
-   =============================== */
-
-/* ---------- Body Themes ---------- */
-body.default {
-  background-color: #fff;
-  color: #000;
-  font-family: Arial, sans-serif;
+/* -------------------
+  GENERAL LAYOUT
+------------------- */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  color: #111;
 }
 
-body.dark {
-  background-color: #111;
-  color: #eee;
-  font-family: Arial, sans-serif;
-}
-
-body.neon {
-  background-color: #000;
-  color: #0f0;
-  text-shadow: 0 0 5px #0f0;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-body.animated {
-  animation: bgPulse 5s infinite alternate;
-  font-family: Arial, sans-serif;
-}
-
-@keyframes bgPulse {
-  0% { background-color: #ff9; }
-  50% { background-color: #9ff; }
-  100% { background-color: #f9f; }
-}
-
-/* ---------- Global Styles ---------- */
-* {
-  box-sizing: border-box;
-}
-
-img, video {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
+h2, h3 {
+  margin: 10px 0;
 }
 
 button {
+  padding: 8px 12px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  padding: 6px 12px;
-  margin: 4px 0;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-  background-color: #eee;
-  transition: 0.2s;
+  background-color: #4267B2;
+  color: #fff;
+  font-weight: bold;
 }
 
 button:hover {
-  background-color: #ddd;
+  background-color: #365899;
 }
 
 input, textarea, select {
   width: 100%;
   padding: 6px;
-  margin: 4px 0;
+  margin: 5px 0;
   border-radius: 4px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-h2, h3, h4 {
-  margin: 8px 0;
-}
-
-/* ---------- Navbar ---------- */
+/* -------------------
+  NAVBAR
+------------------- */
 .navbar {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #222;
-  color: #fff;
+  justify-content: flex-start;
+  gap: 10px;
   padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.navbar button {
-  background-color: #333;
-  color: #fff;
-  border: none;
-}
-
-.navbar button:hover {
-  background-color: #444;
-}
-
-/* ---------- Feed Section ---------- */
-.createPost, .feed {
-  width: 95%;
-  max-width: 600px;
+/* -------------------
+  FEED SECTION
+------------------- */
+.feed, .createPost {
+  max-width: 700px;
   margin: 20px auto;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #fafafa;
-  border: 1px solid #ddd;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
 }
 
-#createPost textarea {
-  resize: vertical;
-}
-
-#imagePreview {
-  display: block;
-  margin: 10px auto;
-  max-height: 300px;
+.feed img, .feed video {
+  width: 100%;
+  max-height: 400px;
   object-fit: cover;
   border-radius: 8px;
+  margin-top: 10px;
 }
 
-/* Feed posts container */
-#postsContainer .post {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #fff;
-  border: 1px solid #ccc;
+.feed .post {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
-.post img, .post video {
-  max-width: 100%;
-  height: auto;
-  margin: 10px 0;
-  border-radius: 8px;
+.feed .post .username {
+  font-weight: bold;
+  cursor: pointer;
 }
 
-/* ---------- Profile Page ---------- */
-.profileSection, .customizationSection, .musicPlayerSection {
-  width: 95%;
+/* -------------------
+  PROFILE PAGE
+------------------- */
+.profileSection {
   max-width: 600px;
   margin: 20px auto;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #fafafa;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
 }
 
 .profilePhoto {
@@ -146,96 +100,39 @@ h2, h3, h4 {
   object-fit: cover;
   border-radius: 50%;
   display: block;
-  margin: 0 auto 10px auto;
-  border: 2px solid #aaa;
+  margin: 10px auto;
 }
 
-.topFriendsList {
+.topFriendsSection {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.topFriendsList div {
-  background-color: #eee;
+.friendCard {
   padding: 5px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  background-color: #4267B2;
+  color: #fff;
+  border-radius: 5px;
 }
 
-/* Profile inputs */
-.profileSection input, .profileSection textarea {
-  margin-bottom: 8px;
-}
-
-/* Music Player */
 .musicPlayerSection iframe {
   width: 100%;
   height: 80px;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 
-/* ---------- Notifications ---------- */
-.notifications {
-  margin: 10px 0;
-}
+/* -------------------
+  THEMES
+------------------- */
+body.default { background-color: #f0f2f5; color: #111; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
 
-.notifications label {
-  margin-right: 10px;
-}
-
-/* ---------- Friend Search & Requests ---------- */
-.friendSearchSection {
-  margin: 10px 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.friendSearchSection input {
-  margin-bottom: 6px;
-}
-
-.friendRequestsList, .friendsList {
-  margin: 5px 0;
-}
-
-.friendRequestsList div, .friendsList div {
-  background-color: #eee;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin: 2px 0;
-}
-
-/* ---------- Comments ---------- */
-.commentSection {
-  margin-top: 10px;
-}
-
-.commentSection .comment {
-  background-color: #f0f0f0;
-  border-radius: 6px;
-  padding: 6px;
-  margin: 4px 0;
-  word-wrap: break-word;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 600px) {
-  .navbar {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .profileSection, .customizationSection, .musicPlayerSection,
-  .createPost, .feed {
-    width: 95%;
-    padding: 8px;
-  }
-
-  .profilePhoto {
-    width: 120px;
-    height: 120px;
-  }
+@keyframes bgPulse {
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
 }

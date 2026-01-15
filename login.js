@@ -2,13 +2,17 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https:/
 
 const auth = getAuth();
 
+// Grab form elements
 const loginForm = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
+// Form submit handler
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
 
   if (!email || !password) {
     alert("Both email and password are required.");
@@ -16,8 +20,11 @@ loginForm.addEventListener("submit", async (e) => {
   }
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "feed.html"; // redirect to feed after login
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Logged in as:", userCredential.user.email);
+
+    // Redirect safely after login
+    window.location.replace("feed.html");
   } catch (err) {
     console.error("Login error:", err);
     alert("Failed to login. Check your email and password.");
@@ -27,6 +34,9 @@ loginForm.addEventListener("submit", async (e) => {
 // Auto-redirect if already logged in
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    window.location.href = "feed.html";
+    console.log("User already logged in:", user.email);
+    if (window.location.pathname.includes("index.html") || window.location.pathname === "/") {
+      window.location.replace("feed.html");
+    }
   }
 });

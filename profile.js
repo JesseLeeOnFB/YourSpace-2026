@@ -1,126 +1,66 @@
-// profile.js
-document.addEventListener("DOMContentLoaded", async () => {
-    // NAVIGATION BUTTONS
-    const homeBtn = document.getElementById("homeBtn");
-    const profileBtn = document.getElementById("profileBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="default">
 
-    if (homeBtn) homeBtn.addEventListener("click", () => window.location.href = "feed.html");
-    if (profileBtn) profileBtn.addEventListener("click", () => window.location.href = "profile.html");
-    if (logoutBtn) logoutBtn.addEventListener("click", async () => {
-        try {
-            await auth.signOut();
-            alert("Logged out successfully.");
-            window.location.href = "index.html";
-        } catch(err) {
-            console.error("Logout failed:", err);
-            alert("Failed to logout. Check console.");
-        }
-    });
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-    // PROFILE ELEMENTS
-    const profilePicInput = document.getElementById("profilePicInput");
-    const profilePicImg = document.getElementById("profilePicImg");
-    const displayNameInput = document.getElementById("displayName");
-    const usernameInput = document.getElementById("username");
-    const bioInput = document.getElementById("bio");
-    const locationInput = document.getElementById("location");
-    const musicInput = document.getElementById("music");
-    const themeSelect = document.getElementById("themeSelect");
-    const topFriendsInput = document.getElementById("topFriendsInput");
+  <!-- PROFILE SECTION -->
+  <section class="profileSection">
+    <h2>Your Profile</h2>
 
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const saveThemeBtn = document.getElementById("saveThemeBtn");
-    const saveMusicBtn = document.getElementById("saveMusicBtn");
+    <!-- PROFILE PICTURE -->
+    <div class="profilePicContainer">
+      <img id="profilePicImg" src="default_profile.png" alt="Profile Picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
 
-    if (!auth.currentUser) {
-        alert("You must be logged in to view your profile.");
-        window.location.href = "index.html";
-        return;
-    }
+    <!-- BASIC INFO -->
+    <label>Display Name:</label>
+    <input type="text" id="displayName" placeholder="Your display name">
 
-    const userRef = doc(db, "users", auth.currentUser.uid);
+    <label>Username:</label>
+    <input type="text" id="username" placeholder="Your username">
 
-    // LOAD PROFILE DATA
-    const loadProfile = async () => {
-        try {
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                displayNameInput.value = data.displayName || "";
-                usernameInput.value = data.username || "";
-                bioInput.value = data.bio || "";
-                locationInput.value = data.location || "";
-                musicInput.value = data.music || "";
-                themeSelect.value = data.theme || "default";
-                topFriendsInput.value = (data.topFriends || []).join(", ");
+    <label>Bio:</label>
+    <textarea id="bio" rows="3" placeholder="Tell people about yourself"></textarea>
 
-                if (data.profilePic) profilePicImg.src = data.profilePic;
-                else profilePicImg.src = "default_profile.png"; // fallback
-            }
-        } catch(err) {
-            console.error("Failed to load profile:", err);
-        }
-    };
+    <label>Location:</label>
+    <input type="text" id="location" placeholder="Where are you?">
 
-    await loadProfile();
+    <!-- MUSIC -->
+    <label>Music Player (YouTube link):</label>
+    <input type="text" id="music" placeholder="YouTube link">
+    <button id="saveMusicBtn">Save Music</button>
 
-    // SAVE PROFILE DATA
-    if (saveProfileBtn) saveProfileBtn.addEventListener("click", async () => {
-        try {
-            const topFriendsArray = topFriendsInput.value.split(",").map(f => f.trim()).filter(f => f);
-            await setDoc(userRef, {
-                displayName: displayNameInput.value,
-                username: usernameInput.value,
-                bio: bioInput.value,
-                location: locationInput.value,
-                topFriends: topFriendsArray
-            }, { merge: true });
-            alert("Profile saved successfully!");
-        } catch(err) {
-            console.error("Failed to save profile:", err);
-            alert("Failed to save profile. Check console.");
-        }
-    });
+    <!-- THEME SELECT -->
+    <label>Theme:</label>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="animated">Animated</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
 
-    // SAVE THEME
-    if (saveThemeBtn) saveThemeBtn.addEventListener("click", async () => {
-        try {
-            await setDoc(userRef, { theme: themeSelect.value }, { merge: true });
-            document.body.className = themeSelect.value;
-            alert("Theme saved!");
-        } catch(err) {
-            console.error("Failed to save theme:", err);
-            alert("Failed to save theme. Check console.");
-        }
-    });
+    <!-- TOP FRIENDS -->
+    <label>Top 10 Friends (comma-separated usernames):</label>
+    <input type="text" id="topFriendsInput" placeholder="DanielleW, JohnD, ...">
 
-    // SAVE MUSIC
-    if (saveMusicBtn) saveMusicBtn.addEventListener("click", async () => {
-        try {
-            await setDoc(userRef, { music: musicInput.value }, { merge: true });
-            alert("Music saved!");
-            // Optionally, update player here
-        } catch(err) {
-            console.error("Failed to save music:", err);
-            alert("Failed to save music. Check console.");
-        }
-    });
+    <!-- SAVE PROFILE INFO -->
+    <button id="saveProfileBtn">Save Profile</button>
+  </section>
 
-    // UPLOAD PROFILE PICTURE
-    if (profilePicInput) profilePicInput.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-        try {
-            const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            profilePicImg.src = downloadURL;
-            await setDoc(userRef, { profilePic: downloadURL }, { merge: true });
-            alert("Profile picture updated!");
-        } catch(err) {
-            console.error("Failed to upload profile picture:", err);
-            alert("Failed to upload profile picture. Check console.");
-        }
-    });
-});
+  <script type="module" src="profile.js"></script>
+</body>
+</html>

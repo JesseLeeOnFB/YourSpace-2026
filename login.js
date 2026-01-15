@@ -1,11 +1,16 @@
-import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const loginBtn = document.getElementById("loginBtn");
+const auth = getAuth();
 
-loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+const loginForm = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
   if (!email || !password) {
     alert("Please enter both email and password.");
@@ -14,9 +19,10 @@ loginBtn.addEventListener("click", async () => {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "feed.html"; // redirect to feed on success
-  } catch (err) {
-    console.error("Login failed:", err);
-    alert("Login failed. Check your email and password.");
+    // Successful login redirects to feed page
+    window.location.href = "feed.html";
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Login failed. Please check your email and password.");
   }
 });

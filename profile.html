@@ -1,64 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="default">
 
-  <!-- NAV BAR -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<!-- NAV -->
+<nav class="navbar">
+  <button id="homeBtn">Home</button>
+  <button id="profileBtn">Profile</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <!-- PROFILE SECTION -->
-  <section class="profileSection">
-    <h2>Profile</h2>
-    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    <button id="profilePhotoSaveBtn">Save Profile Photo</button>
+<!-- PROFILE INFO -->
+<section class="profileSection">
+  <h2>Your Profile</h2>
+  <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
+  <input type="file" id="profilePhotoInput" accept="image/*">
+  <button id="profilePhotoSaveBtn">Save Profile Photo</button>
 
-    <div>
-      <label>Username:</label>
-      <input type="text" id="usernameInput" placeholder="Username">
-    </div>
-    <div>
-      <label>Bio:</label>
-      <textarea id="bioInput" rows="3"></textarea>
-    </div>
-    <div>
-      <label>Location:</label>
-      <input type="text" id="locationInput" placeholder="Location">
-    </div>
-    <button id="profileInfoSaveBtn">Save Profile Info</button>
-  </section>
+  <div>
+    <label>Username:</label>
+    <input type="text" id="usernameInput">
+  </div>
+  <div>
+    <label>Bio:</label>
+    <textarea id="bioInput" rows="3"></textarea>
+  </div>
+  <div>
+    <label>Location:</label>
+    <input type="text" id="locationInput">
+  </div>
+  <button id="profileInfoSaveBtn">Save Profile Info</button>
+</section>
 
-  <!-- MUSIC PLAYER SECTION -->
-  <section class="musicPlayerSection">
-    <h3>Music Player</h3>
-    <input type="text" id="musicInput" placeholder="YouTube URL">
-    <button id="musicSaveBtn">Save Music</button>
-    <div id="musicPlayerContainer"></div>
-  </section>
+<!-- MUSIC PLAYER -->
+<section class="musicPlayerSection">
+  <h3>Music Player</h3>
+  <input type="text" id="musicInput" placeholder="YouTube URL">
+  <button id="musicSaveBtn">Save Music</button>
+  <div id="musicPlayerContainer"></div>
+</section>
 
-  <!-- TOP FRIENDS SECTION -->
-  <section class="topFriendsSection">
-    <h3>Top 10 Friends</h3>
-    <div id="topFriendsContainer"></div>
-  </section>
+<!-- TOP FRIENDS -->
+<section class="topFriendsSection">
+  <h3>Top 10 Friends</h3>
+  <div id="topFriendsContainer"></div>
+</section>
 
-  <!-- SEARCH USER SECTION -->
-  <section class="searchSection">
-    <h3>Find Users</h3>
-    <input type="text" id="searchInput" placeholder="Enter username">
-    <button id="searchBtn">Search</button>
-    <div id="searchResults"></div>
-  </section>
+<!-- USER POSTS -->
+<section class="userPostsSection">
+  <h3>Your Posts</h3>
+  <div id="userPostsContainer"></div>
+</section>
 
-  <script type="module" src="profile.js"></script>
+<!-- SEARCH USERS -->
+<section class="searchSection">
+  <h3>Find Users</h3>
+  <input type="text" id="searchInput" placeholder="Enter username">
+  <button id="searchBtn">Search</button>
+  <div id="searchResults"></div>
+</section>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

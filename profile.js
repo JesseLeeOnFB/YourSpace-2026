@@ -1,126 +1,132 @@
 import { auth, db, storage } from "./firebase.js";
 import {
-  doc, getDoc, setDoc, updateDoc, collection,
-  query, where, getDocs
+  doc, getDoc, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 import {
   ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import {
+  onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import { onAuthStateChanged, signOut } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+const profilePhoto = document.getElementById("profilePhoto");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
 
-const $ = id => document.getElementById(id);
+const usernameInput = document.getElementById("usernameInput");
+const bioInput = document.getElementById("bioInput");
+const locationInput = document.getElementById("locationInput");
+
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const themeSelect = document.getElementById("themeSelect");
+const saveThemeBtn = document.getElementById("saveThemeBtn");
+
+const musicInput = document.getElementById("musicInput");
+const saveMusicBtn = document.getElementById("saveMusicBtn");
+const musicPlayer = document.getElementById("musicPlayer");
+
+// NAV
+document.getElementById("navHome").onclick = () => window.location.href = "index.html";
+document.getElementById("navFeed").onclick = () => window.location.href = "feed.html";
+document.getElementById("navLogout").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
+};
 
 onAuthStateChanged(auth, async user => {
-  if (!user) return location.href = "index.html";
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
 
   const userRef = doc(db, "users", user.uid);
   const snap = await getDoc(userRef);
 
-  if (!snap.exists()) return;
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      username: "",
+      bio: "",
+      location: "",
+      theme: "default",
+      music: "",
+      photoURL: ""
+    });
+  }
 
-  const data = snap.data();
+  const data = (await getDoc(userRef)).data();
 
-  $("usernameInput").value = data.username || "";
-  $("locationInput").value = data.location || "";
-  $("bioInput").value = data.bio || "";
-  $("musicInput").value = data.music || "";
-  $("themeSelect").value = data.theme || "default";
-
-  if (data.profilePic) $("profilePhoto").src = data.profilePic;
+  usernameInput.value = data.username || "";
+  bioInput.value = data.bio || "";
+  locationInput.value = data.location || "";
+  themeSelect.value = data.theme || "default";
+  musicInput.value = data.music || "";
 
   document.body.className = data.theme || "default";
 
-  loadTopFriends(data.topFriends || []);
-  loadUserPosts(user.uid);
+  if (data.photoURL) profilePhoto.src = data.photoURL;
+  if (data.music) renderMusic(data.music);
 });
 
-$("saveProfileBtn").onclick = async () => {
+// SAVE PROFILE
+saveProfileBtn.onclick = async () => {
   const user = auth.currentUser;
   if (!user) return;
 
-  await setDoc(doc(db, "users", user.uid), {
-    username: $("usernameInput").value.trim(),
-    location: $("locationInput").value.trim(),
-    bio: $("bioInput").value.trim(),
-    music: $("musicInput").value.trim()
-  }, { merge: true });
+  await updateDoc(doc(db, "users", user.uid), {
+    username: usernameInput.value.trim(),
+    bio: bioInput.value.trim(),
+    location: locationInput.value.trim()
+  });
 
   alert("Profile saved");
 };
 
-$("savePhotoBtn").onclick = async () => {
-  const file = $("profilePhotoInput").files[0];
-  if (!file) return alert("No file selected");
-
+// THEME
+saveThemeBtn.onclick = async () => {
   const user = auth.currentUser;
-  const refPic = ref(storage, `profileImages/${user.uid}/profile.jpg`);
+  if (!user) return;
 
-  await uploadBytes(refPic, file);
-  const url = await getDownloadURL(refPic);
-
-  await updateDoc(doc(db, "users", user.uid), { profilePic: url });
-  $("profilePhoto").src = url;
-};
-
-$("saveThemeBtn").onclick = async () => {
-  const theme = $("themeSelect").value;
+  const theme = themeSelect.value;
   document.body.className = theme;
 
-  await updateDoc(doc(db, "users", auth.currentUser.uid), { theme });
+  await updateDoc(doc(db, "users", user.uid), { theme });
+  alert("Theme saved");
 };
 
-$("searchFriendBtn").onclick = async () => {
-  const username = $("friendSearchInput").value.trim();
-  if (!username) return;
+// MUSIC
+saveMusicBtn.onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
 
-  const q = query(collection(db, "users"), where("username", "==", username));
-  const snap = await getDocs(q);
-
-  $("searchResults").innerHTML = "";
-  snap.forEach(docSnap => {
-    const div = document.createElement("div");
-    div.textContent = docSnap.data().username;
-    const btn = document.createElement("button");
-    btn.textContent = "Add Friend";
-    btn.onclick = () => addFriend(docSnap.id);
-    div.appendChild(btn);
-    $("searchResults").appendChild(div);
-  });
+  const url = musicInput.value.trim();
+  await updateDoc(doc(db, "users", user.uid), { music: url });
+  renderMusic(url);
 };
 
-async function addFriend(friendId) {
-  const refUser = doc(db, "users", auth.currentUser.uid);
-  const snap = await getDoc(refUser);
-  const friends = snap.data().friends || [];
-  if (!friends.includes(friendId)) friends.push(friendId);
-  await updateDoc(refUser, { friends });
-  alert("Friend added");
+function renderMusic(url) {
+  const videoId = url.split("v=")[1]?.split("&")[0];
+  if (!videoId) return;
+
+  musicPlayer.innerHTML = `
+    <iframe
+      src="https://www.youtube.com/embed/${videoId}"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  `;
 }
 
-function loadTopFriends(list) {
-  $("topFriendsList").innerHTML = "";
-  list.forEach(name => {
-    const li = document.createElement("li");
-    li.textContent = name;
-    $("topFriendsList").appendChild(li);
-  });
-}
+// PROFILE PHOTO
+profilePhotoInput.onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-async function loadUserPosts(uid) {
-  const q = query(collection(db, "posts"), where("userId", "==", uid));
-  const snap = await getDocs(q);
-  snap.forEach(p => {
-    const d = document.createElement("div");
-    d.textContent = p.data().text || "";
-    $("userPosts").appendChild(d);
-  });
-}
+  const user = auth.currentUser;
+  const fileRef = ref(storage, `profileImages/${user.uid}.jpg`);
 
-$("homeBtn").onclick = () => location.href = "feed.html";
-$("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  location.href = "index.html";
+  await uploadBytes(fileRef, file);
+  const url = await getDownloadURL(fileRef);
+
+  await updateDoc(doc(db, "users", user.uid), { photoURL: url });
+  profilePhoto.src = url;
 };

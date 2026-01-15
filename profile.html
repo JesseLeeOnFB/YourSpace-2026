@@ -1,58 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="default">
 
-<!-- NAV BAR -->
-<nav class="navbar">
-    <button id="homeBtn">Home</button>
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <button id="homeBtn">Feed</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-</nav>
+  </nav>
 
-<!-- PROFILE SECTION -->
-<section class="profileSection">
-    <h2>My Profile</h2>
-    
-    <div class="profilePhotoContainer">
-        <img id="profilePhoto" src="defaultAvatar.png" alt="Profile Photo">
-        <input type="file" id="profilePhotoInput" accept="image/*">
-        <button id="saveProfilePhotoBtn">Save Photo</button>
+  <main class="profileSection">
+    <h1>Your Profile</h1>
+
+    <!-- PROFILE PICTURE -->
+    <div class="profilePhotoSection">
+      <img id="profilePicDisplay" src="" alt="Profile Picture" style="display:none; border-radius:50%; width:150px; height:150px; object-fit:cover;">
+      <input type="file" id="profilePicInput" accept="image/*">
     </div>
 
-    <div class="profileInfo">
-        <label>Username: <input type="text" id="usernameInput" disabled></label>
-        <label>Display Name: <input type="text" id="displayNameInput"></label>
-        <label>Bio: <textarea id="bioInput" rows="3"></textarea></label>
-        <label>Location: <input type="text" id="locationInput"></label>
-        <label>Music URL: <input type="text" id="musicInput"></label>
-        <button id="saveProfileBtn">Save Profile Info</button>
+    <!-- BIO & LOCATION -->
+    <div class="profileInfoSection">
+      <label for="bio">Bio:</label>
+      <textarea id="bio" rows="3" placeholder="Write your bio here..."></textarea>
+
+      <label for="location">Location:</label>
+      <input type="text" id="location" placeholder="City, State">
+
+      <label for="music">Music Link (YouTube or other):</label>
+      <input type="text" id="music" placeholder="Paste link here">
+
+      <label for="topFriends">Top 10 Friends (usernames comma-separated):</label>
+      <input type="text" id="topFriends" placeholder="DanielleW, JohnD, ...">
+
+      <button id="saveProfileBtn">Save Profile</button>
     </div>
 
-    <div class="topFriendsSection">
-        <h3>Top 10 Friends</h3>
-        <input type="text" id="topFriendsInput" placeholder="Add a friend">
-        <button id="addTopFriendBtn">Add</button>
-        <ul id="topFriendsList"></ul>
-    </div>
-
+    <!-- THEME SELECTION -->
     <div class="themeSection">
-        <h3>Theme</h3>
-        <select id="themeSelect">
-            <option value="">Default</option>
-            <option value="dark">Dark</option>
-            <option value="neon">Neon</option>
-            <option value="animated">Animated</option>
-        </select>
-        <button id="saveThemeBtn">Save Theme</button>
+      <label for="themeSelect">Choose a Theme:</label>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+      <button id="saveThemeBtn">Save Theme</button>
     </div>
-</section>
+  </main>
 
-<script type="module" src="profile.js"></script>
+  <!-- OPTIONAL MUSIC PLAYER -->
+  <div class="musicPlayerSection">
+    <h2>Music Player</h2>
+    <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:80px;"></iframe>
+  </div>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

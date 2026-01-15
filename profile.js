@@ -1,154 +1,140 @@
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-storage.js";
+import { auth, db, storage } from "./firebase.js";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// ------------------------
-// ELEMENTS
-// ------------------------
-const profilePhotoInput = document.getElementById("profilePhotoInput");
-const saveProfilePhotoBtn = document.getElementById("saveProfilePhotoBtn");
-const profilePhoto = document.getElementById("profilePhoto");
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const usernameInput = document.getElementById("usernameInput");
-const locationInput = document.getElementById("locationInput");
-const bioInput = document.getElementById("bioInput");
-const musicInput = document.getElementById("musicInput");
-const saveProfileInfoBtn = document.getElementById("saveProfileInfoBtn");
+console.log("✅ profile.js loaded");
 
-const themeSelect = document.getElementById("themeSelect");
-const saveThemeBtn = document.getElementById("saveThemeBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🟢 Profile DOM ready");
 
-const topFriendInput = document.getElementById("topFriendInput");
-const addTopFriendBtn = document.getElementById("addTopFriendBtn");
-const topFriendsList = document.getElementById("topFriendsList");
+  const profilePhoto = document.getElementById("profilePhoto");
+  const profilePhotoInput = document.getElementById("profilePhotoInput");
 
-const friendSearchInput = document.getElementById("friendSearchInput");
-const friendSearchBtn = document.getElementById("friendSearchBtn");
-const friendSearchResults = document.getElementById("friendSearchResults");
+  const usernameInput = document.getElementById("usernameInput");
+  const locationInput = document.getElementById("locationInput");
+  const bioInput = document.getElementById("bioInput");
+  const musicInput = document.getElementById("musicInput");
 
-// ------------------------
-// LOAD USER DATA
-// ------------------------
-async function loadProfile() {
-  const userId = auth.currentUser.uid;
-  const userRef = doc(db, "users", userId);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    profilePhoto.src = data.photoURL || "";
-    usernameInput.value = data.username || "";
-    locationInput.value = data.location || "";
-    bioInput.value = data.bio || "";
-    musicInput.value = data.music || "";
-    themeSelect.value = data.theme || "default";
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+  const savePhotoBtn = document.getElementById("savePhotoBtn");
+  const saveThemeBtn = document.getElementById("saveThemeBtn");
 
-    // Top friends
-    topFriendsList.innerHTML = "";
-    if (data.topFriends) {
-      data.topFriends.forEach(friend => {
-        const div = document.createElement("div");
-        div.textContent = friend;
-        topFriendsList.appendChild(div);
-      });
+  const themeSelect = document.getElementById("themeSelect");
+
+  const homeBtn = document.getElementById("homeBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
     }
 
-    // Theme
-    document.body.className = data.theme || "default";
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
 
-    // Music player
-    if (data.music) {
-      musicPlayer.innerHTML = `<iframe src="${data.music}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    if (snap.exists()) {
+      const data = snap.data();
+
+      usernameInput.value = data.username || "";
+      locationInput.value = data.location || "";
+      bioInput.value = data.bio || "";
+      musicInput.value = data.music || "";
+      themeSelect.value = data.theme || "default";
+
+      if (data.profilePic) {
+        profilePhoto.src = data.profilePic;
+      }
+
+      document.body.className = data.theme || "default";
     }
-  }
-}
-
-// ------------------------
-// SAVE PROFILE PHOTO
-// ------------------------
-saveProfilePhotoBtn.addEventListener("click", async () => {
-  const file = profilePhotoInput.files[0];
-  if (!file) return alert("Select a photo first");
-  const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-  const snapshot = await uploadBytes(storageRef, file);
-  const downloadURL = await getDownloadURL(snapshot.ref);
-
-  const userRef = doc(db, "users", auth.currentUser.uid);
-  await updateDoc(userRef, { photoURL: downloadURL });
-  profilePhoto.src = downloadURL;
-  alert("Profile photo updated!");
-});
-
-// ------------------------
-// SAVE PROFILE INFO
-// ------------------------
-saveProfileInfoBtn.addEventListener("click", async () => {
-  const userRef = doc(db, "users", auth.currentUser.uid);
-  await updateDoc(userRef, {
-    username: usernameInput.value,
-    location: locationInput.value,
-    bio: bioInput.value,
-    music: musicInput.value
   });
-  alert("Profile info updated!");
-  loadProfile();
-});
 
-// ------------------------
-// SAVE THEME
-// ------------------------
-saveThemeBtn.addEventListener("click", async () => {
-  const theme = themeSelect.value;
-  await updateDoc(doc(db, "users", auth.currentUser.uid), { theme });
-  document.body.className = theme;
-  alert("Theme updated!");
-});
+  saveProfileBtn.addEventListener("click", async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
 
-// ------------------------
-// TOP FRIENDS
-// ------------------------
-addTopFriendBtn.addEventListener("click", async () => {
-  const friend = topFriendInput.value.trim();
-  if (!friend) return;
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    topFriends: arrayUnion(friend)
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          username: usernameInput.value.trim(),
+          location: locationInput.value.trim(),
+          bio: bioInput.value.trim(),
+          music: musicInput.value.trim(),
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+      alert("Profile saved");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save profile");
+    }
   });
-  loadProfile();
-});
 
-// ------------------------
-// SEARCH USERS
-// ------------------------
-friendSearchBtn.addEventListener("click", async () => {
-  const query = friendSearchInput.value.trim().toLowerCase();
-  if (!query) return;
-  const usersSnap = await getDoc(doc(db, "users", query));
-  friendSearchResults.innerHTML = "";
-  if (usersSnap.exists()) {
-    const data = usersSnap.data();
-    const div = document.createElement("div");
-    div.textContent = data.username || "Anonymous";
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "Add Friend";
-    addBtn.onclick = async () => {
-      await updateDoc(doc(db, "users", auth.currentUser.uid), {
-        friendRequests: arrayUnion(data.username)
+  savePhotoBtn.addEventListener("click", async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user || !profilePhotoInput.files[0]) return;
+
+      const file = profilePhotoInput.files[0];
+      const photoRef = ref(storage, `profileImages/${user.uid}/profile.jpg`);
+
+      await uploadBytes(photoRef, file, { contentType: file.type });
+      const url = await getDownloadURL(photoRef);
+
+      await updateDoc(doc(db, "users", user.uid), {
+        profilePic: url
       });
-      alert("Friend request sent!");
-    };
-    div.appendChild(addBtn);
-    friendSearchResults.appendChild(div);
-  } else {
-    friendSearchResults.textContent = "User not found";
-  }
-});
 
-// ------------------------
-// INITIAL LOAD
-// ------------------------
-auth.onAuthStateChanged(user => {
-  if (user) loadProfile();
+      profilePhoto.src = url;
+      alert("Profile photo updated");
+    } catch (err) {
+      console.error(err);
+      alert("Photo upload failed");
+    }
+  });
+
+  saveThemeBtn.addEventListener("click", async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const theme = themeSelect.value;
+      document.body.className = theme;
+
+      await updateDoc(doc(db, "users", user.uid), { theme });
+      alert("Theme saved");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save theme");
+    }
+  });
+
+  homeBtn.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
 });

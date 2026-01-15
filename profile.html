@@ -8,38 +8,33 @@
 </head>
 <body class="default">
 
-  <!-- NAV BAR -->
+  <!-- NAVIGATION -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <h1>Your Profile</h1>
-
-  <!-- PROFILE SECTION -->
   <section class="profileSection">
-    <img id="profilePic" src="" alt="Profile Photo" class="profilePhoto">
-    <input type="file" id="profilePicInput" accept="image/*">
-    <button id="saveProfilePicBtn">Save Profile Picture</button>
+    <h2>Your Profile</h2>
+    
+    <div class="profilePhotoContainer">
+      <img id="profilePhoto" src="" alt="Profile Photo" class="profilePhoto">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+    </div>
 
-    <div>
+    <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
       <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
-    <div>
-      <input type="text" id="musicInput" placeholder="YouTube URL or Embed Link">
-      <button id="saveMusicBtn">Save Music</button>
-      <div id="musicPlayer"></div>
-    </div>
-
-    <div>
-      <label for="themeSelect">Theme:</label>
+    <div class="profileTheme">
+      <label>Choose Theme:</label>
       <select id="themeSelect">
-        <option value="">Select Theme</option>
         <option value="default">Default</option>
         <option value="dark">Dark</option>
         <option value="neon">Neon</option>
@@ -48,9 +43,11 @@
       <button id="saveThemeBtn">Save Theme</button>
     </div>
 
-    <div>
+    <div class="topFriendsSection">
       <h3>Top 10 Friends</h3>
       <ul id="topFriendsList"></ul>
+      <input type="text" id="addTopFriendInput" placeholder="Username to add">
+      <button id="addTopFriendBtn">Add Friend</button>
     </div>
   </section>
 

@@ -1,130 +1,26 @@
-/* -----------------------------
-   Global Styles
------------------------------ */
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
-  color: #222;
+  font-family: Arial, sans-serif;
 }
 
-h2 {
-  margin-top: 0;
-}
-
-/* -----------------------------
-   Navbar
------------------------------ */
 .navbar {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #242526;
-  color: #fff;
-  padding: 10px 0;
+  gap: 10px;
+  padding: 10px;
+  background: #222;
 }
 
 .navbar button {
-  background: #3a3b3c;
   color: #fff;
+  background: #444;
   border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.2s;
+  padding: 8px 12px;
 }
 
-.navbar button:hover {
-  background: #555;
-}
-
-/* -----------------------------
-   Feed Section
------------------------------ */
-.feed {
-  max-width: 600px;
-  margin: 20px auto;
+.profileContainer {
+  max-width: 900px;
+  margin: auto;
   padding: 10px;
-}
-
-.post {
-  background: #fff;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.post img, .post video {
-  max-width: 100%;
-  max-height: 400px;
-  display: block;
-  margin: 10px 0;
-  border-radius: 5px;
-}
-
-.post .post-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-}
-
-.post button {
-  cursor: pointer;
-  border: none;
-  background: #eee;
-  padding: 5px 10px;
-  border-radius: 5px;
-  transition: background 0.2s;
-}
-
-.post button:hover {
-  background: #ddd;
-}
-
-/* -----------------------------
-   Create Post Section
------------------------------ */
-.createPost {
-  max-width: 600px;
-  margin: 20px auto;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.createPost textarea, .createPost input[type="file"] {
-  width: 100%;
-  margin-top: 5px;
-}
-
-.createPost button {
-  margin-top: 10px;
-  background-color: #3a3b3c;
-  color: #fff;
-  width: 100%;
-  padding: 10px;
-}
-
-.createPost img {
-  max-width: 100%;
-  max-height: 300px;
-  margin-top: 10px;
-  border-radius: 5px;
-}
-
-/* -----------------------------
-   Profile Page
------------------------------ */
-.profileSection {
-  max-width: 500px;
-  margin: 20px auto;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
 }
 
 .profilePhoto {
@@ -132,88 +28,39 @@ h2 {
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
-  display: block;
-  margin: 10px auto;
-  border: 2px solid #3a3b3c;
 }
 
-.profileSection input[type="text"], .profileSection textarea {
+.profileInfo input,
+.profileInfo textarea,
+.customHTMLSection textarea,
+select {
   width: 100%;
   margin: 5px 0;
   padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
 }
 
-.profileSection button {
+button {
+  margin-top: 8px;
+  padding: 8px;
+}
+
+.musicSection iframe {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #3a3b3c;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  height: 200px;
 }
 
-.profileSection button:hover {
-  background-color: #555;
+.customProfileContent {
+  margin-top: 15px;
 }
 
-/* -----------------------------
-   Music Player
------------------------------ */
-.musicPlayerSection iframe {
-  width: 100%;
-  height: 80px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-/* -----------------------------
-   Top 10 Friends
------------------------------ */
-.topFriendsSection ul {
-  list-style: none;
-  padding: 0;
-}
-
-.topFriendsSection li {
-  background: #eee;
-  margin: 5px 0;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-/* -----------------------------
-   Themes
------------------------------ */
-body.default { background-color: #fff; color: #000; }
-body.dark { background-color: #111; color: #eee; }
-body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
-body.animated { animation: bgPulse 5s infinite alternate; }
+/* THEMES */
+body.default { background: #fff; color: #000; }
+body.dark { background: #111; color: #eee; }
+body.neon { background: black; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 6s infinite alternate; }
 
 @keyframes bgPulse {
-  0% { background-color: #ff9; }
-  50% { background-color: #9ff; }
-  100% { background-color: #f9f; }
-}
-
-/* -----------------------------
-   Responsive
------------------------------ */
-@media only screen and (max-width: 600px) {
-  .navbar {
-    flex-direction: column;
-  }
-
-  .profileSection, .createPost, .feed {
-    width: 95%;
-  }
-
-  .profilePhoto {
-    width: 120px;
-    height: 120px;
-  }
+  0% { background: #ff9; }
+  50% { background: #9ff; }
+  100% { background: #f9f; }
 }

@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -6,6 +6,7 @@ const db = getFirestore();
 const auth = getAuth();
 const storage = getStorage();
 
+// DOM Elements
 const profilePhoto = document.getElementById("profilePhoto");
 const profilePhotoInput = document.getElementById("profilePhotoInput");
 const profilePhotoSaveBtn = document.getElementById("profilePhotoSaveBtn");
@@ -16,16 +17,18 @@ const profileInfoSaveBtn = document.getElementById("profileInfoSaveBtn");
 const musicInput = document.getElementById("musicInput");
 const musicSaveBtn = document.getElementById("musicSaveBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
+const topFriendsContainer = document.getElementById("topFriendsContainer");
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 const searchResults = document.getElementById("searchResults");
-const topFriendsContainer = document.getElementById("topFriendsContainer");
+const userPostsContainer = document.getElementById("userPostsContainer");
 
 let userDocRef;
 
-// Wait for auth
+// Load profile data
 auth.onAuthStateChanged(async (user) => {
   if (!user) return window.location.href = "index.html";
+
   userDocRef = doc(db, "users", user.uid);
   const snap = await getDoc(userDocRef);
   if (!snap.exists()) return alert("Profile not found");
@@ -36,7 +39,7 @@ auth.onAuthStateChanged(async (user) => {
   locationInput.value = data.location || "";
   if (data.photoURL) profilePhoto.src = data.photoURL;
 
-  // Music player
+  // Music
   if (data.music) {
     musicInput.value = data.music;
     const match = data.music.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{11})/);
@@ -45,10 +48,27 @@ auth.onAuthStateChanged(async (user) => {
     }
   }
 
-  // Load top friends
+  // Top friends
   if (data.topFriends && data.topFriends.length) {
     topFriendsContainer.innerHTML = data.topFriends.map(f => `<div>${f}</div>`).join("");
   }
+
+  // Load user's posts
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+  const postSnap = await getDocs(q);
+  userPostsContainer.innerHTML = "";
+  postSnap.forEach(docSnap => {
+    const post = docSnap.data();
+    const div = document.createElement("div");
+    div.classList.add("userPost");
+    div.innerHTML = `
+      <p>${post.text || ""}</p>
+      ${post.imageURL ? `<img src="${post.imageURL}" />` : ""}
+      ${post.videoURL ? `<video src="${post.videoURL}" controls></video>` : ""}
+    `;
+    userPostsContainer.appendChild(div);
+  });
 });
 
 // Save profile info
@@ -60,13 +80,13 @@ profileInfoSaveBtn.addEventListener("click", async () => {
       location: locationInput.value
     });
     alert("Profile info saved!");
-  } catch (err) {
+  } catch(err) {
     console.error(err);
     alert("Failed to save profile info");
   }
 });
 
-// Upload & save profile photo
+// Upload profile photo
 profilePhotoSaveBtn.addEventListener("click", async () => {
   const file = profilePhotoInput.files[0];
   if (!file) return alert("Select a photo first.");
@@ -83,10 +103,10 @@ profilePhotoSaveBtn.addEventListener("click", async () => {
   }
 });
 
-// Save music & embed
+// Save music
 musicSaveBtn.addEventListener("click", async () => {
   const url = musicInput.value.trim();
-  if (!url) return alert("Enter a valid YouTube URL.");
+  if (!url) return alert("Enter a YouTube URL.");
   const match = url.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{11})/);
   if (!match) return alert("Invalid YouTube URL.");
   try {
@@ -99,29 +119,32 @@ musicSaveBtn.addEventListener("click", async () => {
   }
 });
 
-// Search users
+// Search users & add friend
 searchBtn.addEventListener("click", async () => {
-  const query = searchInput.value.trim();
-  if (!query) return alert("Enter username");
+  const usernameQuery = searchInput.value.trim();
+  if (!usernameQuery) return alert("Enter a username to search");
   searchResults.innerHTML = "Searching...";
   try {
     const usersRef = collection(db, "users");
-    const q = queryFn(usersRef, where("username", "==", query));
+    const q = query(usersRef, where("username", "==", usernameQuery));
     const snap = await getDocs(q);
-    if (!snap.empty) {
-      searchResults.innerHTML = "";
+    searchResults.innerHTML = "";
+    if (snap.empty) {
+      searchResults.innerHTML = "User not found";
+    } else {
       snap.forEach(docSnap => {
         const data = docSnap.data();
-        const uid = docSnap.id;
         const div = document.createElement("div");
         div.innerHTML = `<strong>${data.username}</strong> <button class="addFriendBtn">Add Friend</button>`;
-        const btn = div.querySelector(".addFriendBtn");
-        btn.addEventListener("click", () => alert(`Send friend request to ${data.username}`));
+        div.querySelector(".addFriendBtn").addEventListener("click", async () => {
+          alert(`Friend request sent to ${data.username}`);
+          // Implement friend request logic here
+        });
         searchResults.appendChild(div);
       });
-    } else searchResults.innerHTML = "User not found";
+    }
   } catch(err) {
     console.error(err);
-    searchResults.innerHTML = "Error searching";
+    searchResults.innerHTML = "Search error";
   }
 });

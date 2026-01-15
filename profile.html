@@ -1,69 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="profile-page">
+<body class="default">
 
-  <!-- NAVIGATION -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<nav class="navbar">
+  <button id="homeBtn">Home</button>
+  <button id="profileBtn">Profile</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-  <main class="profile-main">
-    <!-- Profile Picture Section -->
-    <section class="profile-section">
-      <h2>Profile Picture</h2>
-      <div class="profile-pic-container">
-        <img id="profilePicDisplay" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput" accept="image/*">
-        <button id="saveProfilePicBtn">Save Profile Picture</button>
-      </div>
-    </section>
+<section class="profile-section">
+  <h2>Your Profile</h2>
+  <img id="profilePic" src="" alt="Profile Picture" class="profile-pic">
+  <input type="file" id="profilePicInput" accept="image/*">
+  <button id="saveProfilePic">Save Profile Picture</button>
+  
+  <input type="text" id="bioInput" placeholder="Bio">
+  <input type="text" id="locationInput" placeholder="Location">
+  <button id="saveProfileInfo">Save Profile Info</button>
+  
+  <h3>Top Friends</h3>
+  <div id="topFriendsContainer"></div>
+  <input type="text" id="topFriendInput" placeholder="Add Top Friend">
+  <button id="saveTopFriends">Save Top Friends</button>
 
-    <!-- Profile Info Section -->
-    <section class="profile-section">
-      <h2>Profile Info</h2>
-      <label>Display Name:</label>
-      <input type="text" id="displayNameInput">
-      <label>Bio:</label>
-      <textarea id="bioInput"></textarea>
-      <label>Location:</label>
-      <input type="text" id="locationInput">
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </section>
+  <h3>Music</h3>
+  <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
+  <button id="saveMusic">Save Music</button>
+  <div id="musicPlayer"></div>
+</section>
 
-    <!-- Music Player Section -->
-    <section class="profile-section">
-      <h2>Music Player</h2>
-      <input type="text" id="musicLinkInput" placeholder="Paste your music link here">
-      <button id="saveMusicBtn">Save Music</button>
-      <div id="musicPlayerContainer"></div>
-    </section>
-
-    <!-- Top Friends Section -->
-    <section class="profile-section">
-      <h2>Top Friends</h2>
-      <input type="text" id="topFriendsInput" placeholder="Enter username to add">
-      <button id="addTopFriendBtn">Add to Top 10</button>
-      <ul id="topFriendsList"></ul>
-    </section>
-
-    <!-- Wall / Comments Section -->
-    <section class="profile-section">
-      <h2>Wall Comments</h2>
-      <textarea id="wallCommentInput" placeholder="Leave a note on this wall"></textarea>
-      <button id="postWallCommentBtn">Post Comment</button>
-      <div id="wallCommentsContainer"></div>
-    </section>
-  </main>
-
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="profile.js"></script>
+<script type="module">
+  import { auth, onAuthStateChanged } from './firebase.js';
+  onAuthStateChanged(auth, user => {
+    if(!user) window.location.href='index.html';
+  });
+</script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

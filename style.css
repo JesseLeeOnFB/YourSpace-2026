@@ -1,91 +1,290 @@
-/* GENERAL BODY */
-body.default {
-  background-color: #f0f2f5;
-  color: #111;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+/* =====================
+   GENERAL RESET
+===================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
 }
 
-/* NAVBAR */
+body.default {
+    background-color: #f0f2f5;
+    color: #222;
+}
+
+/* =====================
+   NAVBAR
+===================== */
 .navbar {
-  display: flex;
-  justify-content: flex-start;
-  background-color: #4267B2;
-  padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 20px;
+    background-color: #4267B2;
+    color: #fff;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .navbar button {
-  margin-right: 10px;
-  padding: 8px 12px;
-  background-color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    color: #4267B2;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
 .navbar button:hover {
-  background-color: #ddd;
+    background-color: #d9e6ff;
 }
 
-/* CREATE POST CARD */
-.createPost.card {
-  background-color: #fff;
-  padding: 15px;
-  margin: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+/* =====================
+   CARD CONTAINERS
+===================== */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin: 15px auto;
+    width: 90%;
+    max-width: 800px;
+}
+
+/* =====================
+   PROFILE PAGE
+===================== */
+.profilePicContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.profilePic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #4267B2;
+}
+
+.profileFields label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+.profileFields input, 
+.profileFields textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.profileFields button {
+    margin-top: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #4267B2;
+    color: #fff;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.profileFields button:hover {
+    background-color: #365899;
+}
+
+/* MUSIC PLAYER */
+#musicPlayerContainer iframe {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* COMMENTS / WALL */
+.comments textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.comments button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #4267B2;
+    color: #fff;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.comments button:hover {
+    background-color: #365899;
+}
+
+.comment.card {
+    background-color: #f5f6f7;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+/* =====================
+   FEED PAGE
+===================== */
+.createPost {
+    width: 90%;
+    max-width: 800px;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .createPost textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+    width: 100%;
+    border-radius: 6px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
 }
 
-.createPost input[type=file] {
-  margin-bottom: 10px;
+.createPost button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #4267B2;
+    color: #fff;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
-/* FEED */
-.feed {
-  padding: 15px;
+.createPost button:hover {
+    background-color: #365899;
 }
 
-.post.card {
-  background-color: #fff;
-  margin-bottom: 15px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+#imagePreview {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    margin-top: 10px;
+    border-radius: 8px;
 }
 
-.post img.postMedia,
-.post video.postMedia {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-top: 10px;
+.feed .post {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
-/* POST BUTTONS */
-.postButtons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+.feed .post img,
+.feed .post video {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 8px;
 }
 
-.postButtons button {
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  background-color: #4267B2;
-  color: #fff;
+.postActions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 8px;
 }
 
-.postButtons button:hover {
-  background-color: #365899;
+.postActions button {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    background-color: #4267B2;
+    color: #fff;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.postActions button:hover {
+    background-color: #365899;
+}
+
+/* =====================
+   INPUTS / THEMES
+===================== */
+input, textarea {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+button {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media screen and (max-width: 600px) {
+    .card, .createPost {
+        width: 95%;
+    }
+}
+
+/* =====================
+   PRESET THEMES
+===================== */
+body.dark {
+    background-color: #1e1e1e;
+    color: #eee;
+}
+
+body.neon {
+    background-color: #111;
+    color: #0ff;
+}
+
+body.blue {
+    background-color: #d0e6ff;
+    color: #003366;
+}
+
+body.red {
+    background-color: #ffd0d0;
+    color: #660000;
+}
+
+body.gradient {
+    background: linear-gradient(120deg,#ff7f50,#1e90ff);
+    color: #fff;
+}
+
+/* Animated theme */
+@keyframes rainbowText {
+    0%{color:red}20%{color:orange}40%{color:yellow}60%{color:green}80%{color:blue}100%{color:violet}
+}
+
+body.animated {
+    background-color: #000;
+    animation: rainbowText 5s linear infinite;
 }

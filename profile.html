@@ -15,10 +15,10 @@
 
   <section class="profileSection">
     <h2>My Profile</h2>
-    <div class="profilePhotoSection">
-      <img id="profilePhoto" src="" alt="Profile Photo">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+    <div class="profilePhotoContainer">
+      <img id="profilePhoto" src="" alt="Profile Photo" class="profilePhoto">
+      <input type="file" id="profilePicInput" accept="image/*">
+      <button id="saveProfilePicBtn">Save Profile Photo</button>
     </div>
 
     <div class="profileInfo">
@@ -29,10 +29,9 @@
       <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
-    <div class="themeSection">
-      <h3>Preset Themes</h3>
+    <div class="profileTheme">
+      <label for="themeSelect">Theme:</label>
       <select id="themeSelect">
-        <option value="">Select Theme</option>
         <option value="default">Default</option>
         <option value="dark">Dark</option>
         <option value="neon">Neon</option>
@@ -40,25 +39,6 @@
       </select>
       <button id="saveThemeBtn">Save Theme</button>
     </div>
-
-    <div class="topFriendsSection">
-      <h3>Top 10 Friends</h3>
-      <ul id="topFriendsList"></ul>
-    </div>
-
-    <!-- Step 7: Friend Search Section -->
-    <div class="friendSearchSection">
-      <h3>Find Friends</h3>
-      <input type="text" id="friendSearchInput" placeholder="Search username">
-      <button id="friendSearchBtn">Search</button>
-      <ul id="friendSearchResults"></ul>
-    </div>
-
-    <div class="friendRequestsSection">
-      <h3>Friend Requests</h3>
-      <ul id="friendRequestsList"></ul>
-    </div>
-
   </section>
 
   <script type="module" src="profile.js"></script>

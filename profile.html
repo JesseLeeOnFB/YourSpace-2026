@@ -2,61 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="default">
 
-  <!-- NAVBAR -->
+  <!-- NAV BAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- PROFILE SECTION -->
   <section class="profileSection">
-    <h2>Profile</h2>
+    <h2>Your Profile</h2>
 
-    <!-- Profile Photo -->
-    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
+    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Picture">
+
     <input type="file" id="profilePhotoInput" accept="image/*">
-    <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+    <button id="savePhotoBtn">Save Profile Photo</button>
 
-    <!-- Profile Info -->
     <input type="text" id="usernameInput" placeholder="Username">
     <input type="text" id="locationInput" placeholder="Location">
     <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-    <input type="text" id="musicInput" placeholder="Embedded Music URL">
-    <button id="saveProfileInfoBtn">Save Profile Info</button>
 
-    <!-- Theme Selection -->
+    <input type="text" id="musicInput" placeholder="YouTube Music URL">
+
+    <button id="saveProfileBtn">Save Profile Info</button>
+  </section>
+
+  <!-- THEME SECTION -->
+  <section class="customizationSection">
+    <h3>Profile Theme</h3>
+
     <select id="themeSelect">
       <option value="default">Default</option>
       <option value="dark">Dark</option>
       <option value="neon">Neon</option>
       <option value="animated">Animated</option>
     </select>
+
     <button id="saveThemeBtn">Save Theme</button>
-
-    <!-- Top Friends -->
-    <h3>Top Friends</h3>
-    <div id="topFriendsList"></div>
-    <input type="text" id="topFriendInput" placeholder="Add friend by username">
-    <button id="addTopFriendBtn">Add</button>
-
-    <!-- Friend Search -->
-    <h3>Search Users</h3>
-    <input type="text" id="friendSearchInput" placeholder="Search by username">
-    <button id="friendSearchBtn">Search</button>
-    <div id="friendSearchResults"></div>
-
-    <!-- Music Player -->
-    <div class="musicPlayerSection" id="musicPlayer"></div>
-
   </section>
 
+  <!-- IMPORTANT: MODULE SCRIPT -->
   <script type="module" src="profile.js"></script>
 </body>
 </html>

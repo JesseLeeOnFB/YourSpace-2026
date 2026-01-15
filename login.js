@@ -1,33 +1,22 @@
-// login.js
 import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const loginForm = document.getElementById("loginForm");
-const loginError = document.getElementById("loginError");
+const loginBtn = document.getElementById("loginBtn");
 
-loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  if (!email || !password) {
+    alert("Please enter both email and password.");
+    return;
+  }
 
-    loginError.textContent = "";
-
-    try {
-        await auth.signInWithEmailAndPassword(email, password);
-        // Redirect to feed only after successful login
-        window.location.href = "feed.html";
-    } catch (err) {
-        console.error("Login error:", err);
-        loginError.textContent = "Login failed. Check email and password.";
-    }
-});
-
-// Optional: auto-redirect if already logged in
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        // Already logged in, go to feed
-        if (!window.location.href.includes("feed.html")) {
-            window.location.href = "feed.html";
-        }
-    }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "feed.html"; // redirect to feed on success
+  } catch (err) {
+    console.error("Login failed:", err);
+    alert("Login failed. Check your email and password.");
+  }
 });

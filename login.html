@@ -9,14 +9,22 @@
 <body class="login-page">
 
   <div class="login-container">
-    <h1>YourSpace Login</h1>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button id="loginBtn">Login</button>
-    <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+    <h1>YourSpace</h1>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+
+      <button type="submit" id="loginBtn">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
   </div>
 
-  <script type="module" src="./firebase.js"></script>
-<script type="module" src="./login.js"></script>
+  <!-- Firebase and login script -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="login.js"></script>
 </body>
 </html>

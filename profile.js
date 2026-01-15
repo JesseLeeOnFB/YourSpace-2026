@@ -1,144 +1,121 @@
-// PROFILE.JS
-document.addEventListener("DOMContentLoaded", () => {
-  // NAVIGATION BUTTONS
-  const homeBtn = document.getElementById("homeBtn");
-  const profileBtn = document.getElementById("profileBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+import { auth, db, storage, doc, getDoc, setDoc, updateDoc, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut } from './firebase.js';
 
-  if (homeBtn) homeBtn.addEventListener("click", () => window.location.href = "feed.html");
-  if (profileBtn) profileBtn.addEventListener("click", () => window.location.href = "profile.html");
-  if (logoutBtn) logoutBtn.addEventListener("click", async () => {
-    try {
-      await auth.signOut();
-      window.location.href = "index.html";
-    } catch(err) { console.error(err); alert("Logout failed."); }
-  });
+let currentUser;
 
-  // PROFILE DATA ELEMENTS
-  const displayNameInput = document.getElementById("displayNameInput");
-  const bioInput = document.getElementById("bioInput");
-  const locationInput = document.getElementById("locationInput");
-  const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-  // PROFILE PICTURE ELEMENTS
-  const profilePicInput = document.getElementById("profilePicInput");
-  const profilePicDisplay = document.getElementById("profilePicDisplay");
-  const saveProfilePicBtn = document.getElementById("saveProfilePicBtn");
-
-  // MUSIC PLAYER ELEMENTS
-  const musicLinkInput = document.getElementById("musicLinkInput");
-  const saveMusicBtn = document.getElementById("saveMusicBtn");
-  const musicPlayerContainer = document.getElementById("musicPlayerContainer");
-
-  // TOP FRIENDS
-  const topFriendsInput = document.getElementById("topFriendsInput");
-  const addTopFriendBtn = document.getElementById("addTopFriendBtn");
-  const topFriendsList = document.getElementById("topFriendsList");
-
-  // WALL COMMENTS
-  const wallCommentInput = document.getElementById("wallCommentInput");
-  const postWallCommentBtn = document.getElementById("postWallCommentBtn");
-  const wallCommentsContainer = document.getElementById("wallCommentsContainer");
-
-  // ===== Load Saved Profile Data =====
-  async function loadProfile() {
-    const userDoc = await getUserDoc(); // Implement to pull current user's Firestore document
-    if (!userDoc) return;
-
-    displayNameInput.value = userDoc.displayName || "";
-    bioInput.value = userDoc.bio || "";
-    locationInput.value = userDoc.location || "";
-
-    profilePicDisplay.src = userDoc.profilePic || "default-avatar.png";
-    musicLinkInput.value = userDoc.music || "";
-
-    topFriendsList.innerHTML = "";
-    (userDoc.topFriends || []).forEach(f => {
-      const li = document.createElement("li");
-      li.textContent = f;
-      topFriendsList.appendChild(li);
-    });
-
-    loadWallComments(userDoc.wallComments || []);
-  }
-
-  function loadWallComments(comments) {
-    wallCommentsContainer.innerHTML = "";
-    comments.forEach(c => {
-      const div = document.createElement("div");
-      div.classList.add("wall-comment");
-      div.innerHTML = `<strong>${c.username}:</strong> ${c.comment}`;
-      wallCommentsContainer.appendChild(div);
-    });
-  }
-
-  loadProfile();
-
-  // ===== Save Profile Info =====
-  saveProfileBtn.addEventListener("click", async () => {
-    const updates = {
-      displayName: displayNameInput.value,
-      bio: bioInput.value,
-      location: locationInput.value
-    };
-    await updateUserDoc(updates); // Implement Firestore update
-    alert("Profile info saved!");
-  });
-
-  // ===== Save Profile Picture =====
-  saveProfilePicBtn.addEventListener("click", async () => {
-    if (!profilePicInput.files[0]) return alert("Select an image!");
-    const file = profilePicInput.files[0];
-
-    // Preview
-    const reader = new FileReader();
-    reader.onload = () => profilePicDisplay.src = reader.result;
-    reader.readAsDataURL(file);
-
-    // Upload file to Firebase storage and update user profileDoc
-    await uploadProfileImage(file);
-    alert("Profile picture saved!");
-  });
-
-  // ===== Save Music Link =====
-  saveMusicBtn.addEventListener("click", () => {
-    const url = musicLinkInput.value.trim();
-    if (!url) return alert("Enter a music link!");
-    let embedHTML = "";
-
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      const videoId = url.split("v=")[1] || url.split("youtu.be/")[1];
-      embedHTML = `<iframe width="300" height="150" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    } else if (url.includes("soundcloud.com")) {
-      embedHTML = `<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}"></iframe>`;
-    } else if (url.includes("spotify.com")) {
-      embedHTML = `<iframe src="https://open.spotify.com/embed${url.split("spotify.com")[1]}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-    } else if (url.includes("pandora.com")) {
-      embedHTML = `<iframe src="${url}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-    } else return alert("Unsupported music platform!");
-
-    musicPlayerContainer.innerHTML = embedHTML;
-    alert("Music saved!");
-  });
-
-  // ===== Add Top Friend =====
-  addTopFriendBtn.addEventListener("click", async () => {
-    const friendUsername = topFriendsInput.value.trim();
-    if (!friendUsername) return;
-
-    await addTopFriend(friendUsername); // Implement check for accepted friend
-    topFriendsInput.value = "";
-    loadProfile();
-    alert("Top friend added!");
-  });
-
-  // ===== Post Wall Comment =====
-  postWallCommentBtn.addEventListener("click", async () => {
-    const commentText = wallCommentInput.value.trim();
-    if (!commentText) return;
-
-    await postWallComment(commentText); // Implement Firestore add comment
-    wallCommentInput.value = "";
-    loadProfile();
-  });
+onAuthStateChanged(auth, async user => {
+    if (!user) {
+        alert('You must be logged in');
+        window.location.href = 'index.html';
+    } else {
+        currentUser = user;
+        await loadProfile();
+    }
 });
+
+// NAVIGATION BUTTONS
+document.getElementById('homeBtn')?.addEventListener('click', () => window.location.href = 'feed.html');
+document.getElementById('profileBtn')?.addEventListener('click', () => window.location.href = 'profile.html');
+document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = 'index.html';
+});
+
+// LOAD PROFILE DATA
+async function loadProfile() {
+    const userRef = doc(db, 'users', currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+        const data = userSnap.data();
+
+        document.getElementById('bioInput').value = data.bio || '';
+        document.getElementById('locationInput').value = data.location || '';
+        document.getElementById('topFriendInput').value = '';
+        document.getElementById('topFriendsContainer').innerHTML = (data.topFriends || []).map(f => `<div>${f}</div>`).join('');
+
+        // PROFILE PICTURE
+        if (data.profilePic) {
+            document.getElementById('profilePic').src = data.profilePic;
+        }
+
+        // MUSIC
+        if (data.music) {
+            loadMusicPlayer(data.music);
+        }
+    }
+}
+
+// SAVE PROFILE INFO
+document.getElementById('saveProfileInfo')?.addEventListener('click', async () => {
+    const bio = document.getElementById('bioInput').value;
+    const location = document.getElementById('locationInput').value;
+
+    const userRef = doc(db, 'users', currentUser.uid);
+    await updateDoc(userRef, { bio, location });
+    alert('Profile info saved!');
+});
+
+// SAVE PROFILE PICTURE
+document.getElementById('saveProfilePic')?.addEventListener('click', async () => {
+    const file = document.getElementById('profilePicInput').files[0];
+    if (!file) return alert('Select an image first');
+
+    const storageRef = ref(storage, `profileImages/${currentUser.uid}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    const userRef = doc(db, 'users', currentUser.uid);
+    await updateDoc(userRef, { profilePic: url });
+
+    document.getElementById('profilePic').src = url;
+    alert('Profile picture updated!');
+});
+
+// TOP FRIENDS
+document.getElementById('saveTopFriends')?.addEventListener('click', async () => {
+    const input = document.getElementById('topFriendInput').value.trim();
+    if (!input) return;
+
+    const userRef = doc(db, 'users', currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.data();
+    const topFriends = data.topFriends || [];
+
+    if (!topFriends.includes(input)) topFriends.push(input);
+    await updateDoc(userRef, { topFriends });
+    document.getElementById('topFriendsContainer').innerHTML = topFriends.map(f => `<div>${f}</div>`).join('');
+    document.getElementById('topFriendInput').value = '';
+});
+
+// MUSIC
+document.getElementById('saveMusic')?.addEventListener('click', async () => {
+    const link = document.getElementById('musicInput').value.trim();
+    if (!link) return;
+
+    const embed = convertToEmbed(link);
+    await updateDoc(doc(db, 'users', currentUser.uid), { music: embed });
+    loadMusicPlayer(embed);
+});
+
+// MUSIC PLAYER
+function loadMusicPlayer(embedHtml) {
+    const playerDiv = document.getElementById('musicPlayer');
+    playerDiv.innerHTML = embedHtml;
+}
+
+// Convert shared links to embeddable HTML
+function convertToEmbed(link) {
+    // YouTube
+    if (link.includes('youtube.com') || link.includes('youtu.be')) {
+        const videoId = link.split('v=')[1] || link.split('/').pop();
+        return `<iframe width="300" height="150" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    }
+    // SoundCloud
+    if (link.includes('soundcloud.com')) {
+        return `<iframe width="300" height="150" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${link}"></iframe>`;
+    }
+    // Spotify
+    if (link.includes('spotify.com')) {
+        return `<iframe src="https://open.spotify.com/embed/track/${link.split('/').pop()}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+    }
+    return link;
+}

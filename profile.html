@@ -1,68 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>YourSpace Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="default">
 
 <nav class="navbar">
   <button id="homeBtn">Home</button>
+  <button id="feedBtn">Feed</button>
   <button id="logoutBtn">Logout</button>
 </nav>
 
 <section class="profileSection">
 
-  <h2>Your Profile</h2>
-
   <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
 
-  <input type="file" id="profilePhotoInput" accept="image/*">
+  <input type="file" id="profilePhotoInput">
   <button id="saveProfilePhotoBtn">Save Profile Photo</button>
 
   <input type="text" id="usernameInput" placeholder="Username">
   <input type="text" id="locationInput" placeholder="Location">
-  <textarea id="bioInput" placeholder="Bio"></textarea>
+  <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
 
-  <input type="text" id="musicInput" placeholder="YouTube Music URL">
+  <input type="text" id="musicInput" placeholder="YouTube Music Link">
   <button id="saveProfileBtn">Save Profile</button>
 
 </section>
 
 <section class="customizationSection">
 
-  <h3>Profile Theme</h3>
-
+  <h3>YourSpace Theme</h3>
   <select id="themeSelect">
     <option value="default">Default</option>
     <option value="dark">Dark</option>
     <option value="neon">Neon</option>
     <option value="animated">Animated</option>
   </select>
-
   <button id="saveThemeBtn">Save Theme</button>
 
-</section>
-
-<section class="customizationSection">
-
-  <h3>YourSpace Custom Profile HTML</h3>
-
-  <textarea
-    id="customHTMLInput"
-    rows="6"
-    placeholder="Customize your profile with HTML & CSS (advanced users)">
+  <h3>YourSpace Custom HTML</h3>
+  <textarea id="customHTMLInput" rows="6"
+    placeholder="Advanced users only (HTML/CSS)">
   </textarea>
-
   <button id="saveCustomHTMLBtn">Save Custom HTML</button>
 
-</section>
+  <div id="customHTMLContainer"></div>
 
-<section class="musicPlayerSection">
-  <div id="musicPlayer"></div>
 </section>
 
 <script type="module" src="profile.js"></script>

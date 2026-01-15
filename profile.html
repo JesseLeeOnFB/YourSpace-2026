@@ -15,14 +15,14 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
+  <!-- PROFILE SECTION -->
   <section class="profileSection">
-    <h2>Your Profile</h2>
+    <h2>My Profile</h2>
 
     <!-- Profile Picture -->
-    <div class="profilePhotoWrapper">
-      <img id="profilePicDisplay" src="" alt="Profile Picture" class="profilePhoto">
+    <div class="profilePhotoContainer">
+      <img id="profilePicImg" src="" alt="Profile Picture" class="profilePhoto">
       <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Profile Picture</button>
     </div>
 
     <!-- Profile Info -->
@@ -30,15 +30,15 @@
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Embedded Music URL">
-      <button id="saveProfileInfoBtn">Save Profile Info</button>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL (YouTube)">
+      <button id="saveProfileBtn">Save Profile Info</button>
     </div>
 
     <!-- Theme Selector -->
-    <div class="themeSelector">
-      <label for="themeSelect">Choose Theme:</label>
+    <div class="customizationSection">
+      <label for="themeSelect">Select Theme:</label>
       <select id="themeSelect">
-        <option value="">Default</option>
+        <option value="default">Default</option>
         <option value="dark">Dark</option>
         <option value="neon">Neon</option>
         <option value="animated">Animated</option>
@@ -46,23 +46,24 @@
       <button id="saveThemeBtn">Save Theme</button>
     </div>
 
-    <!-- Top Friends -->
+    <!-- Top Friends Section -->
     <div class="topFriendsSection">
       <h3>Top 10 Friends</h3>
       <ul id="topFriendsList"></ul>
-      <input type="text" id="topFriendInput" placeholder="Add friend username">
-      <button id="addTopFriendBtn">Add to Top 10</button>
+      <input type="text" id="addTopFriendInput" placeholder="Add friend username">
+      <button id="addTopFriendBtn">Add Top Friend</button>
     </div>
 
-    <!-- Search Users -->
+    <!-- Search Users Section -->
     <div class="searchUsersSection">
       <h3>Search Users</h3>
       <input type="text" id="searchUserInput" placeholder="Enter username">
       <button id="searchUserBtn">Search</button>
-      <div id="searchResults"></div>
+      <ul id="searchResults"></ul>
     </div>
+
   </section>
 
- <script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

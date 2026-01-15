@@ -1,39 +1,65 @@
-alert("PROFILE.JS LOADED");
-import { auth, db, storage } from "./firebase.js";
-import {
-  doc, getDoc, setDoc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import {
-  onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// ✅ PROFILE.JS — SELF CONTAINED (NO firebase.js REQUIRED)
 
-const profilePhoto = document.getElementById("profilePhoto");
-const profilePhotoInput = document.getElementById("profilePhotoInput");
+// 🔥 PROOF THIS FILE LOADS
+console.log("profile.js loaded");
+
+// ----------------------------------
+// 🔹 FIREBASE SETUP (SAME AS FEED)
+// ----------------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+// 🔐 YOUR FIREBASE CONFIG (UNCHANGED)
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+};
+
+// INIT
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// ----------------------------------
+// 🔹 DOM ELEMENTS
+// ----------------------------------
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const saveThemeBtn = document.getElementById("saveThemeBtn");
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicImg = document.getElementById("profilePic");
 
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
-
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-const themeSelect = document.getElementById("themeSelect");
-const saveThemeBtn = document.getElementById("saveThemeBtn");
-
 const musicInput = document.getElementById("musicInput");
-const saveMusicBtn = document.getElementById("saveMusicBtn");
-const musicPlayer = document.getElementById("musicPlayer");
+const themeSelect = document.getElementById("themeSelect");
 
-// NAV
-document.getElementById("navHome").onclick = () => window.location.href = "index.html";
-document.getElementById("navFeed").onclick = () => window.location.href = "feed.html";
-document.getElementById("navLogout").onclick = async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-};
-
-onAuthStateChanged(auth, async user => {
+// ----------------------------------
+// 🔹 AUTH + LOAD PROFILE
+// ----------------------------------
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
@@ -44,12 +70,13 @@ onAuthStateChanged(auth, async user => {
 
   if (!snap.exists()) {
     await setDoc(userRef, {
-      username: "",
+      username: "Anonymous",
       bio: "",
       location: "",
-      theme: "default",
       music: "",
-      photoURL: ""
+      photoURL: "",
+      theme: "default",
+      createdAt: serverTimestamp()
     });
   }
 
@@ -58,30 +85,40 @@ onAuthStateChanged(auth, async user => {
   usernameInput.value = data.username || "";
   bioInput.value = data.bio || "";
   locationInput.value = data.location || "";
-  themeSelect.value = data.theme || "default";
   musicInput.value = data.music || "";
+  themeSelect.value = data.theme || "default";
+
+  if (data.photoURL) {
+    profilePicImg.src = data.photoURL;
+  }
 
   document.body.className = data.theme || "default";
-
-  if (data.photoURL) profilePhoto.src = data.photoURL;
-  if (data.music) renderMusic(data.music);
 });
 
-// SAVE PROFILE
+// ----------------------------------
+// 💾 SAVE PROFILE INFO
+// ----------------------------------
 saveProfileBtn.onclick = async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return alert("Not logged in");
 
-  await updateDoc(doc(db, "users", user.uid), {
-    username: usernameInput.value.trim(),
-    bio: bioInput.value.trim(),
-    location: locationInput.value.trim()
-  });
-
-  alert("Profile saved");
+  try {
+    await updateDoc(doc(db, "users", user.uid), {
+      username: usernameInput.value.trim(),
+      bio: bioInput.value.trim(),
+      location: locationInput.value.trim(),
+      music: musicInput.value.trim()
+    });
+    alert("Profile saved ✅");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile");
+  }
 };
 
-// THEME
+// ----------------------------------
+// 🎨 SAVE THEME
+// ----------------------------------
 saveThemeBtn.onclick = async () => {
   const user = auth.currentUser;
   if (!user) return;
@@ -89,45 +126,37 @@ saveThemeBtn.onclick = async () => {
   const theme = themeSelect.value;
   document.body.className = theme;
 
-  await updateDoc(doc(db, "users", user.uid), { theme });
-  alert("Theme saved");
+  try {
+    await updateDoc(doc(db, "users", user.uid), { theme });
+    alert("Theme saved ✅");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save theme");
+  }
 };
 
-// MUSIC
-saveMusicBtn.onclick = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const url = musicInput.value.trim();
-  await updateDoc(doc(db, "users", user.uid), { music: url });
-  renderMusic(url);
-};
-
-function renderMusic(url) {
-  const videoId = url.split("v=")[1]?.split("&")[0];
-  if (!videoId) return;
-
-  musicPlayer.innerHTML = `
-    <iframe
-      src="https://www.youtube.com/embed/${videoId}"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>
-  `;
-}
-
-// PROFILE PHOTO
-profilePhotoInput.onchange = async e => {
+// ----------------------------------
+// 🖼️ UPLOAD PROFILE PICTURE
+// ----------------------------------
+profilePicInput.onchange = async (e) => {
   const file = e.target.files[0];
-  if (!file) return;
-
   const user = auth.currentUser;
-  const fileRef = ref(storage, `profileImages/${user.uid}.jpg`);
+  if (!file || !user) return;
 
-  await uploadBytes(fileRef, file);
-  const url = await getDownloadURL(fileRef);
+  const imgRef = ref(storage, `profileImages/${user.uid}/profile.jpg`);
 
-  await updateDoc(doc(db, "users", user.uid), { photoURL: url });
-  profilePhoto.src = url;
+  try {
+    await uploadBytes(imgRef, file, { contentType: file.type });
+    const url = await getDownloadURL(imgRef);
+
+    await updateDoc(doc(db, "users", user.uid), {
+      photoURL: url
+    });
+
+    profilePicImg.src = url;
+    alert("Profile photo updated ✅");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to upload photo");
+  }
 };

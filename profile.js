@@ -1,113 +1,85 @@
-import { auth, db, storage } from "./firebaseConfig.js";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+document.addEventListener("DOMContentLoaded", () => {
 
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  /* ---------------- NAV ---------------- */
+  document.getElementById("homeBtn")?.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
 
-document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("profileBtn")?.addEventListener("click", () => {
+    window.location.href = "profile.html";
+  });
 
-  // NAV BUTTONS
-  homeBtn.onclick = () => location.href = "feed.html";
-  profileBtn.onclick = () => location.href = "profile.html";
-  logoutBtn.onclick = async () => {
-    await auth.signOut();
-    location.href = "index.html";
-  };
+  document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "index.html";
+  });
 
-  auth.onAuthStateChanged(async user => {
-    if (!user) {
-      location.href = "index.html";
+  /* ---------------- ELEMENTS ---------------- */
+  const bioInput = document.getElementById("bioInput");
+  const locationInput = document.getElementById("locationInput");
+  const musicInput = document.getElementById("musicInput");
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+  const profilePicInput = document.getElementById("profilePicInput");
+  const profilePicDisplay = document.getElementById("profilePicDisplay");
+  const saveProfilePicBtn = document.getElementById("saveProfilePicBtn");
+
+  const topFriendsInput = document.getElementById("topFriendsInput");
+  const saveTopFriendsBtn = document.getElementById("saveTopFriendsBtn");
+
+  /* ---------------- LOAD SAVED DATA ---------------- */
+  bioInput.value = localStorage.getItem("bio") || "";
+  locationInput.value = localStorage.getItem("location") || "";
+  musicInput.value = localStorage.getItem("music") || "";
+  topFriendsInput.value = localStorage.getItem("topFriends") || "";
+
+  const savedPic = localStorage.getItem("profilePic");
+  if (savedPic) {
+    profilePicDisplay.src = savedPic;
+    profilePicDisplay.style.display = "block";
+  }
+
+  /* ---------------- SAVE PROFILE INFO ---------------- */
+  saveProfileBtn.addEventListener("click", () => {
+    localStorage.setItem("bio", bioInput.value);
+    localStorage.setItem("location", locationInput.value);
+    localStorage.setItem("music", musicInput.value);
+    alert("Profile saved!");
+  });
+
+  /* ---------------- PROFILE PIC PREVIEW ---------------- */
+  profilePicInput.addEventListener("change", () => {
+    const file = profilePicInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      profilePicDisplay.src = e.target.result;
+      profilePicDisplay.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------------- SAVE PROFILE PIC ---------------- */
+  saveProfilePicBtn.addEventListener("click", () => {
+    const file = profilePicInput.files[0];
+    if (!file) {
+      alert("Please choose a photo first.");
       return;
     }
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        bio: "",
-        location: "",
-        profilePic: ""
-      });
-    }
-
-    const data = snap.data();
-
-    // LOAD PROFILE DATA
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
-
-    if (data.profilePic) {
-      profilePicDisplay.src = data.profilePic;
-      profilePicDisplay.style.display = "block";
-    }
-
-    // SAVE PROFILE INFO
-    saveProfileBtn.onclick = async () => {
-      await updateDoc(userRef, {
-        bio: bioInput.value,
-        location: locationInput.value
-      });
-      alert("Profile saved");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      localStorage.setItem("profilePic", e.target.result);
+      alert("Profile picture saved!");
     };
-
-    // PROFILE PHOTO UPLOAD
-    saveProfilePicBtn.onclick = async () => {
-      const file = profilePicInput.files[0];
-      if (!file) return alert("Select a photo");
-
-      const imgRef = ref(storage, `profileImages/${user.uid}/profile.jpg`);
-      await uploadBytes(imgRef, file);
-      const url = await getDownloadURL(imgRef);
-
-      await updateDoc(userRef, { profilePic: url });
-      profilePicDisplay.src = url;
-      profilePicDisplay.style.display = "block";
-      alert("Profile photo updated");
-    };
+    reader.readAsDataURL(file);
   });
 
-  // BACKGROUND LOAD
-  const bgImg = localStorage.getItem("profileBgImage");
-  const bgColor = localStorage.getItem("profileBgColor");
+  /* ---------------- TOP FRIENDS ---------------- */
+  saveTopFriendsBtn.addEventListener("click", () => {
+    localStorage.setItem("topFriends", topFriendsInput.value);
+    alert("Top friends saved!");
+  });
 
-  if (bgImg) {
-    document.body.style.backgroundImage = `url(${bgImg})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundAttachment = "fixed";
-    bgImageInput.value = bgImg;
-  }
-
-  if (bgColor) {
-    document.body.style.backgroundColor = bgColor;
-    bgColorInput.value = bgColor;
-  }
-
-  // SAVE BACKGROUND
-  saveBackgroundBtn.onclick = () => {
-    const img = bgImageInput.value.trim();
-    const color = bgColorInput.value;
-
-    if (img) {
-      localStorage.setItem("profileBgImage", img);
-      document.body.style.backgroundImage = `url(${img})`;
-      document.body.style.backgroundSize = "cover";
-    } else {
-      localStorage.removeItem("profileBgImage");
-      document.body.style.backgroundImage = "none";
-    }
-
-    localStorage.setItem("profileBgColor", color);
-    document.body.style.backgroundColor = color;
-
-    alert("Background saved");
-  };
 });

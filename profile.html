@@ -2,52 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Your Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="default">
 
-  <!-- NAV BAR -->
+  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profileContainer">
-
-    <h1>Your Profile</h1>
-
-    <!-- PROFILE PHOTO -->
-    <section class="profilePhotoSection">
-      <img id="profilePicDisplay" alt="Profile Picture">
+  <!-- PROFILE CARD -->
+  <section class="profile card">
+    <h2>Your Profile</h2>
+    <div class="profilePicContainer">
+      <img id="profilePic" src="" alt="Profile Picture" class="profilePic">
       <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Profile Picture</button>
-    </section>
+      <button id="saveProfilePicBtn">Save Profile Photo</button>
+    </div>
 
-    <!-- PROFILE INFO -->
-    <section class="profileInfo">
+    <div class="profileFields">
+      <label>Display Name</label>
+      <input type="text" id="displayName">
+      
       <label>Bio</label>
-      <textarea id="bioInput" rows="3"></textarea>
+      <textarea id="bio" rows="3"></textarea>
 
       <label>Location</label>
-      <input type="text" id="locationInput">
+      <input type="text" id="location">
 
-      <label>Music (YouTube URL)</label>
-      <input type="text" id="musicInput">
+      <label>Music Player Link</label>
+      <input type="text" id="musicLink">
+      <button id="saveMusicBtn">Save Music</button>
+      <div id="musicPlayerContainer"></div>
 
-      <button id="saveProfileBtn">Save Profile</button>
-    </section>
-
-    <!-- TOP FRIENDS -->
-    <section class="topFriends">
-      <h2>Top 10 Friends</h2>
-      <input type="text" id="topFriendsInput" placeholder="Comma separated usernames">
+      <label>Top 10 Friends (Add username to box, separate by comma)</label>
+      <input type="text" id="topFriends">
       <button id="saveTopFriendsBtn">Save Top Friends</button>
-    </section>
+    </div>
 
-  </main>
+    <button id="saveProfileBtn">Save Profile Info</button>
+  </section>
+
+  <!-- USER WALL / COMMENTS -->
+  <section class="comments card">
+    <h2>Your Wall</h2>
+    <textarea id="commentInput" rows="2" placeholder="Leave a note on your wall"></textarea>
+    <button id="postCommentBtn">Post Comment</button>
+    <div id="commentsContainer"></div>
+  </section>
 
   <script type="module" src="profile.js"></script>
 </body>

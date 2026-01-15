@@ -1,5 +1,5 @@
 import { auth, db, storage } from "./firebase.js";
-import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
 // NAV BUTTONS
@@ -43,6 +43,7 @@ postBtn.addEventListener("click", async () => {
       fileURL = await getDownloadURL(storageRef);
     }
 
+    // Correct collection reference
     await addDoc(collection(db, "posts"), {
       text: postText.value || "",
       userId: auth.currentUser.uid,
@@ -87,7 +88,10 @@ postFileInput.addEventListener("change", (e) => {
 async function loadPosts() {
   postsContainer.innerHTML = "";
   try {
-    const postsSnap = await getDocs(collection(db, "posts"));
+    const postsRef = collection(db, "posts"); // <-- fixed
+    const q = query(postsRef, orderBy("createdAt", "desc"));
+    const postsSnap = await getDocs(q);
+
     postsSnap.forEach(docSnap => {
       const post = docSnap.data();
       const postDiv = document.createElement("div");

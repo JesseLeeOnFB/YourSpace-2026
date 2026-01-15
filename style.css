@@ -1,6 +1,4 @@
-/* -------------------
-   Global Body Themes
-------------------- */
+/* --- Body Themes --- */
 body.default { background-color: #fff; color: #000; font-family: Arial, sans-serif; }
 body.dark { background-color: #111; color: #eee; }
 body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
@@ -12,47 +10,35 @@ body.animated { animation: bgPulse 5s infinite alternate; }
   100% { background-color: #f9f; }
 }
 
-/* -------------------
-   Nav Bar
-------------------- */
-.navbar {
-  display: flex;
-  justify-content: space-around;
-  background-color: #222;
-  color: #fff;
-  padding: 10px;
-}
-
-.navbar button {
-  background-color: #555;
-  border: none;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.navbar button:hover {
-  background-color: #777;
-}
-
-/* -------------------
-   Profile Section
-------------------- */
-.profileSection, .customizationSection, .musicPlayerSection, .topFriendsSection, .friendRequestsSection {
-  margin: 20px auto;
-  padding: 15px;
+/* --- General Inputs & Buttons --- */
+input, textarea, select, button {
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  max-width: 600px;
-  background-color: #f9f9f9;
+  font-size: 1rem;
 }
 
-.profilePhotoSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px;
+button {
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* --- Profile Section --- */
+.profileSection {
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  max-width: 600px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .profilePhoto {
@@ -60,96 +46,94 @@ body.animated { animation: bgPulse 5s infinite alternate; }
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
+  display: block;
   margin-bottom: 10px;
-  border: 2px solid #aaa;
 }
 
-.profileInfo input,
-.profileInfo textarea,
-.profileInfo select,
-.addFriendSection input {
+.profileInfo input, .profileInfo textarea {
   width: 100%;
   box-sizing: border-box;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 4px;
+}
+
+/* --- Top Friends Section --- */
+.topFriendsSection {
+  margin-top: 20px;
+}
+
+#topFriendsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#topFriendsList li {
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+/* --- Friend Search Section --- */
+.friendSearchSection {
+  margin: 20px auto;
+  padding: 20px;
   border: 1px solid #ccc;
+  max-width: 600px;
+  background-color: rgba(245, 245, 245, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-button {
-  padding: 8px 14px;
-  margin-top: 8px;
-  cursor: pointer;
-  border-radius: 4px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
+#searchUserInput {
+  width: calc(100% - 100px);
+  margin-right: 10px;
 }
 
-button:hover {
-  background-color: #45a049;
-}
-
-/* -------------------
-   Top Friends Section
-------------------- */
-#topFriendsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.topFriend {
-  background-color: #ddd;
-  padding: 5px 10px;
-  border-radius: 12px;
-}
-
-/* -------------------
-   Friend Requests Section
-------------------- */
-#friendRequestsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.friendRequest {
+.searchResult {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #eee;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
-/* -------------------
-   Feed Section Images
-------------------- */
-.feed img, .feed video {
+.searchResult button {
+  margin-left: 6px;
+  padding: 4px 8px;
+}
+
+/* --- Music Player Section --- */
+.musicPlayerSection {
+  margin-top: 20px;
+}
+
+/* --- Responsive for Mobile --- */
+@media screen and (max-width: 768px) {
+  .profileSection, .friendSearchSection {
+    width: 90%;
+    padding: 15px;
+  }
+
+  #searchUserInput {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .searchResult {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchResult button {
+    margin: 4px 0 0 0;
+  }
+}
+
+/* --- Feed Images & Videos (unchanged) --- */
+.feedPost img, .feedPost video {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-  margin-top: 10px;
-}
-
-/* -------------------
-   Misc
-------------------- */
-.musicPlayerSection iframe {
-  width: 100%;
-  height: 80px;
-  border: none;
-}
-
-@media (max-width: 600px) {
-  .profileSection, .topFriendsSection, .friendRequestsSection {
-    margin: 10px;
-    padding: 10px;
-  }
-
-  .profilePhoto {
-    width: 120px;
-    height: 120px;
-  }
 }

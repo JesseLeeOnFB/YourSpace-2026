@@ -1,213 +1,314 @@
-/* -------------------- General -------------------- */
-body {
-  font-family: Arial, sans-serif;
+/* =======================
+   GLOBAL RESET & BODY
+======================= */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
   background-color: #f0f2f5;
   color: #111;
+  line-height: 1.5;
 }
 
-/* Links */
-a {
-  color: #1877f2;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* -------------------- Navbar -------------------- */
+/* =======================
+   NAVBAR
+======================= */
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  background-color: #4267b2;
   padding: 10px 20px;
+  background-color: #4267B2;
   color: #fff;
+  gap: 15px;
 }
 
 .navbar button {
-  background-color: #fff;
-  color: #4267b2;
+  padding: 8px 15px;
   border: none;
-  padding: 8px 16px;
-  margin-left: 10px;
   border-radius: 5px;
-  cursor: pointer;
+  background-color: #fff;
+  color: #4267B2;
   font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .navbar button:hover {
-  background-color: #e1e1e1;
+  background-color: #e4e6eb;
 }
 
-/* -------------------- Create Post Section -------------------- */
+/* =======================
+   CREATE POST SECTION
+======================= */
 .createPost {
   background-color: #fff;
+  max-width: 600px;
   margin: 20px auto;
-  padding: 15px;
+  padding: 15px 20px;
   border-radius: 10px;
-  max-width: 700px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.createPost textarea {
+.createPost h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+#createPost textarea,
+#createPost input[type="file"] {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
+}
+
+#createPost textarea {
+  padding: 8px;
+  border-radius: 5px;
   border: 1px solid #ccc;
   resize: none;
-  font-size: 14px;
 }
 
-.createPost input[type="file"] {
+#createPost input[type="file"] {
   margin-top: 10px;
 }
 
-#createPostBtn {
-  margin-top: 10px;
-  padding: 8px 16px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4267b2;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#createPostBtn:hover {
-  background-color: #365899;
-}
-
-/* Image/video preview in create post */
-#createPostPreview {
+/* Image Preview */
+#createPost #imagePreview {
   display: block;
   margin-top: 10px;
   max-width: 100%;
-  max-height: 400px;
   border-radius: 8px;
-  object-fit: cover;
 }
 
-/* -------------------- Feed Posts -------------------- */
-.postCard {
-  background-color: #fff;
-  margin: 20px auto;
-  padding: 15px;
-  border-radius: 10px;
-  max-width: 700px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.postCard img, .postCard video {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 8px;
+/* Notifications */
+.createPost .notifications {
   margin-top: 10px;
-}
-
-.postCard .postHeader {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 10px;
+  font-size: 14px;
 }
 
-.postCard .postHeader h4 {
-  margin: 0;
-}
-
-.postCard .postActions {
-  display: flex;
-  justify-content: space-around;
+.createPost button#postBtn {
   margin-top: 10px;
-}
-
-.postCard button {
+  padding: 8px 15px;
   border: none;
-  background-color: transparent;
-  cursor: pointer;
+  border-radius: 5px;
+  background-color: #4267B2;
+  color: #fff;
   font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.postCard button:hover {
-  color: #4267b2;
+.createPost button#postBtn:hover {
+  background-color: #365899;
 }
 
-/* -------------------- Profile Page -------------------- */
-.profileSection {
+/* =======================
+   FEED SECTION
+======================= */
+.feed {
   max-width: 700px;
+  margin: 20px auto;
+}
+
+.feed h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #333;
+}
+
+/* Post Container */
+.post {
+  background-color: #fff;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.post-header img.profilePic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #4267B2;
+}
+
+.post-header .username {
+  font-weight: bold;
+  cursor: pointer;
+  color: #4267B2;
+}
+
+.post-content {
+  margin-bottom: 10px;
+}
+
+.post-content img,
+.post-content video {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.post-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #4267B2;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.post-actions button:hover {
+  color: #365899;
+}
+
+/* =======================
+   PROFILE PAGE
+======================= */
+.profileSection {
+  max-width: 600px;
   margin: 20px auto;
   background-color: #fff;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .profileSection h2 {
-  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-.profilePhoto {
-  width: 160px;
-  height: 160px;
+.profileSection img.profilePhoto {
+  width: 150px;
+  height: 150px;
   object-fit: cover;
   border-radius: 50%;
+  border: 3px solid #4267B2;
+  display: block;
   margin-bottom: 15px;
 }
 
-.profileCard {
-  margin-top: 15px;
-  padding: 15px;
-  background-color: #f7f7f7;
-  border-radius: 10px;
-}
-
-.profileCard label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.profileCard input, .profileCard textarea {
+.profileSection input,
+.profileSection textarea,
+.profileSection select,
+.profileSection button {
   width: 100%;
+  margin-bottom: 10px;
   padding: 8px;
-  margin-top: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-/* Buttons in profile page */
-.profileCard button {
-  margin-top: 10px;
-  padding: 8px 14px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4267b2;
+/* Buttons */
+.profileSection button {
+  background-color: #4267B2;
   color: #fff;
+  font-weight: bold;
   cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
 }
 
-.profileCard button:hover {
+.profileSection button:hover {
   background-color: #365899;
 }
 
-/* -------------------- Responsive -------------------- */
+/* =======================
+   TOP FRIENDS BOX
+======================= */
+.topFriendsBox {
+  margin-top: 15px;
+  background-color: #f7f7f7;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.topFriendsBox h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.topFriendsBox ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.topFriendsBox li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* =======================
+   MUSIC PLAYER
+======================= */
+.musicPlayerSection {
+  margin-top: 15px;
+}
+
+.musicPlayerSection iframe {
+  width: 100%;
+  height: 80px;
+  border: none;
+  border-radius: 8px;
+}
+
+/* =======================
+   THEME CLASSES
+======================= */
+body.default { background-color: #f0f2f5; color: #111; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
+
+@keyframes bgPulse {
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
+}
+
+/* =======================
+   MEDIA QUERIES
+======================= */
 @media screen and (max-width: 768px) {
-  .postCard, .createPost, .profileSection {
-    margin: 15px;
-    padding: 10px;
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .profilePhoto {
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .post-header img.profilePic {
+    width: 40px;
+    height: 40px;
+  }
+
+  .profileSection img.profilePhoto {
     width: 120px;
     height: 120px;
-  }
-
-  .postCard img, .postCard video {
-    max-height: 250px;
   }
 }

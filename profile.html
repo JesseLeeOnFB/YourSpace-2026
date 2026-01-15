@@ -15,60 +15,54 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- PROFILE SECTION -->
-  <section class="profileSection">
-    <h2>My Profile</h2>
+  <main class="profileMain">
 
-    <!-- Profile Picture -->
-    <div class="profilePicContainer">
-      <img id="profilePicPreview" src="" alt="Profile Picture" class="profilePhoto">
-      <input type="file" id="profilePicInput" accept="image/*">
-    </div>
+    <!-- PROFILE PICTURE -->
+    <section class="profileSection">
+      <h2>Your Profile</h2>
+      <img id="profilePhoto" class="profilePhoto" src="default-pfp.png" alt="Profile Photo">
+      <input type="file" id="profilePhotoInput" accept="image/*">
+      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+    </section>
 
-    <!-- Profile Info -->
-    <div class="profileInfo">
-      <label>Username:</label>
-      <input type="text" id="usernameInput" placeholder="Enter username">
+    <!-- BIO, LOCATION, MUSIC -->
+    <section class="profileSection">
+      <h3>Profile Info</h3>
+      <label for="bioInput">Bio:</label>
+      <textarea id="bioInput" rows="3"></textarea>
 
-      <label>Bio:</label>
-      <textarea id="bioInput" placeholder="Tell us about yourself"></textarea>
+      <label for="locationInput">Location:</label>
+      <input type="text" id="locationInput">
 
-      <label>Location:</label>
-      <input type="text" id="locationInput" placeholder="City, Country">
+      <label for="musicInput">Music (YouTube link):</label>
+      <input type="text" id="musicInput">
+      <button id="saveMusicBtn">Save Music</button>
 
-      <label>Favorite Music / Link:</label>
-      <input type="text" id="musicInput" placeholder="YouTube link or other">
-    </div>
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </section>
 
-    <button id="saveProfileBtn">Save Profile Info</button>
-  </section>
+    <!-- TOP FRIENDS -->
+    <section class="profileSection">
+      <h3>Top 10 Friends</h3>
+      <input type="text" id="topFriendsInput" placeholder="Enter friend username">
+      <button id="saveTopFriendsBtn">Save Top Friends</button>
+      <ul id="topFriendsList"></ul>
+    </section>
 
-  <!-- THEME CUSTOMIZATION -->
-  <section class="customizationSection">
-    <h2>Theme / Background</h2>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
-  </section>
+    <!-- SEARCH USERS -->
+    <section class="profileSection">
+      <h3>Search Users</h3>
+      <input type="text" id="searchUserInput" placeholder="Search by username">
+      <button id="searchUserBtn">Search</button>
+      <ul id="searchResults"></ul>
+    </section>
 
-  <!-- TOP FRIENDS -->
-  <section class="topFriendsSection">
-    <h2>Top Friends</h2>
-    <ul id="topFriendsList"></ul>
-    <input type="text" id="addTopFriendInput" placeholder="Add friend's username">
-    <button id="addTopFriendBtn">Add to Top Friends</button>
-  </section>
+  </main>
 
-  <!-- SEARCH USERS -->
-  <section class="searchSection">
-    <h2>Search Users</h2>
-    <input type="text" id="searchUserInput" placeholder="Enter username">
-    <button id="searchUserBtn">Search</button>
-    <div id="searchResults"></div>
+  <!-- MUSIC PLAYER -->
+  <section class="musicPlayerSection">
+    <h3>Music Player</h3>
+    <iframe id="musicPlayer" width="300" height="80" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </section>
 
   <script type="module" src="profile.js"></script>

@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Your Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body class="profilePage">
-
-  <!-- NAV -->
+  <!-- NAV BAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
@@ -18,35 +17,34 @@
 
   <main class="profileContainer">
 
+    <h1>Your Profile</h1>
+
     <!-- PROFILE PHOTO -->
     <section class="profilePhotoSection">
-      <img id="profilePicDisplay" />
-      <input type="file" id="profilePicInput" accept="image/*" />
-      <button id="saveProfilePicBtn">Save Profile Photo</button>
+      <img id="profilePicDisplay" alt="Profile Picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+      <button id="saveProfilePicBtn">Save Profile Picture</button>
     </section>
 
     <!-- PROFILE INFO -->
     <section class="profileInfo">
       <label>Bio</label>
-      <textarea id="bioInput"></textarea>
+      <textarea id="bioInput" rows="3"></textarea>
 
       <label>Location</label>
-      <input type="text" id="locationInput" />
+      <input type="text" id="locationInput">
+
+      <label>Music (YouTube URL)</label>
+      <input type="text" id="musicInput">
 
       <button id="saveProfileBtn">Save Profile</button>
     </section>
 
-    <!-- BACKGROUND CUSTOMIZATION -->
-    <section class="profileBackground">
-      <h2>Profile Background</h2>
-
-      <label>Background Image URL</label>
-      <input type="text" id="bgImageInput" placeholder="https://..." />
-
-      <label>Background Color</label>
-      <input type="color" id="bgColorInput" />
-
-      <button id="saveBackgroundBtn">Save Background</button>
+    <!-- TOP FRIENDS -->
+    <section class="topFriends">
+      <h2>Top 10 Friends</h2>
+      <input type="text" id="topFriendsInput" placeholder="Comma separated usernames">
+      <button id="saveTopFriendsBtn">Save Top Friends</button>
     </section>
 
   </main>

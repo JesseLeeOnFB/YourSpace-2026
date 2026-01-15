@@ -1,57 +1,46 @@
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const auth = getAuth();
 const db = getFirestore();
 
-const emailInput = document.getElementById("signupEmail");
-const passwordInput = document.getElementById("signupPassword");
-const usernameInput = document.getElementById("signupUsername");
-const signupBtn = document.getElementById("signupBtn");
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-signupBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    const username = usernameInput.value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const displayName = document.getElementById("displayName").value.trim();
 
-    if (!email || !password || !username) {
-        alert("Please fill out all fields.");
-        return;
-    }
+  if (!email || !password || !displayName) {
+    alert("All fields are required.");
+    return;
+  }
 
-    if (username.length < 3) {
-        alert("Username must be at least 3 characters.");
-        return;
-    }
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    try {
-        // Create auth user
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+    // Update display name
+    await updateProfile(user, { displayName: displayName });
 
-        // Create Firestore user profile
-        await setDoc(doc(db, "users", user.uid), {
-            uid: user.uid,
-            email: email,
-            username: username,
-            bio: "",
-            location: "",
-            photoURL: "",
-            theme: "default",
-            music: "",
-            friends: [],
-            friendRequests: [],
-            topFriends: [],
-            createdAt: serverTimestamp()
-        });
+    // Create user document in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      displayName,
+      bio: "",
+      location: "",
+      music: "",
+      profilePic: "",
+      topFriends: [],
+      username: displayName.replace(/\s+/g, ''),
+      createdAt: serverTimestamp(),
+      friendRequests: [],
+      friends: []
+    });
 
-        console.log("Account created:", user.uid);
-
-        alert("Account created! Welcome to YourSpace 🎉");
-        window.location.href = "feed.html";
-
-    } catch (error) {
-        console.error("Signup failed:", error);
-        alert("Signup failed: " + error.message);
-    }
+    alert("Account created successfully!");
+    window.location.href = "feed.html";
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Failed to create account. Check console.");
+  }
 });

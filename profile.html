@@ -1,62 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
+<body>
+  <!-- Nav Bar -->
+  <nav class="navbar">
+    <button id="homeBtn">Home</button>
+    <button id="feedBtn">Feed</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<nav class="navbar">
-  <button id="homeBtn">Home</button>
-  <button id="profileBtn">Profile</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <!-- Profile Section -->
+  <section class="profileSection">
+    <h2>Your Profile</h2>
 
-<section class="profileSection">
-  <h2>Profile</h2>
+    <!-- Profile Picture -->
+    <div class="profilePhotoWrapper">
+      <img id="profilePicDisplay" src="" alt="Profile Picture" style="display:none; border-radius:50%; width:150px; height:150px; object-fit:cover;">
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
 
-  <div class="profilePhotoSection">
-    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Picture">
-    <input type="file" id="profilePhotoInput" accept="image/*">
-    <button id="saveProfilePhotoBtn">Save Photo</button>
-  </div>
+    <!-- Profile Info -->
+    <div class="profileInfo">
+      <label>Username</label>
+      <input type="text" id="usernameInput" placeholder="Username">
 
-  <div class="profileInfo">
-    <input type="text" id="usernameInput" placeholder="Username">
-    <input type="text" id="locationInput" placeholder="Location">
-    <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-    <input type="text" id="musicInput" placeholder="Embedded Music URL">
-    <button id="saveProfileInfoBtn">Save Profile</button>
-  </div>
+      <label>Location</label>
+      <input type="text" id="locationInput" placeholder="Location">
 
-  <div class="themeSection">
-    <label for="themeSelect">Select Theme:</label>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
-  </div>
+      <label>Bio</label>
+      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
 
-  <div class="friendsSection">
-    <h3>Friend Requests</h3>
-    <div id="friendRequestsContainer"></div>
+      <label>Music URL</label>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
 
-    <h3>Friends</h3>
-    <div id="friendsContainer"></div>
+      <label>Top Friends (comma separated usernames)</label>
+      <input type="text" id="topFriendsInput" placeholder="Top friends">
+    </div>
 
-    <h3>Top 10 Friends</h3>
-    <div id="topFriendsContainer"></div>
-    <input type="text" id="addTopFriendInput" placeholder="Add Top Friend (username)">
-    <button id="addTopFriendBtn">Add</button>
-  </div>
+    <!-- Theme Selector -->
+    <div class="customizationSection">
+      <label>Theme</label>
+      <select id="themeSelect">
+        <option value="">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+    </div>
 
-</section>
+    <!-- Save Profile Info -->
+    <button id="saveProfileBtn">Save Profile</button>
+  </section>
 
-<script type="module" src="profile.js"></script>
+  <!-- Music Player Section -->
+  <section class="musicPlayerSection">
+    <h3>Music Player</h3>
+    <audio id="musicPlayer" controls style="width:100%;"></audio>
+  </section>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

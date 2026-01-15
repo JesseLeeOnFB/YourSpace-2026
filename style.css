@@ -132,6 +132,7 @@ body.animated {
   100% { background-color: #f9f; }
 }
 
+
 /* Customization section */
 .customizationSection {
   margin: 20px 0;
@@ -145,7 +146,36 @@ body.animated {
   max-width: 800px;
   margin: auto;
 }
+/* ----------------------------
+   Profile Page / Customizations
+---------------------------- */
+body.default { background-color: #fff; color: #000; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
 
+@keyframes bgPulse {
+  0% { background-color: #ff9; }
+  50% { background-color: #9ff; }
+  100% { background-color: #f9f; }
+}
+
+.profilePhoto { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; }
+.profileSection, .customizationSection, .musicPlayerSection { 
+    margin: 20px; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 10px; 
+}
+input, textarea, select, button { 
+    margin: 5px 0; 
+    padding: 5px; 
+    border-radius: 5px; 
+    border: 1px solid #aaa; 
+}
+.friendsSection ul { list-style: none; padding: 0; }
+.friendsSection li { padding: 2px 0; }
+.musicPlayerSection audio { width: 100%; }
 #createPost, .feed div#postsContainer {
   margin-bottom: 20px;
 }

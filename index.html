@@ -9,16 +9,21 @@
 <body class="default">
 
   <div class="login-container">
-    <h1>Login to YourSpace</h1>
+    <h1>YourSpace</h1>
+
     <input type="email" id="loginEmail" placeholder="Email">
     <input type="password" id="loginPassword" placeholder="Password">
+
     <button id="loginBtn">Login</button>
-    <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+
+    <p>No account? <a href="signup.html">Create one</a></p>
   </div>
 
-  <!-- Firebase Config -->
+  <!-- Firebase core -->
   <script type="module" src="firebase.js"></script>
-  <script type="module" src="login.js"></script>
+
+  <!-- Login logic -->
+  <script type="module" src="script.js"></script>
 
 </body>
 </html>

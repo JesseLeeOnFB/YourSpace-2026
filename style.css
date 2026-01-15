@@ -1,265 +1,91 @@
-/* ----------------------------- */
-/* GLOBAL STYLES                 */
-/* ----------------------------- */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f2f5;
-    color: #111;
+/* GENERAL BODY */
+body.default {
+  background-color: #f0f2f5;
+  color: #111;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* ----------------------------- */
-/* NAVIGATION BAR                 */
-/* ----------------------------- */
+/* NAVBAR */
 .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #4267B2;
-    padding: 10px 20px;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  display: flex;
+  justify-content: flex-start;
+  background-color: #4267B2;
+  padding: 10px;
 }
 
 .navbar button {
-    background-color: #fff;
-    color: #4267B2;
-    border: none;
-    padding: 8px 15px;
-    margin: 0 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
+  margin-right: 10px;
+  padding: 8px 12px;
+  background-color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .navbar button:hover {
-    background-color: #e4e6eb;
+  background-color: #ddd;
 }
 
-/* ----------------------------- */
-/* CREATE POST SECTION            */
-/* ----------------------------- */
-.createPost {
-    max-width: 600px;
-    margin: 20px auto;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+/* CREATE POST CARD */
+.createPost.card {
+  background-color: #fff;
+  padding: 15px;
+  margin: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .createPost textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    resize: none;
-    font-size: 14px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-.createPost input[type="file"] {
-    margin-top: 10px;
+.createPost input[type=file] {
+  margin-bottom: 10px;
 }
 
-.createPost button {
-    margin-top: 10px;
-    background-color: #4267B2;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.createPost button:hover {
-    background-color: #365899;
-}
-
-.createPost img,
-.createPost video {
-    margin-top: 10px;
-    max-width: 100%;
-    border-radius: 10px;
-}
-
-/* ----------------------------- */
-/* FEED POSTS                     */
-/* ----------------------------- */
+/* FEED */
 .feed {
-    max-width: 700px;
-    margin: 0 auto 40px auto;
+  padding: 15px;
 }
 
-.post {
-    background-color: #fff;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+.post.card {
+  background-color: #fff;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+.post img.postMedia,
+.post video.postMedia {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
-.post-header img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
+/* POST BUTTONS */
+.postButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.post-header .username {
-    font-weight: bold;
-    cursor: pointer;
-    color: #4267B2;
+.postButtons button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #4267B2;
+  color: #fff;
 }
 
-.post-content img,
-.post-content video {
-    max-width: 100%;
-    margin-top: 10px;
-    border-radius: 10px;
-}
-
-.post-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.post-buttons button {
-    background-color: #e4e6eb;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.post-buttons button:hover {
-    background-color: #d8dadf;
-}
-
-/* ----------------------------- */
-/* PROFILE PAGE                   */
-/* ----------------------------- */
-.profilePage {
-    max-width: 800px;
-    margin: 20px auto;
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-}
-
-.profile-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto 15px auto;
-}
-
-.profile-info {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.profile-info h2 {
-    margin: 5px 0;
-}
-
-.profile-info p {
-    margin: 3px 0;
-    font-size: 14px;
-    color: #555;
-}
-
-.profile-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.profile-buttons button {
-    background-color: #4267B2;
-    color: #fff;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.profile-buttons button:hover {
-    background-color: #365899;
-}
-
-/* Top 10 Friends Box */
-.top-friends {
-    margin-top: 20px;
-    background-color: #f0f2f5;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.top-friends input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-}
-
-/* Music Player Section */
-.music-player {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.music-player input {
-    width: 80%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-/* ----------------------------- */
-/* MISC RESPONSIVE FIXES          */
-/* ----------------------------- */
-img, video {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-button, input, textarea {
-    font-family: inherit;
-}
-
-@media (max-width: 600px) {
-    .navbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .post-header img {
-        width: 40px;
-        height: 40px;
-    }
-
-    .profile-photo {
-        width: 120px;
-        height: 120px;
-    }
+.postButtons button:hover {
+  background-color: #365899;
 }

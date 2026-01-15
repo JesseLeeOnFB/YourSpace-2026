@@ -8,60 +8,62 @@
 </head>
 <body class="default">
 
-  <!-- NAVIGATION -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- PROFILE SECTION -->
+  <!-- PROFILE PHOTO -->
   <section class="profileSection">
-    <h2>Profile</h2>
-    <div class="profilePhotoSection">
-      <img id="profilePhoto" src="default-avatar.png" alt="Profile Photo" class="profilePhoto">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="savePhotoBtn">Save Profile Picture</button>
-    </div>
+    <h2>Your Profile</h2>
+    <img id="profilePhoto" class="profilePhoto" src="" alt="Profile Photo">
+    <input type="file" id="profilePhotoInput" accept="image/*">
+    <button id="saveProfilePhotoBtn">Save Profile Picture</button>
+  </section>
 
+  <!-- PROFILE INFO -->
+  <section class="profileSection">
+    <h3>Profile Info</h3>
     <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="locationInput" placeholder="Location">
       <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
       <input type="text" id="musicInput" placeholder="Embedded Music URL">
-      <button id="saveInfoBtn">Save Profile Info</button>
     </div>
+    <button id="saveProfileInfoBtn">Save Profile Info</button>
   </section>
 
-  <!-- CUSTOMIZATION SECTION -->
+  <!-- TOP 10 FRIENDS -->
+  <section class="friendsSection">
+    <h3>Top 10 Friends</h3>
+    <ul id="friendsList">
+      <!-- Friend items will be injected here -->
+    </ul>
+    <input type="text" id="addFriendInput" placeholder="Add friend by username">
+    <button id="addFriendBtn">Add Friend</button>
+  </section>
+
+  <!-- THEME CUSTOMIZATION -->
   <section class="customizationSection">
-    <h2>Profile Customization</h2>
-    <label for="themeSelect">Choose Theme:</label>
+    <h3>Profile Theme</h3>
     <select id="themeSelect">
       <option value="default">Default</option>
       <option value="dark">Dark</option>
       <option value="neon">Neon</option>
       <option value="animated">Animated</option>
     </select>
+    <textarea id="customHTML" rows="4" placeholder="Custom HTML for background (optional)"></textarea>
     <button id="saveThemeBtn">Save Theme</button>
-
-    <h3>Custom HTML (Optional)</h3>
-    <textarea id="customHtmlInput" rows="5" placeholder="Enter HTML for your profile background, banners, etc."></textarea>
-    <button id="saveHtmlBtn">Save Custom HTML</button>
   </section>
 
-  <!-- MUSIC PLAYER SECTION -->
+  <!-- MUSIC PLAYER -->
   <section class="musicPlayerSection">
-    <h2>Music Player</h2>
-    <div id="musicPlayerContainer"></div>
-  </section>
-
-  <!-- TOP 10 FRIENDS -->
-  <section class="friendsSection">
-    <h2>Top 10 Friends</h2>
-    <ul id="friendsList"></ul>
-    <input type="text" id="addFriendInput" placeholder="Add friend by username">
-    <button id="addFriendBtn">Add Friend</button>
+    <h3>Music Player</h3>
+    <div id="musicPlayerContainer">
+      <!-- Embedded music iframe will appear here -->
+    </div>
   </section>
 
   <script type="module" src="profile.js"></script>

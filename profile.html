@@ -15,14 +15,12 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
+  <!-- PROFILE SECTION -->
   <section class="profileSection">
     <h2>Your Profile</h2>
-    
-    <div class="profilePhotoContainer">
-      <img id="profilePhoto" src="" alt="Profile Photo" class="profilePhoto">
-      <input type="file" id="profilePhotoInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
-    </div>
+    <img id="profilePhoto" src="" alt="Profile Photo">
+    <input type="file" id="profilePhotoInput" accept="image/*">
+    <button id="saveProfilePhotoBtn">Save Profile Photo</button>
 
     <div class="profileInfo">
       <input type="text" id="usernameInput" placeholder="Username">
@@ -32,10 +30,10 @@
       <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
-    <div class="profileTheme">
-      <label>Choose Theme:</label>
+    <div class="themeSection">
+      <label for="themeSelect">Theme:</label>
       <select id="themeSelect">
-        <option value="default">Default</option>
+        <option value="">Default</option>
         <option value="dark">Dark</option>
         <option value="neon">Neon</option>
         <option value="animated">Animated</option>
@@ -46,11 +44,12 @@
     <div class="topFriendsSection">
       <h3>Top 10 Friends</h3>
       <ul id="topFriendsList"></ul>
-      <input type="text" id="addTopFriendInput" placeholder="Username to add">
+      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
       <button id="addTopFriendBtn">Add Friend</button>
     </div>
   </section>
 
+  <!-- SCRIPT IMPORTS -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>
 </body>

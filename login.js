@@ -1,35 +1,32 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth } from './firebase.js'; // make sure path matches your repo
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
+// Keep user logged in and redirect
+auth.onAuthStateChanged(user => {
+    if (user) {
+        window.location.href = 'feed.html'; // redirect logged-in users automatically
+    }
+});
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const loginBtn = document.getElementById('loginBtn');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const loginError = document.getElementById('loginError');
 
-// Login form
-const loginForm = document.getElementById("loginForm");
+loginBtn.addEventListener('click', async () => {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value;
 
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    if (!email || !password) {
+        loginError.textContent = "Please enter both email and password.";
+        return;
+    }
 
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "feed.html";
-  } catch (err) {
-    console.error("Login error:", err);
-    alert("Login failed. Check your email and password.");
-  }
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        // Only redirect after login succeeds
+        window.location.href = 'feed.html';
+    } catch (err) {
+        console.error("Login failed:", err);
+        loginError.textContent = "Login failed: " + err.message;
+    }
 });

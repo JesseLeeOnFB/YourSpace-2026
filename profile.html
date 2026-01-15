@@ -15,39 +15,57 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <section class="profileSection">
-    <h2>Your Profile</h2>
+  <main class="profilePage">
 
-    <div class="profilePhotoSection">
-      <img id="profilePicPreview" src="" alt="Profile Picture" class="profilePhoto">
-      <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Profile Photo</button>
-    </div>
+    <section class="profileSection">
+      <h2>Your Profile</h2>
 
-    <div class="profileInfo">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="locationInput" placeholder="Location">
-      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
-      <input type="text" id="musicInput" placeholder="Music URL">
-      <button id="saveProfileInfoBtn">Save Info</button>
-    </div>
+      <!-- Profile Picture -->
+      <div class="profilePhotoSection">
+        <img id="profilePicPreview" src="" alt="Profile Picture" class="profilePhoto">
+        <input type="file" id="profilePicInput" accept="image/*">
+        <button id="saveProfilePicBtn">Save Profile Photo</button>
+      </div>
 
-    <div class="themeSection">
-      <label for="themeSelect">Theme:</label>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="dark">Dark</option>
-        <option value="neon">Neon</option>
-        <option value="animated">Animated</option>
-      </select>
-      <button id="saveThemeBtn">Save Theme</button>
-    </div>
+      <!-- Profile Info -->
+      <div class="profileInfoSection">
+        <label>Username:
+          <input type="text" id="usernameInput">
+        </label>
+        <label>Location:
+          <input type="text" id="locationInput">
+        </label>
+        <label>Bio:
+          <textarea id="bioInput" rows="3"></textarea>
+        </label>
+        <label>Music URL:
+          <input type="text" id="musicInput" placeholder="YouTube link or similar">
+        </label>
+        <button id="saveProfileInfoBtn">Save Profile Info</button>
+      </div>
 
-    <div class="topFriendsSection">
-      <h3>Top 10 Friends</h3>
-      <div id="topFriendsList"></div>
-    </div>
-  </section>
+      <!-- Theme Selection -->
+      <div class="themeSection">
+        <label>Theme:
+          <select id="themeSelect">
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+            <option value="animated">Animated</option>
+          </select>
+        </label>
+        <button id="saveThemeBtn">Save Theme</button>
+      </div>
+
+      <!-- Top 10 Friends -->
+      <div class="topFriendsSection">
+        <h3>Top 10 Friends</h3>
+        <div id="topFriendsList"></div>
+      </div>
+
+    </section>
+
+  </main>
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>

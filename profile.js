@@ -1,3 +1,4 @@
+alert("PROFILE.JS LOADED");
 import { auth, db, storage } from "./firebase.js";
 import {
   doc, getDoc, setDoc, updateDoc

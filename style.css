@@ -1,208 +1,84 @@
-/* --- GENERAL BODY & FONT --- */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-h2, h3 {
-  margin: 10px 0;
-}
-
-/* --- NAV BAR --- */
-.navbar {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 10px;
-  background-color: #222;
-}
-
-.navbar button {
-  padding: 8px 12px;
-  background-color: #444;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.navbar button:hover {
-  background-color: #666;
-}
-
-/* --- PROFILE PAGE --- */
-.profileSection {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 15px;
-  border-radius: 10px;
-  background-color: #f8f8f8;
-}
-
-.profilePhotoContainer {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.profilePhoto {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #aaa;
-}
-
-.profileInfo input,
-.profileInfo textarea,
-.customizationSection select,
-.profilePhotoContainer input[type="file"],
-.searchUsersSection input,
-.topFriendsSection input {
-  width: 100%;
-  max-width: 400px;
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.profileInfo button,
-.customizationSection button,
-.topFriendsSection button,
-.searchUsersSection button {
-  margin-top: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  background-color: #222;
-  color: #fff;
-  cursor: pointer;
-}
-
-.profileInfo button:hover,
-.customizationSection button:hover,
-.topFriendsSection button:hover,
-.searchUsersSection button:hover {
-  background-color: #555;
-}
-
-/* --- TOP FRIENDS LIST --- */
-#topFriendsList {
-  list-style: none;
-  padding-left: 0;
-}
-
-#topFriendsList li {
-  padding: 5px;
-  border-bottom: 1px solid #ccc;
-}
-
-/* --- SEARCH USERS RESULTS --- */
-#searchResults {
-  list-style: none;
-  padding-left: 0;
-  max-height: 200px;
-  overflow-y: auto;
-  margin-top: 5px;
-}
-
-#searchResults li {
-  padding: 5px;
-  border-bottom: 1px solid #ccc;
-  cursor: pointer;
-}
-
-#searchResults li:hover {
-  background-color: #eee;
-}
-
-/* --- FEED --- */
-.createPost, .feed {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 15px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-}
-
-#createPost textarea {
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 8px;
-}
-
-#createPost button, .feed button {
-  padding: 8px 12px;
-  margin-top: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #222;
-  color: #fff;
-}
-
-#createPost button:hover, .feed button:hover {
-  background-color: #555;
-}
-
-/* --- FEED POSTS --- */
-.feedPost {
-  background-color: #fff;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.feedPost img, .feedPost video {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-/* --- THEMES --- */
-body.default {
-  background-color: #fff;
-  color: #000;
-}
-
-body.dark {
-  background-color: #111;
-  color: #eee;
-}
-
-body.neon {
-  background-color: #000;
-  color: #0f0;
-  text-shadow: 0 0 5px #0f0;
-}
-
-body.animated {
-  animation: bgPulse 5s infinite alternate;
-}
+/* Global */
+body.default { background-color: #fff; color: #000; font-family: Arial, sans-serif; }
+body.dark { background-color: #111; color: #eee; }
+body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+body.animated { animation: bgPulse 5s infinite alternate; }
 
 @keyframes bgPulse {
-  0% { background-color: #ff9; }
-  50% { background-color: #9ff; }
-  100% { background-color: #f9f; }
+    0% { background-color: #ff9; }
+    50% { background-color: #9ff; }
+    100% { background-color: #f9f; }
 }
 
-/* --- MEDIA QUERIES --- */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    gap: 5px;
-  }
+input, textarea, select, button {
+    margin: 5px 0;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
 
-  .profilePhoto {
-    width: 120px;
-    height: 120px;
-  }
+button {
+    cursor: pointer;
+    background-color: #0d6efd;
+    color: #fff;
+    border: none;
+}
 
-  .createPost, .feed, .profileSection {
-    margin: 10px;
+button:hover {
+    background-color: #084298;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    gap: 10px;
     padding: 10px;
-  }
+    background-color: #f0f0f0;
+}
+
+/* Profile */
+.profilePhoto {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #aaa;
+}
+
+.profileSection, .customizationSection, .musicPlayerSection, .friendsSection {
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* Music player iframe */
+.musicPlayerSection iframe {
+    width: 100%;
+    max-width: 300px;
+    height: 80px;
+    margin-top: 10px;
+}
+
+/* Feed images/videos */
+.feedPost img, .feedPost video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* Top friends */
+#topFriendsList li {
+    list-style: none;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profilePhoto { width: 120px; height: 120px; }
+    input, textarea, select, button { font-size: 12px; padding: 6px; }
 }

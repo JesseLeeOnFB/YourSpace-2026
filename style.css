@@ -1,234 +1,86 @@
-/* ---------------------------
-   GLOBAL STYLES
---------------------------- */
+/* =========================
+   GLOBAL
+========================= */
 body {
-  font-family: Arial, Helvetica, sans-serif;
   margin: 0;
-  padding: 0;
-  background-color: #f7f7f7;
-  color: #333;
-}
-
-h2 {
-  margin-top: 0;
+  font-family: Arial, sans-serif;
 }
 
 button {
   cursor: pointer;
-  padding: 8px 12px;
-  margin: 5px 0;
-  border: none;
-  border-radius: 5px;
-  background-color: #4a90e2;
-  color: #fff;
-  font-weight: bold;
 }
 
-button:hover {
-  background-color: #357ABD;
-}
-
-input, textarea, select {
-  padding: 6px 8px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* ---------------------------
-   NAVBAR
---------------------------- */
+/* =========================
+   NAV BAR
+========================= */
 .navbar {
   display: flex;
-  background-color: #333;
-  padding: 10px;
   gap: 10px;
+  padding: 10px;
+  background: #222;
 }
 
 .navbar button {
-  background-color: #555;
+  color: white;
+  background: #444;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
-.navbar button:hover {
-  background-color: #777;
-  color: #fff;
-}
-
-/* ---------------------------
-   CREATE POST SECTION
---------------------------- */
-.createPost {
-  background-color: #fff;
-  margin: 20px auto;
-  padding: 15px;
-  border-radius: 8px;
-  max-width: 600px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-#createPost textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-/* ---------------------------
-   IMAGE PREVIEW
---------------------------- */
-#createPost #imagePreview {
-  max-width: 100%;
-  max-height: 300px;
-  display: block;
-  margin-top: 10px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-/* ---------------------------
-   FEED
---------------------------- */
-.feed {
-  max-width: 600px;
-  margin: 20px auto;
-}
-
-.postCard {
-  background-color: #fff;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.postCard img, .postCard video {
-  max-width: 100%;
-  max-height: 400px;
-  display: block;
-  margin: 10px 0;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-/* Comment section inside post */
-.commentsContainer {
-  margin-top: 10px;
-  padding-top: 5px;
-  border-top: 1px solid #eee;
-}
-
-.comment {
-  margin-bottom: 5px;
-  font-size: 0.9em;
-}
-
-/* Buttons inside post */
-.postButtons {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.postButtons button {
-  background-color: #4a90e2;
-  font-size: 0.9em;
-  padding: 5px 8px;
-}
-
-/* ---------------------------
-   PROFILE PAGE
---------------------------- */
-.profileSection {
-  max-width: 600px;
-  margin: 20px auto;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Profile photo */
+/* =========================
+   PROFILE
+========================= */
 .profilePhoto {
   width: 150px;
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
+  display: block;
   margin-bottom: 10px;
 }
 
-/* Input fields */
-.profileSection input, .profileSection textarea {
-  width: 100%;
-  margin: 5px 0;
-  padding: 6px 8px;
-  border-radius: 5px;
+.profileSection,
+.customizationSection {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
   border: 1px solid #ccc;
-}
-
-/* Profile buttons */
-.profileSection button {
-  margin-top: 10px;
-}
-
-/* Music player */
-.musicPlayerSection {
-  margin-top: 15px;
-}
-
-.musicPlayerSection iframe {
-  width: 100%;
-  height: 80px;
-  border: none;
   border-radius: 8px;
 }
 
-/* Top friends section */
-.topFriendsSection {
-  margin-top: 15px;
+/* =========================
+   FEED MEDIA FIX (CRITICAL)
+========================= */
+#postsContainer img,
+#postsContainer video {
+  width: 100%;
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 10px;
+  display: block;
+  margin: 10px auto;
 }
 
-.topFriendsSection ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+/* MOBILE */
+@media (max-width: 600px) {
+  #postsContainer img,
+  #postsContainer video {
+    max-height: 280px;
+  }
 }
 
-.topFriendsSection li {
-  background-color: #eee;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-/* ---------------------------
+/* =========================
    THEMES
---------------------------- */
-body.default { background-color: #fff; color: #000; }
-body.dark { background-color: #111; color: #eee; }
-body.neon { background-color: #000; color: #0f0; text-shadow: 0 0 5px #0f0; }
+========================= */
+body.default { background: #fff; color: #000; }
+body.dark { background: #111; color: #eee; }
+body.neon { background: #000; color: #0f0; }
 body.animated { animation: bgPulse 5s infinite alternate; }
 
 @keyframes bgPulse {
-  0% { background-color: #ff9; }
-  50% { background-color: #9ff; }
-  100% { background-color: #f9f; }
-}
-
-/* ---------------------------
-   RESPONSIVE
---------------------------- */
-@media screen and (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-  }
-
-  .postCard img, .postCard video {
-    max-height: 250px;
-  }
-
-  .profilePhoto {
-    width: 120px;
-    height: 120px;
-  }
+  0% { background: #ff9; }
+  50% { background: #9ff; }
+  100% { background: #f9f; }
 }

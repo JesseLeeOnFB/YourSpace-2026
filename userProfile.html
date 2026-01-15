@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - User Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <button id="homeBtn">Home</button>
+    <button id="profileBtn">My Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <section class="userProfileSection">
+    <div class="profileHeader">
+      <img id="userProfilePic" src="" alt="Profile Picture" class="profilePhoto">
+      <h2 id="userDisplayName">Anonymous</h2>
+      <button id="addFriendBtn">Add Friend</button>
+    </div>
+
+    <div class="profileDetails">
+      <p><strong>Username:</strong> <span id="userUsername"></span></p>
+      <p><strong>Bio:</strong> <span id="userBio"></span></p>
+      <p><strong>Location:</strong> <span id="userLocation"></span></p>
+      <p><strong>Music:</strong></p>
+      <div id="userMusicPlayer"></div>
+    </div>
+
+    <div class="topFriendsSection">
+      <h3>Top Friends</h3>
+      <ul id="userTopFriendsList"></ul>
+    </div>
+  </section>
+
+  <script type="module" src="userProfile.js"></script>
+</body>
+</html>

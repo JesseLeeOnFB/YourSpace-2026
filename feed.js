@@ -1,119 +1,119 @@
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth, db, storage } from "./firebase.js";
+import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp,
-  query,
-  orderBy,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// NAV BUTTONS
+document.addEventListener("DOMContentLoaded", () => {
+  const homeBtn = document.getElementById("homeBtn");
+  const profileBtn = document.getElementById("profileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-import { app } from "./firebase.js";
+  if (homeBtn) homeBtn.addEventListener("click", () => window.location.href = "feed.html");
+  if (profileBtn) profileBtn.addEventListener("click", () => window.location.href = "profile.html");
+  if (logoutBtn) logoutBtn.addEventListener("click", async () => {
+    try {
+      await auth.signOut();
+      window.location.href = "index.html";
+    } catch (err) {
+      alert("Logout failed: " + err.message);
+    }
+  });
+});
 
-/* -------------------------------------------------- */
-/* INIT */
-/* -------------------------------------------------- */
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* -------------------------------------------------- */
-/* DOM ELEMENTS */
-/* -------------------------------------------------- */
-const postText = document.getElementById("postText");
+// POST CREATION
 const postBtn = document.getElementById("postBtn");
+const postText = document.getElementById("postText");
+const postFileInput = document.getElementById("postFileInput");
+const postError = document.getElementById("postError");
 const postsContainer = document.getElementById("postsContainer");
 
-const homeBtn = document.getElementById("homeBtn");
-const profileBtn = document.getElementById("profileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-/* -------------------------------------------------- */
-/* AUTH GUARD */
-/* -------------------------------------------------- */
-let currentUser = null;
-
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "index.html";
+postBtn.addEventListener("click", async () => {
+  postError.textContent = "";
+  if (!auth.currentUser) {
+    postError.textContent = "You must be logged in to post!";
     return;
   }
 
-  currentUser = user;
-  loadFeed();
-});
-
-/* -------------------------------------------------- */
-/* NAVIGATION */
-/* -------------------------------------------------- */
-homeBtn.addEventListener("click", () => {
-  window.location.href = "feed.html";
-});
-
-profileBtn.addEventListener("click", () => {
-  window.location.href = "profile.html";
-});
-
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-});
-
-/* -------------------------------------------------- */
-/* CREATE POST (TEXT ONLY) */
-/* -------------------------------------------------- */
-postBtn.addEventListener("click", async () => {
-  if (!currentUser) return;
-
-  const text = postText.value.trim();
-  if (!text) return;
-
-  postBtn.disabled = true;
-
   try {
+    let fileURL = null;
+    if (postFileInput.files.length > 0) {
+      const file = postFileInput.files[0];
+      const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      fileURL = await getDownloadURL(storageRef);
+    }
+
     await addDoc(collection(db, "posts"), {
-      userId: currentUser.uid,
-      text,
+      text: postText.value || "",
+      userId: auth.currentUser.uid,
+      postFileURL: fileURL || "",
       createdAt: serverTimestamp()
     });
 
     postText.value = "";
-  } catch (err) {
-    console.error("Post failed:", err);
-    alert("Post failed. Check console.");
-  }
+    postFileInput.value = "";
+    document.getElementById("imagePreview").style.display = "none";
+    document.getElementById("videoPreview").style.display = "none";
+    postError.style.color = "green";
+    postError.textContent = "Post successful ✅";
 
-  postBtn.disabled = false;
+    loadPosts(); // refresh feed
+  } catch (err) {
+    postError.style.color = "red";
+    postError.textContent = "Post failed: " + err.message;
+  }
 });
 
-/* -------------------------------------------------- */
-/* LOAD FEED */
-/* -------------------------------------------------- */
-function loadFeed() {
-  const q = query(
-    collection(db, "posts"),
-    orderBy("createdAt", "desc")
-  );
+// IMAGE/VIDEO PREVIEW
+postFileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  onSnapshot(q, (snapshot) => {
-    postsContainer.innerHTML = "";
+  const imagePreview = document.getElementById("imagePreview");
+  const videoPreview = document.getElementById("videoPreview");
 
-    snapshot.forEach((doc) => {
-      const post = doc.data();
+  if (file.type.startsWith("image/")) {
+    imagePreview.src = URL.createObjectURL(file);
+    imagePreview.style.display = "block";
+    videoPreview.style.display = "none";
+  } else if (file.type.startsWith("video/")) {
+    videoPreview.src = URL.createObjectURL(file);
+    videoPreview.style.display = "block";
+    imagePreview.style.display = "none";
+  }
+});
 
-      const div = document.createElement("div");
-      div.className = "post";
+// LOAD POSTS
+async function loadPosts() {
+  postsContainer.innerHTML = "";
+  try {
+    const postsSnap = await getDocs(collection(db, "posts"));
+    postsSnap.forEach(docSnap => {
+      const post = docSnap.data();
+      const postDiv = document.createElement("div");
+      postDiv.className = "postContainer";
 
-      div.innerHTML = `
-        <p class="post-text">${post.text || ""}</p>
-      `;
+      let contentHTML = `<p><strong>${post.userId}</strong>: ${post.text}</p>`;
+      if (post.postFileURL) {
+        if (post.postFileURL.endsWith(".mp4")) {
+          contentHTML += `<video src="${post.postFileURL}" controls style="max-width:100%; border-radius:8px;"></video>`;
+        } else {
+          contentHTML += `<img src="${post.postFileURL}" style="max-width:100%; border-radius:8px;">`;
+        }
+      }
 
-      postsContainer.appendChild(div);
+      postDiv.innerHTML = contentHTML;
+      postsContainer.appendChild(postDiv);
     });
-  });
+  } catch (err) {
+    postError.style.color = "red";
+    postError.textContent = "Failed to load posts: " + err.message;
+  }
 }
+
+// INITIAL LOAD
+document.addEventListener("DOMContentLoaded", () => {
+  if (auth.currentUser) {
+    loadPosts();
+  }
+});

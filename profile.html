@@ -2,63 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Your Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
+<body>
 
-  <!-- NAVIGATION BAR -->
+  <!-- NAV BAR -->
   <nav class="navbar">
-    <button id="homeBtn">Feed</button>
+    <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profileSection">
+  <main class="profileContainer">
+
     <h1>Your Profile</h1>
 
-    <!-- PROFILE PICTURE -->
-    <div class="profilePhotoSection">
-      <img id="profilePicDisplay" src="" alt="Profile Picture" style="display:none; border-radius:50%; width:150px; height:150px; object-fit:cover;">
+    <!-- PROFILE PHOTO -->
+    <section class="profilePhotoSection">
+      <img id="profilePicDisplay" alt="Profile Picture">
       <input type="file" id="profilePicInput" accept="image/*">
-    </div>
+      <button id="saveProfilePicBtn">Save Profile Picture</button>
+    </section>
 
-    <!-- BIO & LOCATION -->
-    <div class="profileInfoSection">
-      <label for="bio">Bio:</label>
-      <textarea id="bio" rows="3" placeholder="Write your bio here..."></textarea>
+    <!-- PROFILE INFO -->
+    <section class="profileInfo">
+      <label>Bio</label>
+      <textarea id="bioInput" rows="3"></textarea>
 
-      <label for="location">Location:</label>
-      <input type="text" id="location" placeholder="City, State">
+      <label>Location</label>
+      <input type="text" id="locationInput">
 
-      <label for="music">Music Link (YouTube or other):</label>
-      <input type="text" id="music" placeholder="Paste link here">
-
-      <label for="topFriends">Top 10 Friends (usernames comma-separated):</label>
-      <input type="text" id="topFriends" placeholder="DanielleW, JohnD, ...">
+      <label>Music (YouTube URL)</label>
+      <input type="text" id="musicInput">
 
       <button id="saveProfileBtn">Save Profile</button>
-    </div>
+    </section>
 
-    <!-- THEME SELECTION -->
-    <div class="themeSection">
-      <label for="themeSelect">Choose a Theme:</label>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="dark">Dark</option>
-        <option value="neon">Neon</option>
-        <option value="animated">Animated</option>
-      </select>
-      <button id="saveThemeBtn">Save Theme</button>
-    </div>
+    <!-- TOP FRIENDS -->
+    <section class="topFriends">
+      <h2>Top 10 Friends</h2>
+      <input type="text" id="topFriendsInput" placeholder="Comma separated usernames">
+      <button id="saveTopFriendsBtn">Save Top Friends</button>
+    </section>
+
   </main>
-
-  <!-- OPTIONAL MUSIC PLAYER -->
-  <div class="musicPlayerSection">
-    <h2>Music Player</h2>
-    <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:80px;"></iframe>
-  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

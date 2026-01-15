@@ -3,35 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - User Profile</title>
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">My Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+<body class="default">
 
-  <section class="userProfileSection">
-    <div class="profileHeader">
-      <img id="userProfilePic" src="" alt="Profile Picture" class="profilePhoto">
-      <h2 id="userDisplayName">Anonymous</h2>
-      <button id="addFriendBtn">Add Friend</button>
+  <!-- Profile Section -->
+  <section class="profileSection">
+    <img id="profilePic" class="profilePhoto" src="" alt="Profile Picture">
+    <input type="file" id="profilePicInput" accept="image/*">
+    <button id="saveProfilePicBtn">Save Profile Picture</button>
+
+    <div class="profileInfo">
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="locationInput" placeholder="Location">
+      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
+      <button id="saveProfileInfoBtn">Save Profile Info</button>
     </div>
 
-    <div class="profileDetails">
-      <p><strong>Username:</strong> <span id="userUsername"></span></p>
-      <p><strong>Bio:</strong> <span id="userBio"></span></p>
-      <p><strong>Location:</strong> <span id="userLocation"></span></p>
-      <p><strong>Music:</strong></p>
-      <div id="userMusicPlayer"></div>
-    </div>
+    <!-- Theme Selection -->
+    <select id="themeSelect">
+      <option value="">Select Theme</option>
+      <option value="default">Default</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="animated">Animated</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
 
+    <!-- Top 10 Friends -->
     <div class="topFriendsSection">
-      <h3>Top Friends</h3>
-      <ul id="userTopFriendsList"></ul>
+      <h3>Top 10 Friends</h3>
+      <ul id="topFriendsList"></ul>
     </div>
+  </section>
+
+  <!-- Friend Search Section -->
+  <section class="friendSearchSection">
+    <h3>Find Friends</h3>
+    <input type="text" id="searchUserInput" placeholder="Search by username">
+    <button id="searchUserBtn">Search</button>
+    <div id="searchResults"></div>
   </section>
 
   <script type="module" src="userProfile.js"></script>

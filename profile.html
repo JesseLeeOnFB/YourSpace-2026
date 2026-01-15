@@ -8,66 +8,63 @@
 </head>
 <body class="default">
 
-  <!-- NAVIGATION -->
+  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profilePage">
+  <!-- PROFILE SECTION -->
+  <section class="profileSection">
+    <h2>Your Profile</h2>
 
-    <section class="profileSection">
-      <h2>Your Profile</h2>
+    <!-- Profile Picture -->
+    <div class="profilePicContainer">
+      <img id="profilePicDisplay" src="" alt="Profile Picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+      <button id="saveProfilePicBtn">Save Profile Picture</button>
+    </div>
 
-      <!-- Profile Picture -->
-      <div class="profilePhotoSection">
-        <img id="profilePicPreview" src="" alt="Profile Picture" class="profilePhoto">
-        <input type="file" id="profilePicInput" accept="image/*">
-        <button id="saveProfilePicBtn">Save Profile Photo</button>
-      </div>
+    <!-- User Info -->
+    <div class="profileInfo">
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="locationInput" placeholder="Location">
+      <textarea id="bioInput" rows="3" placeholder="Bio"></textarea>
+      <input type="text" id="musicInput" placeholder="Embedded Music URL">
+      <button id="saveProfileInfoBtn">Save Profile Info</button>
+    </div>
 
-      <!-- Profile Info -->
-      <div class="profileInfoSection">
-        <label>Username:
-          <input type="text" id="usernameInput">
-        </label>
-        <label>Location:
-          <input type="text" id="locationInput">
-        </label>
-        <label>Bio:
-          <textarea id="bioInput" rows="3"></textarea>
-        </label>
-        <label>Music URL:
-          <input type="text" id="musicInput" placeholder="YouTube link or similar">
-        </label>
-        <button id="saveProfileInfoBtn">Save Profile Info</button>
-      </div>
+    <!-- Theme Selection -->
+    <div class="customizationSection">
+      <h3>Theme</h3>
+      <select id="themeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="animated">Animated</option>
+      </select>
+      <button id="saveThemeBtn">Save Theme</button>
+    </div>
 
-      <!-- Theme Selection -->
-      <div class="themeSection">
-        <label>Theme:
-          <select id="themeSelect">
-            <option value="default">Default</option>
-            <option value="dark">Dark</option>
-            <option value="neon">Neon</option>
-            <option value="animated">Animated</option>
-          </select>
-        </label>
-        <button id="saveThemeBtn">Save Theme</button>
-      </div>
+    <!-- Top Friends -->
+    <div class="topFriendsSection">
+      <h3>Top 10 Friends</h3>
+      <ul id="topFriendsList"></ul>
+      <input type="text" id="addTopFriendInput" placeholder="Enter username to add">
+      <button id="addTopFriendBtn">Add Top Friend</button>
+    </div>
 
-      <!-- Top 10 Friends -->
-      <div class="topFriendsSection">
-        <h3>Top 10 Friends</h3>
-        <div id="topFriendsList"></div>
-      </div>
+    <!-- Search & Add Friends -->
+    <div class="friendSearchSection">
+      <h3>Search Users</h3>
+      <input type="text" id="searchUserInput" placeholder="Enter username">
+      <button id="searchUserBtn">Search</button>
+      <div id="searchResults"></div>
+    </div>
 
-    </section>
+  </section>
 
-  </main>
-
-  <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>
 </body>
 </html>

@@ -1,56 +1,31 @@
-* {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-}
+body.default { background:#f0f0f0; color:#222; font-family: Arial, sans-serif; margin:0; }
+body.dark { background:#121212; color:#eee; }
+body.light { background:#fff; color:#222; }
+body.neon { background:#0ff; color:#222; }
+body.animated { background:linear-gradient(45deg, #f06, #4a0, #06f); animation:animateBg 10s linear infinite; color:#fff; }
+@keyframes animateBg {0% {background-position:0 0;}100% {background-position:100% 100%;}}
 
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
-  color: #fff;
-}
+.navbar { display:flex; justify-content:space-around; padding:10px; background:#333; color:#fff; }
+.navbar button { padding:10px 20px; cursor:pointer; }
 
-.auth-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+.createPost, .feed, .profile-header, .theme-selector, .music-player, .top-friends, .wall-comments { margin:20px; padding:15px; border-radius:10px; background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
 
-.auth-container {
-  background: #111;
-  padding: 30px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 350px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-}
+textarea, input[type=text], input[type=file], select { width:100%; margin:5px 0; padding:8px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box; }
 
-.auth-container h1 {
-  margin-bottom: 20px;
-}
+button { cursor:pointer; background:#007bff; color:#fff; border:none; padding:8px 12px; border-radius:5px; margin:3px; }
+button:hover { background:#0056b3; }
 
-.auth-container input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  border: none;
-  font-size: 16px;
-}
+.profile-header { display:flex; flex-wrap:wrap; gap:20px; }
+.profile-pic-container img { width:150px; height:150px; border-radius:50%; object-fit:cover; }
+.profile-info input { margin-bottom:5px; }
 
-.auth-container button {
-  width: 100%;
-  padding: 12px;
-  background: #4a6cff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
+.postContainer { border:1px solid #ccc; border-radius:10px; padding:10px; margin-bottom:15px; background:#fafafa; }
+.postContainer img, .postContainer video { max-width:100%; margin-top:10px; border-radius:8px; }
+.postContainer button { margin-right:5px; }
 
-.auth-container button:active {
-  transform: scale(0.98);
+.top-friends div, .wall-comments div { margin:5px 0; padding:5px; border-bottom:1px solid #ddd; }
+
+@media (max-width:600px){
+  .profile-header { flex-direction:column; align-items:center; }
+  .profile-info input { width:100%; }
 }

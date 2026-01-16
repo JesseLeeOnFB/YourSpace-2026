@@ -6,68 +6,53 @@
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
+<body>
 
-  <!-- NAV -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <!-- NAVIGATION -->
+  <nav class="top-nav">
+    <a href="feed.html" class="nav-btn">Feed</a>
+    <a href="profile.html" class="nav-btn">Profile</a>
+    <a href="logout.html" class="nav-btn">Logout</a>
   </nav>
 
   <!-- PROFILE HEADER -->
   <section class="profile-header">
-    <div class="profile-pic-container">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <input type="file" id="profilePicInput" accept="image/*">
-      <button id="saveProfilePicBtn">Save Profile Photo</button>
+    <div class="pfp-container">
+      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+      <input type="file" id="profilePfpInput" accept="image/*">
     </div>
     <div class="profile-info">
-      <input type="text" id="displayName" placeholder="Display Name">
-      <input type="text" id="bio" placeholder="Bio">
-      <input type="text" id="location" placeholder="Location">
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="bioInput" placeholder="Bio">
+      <input type="text" id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
     </div>
   </section>
 
-  <!-- THEME SELECTOR -->
-  <section class="theme-selector">
-    <h3>Choose Theme:</h3>
-    <select id="themeSelect">
-      <option value="">Default</option>
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-      <option value="neon">Neon</option>
-      <option value="animated">Animated</option>
-      <option value="blue">Blue</option>
-      <option value="red">Red</option>
-      <option value="gradient">Gradient</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
+  <!-- TOP FRIENDS -->
+  <section class="top-friends-section">
+    <h3>Top 10 Friends</h3>
+    <div class="top-friends-container">
+      <!-- Friends will appear here -->
+    </div>
+    <input type="text" id="topFriendInput" placeholder="Add friend">
+    <button id="addTopFriendBtn">Add Friend</button>
+  </section>
+
+  <!-- WALL COMMENTS -->
+  <section class="wall-comments">
+    <h3>Wall Comments</h3>
+    <div id="commentContainer"></div>
+    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+    <button id="postWallCommentBtn">Post Comment</button>
   </section>
 
   <!-- MUSIC PLAYER -->
-  <section class="music-player">
-    <h3>Music</h3>
-    <input type="text" id="musicLink" placeholder="YouTube / Spotify / SoundCloud URL">
-    <button id="saveMusicBtn">Save Music</button>
-    <div id="musicContainer"></div>
-  </section>
-
-  <!-- TOP FRIENDS -->
-  <section class="top-friends">
-    <h3>Top Friends</h3>
-    <div id="topFriendsContainer"></div>
-    <input type="text" id="addTopFriendInput" placeholder="Add friend username">
-    <button id="addTopFriendBtn">Add to Top Friends</button>
-  </section>
-
-  <!-- WALL / COMMENTS -->
-  <section class="wall-comments">
-    <h3>Friends Wall</h3>
-    <div id="wallContainer"></div>
-    <textarea id="wallCommentInput" placeholder="Leave a note on the wall"></textarea>
-    <button id="postWallCommentBtn">Post Comment</button>
+  <section class="music-player-section">
+    <h3>Music Player</h3>
+    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
+    <button id="saveMusicBtn">Save & Play</button>
+    <div id="musicPlayerContainer"></div>
   </section>
 
   <script type="module" src="firebase.js"></script>

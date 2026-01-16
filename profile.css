@@ -1,82 +1,94 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f0f2f5;
+  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
 }
 
 .profile-container {
-  width: 90%;
-  max-width: 900px;
-  margin: auto;
+  display: flex;
   padding: 20px;
+  gap: 20px;
 }
 
-.profile-header {
-  display: flex;
-  gap: 20px;
+.profile-left, .profile-right {
+  flex: 1;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-picture-container {
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.profile-picture img {
+.profile-picture-container img {
   width: 150px;
   height: 150px;
-  object-fit: cover;
+  object-fit: cover; /* fits the frame properly */
   border-radius: 50%;
-  border: 2px solid #555;
+  border: 2px solid #ccc;
 }
 
-.profile-picture input {
+.profile-info label {
   display: block;
-  margin-top: 10px;
-}
-
-.profile-picture button {
-  margin-top: 5px;
+  margin: 10px 0;
 }
 
 .profile-info input {
-  display: block;
-  margin-bottom: 10px;
+  width: 100%;
   padding: 5px;
-  width: 250px;
+  margin-top: 2px;
 }
 
-.profile-info button {
-  padding: 5px 10px;
+button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
-.friends-section, .wall-section {
-  margin-top: 30px;
-}
-
-.top-friends-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.top-friends-container .top-friend {
-  background: #e0e0e0;
-  padding: 5px 10px;
-  border-radius: 5px;
+.wall-comments {
+  margin-top: 20px;
 }
 
 .wall-comment {
-  background: #fff;
-  margin-bottom: 10px;
-  padding: 5px 10px;
+  background: #e4e6eb;
+  padding: 8px;
+  margin: 5px 0;
   border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .wall-comment button {
-  margin-left: 10px;
-  padding: 2px 5px;
+  background: red;
+  color: white;
+  border: none;
+  padding: 3px 6px;
+  border-radius: 3px;
 }
 
-#friendPreviewContainer {
+.friends-section, .friend-requests {
+  margin-top: 20px;
+}
+
+#top10FriendsContainer, #allFriendsContainer, #searchPreviewContainer {
   margin-top: 10px;
-  background: #f5f5f5;
-  padding: 5px;
+}
+
+.top-friend, .friend, .search-preview {
+  background: #f0f2f5;
+  padding: 6px;
+  margin: 4px 0;
   border-radius: 5px;
+}
+
+.search-preview {
+  cursor: pointer;
+}
+
+.search-preview:hover {
+  background: #d3d6db;
 }

@@ -1,290 +1,139 @@
-/* GENERAL RESET */
-* {
-  box-sizing: border-box;
+/* GENERAL PAGE */
+body {
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  background: #f2f2f2;
+  color: #111;
 }
 
-/* BODY & MAIN CONTAINER */
-body {
-  background-color: #f2f2f2;
-  color: #222;
-  line-height: 1.5;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.profile-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.container {
+  background: #fff;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 900px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 /* NAVIGATION */
-.top-nav {
+nav#navBar {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  background: #333;
+  padding: 10px 0;
 }
 
-.top-nav button {
-  padding: 10px 20px;
-  background-color: #444;
+.navBtn {
   color: #fff;
+  background: #444;
   border: none;
-  cursor: pointer;
+  margin: 0 5px;
+  padding: 8px 15px;
   border-radius: 5px;
-  transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
-.top-nav button:hover {
-  background-color: #666;
+.navBtn:hover {
+  background: #555;
 }
 
-/* PROFILE SECTION */
-.profile-section {
+/* PROFILE PICTURE */
+#pfpContainer {
   display: flex;
-  gap: 20px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.pfp-container {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
-.pfp-container img {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
+#pfpContainer img {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 3px solid #222;
+  object-fit: cover;
+  border: 2px solid #ccc;
 }
 
-.pfp-container input,
-.pfp-container button {
-  width: 180px;
-  text-align: center;
+/* PROFILE INFO */
+#infoFields label {
+  display: block;
+  margin: 10px 0;
 }
 
-/* INFO CONTAINER */
-.info-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.info-container label {
-  font-weight: bold;
-}
-
-.info-container input,
-.info-container textarea,
-.info-container button {
+#infoFields input, #infoFields textarea {
+  width: 100%;
   padding: 8px;
+  margin-top: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-.info-container textarea {
-  resize: vertical;
-  min-height: 60px;
+/* WALL COMMENTS */
+.commentsContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  background: #f9f9f9;
 }
 
-.info-container button {
-  width: fit-content;
-  background-color: #222;
-  color: #fff;
+.wall-comment {
+  padding: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.wall-comment button {
+  background: #e74c3c;
   border: none;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.info-container button:hover {
-  background-color: #555;
 }
 
 /* TOP 10 FRIENDS */
-.top10-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.friends-container {
+#top10FriendsContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 10px;
 }
 
 .top-friend {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  background-color: #eee;
-  padding: 8px 12px;
-  border-radius: 5px;
+  width: 80px;
 }
 
 .top-friend img {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-/* WALL COMMENTS */
-.wall-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.wall-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #fafafa;
-}
-
-.wall-comment {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #eee;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.wall-comment button {
-  background-color: #c00;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 2px 6px;
-}
-
-.wall-comment button:hover {
-  background-color: #f33;
-}
-
-#wallCommentInput {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-#addWallCommentBtn {
-  width: fit-content;
-  background-color: #222;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-#addWallCommentBtn:hover {
-  background-color: #555;
+/* THEME SECTION */
+#themeSelect {
+  padding: 6px;
+  margin-right: 10px;
 }
 
 /* MUSIC PLAYER */
-.music-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+#musicPlayer {
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
-.music-section input {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+/* TEXTAREAS */
+textarea {
+  resize: none;
 }
 
-#loadMusicBtn {
-  width: fit-content;
-  background-color: #222;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
+/* BUTTONS */
+button {
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-#loadMusicBtn:hover {
-  background-color: #555;
-}
-
-/* THEME SECTION */
-.theme-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.theme-section select,
-.theme-section textarea,
-.theme-section button {
-  padding: 8px;
   border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.theme-section button {
-  width: fit-content;
-  background-color: #222;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.theme-section button:hover {
-  background-color: #555;
-}
-
-/* SCROLLBARS */
-.wall-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.wall-container::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 3px;
-}
-
-.wall-container::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
 }

@@ -3,49 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace Profile</title>
+  <title>YourSpace – Profile</title>
   <link rel="stylesheet" href="profile.css" />
 </head>
 <body>
 
-<nav class="nav">
+<header class="top-nav">
   <button onclick="window.location.href='feed.html'">Feed</button>
   <button id="logoutBtn">Logout</button>
-</nav>
+</header>
 
 <main class="profile-container">
 
-  <!-- PROFILE HEADER -->
-  <section class="profile-header">
+  <!-- PROFILE INFO -->
+  <section class="profile-card">
     <div class="pfp-wrapper">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+      <img id="profilePfp" src="default-avatar.png" />
+      <input type="file" id="profilePfpInput" accept="image/*" />
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
-    <input type="file" id="profilePfpInput" accept="image/*">
-    <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    <div class="profile-fields">
+      <label>Username</label>
+      <input id="usernameInput" />
+
+      <label>Bio</label>
+      <textarea id="bioInput"></textarea>
+
+      <label>Location</label>
+      <input id="locationInput" />
+
+      <button id="saveProfileBtn">Save Profile</button>
+    </div>
   </section>
 
-  <!-- PROFILE INFO -->
-  <section class="profile-info">
-    <input id="usernameInput" placeholder="Username">
-    <input id="locationInput" placeholder="Location">
-    <textarea id="bioInput" placeholder="Bio"></textarea>
-    <button id="saveProfileBtn">Save Profile Info</button>
-  </section>
-
-  <!-- TOP 10 FRIENDS -->
-  <section class="top-friends">
-    <h2>Top 10 Friends</h2>
+  <!-- TOP FRIENDS -->
+  <section class="card">
+    <h3>Top 10 Friends</h3>
     <div id="top10FriendsContainer"></div>
   </section>
 
   <!-- WALL -->
-  <section class="wall">
-    <h2>Wall</h2>
+  <section class="card">
+    <h3>Wall</h3>
     <div id="wallCommentsContainer"></div>
+    <input id="wallCommentInput" placeholder="Write something..." />
+    <button id="addWallCommentBtn">Post</button>
+  </section>
 
-    <textarea id="wallCommentInput" placeholder="Write on your wall..."></textarea>
-    <button id="addWallCommentBtn">Post Comment</button>
+  <!-- MUSIC -->
+  <section class="card">
+    <h3>Music</h3>
+    <input id="musicInput" placeholder="YouTube link" />
+    <button id="saveMusicBtn">Save & Play</button>
+    <div id="musicPlayerContainer"></div>
   </section>
 
 </main>

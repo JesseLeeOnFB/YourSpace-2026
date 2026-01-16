@@ -1,139 +1,86 @@
-/* GENERAL PAGE */
 body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f2f2f2;
-  color: #111;
+  margin:0;
+  font-family: Arial, sans-serif;
+  background-color:#f0f0f0;
 }
 
-.container {
-  background: #fff;
-  margin: 20px auto;
-  padding: 15px;
-  border-radius: 10px;
-  max-width: 900px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* NAVIGATION */
-nav#navBar {
-  display: flex;
-  justify-content: center;
-  background: #333;
-  padding: 10px 0;
+#navBar {
+  display:flex;
+  gap:10px;
+  background:#222;
+  padding:10px;
 }
 
 .navBtn {
-  color: #fff;
-  background: #444;
-  border: none;
-  margin: 0 5px;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+  color:#fff;
+  background:#444;
+  border:none;
+  padding:8px 12px;
+  cursor:pointer;
+  border-radius:4px;
 }
 
 .navBtn:hover {
-  background: #555;
+  background:#666;
 }
 
-/* PROFILE PICTURE */
-#pfpContainer {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+#profileContainer {
+  max-width:900px;
+  margin:20px auto;
+  padding:20px;
+  background:#fff;
+  border-radius:8px;
+  display:grid;
+  gap:20px;
 }
 
-#pfpContainer img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
+#pfpSection {
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-/* PROFILE INFO */
-#infoFields label {
-  display: block;
-  margin: 10px 0;
+#profilePfp {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #000;
 }
 
-#infoFields input, #infoFields textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+#profileInfo input, #profileInfo textarea, #themeSection select, #musicInput, #wallCommentInput {
+  width:100%;
+  padding:6px;
+  margin-bottom:10px;
+  border-radius:4px;
+  border:1px solid #ccc;
 }
 
-/* WALL COMMENTS */
-.commentsContainer {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 5px;
-  background: #f9f9f9;
+#wallCommentsContainer {
+  max-height:200px;
+  overflow-y:auto;
+  border:1px solid #ccc;
+  padding:10px;
+  border-radius:6px;
+  background:#fafafa;
 }
 
 .wall-comment {
-  padding: 5px;
-  margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-}
-
-.wall-comment button {
-  background: #e74c3c;
-  border: none;
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-/* TOP 10 FRIENDS */
-#top10FriendsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  padding:6px;
+  margin-bottom:4px;
+  border-bottom:1px solid #eee;
 }
 
 .top-friend {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 80px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
 }
 
 .top-friend img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* THEME SECTION */
-#themeSelect {
-  padding: 6px;
-  margin-right: 10px;
-}
-
-/* MUSIC PLAYER */
-#musicPlayer {
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-/* TEXTAREAS */
-textarea {
-  resize: none;
-}
-
-/* BUTTONS */
-button {
-  cursor: pointer;
-  border-radius: 5px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
 }

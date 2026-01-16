@@ -1,7 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, getDocs, collection
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
@@ -30,6 +28,7 @@ const saveProfileBtn = document.getElementById("saveProfileBtn");
 const topFriendInput = document.getElementById("topFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 const topFriendsContainer = document.getElementById("topFriendsContainer");
+const friendPreview = document.getElementById("friendPreview");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
@@ -37,35 +36,25 @@ const musicInput = document.getElementById("musicInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 
+document.getElementById("feedBtn").onclick = () => location.href = "feed.html";
+document.getElementById("logoutBtn").onclick = () => signOut(auth).then(() => location.href = "login.html");
+
 let currentUser;
-
-// NAV
-document.getElementById("feedBtn").onclick = () => {
-  window.location.href = "feed.html";
-};
-
-document.getElementById("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-};
 
 // AUTH
 auth.onAuthStateChanged(async user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+  if (!user) return location.href = "login.html";
   currentUser = user;
   loadProfile();
 });
 
 // LOAD PROFILE
 async function loadProfile() {
-  const userRef = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
+  const refDoc = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(refDoc);
 
   if (!snap.exists()) {
-    await setDoc(userRef, {
+    await setDoc(refDoc, {
       username: "",
       bio: "",
       location: "",
@@ -77,16 +66,14 @@ async function loadProfile() {
     return loadProfile();
   }
 
-  const data = snap.data();
-
-  usernameInput.value = data.username || "";
-  bioInput.value = data.bio || "";
-  locationInput.value = data.location || "";
-  profilePfp.src = data.pfpURL || "default-avatar.png";
-
-  renderTopFriends(data.topFriends || []);
-  renderWallComments(data.wallComments || []);
-  if (data.musicURL) renderMusic(data.musicURL);
+  const d = snap.data();
+  usernameInput.value = d.username;
+  bioInput.value = d.bio;
+  locationInput.value = d.location;
+  profilePfp.src = d.pfpURL ? `${d.pfpURL}?v=${Date.now()}` : "default-avatar.png";
+  renderTopFriends(d.topFriends);
+  renderWallComments(d.wallComments);
+  if (d.musicURL) renderMusic(d.musicURL);
 }
 
 // SAVE PROFILE INFO
@@ -96,7 +83,7 @@ saveProfileBtn.onclick = async () => {
     bio: bioInput.value,
     location: locationInput.value
   });
-  alert("Profile info saved");
+  alert("Profile saved");
 };
 
 // SAVE PROFILE PICTURE
@@ -104,139 +91,106 @@ savePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Select an image");
 
-  const storageRef = ref(storage, `pfp/${currentUser.uid}`);
+  const storageRef = ref(storage, `pfp/${currentUser.uid}/${Date.now()}_${file.name}`);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
 
   await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
-  profilePfp.src = url;
+  profilePfp.src = `${url}?v=${Date.now()}`;
 };
 
-// ADD TOP FRIEND (VALIDATED)
+// TOP FRIENDS PREVIEW
 addTopFriendBtn.onclick = async () => {
-  const name = topFriendInput.value.trim();
-  if (!name) return;
+  const username = topFriendInput.value.trim();
+  if (!username) return;
 
-  const usersSnap = await getDocs(collection(db, "users"));
-  let found = null;
-
-  usersSnap.forEach(docSnap => {
-    if (docSnap.data().username === name) {
-      found = { uid: docSnap.id, ...docSnap.data() };
-    }
-  });
-
-  if (!found) return alert("User not found");
-
-  const userRef = doc(db, "users", currentUser.uid);
+  const userRef = doc(db, "users", username);
   const snap = await getDoc(userRef);
-  const friends = snap.data().topFriends || [];
 
-  if (friends.some(f => f.uid === found.uid)) return alert("Already added");
-  if (friends.length >= 10) return alert("Max 10 friends");
+  if (!snap.exists()) return alert("User not found");
 
-  friends.push({
-    username: found.username,
-    uid: found.uid,
-    pfpURL: found.pfpURL || "default-avatar.png"
-  });
+  const d = snap.data();
+  friendPreview.innerHTML = `
+    <img src="${d.pfpURL || 'default-avatar.png'}">
+    <strong>${d.username}</strong>
+    <button id="confirmAdd">Add</button>
+  `;
+  friendPreview.style.display = "flex";
 
-  await updateDoc(userRef, { topFriends: friends });
-  renderTopFriends(friends);
-  topFriendInput.value = "";
+  document.getElementById("confirmAdd").onclick = async () => {
+    const refDoc = doc(db, "users", currentUser.uid);
+    const me = await getDoc(refDoc);
+    const list = me.data().topFriends || [];
+    if (list.length >= 10) return alert("Max 10");
+
+    list.push({ username: d.username, uid: username });
+    await updateDoc(refDoc, { topFriends: list });
+    renderTopFriends(list);
+    friendPreview.style.display = "none";
+    topFriendInput.value = "";
+  };
 };
 
 // RENDER TOP FRIENDS
-function renderTopFriends(friends) {
+function renderTopFriends(list = []) {
   topFriendsContainer.innerHTML = "";
-
-  friends.forEach((f, i) => {
+  list.forEach((f, i) => {
     const div = document.createElement("div");
-    div.className = "top-friend";
-
     div.innerHTML = `
-      <img src="${f.pfpURL}" class="top-friend-pfp">
-      <strong class="friend-name">${f.username}</strong>
+      <strong class="friend">${f.username}</strong>
       <button>Remove</button>
     `;
-
-    div.querySelector(".friend-name").onclick = () => {
-      window.location.href = `profile.html?uid=${f.uid}`;
-    };
-
+    div.querySelector(".friend").onclick = () => location.href = `profile.html?user=${f.uid}`;
     div.querySelector("button").onclick = async () => {
-      friends.splice(i, 1);
-      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
-      renderTopFriends(friends);
+      list.splice(i, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: list });
+      renderTopFriends(list);
     };
-
     topFriendsContainer.appendChild(div);
   });
 }
 
-// WALL COMMENTS
+// WALL
 postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  const userRef = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
+  const refDoc = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(refDoc);
   const comments = snap.data().wallComments || [];
 
-  comments.push({
-    user: currentUser.email.split("@")[0],
-    text
-  });
-
-  await updateDoc(userRef, { wallComments: comments });
+  comments.push({ user: currentUser.email.split("@")[0], text });
+  await updateDoc(refDoc, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
 };
 
-function renderWallComments(comments) {
+function renderWallComments(list = []) {
   commentContainer.innerHTML = "";
-
-  comments.forEach((c, i) => {
+  list.forEach((c, i) => {
     const div = document.createElement("div");
     div.innerHTML = `<strong>${c.user}:</strong> ${c.text} <button>Delete</button>`;
-
     div.querySelector("button").onclick = async () => {
-      comments.splice(i, 1);
-      await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
-      renderWallComments(comments);
+      list.splice(i, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { wallComments: list });
+      renderWallComments(list);
     };
-
     commentContainer.appendChild(div);
   });
 }
 
-// MUSIC PLAYER (YOUTUBE SHORTS FIXED)
+// MUSIC
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
   if (!url) return;
-
   await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
   renderMusic(url);
 };
 
 function renderMusic(url) {
-  musicPlayerContainer.innerHTML = "";
-
-  let videoId = null;
-
-  if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1].split("?")[0];
-  } else if (url.includes("youtube.com")) {
-    videoId = new URL(url).searchParams.get("v");
-  }
-
-  if (videoId) {
+  if (url.includes("youtube")) {
+    const id = url.split("v=")[1]?.split("&")[0];
     musicPlayerContainer.innerHTML = `
-      <iframe width="100%" height="200"
-      src="https://www.youtube.com/embed/${videoId}"
-      allowfullscreen></iframe>`;
-    return;
+      <iframe width="100%" height="200" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
   }
-
-  musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
 }

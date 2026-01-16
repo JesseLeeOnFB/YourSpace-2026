@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed</title>
+  <title>Feed</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- NAVIGATION -->
+  <!-- TOP NAV -->
   <nav class="top-nav">
-    <a href="feed.html" class="nav-btn">Feed</a>
-    <a href="profile.html" class="nav-btn">Profile</a>
-    <a href="logout.html" class="nav-btn">Logout</a>
+    <button onclick="window.location.href='feed.html'">Feed</button>
+    <button onclick="window.location.href='profile.html'">Profile</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- CREATE POST -->
@@ -22,14 +21,13 @@
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- POSTS CONTAINER -->
-  <section id="postsContainer" class="posts-container">
-    <!-- JS will prepend posts here -->
-  </section>
-<button id="logoutBtn">Logout</button>
+  <!-- POSTS -->
+  <section id="postsContainer"></section>
 
-<script type="module" src="firebase.js"></script>
-<script type="module" src="auth-guard.js"></script>
-<script type="module" src="feed.js"></script>
+  <!-- SCRIPTS -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script type="module" src="feed.js"></script>
+
 </body>
 </html>

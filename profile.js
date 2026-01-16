@@ -1,21 +1,25 @@
 import { auth, db, storage } from "./firebase.js";
 import {
-  doc, getDoc, updateDoc, arrayUnion, arrayRemove
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove
 } from "firebase/firestore";
 import {
-  ref, uploadBytes, getDownloadURL
+  ref,
+  uploadBytes,
+  getDownloadURL
 } from "firebase/storage";
-import { signOut } from "firebase/auth";
-
-/* DOM */
-const profilePfp = document.getElementById("profilePfp");
-const profilePfpInput = document.getElementById("profilePfpInput");
-const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+const profilePfp = document.getElementById("profilePfp");
+const profilePfpInput = document.getElementById("profilePfpInput");
+const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
 const wallCommentsContainer = document.getElementById("wallCommentsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
@@ -23,130 +27,112 @@ const addWallCommentBtn = document.getElementById("addWallCommentBtn");
 
 const top10FriendsContainer = document.getElementById("top10FriendsContainer");
 
-const musicInput = document.getElementById("musicInput");
-const saveMusicBtn = document.getElementById("saveMusicBtn");
-const musicPlayerContainer = document.getElementById("musicPlayerContainer");
+let currentUserRef = null;
+let currentUserData = null;
 
-document.getElementById("logoutBtn").onclick = () => signOut(auth);
-
-/* LOAD PROFILE */
-async function loadProfile() {
-  const user = auth.currentUser;
+auth.onAuthStateChanged(async (user) => {
   if (!user) return;
 
-  const refDoc = doc(db, "users", user.uid);
-  const snap = await getDoc(refDoc);
+  currentUserRef = doc(db, "users", user.uid);
+  await loadProfile();
+});
+
+async function loadProfile() {
+  const snap = await getDoc(currentUserRef);
   if (!snap.exists()) return;
 
-  const data = snap.data();
+  currentUserData = snap.data();
 
-  usernameInput.value = data.username || "";
-  bioInput.value = data.bio || "";
-  locationInput.value = data.location || "";
-  if (data.pfpURL) profilePfp.src = data.pfpURL;
+  usernameInput.value = currentUserData.username || "";
+  bioInput.value = currentUserData.bio || "";
+  locationInput.value = currentUserData.location || "";
 
-  renderWall(data.wallComments || []);
-  renderTopFriends(data.top10Friends || []);
-  if (data.musicURL) renderMusic(data.musicURL);
+  if (currentUserData.pfpURL) {
+    profilePfp.src = currentUserData.pfpURL;
+  }
+
+  loadWallComments();
+  loadTopFriends();
 }
 
-/* SAVE PROFILE INFO */
+function loadWallComments() {
+  wallCommentsContainer.innerHTML = "";
+
+  const comments = currentUserData.wallComments || [];
+  comments.forEach((comment) => {
+    const div = document.createElement("div");
+    div.className = "wall-comment";
+
+    div.innerHTML = `
+      <strong>${comment.username}</strong>: ${comment.text}
+      ${comment.userId === auth.currentUser.uid ? `<button>Delete</button>` : ""}
+    `;
+
+    if (comment.userId === auth.currentUser.uid) {
+      div.querySelector("button").onclick = async () => {
+        await updateDoc(currentUserRef, {
+          wallComments: arrayRemove(comment)
+        });
+        await loadProfile();
+      };
+    }
+
+    wallCommentsContainer.appendChild(div);
+  });
+}
+
+function loadTopFriends() {
+  top10FriendsContainer.innerHTML = "";
+
+  const friends = currentUserData.top10Friends || [];
+  friends.forEach((friend) => {
+    const div = document.createElement("div");
+    div.className = "top-friend";
+    div.textContent = friend.username;
+    top10FriendsContainer.appendChild(div);
+  });
+}
+
 saveProfileBtn.onclick = async () => {
-  const user = auth.currentUser;
-  await updateDoc(doc(db, "users", user.uid), {
+  await updateDoc(currentUserRef, {
     username: usernameInput.value,
     bio: bioInput.value,
     location: locationInput.value
   });
-  alert("Profile saved");
+  alert("Profile updated");
 };
 
-/* SAVE PROFILE PICTURE */
 saveProfilePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
-  if (!file) return alert("Select an image");
+  if (!file) return alert("Select a picture first");
 
-  const user = auth.currentUser;
-  const storageRef = ref(storage, `profileImages/${user.uid}/pfp.jpg`);
+  const storageRef = ref(
+    storage,
+    `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`
+  );
 
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
 
-  await updateDoc(doc(db, "users", user.uid), { pfpURL: url });
+  await updateDoc(currentUserRef, { pfpURL: url });
   profilePfp.src = url;
 };
-
-/* WALL */
-function renderWall(comments) {
-  wallCommentsContainer.innerHTML = "";
-  comments.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "wall-comment";
-    div.innerHTML = `
-      <strong>${c.username}</strong>: ${c.text}
-      ${c.uid === auth.currentUser.uid ? "<button>Delete</button>" : ""}
-    `;
-    if (c.uid === auth.currentUser.uid) {
-      div.querySelector("button").onclick = async () => {
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
-          wallComments: arrayRemove(c)
-        });
-        loadProfile();
-      };
-    }
-    wallCommentsContainer.appendChild(div);
-  });
-}
 
 addWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  const user = auth.currentUser;
-  await updateDoc(doc(db, "users", user.uid), {
-    wallComments: arrayUnion({
-      uid: user.uid,
-      username: usernameInput.value,
-      text,
-      time: Date.now()
-    })
+  const comment = {
+    text,
+    userId: auth.currentUser.uid,
+    username: currentUserData.username || "Unknown",
+    timestamp: Date.now()
+  };
+
+  await updateDoc(currentUserRef, {
+    wallComments: arrayUnion(comment)
   });
 
   wallCommentInput.value = "";
-  loadProfile();
+  await loadProfile();
 };
-
-/* TOP FRIENDS (DISPLAY ONLY FOR NOW) */
-function renderTopFriends(friends) {
-  top10FriendsContainer.innerHTML = "";
-  friends.forEach((f, i) => {
-    const div = document.createElement("div");
-    div.textContent = `${i + 1}. ${f.username}`;
-    top10FriendsContainer.appendChild(div);
-  });
-}
-
-/* MUSIC */
-saveMusicBtn.onclick = async () => {
-  const url = musicInput.value.trim();
-  if (!url) return;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), { musicURL: url });
-  renderMusic(url);
-};
-
-function renderMusic(url) {
-  const id = url.includes("youtu")
-    ? url.split("v=")[1]?.split("&")[0] || url.split("/").pop()
-    : null;
-
-  musicPlayerContainer.innerHTML = id
-    ? `<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`
-    : "";
-}
-
-/* INIT */
-auth.onAuthStateChanged(user => {
-  if (!user) location.href = "login.html";
-  else loadProfile();
-});

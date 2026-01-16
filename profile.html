@@ -15,6 +15,7 @@
   </header>
 
   <main class="profile-container">
+    <!-- PROFILE INFO -->
     <section class="profile-info">
       <div class="pfp-container">
         <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
@@ -32,14 +33,15 @@
       </div>
     </section>
 
+    <!-- TOP FRIENDS -->
     <section class="top-friends-section">
-      <h3>Top Friends</h3>
-      <div id="topFriendsContainer"></div>
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer" class="top-friends-container"></div>
       <input type="text" id="topFriendInput" placeholder="Search user to add">
-      <button id="addTopFriendBtn">Search & Add</button>
-      <div id="friendSearchResults"></div>
+      <button id="addTopFriendBtn">Add Friend</button>
     </section>
 
+    <!-- WALL COMMENTS -->
     <section class="wall-comments-section">
       <h3>Wall Comments</h3>
       <div id="commentContainer" class="comment-container"></div>
@@ -47,14 +49,14 @@
       <button id="postWallCommentBtn">Post Comment</button>
     </section>
 
+    <!-- MUSIC PLAYER -->
     <section class="music-section">
       <h3>Music</h3>
       <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">
       <button id="saveMusicBtn">Save & Play</button>
-      <div id="musicPlayerContainer"></div>
+      <div id="musicPlayerContainer" class="music-player-container"></div>
     </section>
   </main>
-
-  <script type="module" src="profile.js"></script>
 </body>
+<script type="module" src="profile.js"></script>
 </html>

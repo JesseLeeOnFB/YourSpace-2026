@@ -5,54 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace - Profile</title>
   <link rel="stylesheet" href="profile.css">
+  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
-  <nav>
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
+  <nav class="navbar">
+    <button id="feedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <main class="profile-container">
     <section class="profile-info">
-      <div class="profile-picture-container">
+      <div class="pfp-container">
         <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePfpInput" accept="image/*">
-        <button id="saveProfilePfpBtn">Save Profile Picture</button>
       </div>
-      <div class="profile-fields">
-        <label>Username</label>
-        <input id="usernameInput" type="text" placeholder="Username">
-        <label>Bio</label>
-        <textarea id="bioInput" placeholder="Tell us about yourself"></textarea>
-        <label>Location</label>
-        <input id="locationInput" type="text" placeholder="Location">
-        <button id="saveProfileBtn">Save Profile Info</button>
-      </div>
+      <input type="file" id="profilePfpInput">
+      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="bioInput" placeholder="Bio">
+      <input type="text" id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
     </section>
 
-    <section class="top-friends-section">
-      <h2>Top Friends</h2>
-      <div class="top-friends-container"></div>
-      <input id="topFriendInput" type="text" placeholder="Add a friend">
-      <button id="addTopFriendBtn">Add Friend</button>
-    </section>
-
-    <section class="wall-section">
+    <section class="wall-comments">
       <h2>Wall Comments</h2>
-      <div id="commentContainer" class="wall-comments"></div>
-      <input id="wallCommentInput" type="text" placeholder="Write a comment">
+      <div id="commentContainer" class="comment-container"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
       <button id="postWallCommentBtn">Post Comment</button>
     </section>
-
-    <section class="music-section">
-      <h2>Music Player</h2>
-      <input id="musicInput" type="text" placeholder="Paste YouTube/SoundCloud/Spotify URL">
-      <button id="saveMusicBtn">Save & Play</button>
-      <div id="musicPlayerContainer"></div>
-    </section>
   </main>
-
-  <script type="module" src="profile.js"></script>
 </body>
 </html>

@@ -2,52 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
-  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>YourSpace Profile</h1>
-    <nav>
-      <button id="navFeed">Feed</button>
-      <button id="navProfile">Profile</button>
-      <button id="navMessages">Messages</button>
-      <button id="navNotifications">Notifications</button>
-    </nav>
-  </header>
 
-  <main>
-    <section class="profile-info">
-      <div class="profile-pfp-container">
-        <img id="profilePfp" alt="Profile Picture">
+  <!-- NAVIGATION -->
+  <nav>
+    <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
+    <button id="messagesBtn">Messages</button>
+    <button id="notificationsBtn">Notifications</button>
+  </nav>
+
+  <!-- MAIN PROFILE CONTAINER -->
+  <div class="profile-container">
+
+    <!-- PROFILE INFO -->
+    <div class="profile-info">
+      <img id="profilePfp" src="default-pfp.png" alt="Profile Picture">
+      <div class="profile-fields">
+        <input type="text" id="usernameInput" placeholder="Username">
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input type="text" id="locationInput" placeholder="Location">
         <input type="file" id="profilePfpInput">
+        <button id="saveProfileBtn">Save Profile Info</button>
         <button id="saveProfilePfpBtn">Save Profile Picture</button>
       </div>
-      <div class="profile-fields">
-        <label>Username: <input type="text" id="usernameInput"></label>
-        <label>Bio: <input type="text" id="bioInput"></label>
-        <label>Location: <input type="text" id="locationInput"></label>
-        <button id="saveProfileBtn">Save Profile Info</button>
-      </div>
-    </section>
+    </div>
 
-    <section class="top10-friends-section">
-      <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer"></div>
-      <button id="editTop10Btn">Edit Top 10</button>
-    </section>
-
-    <section class="comment-wall">
-      <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-      <button id="addWallCommentBtn">Post Comment</button>
-    </section>
-
-    <section class="themes">
-      <h2>Profile Themes</h2>
-      <select id="themesDropdown">
+    <!-- THEMES -->
+    <div class="theme-section">
+      <label for="themeSelect">Choose Theme:</label>
+      <select id="themeSelect">
         <option value="default">Default</option>
         <option value="red">Red</option>
         <option value="blue">Blue</option>
@@ -55,14 +43,34 @@
         <option value="black-neon">Black Neon</option>
         <option value="animated">Animated Gradient</option>
       </select>
-    </section>
+      <button id="saveThemeBtn">Apply Theme</button>
+    </div>
 
-    <section class="music-player">
-      <h2>Music Player</h2>
-      <div id="musicPlayerContainer"></div>
-      <input type="text" id="musicUrlInput" placeholder="Enter YouTube/SoundCloud/Pandora/Spotify URL">
-      <button id="loadMusicBtn">Load Music</button>
-    </section>
-  </main>
+    <!-- COMMENT WALL -->
+    <div class="comment-wall-container">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <div class="comment-input-section">
+        <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+        <button id="addWallCommentBtn">Post</button>
+      </div>
+    </div>
+
+    <!-- TOP 10 FRIENDS -->
+    <div class="top10-friends-container" id="top10FriendsContainer">
+      <h3>Top 10 Friends</h3>
+      <!-- JS will populate top friend cards here -->
+    </div>
+
+    <!-- MUSIC PLAYER -->
+    <div class="music-player-container" id="musicPlayerContainer">
+      <iframe id="musicPlayer" src="" allow="autoplay"></iframe>
+    </div>
+
+  </div>
+
+  <!-- PROFILE.JS -->
+  <script type="module" src="profile.js"></script>
+
 </body>
 </html>

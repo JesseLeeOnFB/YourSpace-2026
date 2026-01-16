@@ -1,76 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-  <!-- NAVIGATION -->
-  <nav>
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="messagesBtn">Messages</button>
-    <button id="notificationsBtn">Notifications</button>
-  </nav>
+<!-- NAVIGATION -->
+<nav class="top-nav">
+  <button id="navFeed">Feed</button>
+  <button id="navProfile">Profile</button>
+  <button id="navNotifications">Notifications</button>
+  <button id="navMessages">Messages</button>
+</nav>
 
-  <!-- MAIN PROFILE CONTAINER -->
-  <div class="profile-container">
+<!-- MAIN CONTAINER -->
+<div class="profile-container">
 
-    <!-- PROFILE INFO -->
-    <div class="profile-info">
-      <img id="profilePfp" src="default-pfp.png" alt="Profile Picture">
-      <div class="profile-fields">
-        <input type="text" id="usernameInput" placeholder="Username">
-        <textarea id="bioInput" placeholder="Bio"></textarea>
-        <input type="text" id="locationInput" placeholder="Location">
-        <input type="file" id="profilePfpInput">
-        <button id="saveProfileBtn">Save Profile Info</button>
-        <button id="saveProfilePfpBtn">Save Profile Picture</button>
-      </div>
+  <!-- PROFILE SECTION -->
+  <section class="profile-section">
+    <div class="pfp-container">
+      <img id="profilePfp" src="placeholder.png" alt="Profile Picture">
+      <input type="file" id="profilePfpInput" accept="image/*">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
-    <!-- THEMES -->
-    <div class="theme-section">
-      <label for="themeSelect">Choose Theme:</label>
-      <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-        <option value="black-neon">Black Neon</option>
-        <option value="animated">Animated Gradient</option>
-      </select>
-      <button id="saveThemeBtn">Apply Theme</button>
+    <div class="info-container">
+      <label>Username:</label>
+      <input type="text" id="usernameInput" placeholder="Username">
+
+      <label>Bio:</label>
+      <textarea id="bioInput" placeholder="Write something about yourself..."></textarea>
+
+      <label>Location:</label>
+      <input type="text" id="locationInput" placeholder="Location">
+
+      <button id="saveProfileBtn">Save Profile Info</button>
     </div>
+  </section>
 
-    <!-- COMMENT WALL -->
-    <div class="comment-wall-container">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <div class="comment-input-section">
-        <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-        <button id="addWallCommentBtn">Post</button>
-      </div>
-    </div>
+  <!-- TOP 10 FRIENDS -->
+  <section class="top10-section">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer" class="friends-container"></div>
+    <button id="editTop10Btn">Edit Top 10 Friends</button>
+  </section>
 
-    <!-- TOP 10 FRIENDS -->
-    <div class="top10-friends-container" id="top10FriendsContainer">
-      <h3>Top 10 Friends</h3>
-      <!-- JS will populate top friend cards here -->
-    </div>
+  <!-- WALL COMMENTS -->
+  <section class="wall-section">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer" class="wall-container"></div>
+    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+    <button id="addWallCommentBtn">Post Comment</button>
+  </section>
 
-    <!-- MUSIC PLAYER -->
-    <div class="music-player-container" id="musicPlayerContainer">
-      <iframe id="musicPlayer" src="" allow="autoplay"></iframe>
-    </div>
+  <!-- MUSIC PLAYER -->
+  <section class="music-section">
+    <h3>Music Player</h3>
+    <input type="text" id="musicLinkInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
+    <button id="loadMusicBtn">Load Music</button>
+    <div id="musicPlayerContainer"></div>
+  </section>
 
-  </div>
+  <!-- THEME / CUSTOM HTML -->
+  <section class="theme-section">
+    <h3>Theme & Custom HTML</h3>
+    <select id="themeSelector">
+      <option value="default">Default</option>
+      <option value="red">Red</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+      <option value="gradient">Gradient</option>
+      <option value="neon">Neon</option>
+      <option value="animated">Animated</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
 
-  <!-- PROFILE.JS -->
-  <script type="module" src="profile.js"></script>
+    <label>Custom HTML Background:</label>
+    <textarea id="customHtmlInput" placeholder="Paste HTML code here..."></textarea>
+    <button id="saveCustomHtmlBtn">Save Custom HTML</button>
+  </section>
 
+</div>
+
+<script src="profile.js"></script>
 </body>
 </html>

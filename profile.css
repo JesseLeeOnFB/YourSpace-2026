@@ -1,172 +1,84 @@
-/* Reset and basic layout */
-body, html {
+body {
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f2f5;
-}
-
-nav {
-  display: flex;
-  justify-content: space-around;
-  background-color: #3b5998;
-  padding: 10px;
-}
-
-nav button {
-  color: white;
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-nav button:hover {
-  color: #ddd;
-}
-
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  gap: 30px;
-}
-
-/* Profile info */
-.profile-info {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.profile-picture-container {
-  flex: 1 1 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.profile-picture-container img {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #3b5998;
+.navbar {
+  width: 100%;
+  background-color: #333;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-.profile-picture-container input,
-.profile-picture-container button {
-  margin-top: 10px;
+.navbar button {
+  color: white;
+  background-color: #555;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
-/* Profile fields */
-.profile-fields {
-  flex: 2 1 400px;
+.navbar button:hover {
+  background-color: #777;
+}
+
+.profile-container {
+  width: 90%;
+  max-width: 600px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-info {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.profile-fields input, .profile-fields textarea {
-  width: 100%;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.profile-fields button {
+.pfp-container {
   width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid #333;
+}
+
+.pfp-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ensures image fills container */
+}
+
+input[type="text"], input[type="file"] {
+  padding: 8px;
+  font-size: 16px;
+  width: 100%;
+}
+
+button {
   padding: 10px;
-  background: #3b5998;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
-}
-
-.profile-fields button:hover {
-  background: #2d4373;
-}
-
-/* Top friends */
-.top-friends-section {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.top-friends-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.top-friends-container div {
-  background: #3b5998;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-/* Wall section */
-.wall-section {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .wall-comments {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 10px;
+  gap: 10px;
 }
 
-/* Music section */
-.music-section {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.music-section input {
-  width: 80%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+.comment-container {
   border: 1px solid #ccc;
-}
-
-.music-section button {
-  padding: 10px 15px;
-  background: #3b5998;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.music-section button:hover {
-  background: #2d4373;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .profile-info {
-    flex-direction: column;
-    align-items: center;
-  }
-  .profile-fields {
-    width: 100%;
-  }
+  padding: 10px;
+  min-height: 80px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
 }

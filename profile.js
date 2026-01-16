@@ -1,26 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
+// PROFILE.JS
+import { auth, db, storage } from './firebase.js';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
-
-// Init Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
-
-// DOM Elements
+// DOM elements
 const usernameInput = document.getElementById('usernameInput');
 const bioInput = document.getElementById('bioInput');
 const locationInput = document.getElementById('locationInput');
@@ -35,14 +18,12 @@ const wallCommentInput = document.getElementById('wallCommentInput');
 const addWallCommentBtn = document.getElementById('addWallCommentBtn');
 
 const top10FriendsContainer = document.getElementById('top10FriendsContainer');
-const addFriendInput = document.getElementById('addFriendInput');
-const addFriendPreview = document.getElementById('addFriendPreview');
+const searchUserInput = document.getElementById('searchUserInput');
+const searchUserResults = document.getElementById('searchUserResults');
 
-const musicInput = document.getElementById('musicInput');
-const savePlayMusicBtn = document.getElementById('savePlayMusicBtn');
-const musicPlayerContainer = document.getElementById('musicPlayerContainer');
-
-// --- PROFILE LOADING ---
+// -----------------------
+// LOAD PROFILE
+// -----------------------
 async function loadProfile() {
   const user = auth.currentUser;
   if (!user) return;
@@ -57,39 +38,64 @@ async function loadProfile() {
   locationInput.value = data.location || '';
   if (data.pfpURL) profilePfp.src = data.pfpURL;
 
-  // Wall Comments
+  // -----------------------
+  // Load Wall Comments
+  // -----------------------
   wallCommentsContainer.innerHTML = '';
-  if (data.wallComments?.length) {
-    data.wallComments.forEach(comment => {
-      const div = document.createElement('div');
-      div.className = 'wall-comment';
-      div.innerHTML = `<strong>${comment.username}</strong>: ${comment.text} ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}`;
-      if (comment.userId === user.uid) {
-        div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
-          await updateDoc(userDocRef, { wallComments: arrayRemove(comment) });
-          loadProfile();
+  const comments = data.wallComments || [];
+  for (const comment of comments) {
+    let commentUsername = comment.username;
+    if (!commentUsername && comment.userId) {
+      // Fetch username from Firestore if missing
+      const commentUserDoc = await getDoc(doc(db, 'users', comment.userId));
+      commentUsername = commentUserDoc.exists() ? commentUserDoc.data().username : 'Unknown';
+    }
+
+    const div = document.createElement('div');
+    div.className = 'wall-comment';
+    div.innerHTML = `
+      <strong>${commentUsername}</strong>: ${comment.text}
+      ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
+    `;
+
+    if (comment.userId === user.uid) {
+      div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
+        await updateDoc(userDocRef, {
+          wallComments: arrayRemove(comment)
         });
-      }
-      wallCommentsContainer.appendChild(div);
-    });
+        loadProfile();
+      });
+    }
+
+    wallCommentsContainer.appendChild(div);
   }
 
-  // Top 10 Friends
+  // -----------------------
+  // Load Top 10 Friends
+  // -----------------------
   top10FriendsContainer.innerHTML = '';
-  if (data.top10Friends?.length) {
-    data.top10Friends.forEach(friend => {
-      const div = document.createElement('div');
-      div.className = 'top-friend';
-      div.innerHTML = `<span>${friend.username}</span>`;
-      top10FriendsContainer.appendChild(div);
+  const friends = data.top10Friends || [];
+  friends.forEach(friend => {
+    const div = document.createElement('div');
+    div.className = 'top-friend';
+    div.innerHTML = `
+      <img src="${friend.pfpURL || 'default-pfp.png'}" class="top-friend-pfp" />
+      <span class="top-friend-username">${friend.username}</span>
+    `;
+    div.querySelector('.top-friend-username').addEventListener('click', () => {
+      window.location.href = `/profile.html?user=${encodeURIComponent(friend.username)}`;
     });
-  }
+    top10FriendsContainer.appendChild(div);
+  });
 }
 
-// --- SAVE PROFILE INFO ---
+// -----------------------
+// SAVE PROFILE INFO
+// -----------------------
 saveProfileBtn.addEventListener('click', async () => {
   const user = auth.currentUser;
   if (!user) return;
+
   const userDocRef = doc(db, 'users', user.uid);
   try {
     await updateDoc(userDocRef, {
@@ -98,14 +104,15 @@ saveProfileBtn.addEventListener('click', async () => {
       location: locationInput.value
     });
     alert('Profile info updated!');
-    loadProfile();
   } catch (err) {
     console.error(err);
     alert('Failed to update profile info');
   }
 });
 
-// --- SAVE PROFILE PICTURE ---
+// -----------------------
+// SAVE PROFILE PICTURE
+// -----------------------
 saveProfilePfpBtn.addEventListener('click', async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert('Please select a picture first');
@@ -127,10 +134,13 @@ saveProfilePfpBtn.addEventListener('click', async () => {
   }
 });
 
-// --- WALL COMMENTS ---
+// -----------------------
+// ADD WALL COMMENT
+// -----------------------
 addWallCommentBtn.addEventListener('click', async () => {
   const user = auth.currentUser;
   if (!user) return;
+
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
@@ -143,7 +153,9 @@ addWallCommentBtn.addEventListener('click', async () => {
 
   const userDocRef = doc(db, 'users', user.uid);
   try {
-    await updateDoc(userDocRef, { wallComments: arrayUnion(comment) });
+    await updateDoc(userDocRef, {
+      wallComments: arrayUnion(comment)
+    });
     wallCommentInput.value = '';
     loadProfile();
   } catch (err) {
@@ -152,53 +164,56 @@ addWallCommentBtn.addEventListener('click', async () => {
   }
 });
 
-// --- MUSIC PLAYER ---
-savePlayMusicBtn.addEventListener('click', () => {
-  const url = musicInput.value.trim();
-  if (!url) return alert('Please enter a URL');
-
-  musicPlayerContainer.innerHTML = '';
-  const iframe = document.createElement('iframe');
-  iframe.src = url;
-  iframe.width = '100%';
-  iframe.height = '80';
-  iframe.allow = 'autoplay';
-  iframe.allowFullscreen = true;
-  musicPlayerContainer.appendChild(iframe);
-});
-
-// --- ADD FRIEND ---
-addFriendInput.addEventListener('input', async () => {
-  addFriendPreview.innerHTML = '';
-  const queryText = addFriendInput.value.trim();
+// -----------------------
+// SEARCH USERS & SEND FRIEND REQUEST
+// -----------------------
+searchUserInput.addEventListener('input', async () => {
+  const queryText = searchUserInput.value.trim();
+  searchUserResults.innerHTML = '';
   if (!queryText) return;
 
-  const usersCol = collection(db, 'users');
-  const q = query(usersCol, where('username', '==', queryText));
-  const snapshot = await getDocs(q);
-  snapshot.forEach(docSnap => {
-    const friend = docSnap.data();
-    if (docSnap.id === auth.currentUser.uid) return; // skip self
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('username', '==', queryText));
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(docSnap => {
+    const data = docSnap.data();
     const div = document.createElement('div');
-    div.className = 'friend-preview';
-    div.innerHTML = `<span>${friend.username}</span> <button>Add Friend</button>`;
-    div.querySelector('button').addEventListener('click', async () => {
-      const userRef = doc(db, 'users', auth.currentUser.uid);
-      await updateDoc(userRef, { top10Friends: arrayUnion({ username: friend.username, userId: docSnap.id }) });
-      alert('Friend added to top 10!');
-      loadProfile();
+    div.className = 'search-user-result';
+    div.innerHTML = `
+      <img src="${data.pfpURL || 'default-pfp.png'}" class="search-user-pfp" />
+      <span>${data.username}</span>
+      <button class="addFriendBtn">Add Friend</button>
+    `;
+    div.querySelector('.addFriendBtn').addEventListener('click', async () => {
+      try {
+        const currentUser = auth.currentUser;
+        const friendDocRef = doc(db, 'users', docSnap.id);
+
+        // Send friend request
+        await updateDoc(friendDocRef, {
+          pendingRequests: arrayUnion({
+            fromUserId: currentUser.uid,
+            fromUsername: usernameInput.value || 'Unknown',
+            timestamp: Date.now()
+          })
+        });
+
+        alert('Friend request sent!');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to send friend request');
+      }
     });
-    addFriendPreview.appendChild(div);
+
+    searchUserResults.appendChild(div);
   });
 });
 
-// --- NAVIGATION ---
-document.getElementById('navFeedBtn').addEventListener('click', () => window.location.href = '/feed.html');
-document.getElementById('navProfileBtn').addEventListener('click', () => window.location.href = '/profile.html');
-document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = '/login.html'));
-
-// --- INIT ---
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = '/login.html';
-  else loadProfile();
+// -----------------------
+// INIT
+// -----------------------
+auth.onAuthStateChanged(user => {
+  if (!user) return;
+  loadProfile();
 });

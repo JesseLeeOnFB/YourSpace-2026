@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
-  updateDoc, query, orderBy
+  updateDoc, query, orderBy, getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -27,12 +27,30 @@ const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
 
-// UTILITY: render a post
+// NAV BUTTONS
+document.getElementById("feedNavBtn")?.addEventListener("click", () => {
+  window.location.href = "feed.html";
+});
+document.getElementById("profileNavBtn")?.addEventListener("click", () => {
+  window.location.href = "profile.html";
+});
+
+// UTILITY: Get username from userId
+async function getUsername(userId) {
+  try {
+    const userDoc = await getDoc(doc(db, "users", userId));
+    return userDoc.exists() ? (userDoc.data().username || "Anonymous") : "Anonymous";
+  } catch {
+    return "Anonymous";
+  }
+}
+
+// UTILITY: Render a post
 async function renderPost(postData, postId) {
   const postEl = document.createElement("div");
   postEl.className = "post-container";
 
-  const username = postData.username || "Anonymous";
+  const username = await getUsername(postData.userId);
   const text = postData.text || "";
   const mediaURL = postData.mediaURL || "";
   const mediaType = postData.mediaType || "";
@@ -44,7 +62,6 @@ async function renderPost(postData, postId) {
     mediaHTML = `<video controls class="post-media"><source src="${mediaURL}"></video>`;
   }
 
-  // Build post HTML
   postEl.innerHTML = `
     <div class="post-header">
       <span class="post-username">${username}</span>
@@ -107,10 +124,10 @@ async function renderPost(postData, postId) {
     const commentText = commentInput.value.trim();
     if (!commentText) return;
     const postRef = doc(db, "posts", postId);
-    const newComments = [...(postData.comments || []), { user: auth.currentUser.email.split("@")[0], text: commentText }];
+    const newComments = [...(postData.comments || []), { user: username, text: commentText }];
     await updateDoc(postRef, { comments: newComments });
     const commentEl = document.createElement("p");
-    commentEl.textContent = `${auth.currentUser.email.split("@")[0]}: ${commentText}`;
+    commentEl.textContent = `${username}: ${commentText}`;
     commentSection.appendChild(commentEl);
     commentInput.value = "";
   });
@@ -156,7 +173,6 @@ postBtn.addEventListener("click", async () => {
   try {
     await addDoc(collection(db, "posts"), {
       userId: auth.currentUser.uid,
-      username: auth.currentUser.email.split("@")[0],
       text,
       mediaURL,
       mediaType,

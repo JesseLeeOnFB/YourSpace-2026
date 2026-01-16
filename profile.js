@@ -3,8 +3,11 @@ import {
   getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -14,12 +17,13 @@ const firebaseConfig = {
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// DOM Elements
+// DOM elements
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const savePfpBtn = document.getElementById("savePfpBtn");
@@ -27,19 +31,15 @@ const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-const searchUserInput = document.getElementById("searchUserInput");
-const searchUserBtn = document.getElementById("searchUserBtn");
-const searchResultsContainer = document.getElementById("searchResultsContainer");
+const topFriendInput = document.getElementById("topFriendInput");
+const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 const topFriendsContainer = document.getElementById("topFriendsContainer");
-const incomingRequestsContainer = document.getElementById("incomingRequestsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
 const musicInput = document.getElementById("musicInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
-const feedNavBtn = document.getElementById("feedNavBtn");
-const logoutBtn = document.getElementById("logoutBtn");
 
 let currentUser;
 
@@ -50,13 +50,8 @@ auth.onAuthStateChanged(async user => {
     return;
   }
   currentUser = user;
-  await loadProfile();
-  await loadFriendRequests();
+  loadProfile();
 });
-
-// NAVIGATION
-feedNavBtn?.addEventListener("click", () => window.location.href = "feed.html");
-logoutBtn?.addEventListener("click", () => auth.signOut().then(() => window.location.href = "login.html"));
 
 // LOAD PROFILE
 async function loadProfile() {
@@ -72,7 +67,6 @@ async function loadProfile() {
       topFriends: [],
       wallComments: [],
       musicURL: "",
-      friends: [],
       friendRequests: []
     });
     return loadProfile();
@@ -104,122 +98,58 @@ savePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Select an image");
 
-  const storageRef = ref(storage, `pfp/${currentUser.uid}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-
-  await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
-  profilePfp.src = url;
-  alert("Profile picture saved");
-};
-
-// FRIEND REQUEST SEARCH
-searchUserBtn.onclick = async () => {
-  const searchTerm = searchUserInput.value.trim();
-  searchResultsContainer.innerHTML = "";
-  if (!searchTerm) return;
-
-  const q = query(collection(db, "users"), where("username", "==", searchTerm));
-  const results = await getDocs(q);
-
-  results.forEach(docSnap => {
-    const user = docSnap.data();
-    if (docSnap.id === currentUser.uid) return; // skip self
-    const div = document.createElement("div");
-    div.className = "search-result";
-    div.innerHTML = `
-      <img src="${user.pfpURL || 'default-avatar.png'}" alt="PFP" class="small-pfp">
-      <span class="username">${user.username}</span>
-      <button>Add Friend</button>
-    `;
-    div.querySelector(".username").onclick = () => window.location.href = `/profile.html?user=${user.username}`;
-    div.querySelector("button").onclick = async () => {
-      await updateDoc(doc(db, "users", docSnap.id), { friendRequests: arrayUnion(currentUser.uid) });
-      div.querySelector("button").textContent = "Pending";
-      div.querySelector("button").disabled = true;
-    };
-    searchResultsContainer.appendChild(div);
-  });
-};
-
-// LOAD FRIEND REQUESTS
-async function loadFriendRequests() {
-  const snap = await getDoc(doc(db, "users", currentUser.uid));
-  const requests = snap.data().friendRequests || [];
-  incomingRequestsContainer.innerHTML = "";
-
-  for (const requesterUid of requests) {
-    const userSnap = await getDoc(doc(db, "users", requesterUid));
-    if (!userSnap.exists()) continue;
-    const user = userSnap.data();
-
-    const div = document.createElement("div");
-    div.className = "friend-request";
-    div.innerHTML = `
-      <img src="${user.pfpURL || 'default-avatar.png'}" alt="PFP" class="small-pfp">
-      <span>${user.username}</span>
-      <button class="accept">Accept</button>
-      <button class="deny">Deny</button>
-    `;
-
-    div.querySelector(".accept").onclick = async () => {
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        friends: arrayUnion(requesterUid),
-        friendRequests: requests.filter(id => id !== requesterUid)
-      });
-      await updateDoc(doc(db, "users", requesterUid), { friends: arrayUnion(currentUser.uid) });
-      div.remove();
-      loadProfile();
-    };
-
-    div.querySelector(".deny").onclick = async () => {
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        friendRequests: requests.filter(id => id !== requesterUid)
-      });
-      div.remove();
-    };
-
-    incomingRequestsContainer.appendChild(div);
+  try {
+    const storageRef = ref(storage, `pfp/${currentUser.uid}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
+    profilePfp.src = url;
+    alert("Profile picture saved!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile picture.");
   }
-}
+};
 
-// TOP FRIENDS
-function renderTopFriends(friends) {
-  topFriendsContainer.innerHTML = "";
-  friends.forEach((f, index) => {
-    const div = document.createElement("div");
-    div.className = "top-friend";
-    div.innerHTML = `
-      <span>${index + 1}. </span>
-      <img src="${f.pfpURL || 'default-avatar.png'}" class="small-pfp">
-      <strong class="friend-name">${f.username}</strong>
-      <button>Remove</button>
-    `;
+// TOP FRIENDS + ADD FRIEND REQUEST
+addTopFriendBtn.onclick = async () => {
+  const username = topFriendInput.value.trim();
+  if (!username) return;
 
-    div.querySelector(".friend-name").onclick = () => {
-      window.location.href = `/profile.html?user=${f.username}`;
-    };
+  try {
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const querySnap = await getDocs(q);
 
-    div.querySelector("button").onclick = async () => {
-      friends.splice(index, 1);
-      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
-      renderTopFriends(friends);
-    };
+    if (querySnap.empty) return alert("User not found");
 
-    topFriendsContainer.appendChild(div);
-  });
-}
+    const targetDoc = querySnap.docs[0];
+    const targetId = targetDoc.id;
+
+    await updateDoc(doc(db, "users", targetId), {
+      friendRequests: arrayUnion(currentUser.uid)
+    });
+
+    topFriendInput.value = "";
+    alert("Friend request sent! Pending approval.");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to send friend request.");
+  }
+};
 
 // WALL COMMENTS
 postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
+  const refUser = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(refUser);
   const comments = snap.data().wallComments || [];
-
-  comments.push({ uid: currentUser.uid, user: usernameInput.value, text });
-  await updateDoc(ref, { wallComments: comments });
+  comments.push({
+    uid: currentUser.uid,
+    user: usernameInput.value || currentUser.email.split("@")[0],
+    text
+  });
+  await updateDoc(refUser, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
 };
@@ -228,7 +158,10 @@ function renderWallComments(comments) {
   commentContainer.innerHTML = "";
   comments.forEach((c, i) => {
     const div = document.createElement("div");
-    div.innerHTML = `<strong>${c.user}:</strong> ${c.text} <button>Delete</button>`;
+    div.innerHTML = `
+      <strong>${c.user}:</strong> ${c.text}
+      <button>Delete</button>
+    `;
     div.querySelector("button").onclick = async () => {
       comments.splice(i, 1);
       await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
@@ -238,19 +171,33 @@ function renderWallComments(comments) {
   });
 }
 
-// MUSIC
+// MUSIC PLAYER
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
-  if (!url) return;
+  if (!url) return alert("Enter a URL to play music");
+
   await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
   renderMusic(url);
 };
 
 function renderMusic(url) {
-  if (url.includes("youtube")) {
-    const id = url.split("v=")[1]?.split("&")[0];
-    musicPlayerContainer.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
-  } else {
-    musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
+  if (!url) return;
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    let id = "";
+    if (url.includes("v=")) id = url.split("v=")[1]?.split("&")[0];
+    else if (url.includes("youtu.be")) id = url.split("youtu.be/")[1]?.split("?")[0];
+    if (id) {
+      musicPlayerContainer.innerHTML = `<iframe width="100%" height="200"
+      src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+      return;
+    }
   }
+  musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
 }
+
+// NAVIGATION
+document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
+document.getElementById("logoutBtn").onclick = async () => {
+  await auth.signOut();
+  window.location.href = "login.html";
+};

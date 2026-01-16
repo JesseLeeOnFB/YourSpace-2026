@@ -1,138 +1,146 @@
-import { auth, db, storage } from "./firebase.js";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove
-} from "firebase/firestore";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "firebase/storage";
+import { auth, db, storage } from './firebase.js';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const usernameInput = document.getElementById("usernameInput");
-const bioInput = document.getElementById("bioInput");
-const locationInput = document.getElementById("locationInput");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
+// DOM elements
+const usernameInput = document.getElementById('usernameInput');
+const bioInput = document.getElementById('bioInput');
+const locationInput = document.getElementById('locationInput');
+const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-const profilePfp = document.getElementById("profilePfp");
-const profilePfpInput = document.getElementById("profilePfpInput");
-const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
+const profilePfp = document.getElementById('profilePfp');
+const profilePfpInput = document.getElementById('profilePfpInput');
+const saveProfilePfpBtn = document.getElementById('saveProfilePfpBtn');
 
-const wallCommentsContainer = document.getElementById("wallCommentsContainer");
-const wallCommentInput = document.getElementById("wallCommentInput");
-const addWallCommentBtn = document.getElementById("addWallCommentBtn");
+const wallCommentsContainer = document.getElementById('wallCommentsContainer');
+const wallCommentInput = document.getElementById('wallCommentInput');
+const addWallCommentBtn = document.getElementById('addWallCommentBtn');
 
-const top10FriendsContainer = document.getElementById("top10FriendsContainer");
+const top10FriendsContainer = document.getElementById('top10FriendsContainer');
 
-let currentUserRef = null;
-let currentUserData = null;
-
-auth.onAuthStateChanged(async (user) => {
+// Load profile
+async function loadProfile() {
+  const user = auth.currentUser;
   if (!user) return;
 
-  currentUserRef = doc(db, "users", user.uid);
-  await loadProfile();
-});
+  const userDocRef = doc(db, 'users', user.uid);
+  const docSnap = await getDoc(userDocRef);
+  if (!docSnap.exists()) return;
 
-async function loadProfile() {
-  const snap = await getDoc(currentUserRef);
-  if (!snap.exists()) return;
+  const data = docSnap.data();
+  usernameInput.value = data.username || '';
+  bioInput.value = data.bio || '';
+  locationInput.value = data.location || '';
+  if (data.pfpURL) profilePfp.src = data.pfpURL;
 
-  currentUserData = snap.data();
-
-  usernameInput.value = currentUserData.username || "";
-  bioInput.value = currentUserData.bio || "";
-  locationInput.value = currentUserData.location || "";
-
-  if (currentUserData.pfpURL) {
-    profilePfp.src = currentUserData.pfpURL;
+  // Load wall comments
+  wallCommentsContainer.innerHTML = '';
+  if (data.wallComments) {
+    data.wallComments.forEach(comment => {
+      const div = document.createElement('div');
+      div.className = 'wall-comment';
+      div.innerHTML = `
+        <strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
+        ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
+      `;
+      if (comment.userId === user.uid) {
+        div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
+          await updateDoc(userDocRef, {
+            wallComments: arrayRemove(comment)
+          });
+          loadProfile();
+        });
+      }
+      wallCommentsContainer.appendChild(div);
+    });
   }
 
-  loadWallComments();
-  loadTopFriends();
+  // Load top friends
+  top10FriendsContainer.innerHTML = '';
+  if (data.top10Friends) {
+    data.top10Friends.forEach(friend => {
+      const div = document.createElement('div');
+      div.className = 'top-friend';
+      div.textContent = friend.username || 'Unknown';
+      top10FriendsContainer.appendChild(div);
+    });
+  }
 }
 
-function loadWallComments() {
-  wallCommentsContainer.innerHTML = "";
+// Save profile info
+saveProfileBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
 
-  const comments = currentUserData.wallComments || [];
-  comments.forEach((comment) => {
-    const div = document.createElement("div");
-    div.className = "wall-comment";
+  const userDocRef = doc(db, 'users', user.uid);
+  try {
+    await updateDoc(userDocRef, {
+      username: usernameInput.value,
+      bio: bioInput.value,
+      location: locationInput.value
+    });
+    alert('Profile info updated!');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update profile info');
+  }
+});
 
-    div.innerHTML = `
-      <strong>${comment.username}</strong>: ${comment.text}
-      ${comment.userId === auth.currentUser.uid ? `<button>Delete</button>` : ""}
-    `;
-
-    if (comment.userId === auth.currentUser.uid) {
-      div.querySelector("button").onclick = async () => {
-        await updateDoc(currentUserRef, {
-          wallComments: arrayRemove(comment)
-        });
-        await loadProfile();
-      };
-    }
-
-    wallCommentsContainer.appendChild(div);
-  });
-}
-
-function loadTopFriends() {
-  top10FriendsContainer.innerHTML = "";
-
-  const friends = currentUserData.top10Friends || [];
-  friends.forEach((friend) => {
-    const div = document.createElement("div");
-    div.className = "top-friend";
-    div.textContent = friend.username;
-    top10FriendsContainer.appendChild(div);
-  });
-}
-
-saveProfileBtn.onclick = async () => {
-  await updateDoc(currentUserRef, {
-    username: usernameInput.value,
-    bio: bioInput.value,
-    location: locationInput.value
-  });
-  alert("Profile updated");
-};
-
-saveProfilePfpBtn.onclick = async () => {
+// Save profile picture
+saveProfilePfpBtn.addEventListener('click', async () => {
   const file = profilePfpInput.files[0];
-  if (!file) return alert("Select a picture first");
+  if (!file) return alert('Please select a picture first');
 
-  const storageRef = ref(
-    storage,
-    `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`
-  );
+  try {
+    const user = auth.currentUser;
+    const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
 
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
+    profilePfp.src = url;
 
-  await updateDoc(currentUserRef, { pfpURL: url });
-  profilePfp.src = url;
-};
+    const userDocRef = doc(db, 'users', user.uid);
+    await updateDoc(userDocRef, { pfpURL: url });
+    alert('Profile picture updated!');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to save profile picture');
+  }
+});
 
-addWallCommentBtn.onclick = async () => {
+// Add wall comment
+addWallCommentBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
   const comment = {
     text,
-    userId: auth.currentUser.uid,
-    username: currentUserData.username || "Unknown",
+    userId: user.uid,
+    username: usernameInput.value || 'Unknown',
     timestamp: Date.now()
   };
 
-  await updateDoc(currentUserRef, {
-    wallComments: arrayUnion(comment)
-  });
+  const userDocRef = doc(db, 'users', user.uid);
+  try {
+    await updateDoc(userDocRef, {
+      wallComments: arrayUnion(comment)
+    });
+    wallCommentInput.value = '';
+    loadProfile();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to post comment');
+  }
+});
 
-  wallCommentInput.value = "";
-  await loadProfile();
-};
+// Init
+auth.onAuthStateChanged(user => {
+  if (user) {
+    loadProfile();
+  } else {
+    console.log('No user logged in');
+  }
+});

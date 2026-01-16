@@ -1,10 +1,12 @@
-// profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -16,216 +18,193 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
-// DOM elements
+// DOM
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
+const savePfpBtn = document.getElementById("savePfpBtn");
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 const topFriendInput = document.getElementById("topFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
-const topFriendsContainer = document.querySelector(".top-friends-container");
+const topFriendsContainer = document.getElementById("topFriendsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
 const musicInput = document.getElementById("musicInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
-const logoutBtn = document.getElementById("logoutBtn");
 
-// NAV BUTTONS
-document.getElementById("feedNavBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
-});
-document.getElementById("profileNavBtn")?.addEventListener("click", () => {
-  window.location.href = "profile.html";
-});
+let currentUser;
 
-// LOGOUT BUTTON
-logoutBtn?.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "login.html";
-});
-
-// AUTH STATE
+// AUTH
 auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
+  currentUser = user;
+  loadProfile();
+});
 
-  const userDocRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userDocRef);
+// LOAD PROFILE
+async function loadProfile() {
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
 
-  if (!userSnap.exists()) {
-    // First-time user setup
-    await setDoc(userDocRef, {
-      username: user.email.split("@")[0],
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      username: "",
       bio: "",
       location: "",
-      pfpURL: "default-avatar.png",
+      pfpURL: "",
       topFriends: [],
       wallComments: [],
       musicURL: ""
     });
+    return loadProfile();
   }
 
-  const data = (await getDoc(userDocRef)).data();
+  const data = snap.data();
 
   usernameInput.value = data.username || "";
   bioInput.value = data.bio || "";
   locationInput.value = data.location || "";
   profilePfp.src = data.pfpURL || "default-avatar.png";
 
-  // Load top friends
-  topFriendsContainer.innerHTML = "";
-  (data.topFriends || []).forEach(friend => {
-    const div = document.createElement("div");
-    div.textContent = friend;
-    topFriendsContainer.appendChild(div);
-  });
-
-  // Load wall comments
-  commentContainer.innerHTML = "";
-  (data.wallComments || []).forEach(c => {
-    const div = document.createElement("div");
-    div.textContent = `${c.user}: ${c.text}`;
-    commentContainer.appendChild(div);
-  });
-
-  // Load music
-  if (data.musicURL) {
-    musicPlayerContainer.innerHTML = getEmbeddedMusicHTML(data.musicURL);
-  }
-});
+  renderTopFriends(data.topFriends || []);
+  renderWallComments(data.wallComments || []);
+  if (data.musicURL) renderMusic(data.musicURL);
+}
 
 // SAVE PROFILE INFO
-saveProfileBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return alert("User not logged in.");
+saveProfileBtn.onclick = async () => {
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    username: usernameInput.value,
+    bio: bioInput.value,
+    location: locationInput.value
+  });
+  alert("Profile info saved");
+};
 
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    await updateDoc(userDocRef, {
-      username: usernameInput.value,
-      bio: bioInput.value,
-      location: locationInput.value
-    });
-    alert("Profile updated!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to save profile info.");
-  }
-});
-
-// PFP UPLOAD
-profilePfpInput.addEventListener("change", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
+// SAVE PROFILE PICTURE
+savePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
-  if (!file) return;
+  if (!file) return alert("Select an image");
 
-  try {
-    const storageRef = ref(storage, `pfp/${user.uid}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    profilePfp.src = url;
+  const storageRef = ref(storage, `pfp/${currentUser.uid}`);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
 
-    const userDocRef = doc(db, "users", user.uid);
-    await updateDoc(userDocRef, { pfpURL: url });
-    alert("Profile picture updated!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to save profile photo.");
-  }
-});
+  await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
+  profilePfp.src = url;
+};
 
-// ADD TOP FRIEND
-addTopFriendBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
+// TOP FRIENDS
+addTopFriendBtn.onclick = async () => {
+  const name = topFriendInput.value.trim();
+  if (!name) return;
 
-  const friend = topFriendInput.value.trim();
-  if (!friend) return;
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
+  const friends = snap.data().topFriends || [];
 
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userDocRef);
-    const currentFriends = (userSnap.data().topFriends || []);
+  if (friends.length >= 10) return alert("Max 10 friends");
 
-    if (currentFriends.length >= 10) return alert("Top 10 limit reached.");
-    await updateDoc(userDocRef, { topFriends: [...currentFriends, friend] });
+  friends.push({ username: name, uid: null });
+  await updateDoc(ref, { topFriends: friends });
+  renderTopFriends(friends);
+  topFriendInput.value = "";
+};
 
+function renderTopFriends(friends) {
+  topFriendsContainer.innerHTML = "";
+
+  friends.forEach((f, index) => {
     const div = document.createElement("div");
-    div.textContent = friend;
+    div.className = "top-friend";
+
+    div.innerHTML = `
+      <strong class="friend-name">${f.username}</strong>
+      <button data-index="${index}">Remove</button>
+    `;
+
+    div.querySelector(".friend-name").onclick = () => {
+      window.location.href = `/profile.html?user=${f.username}`;
+    };
+
+    div.querySelector("button").onclick = async () => {
+      friends.splice(index, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
+      renderTopFriends(friends);
+    };
+
     topFriendsContainer.appendChild(div);
-    topFriendInput.value = "";
-  } catch (err) {
-    console.error(err);
-    alert("Failed to add top friend.");
-  }
-});
+  });
+}
 
 // WALL COMMENTS
-postWallCommentBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
+postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userDocRef);
-    const currentComments = userSnap.data().wallComments || [];
-    const newComments = [...currentComments, { user: user.email.split("@")[0], text }];
-    await updateDoc(userDocRef, { wallComments: newComments });
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
+  const comments = snap.data().wallComments || [];
 
+  comments.push({
+    uid: currentUser.uid,
+    user: currentUser.email.split("@")[0],
+    text
+  });
+
+  await updateDoc(ref, { wallComments: comments });
+  renderWallComments(comments);
+  wallCommentInput.value = "";
+};
+
+function renderWallComments(comments) {
+  commentContainer.innerHTML = "";
+
+  comments.forEach((c, i) => {
     const div = document.createElement("div");
-    div.textContent = `${user.email.split("@")[0]}: ${text}`;
+    div.innerHTML = `
+      <strong>${c.user}:</strong> ${c.text}
+      <button>Delete</button>
+    `;
+
+    div.querySelector("button").onclick = async () => {
+      comments.splice(i, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
+      renderWallComments(comments);
+    };
+
     commentContainer.appendChild(div);
-    wallCommentInput.value = "";
-  } catch (err) {
-    console.error(err);
-    alert("Failed to post wall comment.");
-  }
-});
+  });
+}
 
-// MUSIC PLAYER SAVE & PLAY
-saveMusicBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
+// MUSIC PLAYER (ACTUALLY WORKS)
+saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
   if (!url) return;
 
-  try {
-    const userDocRef = doc(db, "users", user.uid);
-    await updateDoc(userDocRef, { musicURL: url });
-    musicPlayerContainer.innerHTML = getEmbeddedMusicHTML(url);
-    alert("Music saved and loaded!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to save or play music.");
-  }
-});
+  await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
+  renderMusic(url);
+};
 
-// HELPER: convert music links to embed
-function getEmbeddedMusicHTML(url) {
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    const videoId = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
-    return `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+function renderMusic(url) {
+  if (url.includes("youtube")) {
+    const id = url.split("v=")[1]?.split("&")[0];
+    musicPlayerContainer.innerHTML = `
+      <iframe width="100%" height="200"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen></iframe>`;
+  } else {
+    musicPlayerContainer.innerHTML = `
+      <audio controls src="${url}"></audio>`;
   }
-  if (url.includes("soundcloud.com")) {
-    return `<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}"></iframe>`;
-  }
-  if (url.includes("spotify.com")) {
-    return `<iframe src="https://open.spotify.com/embed/track/${url.split("/").pop()}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-  }
-  return "";
 }

@@ -1,55 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace - Profile</title>
+<link rel="stylesheet" href="profile.css">
+<script type="module" src="profile.js" defer></script>
 </head>
 <body>
-  <div id="profileContainer">
-    <div id="profileHeader">
+
+<div class="profile-container">
+
+  <div class="profile-header">
+    <div class="profile-picture">
       <img id="profilePfp" src="" alt="Profile Picture">
       <input type="file" id="profilePfpInput">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    </div>
+    <div class="profile-info">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="bioInput" placeholder="Bio">
       <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
-
-    <div id="wallSection">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment">
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
-
-    <div id="addFriendSection">
-      <input type="text" id="addFriendInput" placeholder="Search users by username">
-      <div id="addFriendPreview"></div>
-      <button id="sendFriendRequestBtn" disabled>Send Friend Request</button>
-    </div>
-
-    <div id="pendingFriendRequestsContainer">
-      <h3>Pending Friend Requests</h3>
-      <div id="pendingRequestsList"></div>
-    </div>
-
-    <div id="allFriendsContainer">
-      <h3>All Friends</h3>
-      <div id="allFriendsList"></div>
-    </div>
-
-    <div id="top10FriendsContainer">
-      <h3>Top 10 Friends</h3>
+      <button id="saveProfileBtn">Save Info</button>
     </div>
   </div>
 
-  <script src="profile.js?cachebust=<?php echo time(); ?>"></script>
+  <div class="friends-section">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer" class="top-friends-container"></div>
+
+    <h3>Add Friend</h3>
+    <input type="text" id="friendSearchInput" placeholder="Search username">
+    <div id="friendPreviewContainer"></div>
+  </div>
+
+  <div class="wall-section">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer"></div>
+    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
+
+</div>
+
 </body>
 </html>

@@ -1,47 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace - Profile</title>
-<link rel="stylesheet" href="profile.css">
-<script type="module" src="profile.js" defer></script>
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
+  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
-
-<div class="profile-container">
-
-  <div class="profile-header">
-    <div class="profile-picture">
-      <img id="profilePfp" src="" alt="Profile Picture">
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+  <div class="profile-container">
+    <div class="profile-left">
+      <div class="profile-picture-container">
+        <img id="profilePfp" src="" alt="Profile Picture">
+        <input type="file" id="profilePfpInput">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      </div>
+      <div class="profile-info">
+        <label>Username: <input id="usernameInput" type="text"></label>
+        <label>Bio: <input id="bioInput" type="text"></label>
+        <label>Location: <input id="locationInput" type="text"></label>
+        <button id="saveProfileBtn">Save Info</button>
+      </div>
+      <div class="wall-comments">
+        <h3>Wall Comments</h3>
+        <div id="wallCommentsContainer"></div>
+        <input id="wallCommentInput" type="text" placeholder="Write a comment...">
+        <button id="addWallCommentBtn">Post Comment</button>
+      </div>
     </div>
-    <div class="profile-info">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="bioInput" placeholder="Bio">
-      <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Info</button>
+
+    <div class="profile-right">
+      <div class="friends-section">
+        <h3>Top 10 Friends</h3>
+        <div id="top10FriendsContainer"></div>
+        <h3>All Friends</h3>
+        <div id="allFriendsContainer"></div>
+      </div>
+
+      <div class="friend-requests">
+        <h3>Add Friend</h3>
+        <input id="searchUserInput" type="text" placeholder="Search by username">
+        <div id="searchPreviewContainer"></div>
+        <button id="sendFriendRequestBtn">Send Friend Request</button>
+      </div>
     </div>
   </div>
-
-  <div class="friends-section">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer" class="top-friends-container"></div>
-
-    <h3>Add Friend</h3>
-    <input type="text" id="friendSearchInput" placeholder="Search username">
-    <div id="friendPreviewContainer"></div>
-  </div>
-
-  <div class="wall-section">
-    <h3>Wall Comments</h3>
-    <div id="wallCommentsContainer"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-    <button id="addWallCommentBtn">Post Comment</button>
-  </div>
-
-</div>
-
 </body>
 </html>

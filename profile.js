@@ -1,6 +1,6 @@
 // PROFILE.JS
 import { auth, db, storage } from './firebase.js';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, query, collection, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // DOM elements
@@ -18,37 +18,50 @@ const wallCommentInput = document.getElementById('wallCommentInput');
 const addWallCommentBtn = document.getElementById('addWallCommentBtn');
 
 const top10FriendsContainer = document.getElementById('top10FriendsContainer');
+const addFriendInput = document.getElementById('addFriendInput');
+const addFriendPreview = document.getElementById('addFriendPreview');
+const addFriendBtn = document.getElementById('addFriendBtn');
 
-// Load current user profile
+// Get profile username from URL or use current user
+function getProfileUid() {
+  const params = new URLSearchParams(window.location.search);
+  const userQuery = params.get('user');
+  return userQuery ? userQuery : auth.currentUser?.uid;
+}
+
+// Load profile
 async function loadProfile() {
-  const user = auth.currentUser;
-  if (!user) return;
+  const profileUid = getProfileUid();
+  if (!profileUid) return;
 
-  const userDocRef = doc(db, 'users', user.uid);
+  const userDocRef = doc(db, 'users', profileUid);
   const docSnap = await getDoc(userDocRef);
   if (!docSnap.exists()) return;
 
   const data = docSnap.data();
-  usernameInput.value = data.username || '';
-  bioInput.value = data.bio || '';
-  locationInput.value = data.location || '';
+
+  // Fill inputs only if viewing own profile
+  if (profileUid === auth.currentUser.uid) {
+    usernameInput.value = data.username || '';
+    bioInput.value = data.bio || '';
+    locationInput.value = data.location || '';
+  }
+
   if (data.pfpURL) profilePfp.src = data.pfpURL;
 
   // Load wall comments
   wallCommentsContainer.innerHTML = '';
-  if (data.wallComments && data.wallComments.length > 0) {
+  if (data.wallComments?.length) {
     data.wallComments.forEach(comment => {
       const div = document.createElement('div');
       div.className = 'wall-comment';
       div.innerHTML = `
         <strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
-        ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
+        ${comment.userId === auth.currentUser.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
       `;
-      if (comment.userId === user.uid) {
+      if (comment.userId === auth.currentUser.uid) {
         div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
-          await updateDoc(userDocRef, {
-            wallComments: arrayRemove(comment)
-          });
+          await updateDoc(userDocRef, { wallComments: arrayRemove(comment) });
           loadProfile();
         });
       }
@@ -58,14 +71,15 @@ async function loadProfile() {
 
   // Load Top 10 Friends
   top10FriendsContainer.innerHTML = '';
-  if (data.top10Friends && data.top10Friends.length > 0) {
-    data.top10Friends.forEach(friend => {
-      const div = document.createElement('div');
-      div.className = 'top-friend';
-      div.innerHTML = `<span>${friend.username}</span>`;
-      top10FriendsContainer.appendChild(div);
+  data.top10Friends?.forEach(friend => {
+    const div = document.createElement('div');
+    div.className = 'friend';
+    div.innerHTML = `<span class="friend-username" data-uid="${friend.uid}">${friend.username}</span>`;
+    div.addEventListener('click', () => {
+      window.location.href = `/profile.html?user=${friend.uid}`;
     });
-  }
+    top10FriendsContainer.appendChild(div);
+  });
 }
 
 // SAVE PROFILE INFO
@@ -122,17 +136,48 @@ addWallCommentBtn.addEventListener('click', async () => {
     timestamp: Date.now()
   };
 
-  const userDocRef = doc(db, 'users', user.uid);
+  const userDocRef = doc(db, 'users', getProfileUid());
   try {
-    await updateDoc(userDocRef, {
-      wallComments: arrayUnion(comment)
-    });
+    await updateDoc(userDocRef, { wallComments: arrayUnion(comment) });
     wallCommentInput.value = '';
     loadProfile();
   } catch (err) {
     console.error(err);
     alert('Failed to post comment');
   }
+});
+
+// SEARCH FRIENDS
+addFriendInput.addEventListener('input', async () => {
+  const text = addFriendInput.value.trim();
+  addFriendPreview.innerHTML = '';
+  if (!text) return;
+
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('username', '>=', text), where('username', '<=', text + '\uf8ff'));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const div = document.createElement('div');
+    div.className = 'friend-preview';
+    div.innerHTML = `
+      <span>${data.username}</span>
+      <button class="addFriendBtn" data-uid="${docSnap.id}">Add Friend</button>
+    `;
+    div.querySelector('.addFriendBtn').addEventListener('click', async () => {
+      const currentUserRef = doc(db, 'users', auth.currentUser.uid);
+      try {
+        await updateDoc(currentUserRef, { top10Friends: arrayUnion({ uid: docSnap.id, username: data.username }) });
+        alert('Friend added to top 10!');
+        loadProfile();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to add friend');
+      }
+    });
+    addFriendPreview.appendChild(div);
+  });
 });
 
 // INIT

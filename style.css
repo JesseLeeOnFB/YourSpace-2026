@@ -1,278 +1,151 @@
-/* --- GLOBAL STYLES --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
-}
-
+/* GENERAL BODY */
 body {
-  background: #f5f5f7;
-  color: #222;
-  min-height: 100vh;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f5f6fa;
+  color: #333;
 }
 
-/* LINKS */
-a {
-  color: #0077ff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* BUTTONS */
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* --- LOGIN & SIGNUP PAGES --- */
-.login-body, .signup-body {
+/* NAVIGATION */
+.top-nav {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #4c4c6d, #1f1f2e);
-  color: #fff;
-}
-
-.login-container, .signup-container {
-  background: rgba(0,0,0,0.75);
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.6);
-  text-align: center;
-}
-
-.login-container h1, .signup-container h1 {
-  margin-bottom: 1rem;
-  color: #ffcc00;
-}
-
-.login-container input, .signup-container input {
-  width: 100%;
-  padding: 10px 12px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.login-container button, .signup-container button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  background-color: #ffcc00;
-  color: #000;
-}
-
-/* --- NAVBAR --- */
-.navbar {
-  display: flex;
+  background-color: #242526;
+  padding: 10px 20px;
   justify-content: space-around;
-  align-items: center;
-  background-color: #222;
-  padding: 12px;
 }
 
-.navbar button {
+.top-nav .nav-btn {
   color: #fff;
-  background: #333;
-  padding: 8px 14px;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.2s;
 }
 
-.navbar button:hover {
-  background: #555;
+.top-nav .nav-btn:hover {
+  background-color: #3a3b3c;
 }
 
-/* --- FEED --- */
-.createPost, .feed {
-  width: 90%;
-  max-width: 800px;
+/* CREATE POST */
+.create-post {
+  background-color: #fff;
+  padding: 15px;
   margin: 20px auto;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.createPost {
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.createPost textarea {
+#create-post textarea {
   width: 100%;
-  min-height: 60px;
-  padding: 8px;
+  height: 80px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
   resize: vertical;
-  font-size: 1rem;
 }
 
-#createPost input[type="file"] {
-  margin-top: 8px;
-}
-
-#imagePreview, #videoPreview {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
+#create-post input[type="file"] {
   margin-top: 10px;
-  border-radius: 8px;
+}
+
+#create-post button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+#create-post button:hover {
+  background-color: #165ec7;
 }
 
 /* POSTS */
-.post {
-  background: #fff;
-  margin-top: 20px;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto 50px;
+}
+
+.post-container {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
 .post-header {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
   margin-bottom: 10px;
 }
 
-.post-header img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-right: 12px;
+.post-body p {
+  margin: 0 0 10px 0;
 }
 
-.post-content img, .post-content video {
-  width: 100%;
+.post-media {
+  max-width: 100%;
   max-height: 400px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
   object-fit: cover;
-  border-radius: 12px;
-  margin-top: 8px;
 }
 
 .post-footer {
   display: flex;
   justify-content: space-between;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .post-footer button {
-  background: #eee;
-  color: #333;
-  font-size: 1rem;
+  background-color: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .post-footer button:hover {
-  background: #ddd;
+  background-color: #ddd;
 }
 
-/* --- PROFILE PAGE --- */
-.profile-container {
-  width: 90%;
-  max-width: 900px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* COMMENT SECTION */
+.comment-section {
+  margin-top: 10px;
 }
 
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.profile-header img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%; /* Circle frame for pfp */
-}
-
-.profile-header input[type="file"] {
-  margin-top: 8px;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-info label {
-  font-weight: bold;
-  display: block;
-  margin-top: 8px;
-}
-
-.profile-info input, .profile-info textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border-radius: 6px;
+.comment-section input[type="text"] {
+  width: 70%;
+  padding: 5px;
+  margin-right: 5px;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.save-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
+.comment-section button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #1877f2;
+  color: #fff;
+  cursor: pointer;
 }
 
-.save-buttons button {
-  flex: 1;
-  background: #ffcc00;
-  color: #000;
-}
-
-.top-friends-container, .wall-comments-container {
-  background: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-top: 12px;
-}
-
-.top-friends-container input {
-  width: 100%;
-  margin-top: 8px;
-}
-
-.wall-comment {
-  margin-top: 10px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 6px;
-}
-
-/* --- MEDIA QUERIES --- */
-@media screen and (max-width: 600px) {
-  .post-header img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .profile-header img {
-    width: 80px;
-    height: 80px;
-  }
-
-  .post-footer button {
-    font-size: 0.9rem;
-  }
+.comment-section button:hover {
+  background-color: #165ec7;
 }

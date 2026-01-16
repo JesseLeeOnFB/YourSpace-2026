@@ -1,47 +1,105 @@
 body {
-  margin: 0;
+  background: #121212;
+  color: #fff;
   font-family: Arial, sans-serif;
-  background: #f0f2f5;
+  margin: 0;
 }
 
-.top-nav {
+.profile-nav {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
   padding: 10px;
-  background: #4267b2;
+  background: #1f1f1f;
 }
 
-.top-nav button {
-  color: white;
-  background: none;
+.profile-nav button {
+  background: #333;
+  color: #fff;
   border: none;
-  font-size: 16px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
 .profile-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: auto;
-  padding: 15px;
+  padding: 20px;
 }
 
-.card, .profile-card {
-  background: white;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .pfp-wrapper {
-  text-align: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #222;
 }
 
 #profilePfp {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
+.profile-info label {
+  display: block;
+  margin-top: 10px;
+}
+
+.profile-info input,
+.profile-info textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.profile-info button {
+  margin-top: 12px;
+  padding: 10px;
+  background: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.wall-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.wall-input input {
+  flex: 1;
+  padding: 8px;
+}
+
 .wall-comment {
+  background: #1f1f1f;
+  padding: 10px;
   margin-bottom: 6px;
+  border-radius: 4px;
+}
+
+.wall-comment button {
+  float: right;
+  background: red;
+  border: none;
+  color: white;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.top-friend {
+  padding: 6px;
+  background: #1f1f1f;
+  margin-bottom: 4px;
 }

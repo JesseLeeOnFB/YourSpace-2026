@@ -1,45 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 </head>
 <body>
-  <div class="profile-container">
-    <div class="profile-header">
-      <img id="profilePfp" src="" alt="Profile Picture">
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="bioInput" placeholder="Bio">
-      <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
+<div class="profile-container">
 
-    <div class="wall-section">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment">
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
+  <!-- Profile Info -->
+  <div class="profile-info">
+    <img id="profilePfp" src="" alt="Profile Picture" class="profile-picture">
+    <input type="file" id="profilePfpInput" accept="image/*">
+    <button id="saveProfilePfpBtn">Save Profile Picture</button>
 
-    <div class="friend-section">
-      <h3>Search Users</h3>
-      <input type="text" id="searchUserInput" placeholder="Search username">
-      <div id="searchPreviewContainer"></div>
-
-      <h3>Pending Friend Requests</h3>
-      <div id="pendingRequestsContainer"></div>
-
-      <h3>All Friends</h3>
-      <div id="allFriendsContainer"></div>
-
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer"></div>
-    </div>
+    <input type="text" id="usernameInput" placeholder="Username">
+    <input type="text" id="bioInput" placeholder="Bio">
+    <input type="text" id="locationInput" placeholder="Location">
+    <button id="saveProfileBtn">Save Profile Info</button>
   </div>
 
-  <script type="module" src="profile.js"></script>
+  <!-- Wall Comments -->
+  <div class="wall-container">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer" class="wall-comments"></div>
+    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
+
+  <!-- Friend System -->
+  <div class="friend-system">
+    <h3>Search Users</h3>
+    <input type="text" id="searchUserInput" placeholder="Enter username">
+    <div id="searchPreviewContainer" class="search-preview"></div>
+
+    <h3>Pending Friend Requests</h3>
+    <div id="pendingRequestsContainer" class="pending-requests"></div>
+
+    <h3>All Friends</h3>
+    <div id="allFriendsContainer" class="all-friends"></div>
+
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer" class="top-friends"></div>
+  </div>
+
+  <!-- Music Player -->
+  <div class="music-player">
+    <h3>Music Player</h3>
+    <iframe id="musicPlayer" width="100%" height="80" src="https://www.youtube.com/embed/ZB7Xjd34pjo" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+</div>
+
+<script src="profile.js"></script>
 </body>
 </html>

@@ -1,55 +1,37 @@
 body {
-  background: #121212;
-  color: #fff;
   font-family: Arial, sans-serif;
   margin: 0;
-}
-
-.profile-nav {
-  display: flex;
-  gap: 10px;
-  padding: 10px;
-  background: #1f1f1f;
-}
-
-.profile-nav button {
-  background: #333;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
+  padding: 0;
+  background: #f5f5f5;
 }
 
 .profile-container {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
 }
 
 .profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.pfp-wrapper {
+.profile-pfp {
   width: 150px;
   height: 150px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #222;
-}
-
-#profilePfp {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2196F3;
+  display: block;
+  margin: 0 auto 10px auto;
 }
 
 .profile-info label {
   display: block;
   margin-top: 10px;
+  font-weight: bold;
 }
 
 .profile-info input,
@@ -57,49 +39,49 @@ body {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
-  background: #1f1f1f;
-  border: 1px solid #333;
-  color: #fff;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.profile-info button {
-  margin-top: 12px;
+button {
+  margin-top: 10px;
   padding: 10px;
-  background: #007bff;
+  background: #2196F3;
+  color: #fff;
   border: none;
-  color: white;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.wall-input {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+button:hover {
+  background: #1976D2;
 }
 
-.wall-input input {
-  flex: 1;
-  padding: 8px;
+.wall-section,
+.top-friends-section {
+  margin-top: 20px;
 }
 
-.wall-comment {
-  background: #1f1f1f;
+.wall-comments .wall-comment {
+  background: #e0e0e0;
   padding: 10px;
-  margin-bottom: 6px;
-  border-radius: 4px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  position: relative;
 }
 
 .wall-comment button {
-  float: right;
-  background: red;
-  border: none;
-  color: white;
-  padding: 4px 6px;
-  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  padding: 3px 6px;
+  background: #f44336;
 }
 
-.top-friend {
-  padding: 6px;
-  background: #1f1f1f;
-  margin-bottom: 4px;
+.top-friends .top-friend {
+  padding: 5px;
+  margin: 3px 0;
+  background: #d9edf7;
+  border-radius: 5px;
 }

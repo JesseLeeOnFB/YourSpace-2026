@@ -3,57 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-
-  <!-- NAVIGATION -->
-  <nav class="top-nav">
-    <a href="feed.html" class="nav-btn">Feed</a>
-    <a href="profile.html" class="nav-btn">Profile</a>
-    <a href="logout.html" class="nav-btn">Logout</a>
+  <nav>
+    <button onclick="window.location.href='feed.html'">Feed</button>
+    <button onclick="window.location.href='profile.html'">Profile</button>
+    <button onclick="auth.signOut()">Logout</button>
   </nav>
 
-  <!-- PROFILE HEADER -->
-  <section class="profile-header">
-    <div class="pfp-container">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-      <input type="file" id="profilePfpInput" accept="image/*">
-    </div>
-    <div class="profile-info">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="bioInput" placeholder="Bio">
-      <input type="text" id="locationInput" placeholder="Location">
+  <main class="profile-container">
+    <section class="profile-info">
+      <div class="pfp-wrapper">
+        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture" class="profile-pfp">
+        <input type="file" id="profilePfpInput" accept="image/*">
+      </div>
+      <label>Username: <input type="text" id="usernameInput"></label>
+      <label>Bio: <textarea id="bioInput"></textarea></label>
+      <label>Location: <input type="text" id="locationInput"></label>
       <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
-  </section>
+    </section>
 
-  <!-- TOP FRIENDS -->
-  <section class="top-friends-section">
-    <h3>Top 10 Friends</h3>
-    <div class="top-friends-container">
-      <!-- Friends will appear here -->
-    </div>
-    <input type="text" id="topFriendInput" placeholder="Add friend">
-    <button id="addTopFriendBtn">Add Friend</button>
-  </section>
+    <section class="top-friends-section">
+      <h3>Top Friends</h3>
+      <div class="top-friends-container"></div>
+      <input type="text" id="topFriendInput" placeholder="Add a top friend">
+      <button id="addTopFriendBtn">Add Top Friend</button>
+    </section>
 
-  <!-- WALL COMMENTS -->
-  <section class="wall-comments">
-    <h3>Wall Comments</h3>
-    <div id="commentContainer"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-    <button id="postWallCommentBtn">Post Comment</button>
-  </section>
+    <section class="wall-section">
+      <h3>Wall Comments</h3>
+      <div id="commentContainer" class="comment-container"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+      <button id="postWallCommentBtn">Post Comment</button>
+    </section>
 
-  <!-- MUSIC PLAYER -->
-  <section class="music-player-section">
-    <h3>Music Player</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
-    <button id="saveMusicBtn">Save & Play</button>
-    <div id="musicPlayerContainer"></div>
-  </section>
+    <section class="music-section">
+      <h3>Music Player</h3>
+      <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, or SoundCloud link">
+      <button id="saveMusicBtn">Save & Play Music</button>
+      <div id="musicPlayerContainer" class="music-player-container"></div>
+    </section>
+  </main>
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="profile.js"></script>

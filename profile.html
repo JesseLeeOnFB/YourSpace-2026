@@ -3,36 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
-  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
-  <nav class="navbar">
-    <button id="feedBtn">Feed</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
 
-  <main class="profile-container">
-    <section class="profile-info">
-      <div class="pfp-container">
-        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-      </div>
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePhotoBtn">Save Profile Photo</button>
+<div class="profile-container">
+
+  <!-- Header: Profile Picture + Info -->
+  <div class="profile-header">
+    <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+    <div class="profile-info">
+      <label for="profilePfpInput">Change Profile Picture:</label>
+      <input type="file" id="profilePfpInput" accept="image/*">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
 
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="bioInput" placeholder="Bio">
       <input type="text" id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
-    </section>
+    </div>
+  </div>
 
-    <section class="wall-comments">
-      <h2>Wall Comments</h2>
-      <div id="commentContainer" class="comment-container"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-      <button id="postWallCommentBtn">Post Comment</button>
-    </section>
-  </main>
+  <!-- Top Friends Section -->
+  <h3>Top 10 Friends</h3>
+  <div class="top-friends-section">
+    <input type="text" id="topFriendInput" placeholder="Enter username to add">
+    <button id="addTopFriendBtn">Add Friend</button>
+    <div class="top-friends-container"></div>
+  </div>
+
+  <!-- Wall Comments Section -->
+  <h3>Wall Comments</h3>
+  <div class="wall-comments-section">
+    <div id="commentContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Write a comment"></textarea>
+    <button id="postWallCommentBtn">Post Comment</button>
+  </div>
+
+  <!-- Music Section -->
+  <h3>Music</h3>
+  <input type="text" id="musicInput" placeholder="Paste music link (YouTube, Spotify, SoundCloud)">
+  <button id="saveMusicBtn">Save & Play</button>
+  <div id="musicPlayerContainer" class="music-player-container"></div>
+
+  <!-- Logout -->
+  <button id="logoutBtn">Logout</button>
+
+</div>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

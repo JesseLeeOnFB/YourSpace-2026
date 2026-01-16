@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace - Profile</title>
-  <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="profile.css" />
 </head>
 <body>
 
 <header>
   <nav class="top-nav">
-    <button id="feedNavBtn">Feed</button>
+    <button id="feedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 </header>
@@ -19,20 +19,20 @@
 
   <section class="profile-info">
     <div class="pfp-container">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-      <input type="file" id="profilePfpInput" accept="image/*">
+      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture" />
+      <input type="file" id="profilePfpInput" accept="image/*" />
       <button id="savePfpBtn">Save Profile Picture</button>
     </div>
 
     <div class="profile-fields">
       <label>Username</label>
-      <input type="text" id="usernameInput">
+      <input type="text" id="usernameInput" />
 
       <label>Bio</label>
       <textarea id="bioInput"></textarea>
 
       <label>Location</label>
-      <input type="text" id="locationInput">
+      <input type="text" id="locationInput" />
 
       <button id="saveProfileBtn">Save Profile Info</button>
     </div>
@@ -41,20 +41,20 @@
   <section class="top-friends-section">
     <h3>Top Friends</h3>
     <div id="topFriendsContainer" class="top-friends-container"></div>
-    <input type="text" id="topFriendInput" placeholder="Add friend">
+    <input type="text" id="topFriendInput" placeholder="Add username" />
     <button id="addTopFriendBtn">Add Friend</button>
   </section>
 
   <section class="wall-comments-section">
     <h3>Wall Comments</h3>
     <div id="commentContainer"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment">
+    <input type="text" id="wallCommentInput" placeholder="Write a comment" />
     <button id="postWallCommentBtn">Post Comment</button>
   </section>
 
   <section class="music-section">
     <h3>Music</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube link">
+    <input type="text" id="musicInput" placeholder="Paste YouTube / audio URL" />
     <button id="saveMusicBtn">Save & Play</button>
     <div id="musicPlayerContainer"></div>
   </section>

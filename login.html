@@ -1,30 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Login</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Login</title>
 </head>
-<body class="login-page">
+<body>
 
-  <div class="login-container">
-    <h1>YourSpace</h1>
-    <form id="loginForm">
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Enter your email" required>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter your password" required>
-
-      <button type="submit" id="loginBtn">Login</button>
-    </form>
-
-    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
-  </div>
-
-  <!-- Firebase and login script -->
-  <script type="module" src="firebase.js"></script>
   <script type="module" src="login.js"></script>
+  <script type="module" src="auth-guard.js"></script>
 </body>
 </html>

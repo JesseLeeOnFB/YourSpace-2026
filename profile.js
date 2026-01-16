@@ -66,7 +66,8 @@ auth.onAuthStateChanged(async (user) => {
         commentContainer.innerHTML = "";
         (data.wallComments || []).forEach(c => {
             const div = document.createElement("div");
-            div.textContent = `${c.username}: ${c.text}`;
+            // FIX: Use c.username if available, otherwise fallback
+            div.textContent = `${c.username || user.email.split("@")[0]}: ${c.text || ""}`;
             commentContainer.appendChild(div);
         });
 
@@ -99,9 +100,12 @@ saveProfilePfpBtn.addEventListener("click", async () => {
         const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
+
         const userDocRef = doc(db, "users", user.uid);
+
+        // Save profile picture URL to Firestore
         await updateDoc(userDocRef, { pfpURL: url });
-        profilePfp.src = url;
+        profilePfp.src = url; // Display the uploaded image
         alert("Profile picture updated!");
     } catch (err) {
         console.error(err);
@@ -114,12 +118,12 @@ addTopFriendBtn.addEventListener("click", async () => {
     const friendUsername = topFriendInput.value.trim();
     if (!friendUsername) return;
 
-    // Search for user by username
-    const usersRef = doc(db, "users", friendUsername); // Simplified; implement proper search for production
-    const userSnap = await getDoc(usersRef);
-    if (!userSnap.exists()) return alert("User not found!");
+    // Search user by username (simplified)
+    const usersQueryRef = doc(db, "users", friendUsername); // Adjust your search logic
+    const friendSnap = await getDoc(usersQueryRef);
+    if (!friendSnap.exists()) return alert("User not found!");
 
-    const friendData = userSnap.data();
+    const friendData = friendSnap.data();
     const user = auth.currentUser;
     const userDocRef = doc(db, "users", user.uid);
 
@@ -144,7 +148,7 @@ postWallCommentBtn.addEventListener("click", async () => {
     const userDocRef = doc(db, "users", user.uid);
     const currentCommentsSnap = await getDoc(userDocRef);
     const currentComments = currentCommentsSnap.data().wallComments || [];
-    const newComment = { username: user.email.split("@")[0], text };
+    const newComment = { username: usernameInput.value || user.email.split("@")[0], text };
     await updateDoc(userDocRef, { wallComments: arrayUnion(newComment) });
     const div = document.createElement("div");
     div.textContent = `${newComment.username}: ${newComment.text}`;

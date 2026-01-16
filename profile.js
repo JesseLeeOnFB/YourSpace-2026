@@ -1,11 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc
+  getFirestore, doc, getDoc, setDoc, updateDoc, getDocs, collection
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -41,6 +39,16 @@ const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 
 let currentUser;
 
+// NAV
+document.getElementById("feedBtn").onclick = () => {
+  window.location.href = "feed.html";
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
+
 // AUTH
 auth.onAuthStateChanged(async user => {
   if (!user) {
@@ -53,11 +61,11 @@ auth.onAuthStateChanged(async user => {
 
 // LOAD PROFILE
 async function loadProfile() {
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
+  const userRef = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
-    await setDoc(ref, {
+    await setDoc(userRef, {
       username: "",
       bio: "",
       location: "",
@@ -104,41 +112,60 @@ savePfpBtn.onclick = async () => {
   profilePfp.src = url;
 };
 
-// TOP FRIENDS
+// ADD TOP FRIEND (VALIDATED)
 addTopFriendBtn.onclick = async () => {
   const name = topFriendInput.value.trim();
   if (!name) return;
 
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
+  const usersSnap = await getDocs(collection(db, "users"));
+  let found = null;
+
+  usersSnap.forEach(docSnap => {
+    if (docSnap.data().username === name) {
+      found = { uid: docSnap.id, ...docSnap.data() };
+    }
+  });
+
+  if (!found) return alert("User not found");
+
+  const userRef = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
   const friends = snap.data().topFriends || [];
 
+  if (friends.some(f => f.uid === found.uid)) return alert("Already added");
   if (friends.length >= 10) return alert("Max 10 friends");
 
-  friends.push({ username: name, uid: null });
-  await updateDoc(ref, { topFriends: friends });
+  friends.push({
+    username: found.username,
+    uid: found.uid,
+    pfpURL: found.pfpURL || "default-avatar.png"
+  });
+
+  await updateDoc(userRef, { topFriends: friends });
   renderTopFriends(friends);
   topFriendInput.value = "";
 };
 
+// RENDER TOP FRIENDS
 function renderTopFriends(friends) {
   topFriendsContainer.innerHTML = "";
 
-  friends.forEach((f, index) => {
+  friends.forEach((f, i) => {
     const div = document.createElement("div");
     div.className = "top-friend";
 
     div.innerHTML = `
+      <img src="${f.pfpURL}" class="top-friend-pfp">
       <strong class="friend-name">${f.username}</strong>
-      <button data-index="${index}">Remove</button>
+      <button>Remove</button>
     `;
 
     div.querySelector(".friend-name").onclick = () => {
-      window.location.href = `/profile.html?user=${f.username}`;
+      window.location.href = `profile.html?uid=${f.uid}`;
     };
 
     div.querySelector("button").onclick = async () => {
-      friends.splice(index, 1);
+      friends.splice(i, 1);
       await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
       renderTopFriends(friends);
     };
@@ -152,17 +179,16 @@ postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
+  const userRef = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(userRef);
   const comments = snap.data().wallComments || [];
 
   comments.push({
-    uid: currentUser.uid,
     user: currentUser.email.split("@")[0],
     text
   });
 
-  await updateDoc(ref, { wallComments: comments });
+  await updateDoc(userRef, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
 };
@@ -172,10 +198,7 @@ function renderWallComments(comments) {
 
   comments.forEach((c, i) => {
     const div = document.createElement("div");
-    div.innerHTML = `
-      <strong>${c.user}:</strong> ${c.text}
-      <button>Delete</button>
-    `;
+    div.innerHTML = `<strong>${c.user}:</strong> ${c.text} <button>Delete</button>`;
 
     div.querySelector("button").onclick = async () => {
       comments.splice(i, 1);
@@ -187,7 +210,7 @@ function renderWallComments(comments) {
   });
 }
 
-// MUSIC PLAYER (ACTUALLY WORKS)
+// MUSIC PLAYER (YOUTUBE SHORTS FIXED)
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
   if (!url) return;
@@ -197,14 +220,23 @@ saveMusicBtn.onclick = async () => {
 };
 
 function renderMusic(url) {
-  if (url.includes("youtube")) {
-    const id = url.split("v=")[1]?.split("&")[0];
+  musicPlayerContainer.innerHTML = "";
+
+  let videoId = null;
+
+  if (url.includes("youtu.be/")) {
+    videoId = url.split("youtu.be/")[1].split("?")[0];
+  } else if (url.includes("youtube.com")) {
+    videoId = new URL(url).searchParams.get("v");
+  }
+
+  if (videoId) {
     musicPlayerContainer.innerHTML = `
       <iframe width="100%" height="200"
-      src="https://www.youtube.com/embed/${id}"
+      src="https://www.youtube.com/embed/${videoId}"
       allowfullscreen></iframe>`;
-  } else {
-    musicPlayerContainer.innerHTML = `
-      <audio controls src="${url}"></audio>`;
+    return;
   }
+
+  musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
 }

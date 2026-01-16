@@ -1,16 +1,51 @@
 body {
+  font-family: Arial, sans-serif;
   margin: 0;
-  font-family: system-ui, sans-serif;
+  padding: 0;
+  background: #f2f2f2;
 }
 
 .top-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 10px;
+  background: #222;
+}
+
+.top-nav button {
+  color: #fff;
+  background: #444;
+  border: none;
+  padding: 8px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.top-nav button:hover {
+  background: #666;
 }
 
 .profile-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.profile-info, .top-friends-section, .wall-comments-section, .music-section {
+  background: #fff;
   padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.pfp-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .pfp-container img {
@@ -18,19 +53,61 @@ body {
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #444;
+  margin-bottom: 10px;
 }
 
-.friend-preview {
-  display: none;
-  align-items: center;
-  gap: 10px;
+.profile-fields input, .profile-fields textarea,
+.top-friends-section input, .wall-comments-section input,
+.music-section input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  padding: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #666;
+}
+
+.top-friends-container .top-friend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.friend-rank {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.comment-container div {
+  margin-bottom: 5px;
+}
+
+.music-section iframe, .music-section audio {
+  width: 100%;
   margin-top: 10px;
 }
 
-.friend-preview img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container { padding: 10px; }
+  .pfp-container img { width: 100px; height: 100px; }
+  .top-nav { justify-content: space-between; }
 }

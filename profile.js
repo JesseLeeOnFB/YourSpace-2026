@@ -19,7 +19,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// DOM
+// DOM Elements
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const savePfpBtn = document.getElementById("savePfpBtn");
@@ -31,6 +31,8 @@ const saveProfileBtn = document.getElementById("saveProfileBtn");
 const topFriendInput = document.getElementById("topFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 const topFriendsContainer = document.getElementById("topFriendsContainer");
+
+const friendRequestsContainer = document.getElementById("friendRequestsContainer");
 
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
@@ -51,6 +53,7 @@ auth.onAuthStateChanged(async user => {
   }
   currentUser = user;
   await loadProfile();
+  await loadFriendRequests();
 });
 
 // LOAD PROFILE
@@ -133,22 +136,55 @@ addTopFriendBtn.onclick = async () => {
   });
 
   alert(`Friend request sent to ${usernameToAdd}`);
-
-  // Optionally show preview of profile in top friend area
-  renderFriendPreview(userData.username, userData.pfpURL);
   topFriendInput.value = "";
 };
 
-function renderFriendPreview(username, pfpURL) {
-  const previewDiv = document.createElement("div");
-  previewDiv.className = "friend-preview";
+// LOAD FRIEND REQUESTS
+async function loadFriendRequests() {
+  friendRequestsContainer.innerHTML = "";
+  const pending = currentUserData.pendingRequests || [];
+  if (!pending.length) return;
 
-  previewDiv.innerHTML = `
-    <img src="${pfpURL || 'default-avatar.png'}" alt="${username}" class="friend-pfp-preview">
-    <span>${username}</span>
-  `;
+  for (let requesterId of pending) {
+    const snap = await getDoc(doc(db, "users", requesterId));
+    if (!snap.exists()) continue;
+    const data = snap.data();
 
-  topFriendsContainer.appendChild(previewDiv);
+    const div = document.createElement("div");
+    div.className = "friend-request";
+    div.innerHTML = `
+      <img src="${data.pfpURL || 'default-avatar.png'}" class="friend-request-pfp">
+      <span>${data.username}</span>
+      <button class="accept-btn">Accept</button>
+      <button class="deny-btn">Deny</button>
+    `;
+
+    // ACCEPT FRIEND REQUEST
+    div.querySelector(".accept-btn").onclick = async () => {
+      // Add each other to friends
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        friends: arrayUnion(requesterId),
+        pendingRequests: arrayRemove(requesterId)
+      });
+      await updateDoc(doc(db, "users", requesterId), {
+        friends: arrayUnion(currentUser.uid)
+      });
+      alert(`Friend request from ${data.username} accepted!`);
+      await loadProfile();
+      await loadFriendRequests();
+    };
+
+    // DENY FRIEND REQUEST
+    div.querySelector(".deny-btn").onclick = async () => {
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        pendingRequests: arrayRemove(requesterId)
+      });
+      alert(`Friend request from ${data.username} denied.`);
+      await loadFriendRequests();
+    };
+
+    friendRequestsContainer.appendChild(div);
+  }
 }
 
 // TOP FRIENDS DISPLAY

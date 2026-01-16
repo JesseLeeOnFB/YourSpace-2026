@@ -1,55 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YourSpace – Profile</title>
+  <link rel="stylesheet" href="profile.css" />
 </head>
-
 <body>
+
 <header class="top-nav">
-  <button id="feedBtn">Feed</button>
+  <button onclick="window.location.href='feed.html'">Feed</button>
   <button id="logoutBtn">Logout</button>
 </header>
 
 <main class="profile-container">
 
-  <section class="card">
-    <div class="pfp-wrapper">
-      <img id="profilePfp" src="default-avatar.png">
-      <input type="file" id="profilePfpInput" accept="image/*">
-      <button id="saveProfilePhotoBtn">Save Profile Picture</button>
+  <!-- PROFILE INFO -->
+  <section class="profile-card">
+    <div class="profile-pfp-wrapper">
+      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
     </div>
 
+    <input type="file" id="profilePfpInput" accept="image/*">
+    <button id="savePfpBtn">Save Profile Picture</button>
+
     <label>Username</label>
-    <input id="usernameInput">
+    <input type="text" id="usernameInput">
 
     <label>Bio</label>
     <textarea id="bioInput"></textarea>
 
     <label>Location</label>
-    <input id="locationInput">
+    <input type="text" id="locationInput">
 
-    <button id="saveProfileBtn">Save Profile</button>
+    <button id="saveProfileBtn">Save Profile Info</button>
   </section>
 
+  <!-- TOP FRIENDS -->
+  <section class="card">
+    <h3>Top 10 Friends</h3>
+    <div id="topFriendsContainer" class="top-friends-grid"></div>
+  </section>
+
+  <!-- ADD FRIEND -->
   <section class="card">
     <h3>Add Friend</h3>
-    <input id="friendSearchInput" placeholder="Search username">
-    <div id="friendPreviewContainer"></div>
+    <input type="text" id="friendSearchInput" placeholder="Search username">
+    <div id="friendSearchResults"></div>
   </section>
 
-  <section class="card">
-    <h3>Friend Requests</h3>
-    <div id="incomingRequestsContainer"></div>
-  </section>
-
+  <!-- WALL -->
   <section class="card">
     <h3>Wall</h3>
     <div id="commentContainer"></div>
-    <input id="wallCommentInput" placeholder="Write a comment">
+    <input type="text" id="wallCommentInput" placeholder="Write a comment">
     <button id="postWallCommentBtn">Post</button>
+  </section>
+
+  <!-- MUSIC -->
+  <section class="card">
+    <h3>Music</h3>
+    <input type="text" id="musicInput" placeholder="YouTube link">
+    <button id="saveMusicBtn">Save & Play</button>
+    <div id="musicPlayerContainer"></div>
   </section>
 
 </main>

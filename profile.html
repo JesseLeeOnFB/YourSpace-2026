@@ -1,68 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourSpace - Profile</title>
-    <link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <header>
-        <nav class="top-nav">
-            <button id="feedNavBtn">Feed</button>
-            <button id="logoutBtn">Logout</button>
-        </nav>
-    </header>
+  <header>
+    <nav class="top-nav">
+      <button id="feedNavBtn">Feed</button>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
 
-    <main class="profile-container">
+  <main class="profile-container">
+    <section class="profile-info">
+      <div class="pfp-container">
+        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="savePfpBtn">Save Profile Photo</button>
+      </div>
+      <div class="profile-fields">
+        <label>Username</label>
+        <input type="text" id="usernameInput">
+        <label>Bio</label>
+        <textarea id="bioInput"></textarea>
+        <label>Location</label>
+        <input type="text" id="locationInput">
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
+    </section>
 
-        <!-- PROFILE INFO -->
-        <section class="profile-info">
-            <div class="pfp-container">
-                <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-                <input type="file" id="profilePfpInput" accept="image/*">
-                <button id="savePfpBtn">Save Profile Photo</button>
-            </div>
-            <div class="profile-fields">
-                <label>Username</label>
-                <input type="text" id="usernameInput">
-                <label>Bio</label>
-                <textarea id="bioInput"></textarea>
-                <label>Location</label>
-                <input type="text" id="locationInput">
-                <button id="saveProfileBtn">Save Profile Info</button>
-            </div>
-        </section>
+    <section class="top-friends-section">
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer" class="top-friends-container"></div>
+      <input type="text" id="topFriendInput" placeholder="Add a friend by username">
+      <button id="addTopFriendBtn">Add Friend</button>
+    </section>
 
-        <!-- TOP FRIENDS & FRIEND REQUESTS -->
-        <section class="top-friends-section">
-            <h3>Top 10 Friends</h3>
-            <div id="topFriendsContainer" class="top-friends-container"></div>
-            <input type="text" id="topFriendInput" placeholder="Add friend">
-            <button id="addTopFriendBtn">Send Friend Request</button>
+    <section class="wall-comments-section">
+      <h3>Wall Comments</h3>
+      <div id="commentContainer" class="comment-container"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment">
+      <button id="postWallCommentBtn">Post Comment</button>
+    </section>
 
-            <h3>Friend Requests</h3>
-            <div id="friendRequestsContainer" class="friend-requests-container"></div>
-        </section>
+    <section class="music-section">
+      <h3>Music</h3>
+      <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">
+      <button id="saveMusicBtn">Save & Play</button>
+      <div id="musicPlayerContainer"></div>
+    </section>
+  </main>
 
-        <!-- WALL COMMENTS -->
-        <section class="wall-comments-section">
-            <h3>Wall Comments</h3>
-            <div id="commentContainer" class="comment-container"></div>
-            <input type="text" id="wallCommentInput" placeholder="Write a comment">
-            <button id="postWallCommentBtn">Post Comment</button>
-        </section>
-
-        <!-- MUSIC -->
-        <section class="music-section">
-            <h3>Music</h3>
-            <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">
-            <button id="saveMusicBtn">Save & Play</button>
-            <div id="musicPlayerContainer"></div>
-        </section>
-
-    </main>
-
-    <script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

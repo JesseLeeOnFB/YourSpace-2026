@@ -1,109 +1,92 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
   margin: 0;
-  background-color: #f0f0f0;
+  padding: 0;
 }
 
-/* Navbar */
-#navbar {
-  display: flex;
-  justify-content: space-around;
-  background-color: #222;
-  color: #fff;
+header {
+  background-color: #333;
+  color: white;
   padding: 10px;
 }
-.nav-btn {
+
+header h1 {
+  margin: 0 0 10px 0;
+}
+
+nav button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  color: white;
+  background-color: #555;
+  border: none;
   cursor: pointer;
 }
-#notif-badge {
-  background: red;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  vertical-align: top;
+
+nav button:hover {
+  background-color: #777;
 }
 
-/* Profile Info */
-#profile-container {
+main {
   max-width: 900px;
-  margin: 20px auto;
-  background: #fff;
+  margin: auto;
   padding: 20px;
-  border-radius: 10px;
 }
 
-#profile-info {
+.profile-info {
   display: flex;
   margin-bottom: 20px;
+  gap: 20px;
 }
 
-#pfp-container {
-  margin-right: 20px;
-}
-#profilePfp {
+.profile-pfp-container img {
   width: 150px;
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #333;
+  display: block;
+  margin-bottom: 10px;
 }
 
-/* Wall */
-#wall-container {
-  background: #eee;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-.wall-comment {
-  margin-bottom: 8px;
-  background: #fff;
-  padding: 5px;
-  border-radius: 5px;
-}
-.wall-comment button {
-  margin-left: 10px;
+.profile-fields label {
+  display: block;
+  margin-bottom: 10px;
 }
 
-/* Top 10 */
-#top10-container {
-  background: #eee;
-  padding: 10px;
-  border-radius: 8px;
+.top10-friends-section {
   margin-bottom: 20px;
 }
+
 .top-friend {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
 }
+
 .top-friend img {
   width: 40px;
   height: 40px;
-  object-fit: cover;
   border-radius: 50%;
   margin-right: 10px;
 }
 
-/* Themes */
-.theme-btn {
-  margin: 5px;
+.comment-wall {
+  margin-bottom: 20px;
+}
+
+.wall-comment {
+  background-color: #eee;
   padding: 5px 10px;
-  cursor: pointer;
-}
-
-/* Music Player */
-#musicPlayerContainer iframe {
-  width: 100%;
-  height: 150px;
-  border: none;
-}
-
-/* Notifications */
-.hidden { display: none; }
-.notification-card {
-  background: #fff;
   margin-bottom: 5px;
-  padding: 5px;
   border-radius: 5px;
+}
+
+.themes, .music-player {
+  margin-bottom: 20px;
+}
+
+input, select, button {
+  padding: 5px;
+  margin-top: 5px;
 }

@@ -1,155 +1,163 @@
-/* RESET */
+/* Reset */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
 
-/* PAGE */
-body {
-  background: #f4f6fb;
-  color: #222;
-}
-
-/* NAV */
+/* Nav */
 .top-nav {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: #1e3a8a;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    background-color: #222;
+    padding: 10px;
 }
 
 .top-nav button {
-  background: white;
-  color: #1e3a8a;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .top-nav button:hover {
-  opacity: 0.85;
+    background-color: #666;
 }
 
-/* PROFILE CONTAINER */
+/* Profile container */
 .profile-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 16px;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* PROFILE INFO */
+/* Profile info */
 .profile-info {
-  display: flex;
-  gap: 20px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-/* PROFILE PIC */
 .pfp-container {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #ddd;
-  flex-shrink: 0;
-  position: relative;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
 }
 
 .pfp-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* 🔥 THIS FIXES THE HALF IMAGE */
-  display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* Ensures image fills circle without stretching */
+    border: 2px solid #222;
 }
 
-.pfp-container input {
-  margin-top: 10px;
+.pfp-container input[type="file"] {
+    margin-top: 10px;
 }
 
-/* PROFILE FIELDS */
+.pfp-container button {
+    margin-top: 5px;
+    width: 100%;
+}
+
+/* Profile fields */
 .profile-fields {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .profile-fields label {
-  font-weight: bold;
-  font-size: 14px;
+    font-weight: bold;
 }
 
 .profile-fields input,
 .profile-fields textarea {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.profile-fields textarea {
-  resize: vertical;
-  min-height: 80px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
 }
 
 .profile-fields button {
-  margin-top: 10px;
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+    width: 150px;
+    padding: 10px;
+    margin-top: 10px;
 }
 
-/* SECTIONS */
-section {
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+/* Top friends */
+.top-friends-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-section h3 {
-  margin-bottom: 12px;
+.top-friend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #eee;
+    padding: 6px 10px;
+    border-radius: 4px;
 }
 
-/* WALL COMMENTS */
+.top-friend .friend-name {
+    cursor: pointer;
+    font-weight: bold;
+    color: #222;
+    text-decoration: underline;
+}
+
+.top-friend button {
+    padding: 4px 8px;
+}
+
+/* Wall comments */
+.comment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
 .comment-container div {
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0f0f0;
+    padding: 6px 10px;
+    border-radius: 4px;
 }
 
-/* MUSIC */
+.comment-container button {
+    padding: 2px 6px;
+}
+
+/* Music section */
+.music-section input {
+    width: 80%;
+    padding: 8px;
+    margin-right: 5px;
+}
+
+.music-section button {
+    padding: 8px 12px;
+}
+
 #musicPlayerContainer iframe,
 #musicPlayerContainer audio {
-  width: 100%;
-  margin-top: 10px;
-}
-
-/* MOBILE */
-@media (max-width: 700px) {
-  .profile-info {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-fields {
+    margin-top: 10px;
     width: 100%;
-  }
-
-  .pfp-container {
-    width: 120px;
-    height: 120px;
-  }
+    max-height: 200px;
 }

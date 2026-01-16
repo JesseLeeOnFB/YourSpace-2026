@@ -5,47 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YourSpace Profile</title>
 <link rel="stylesheet" href="profile.css">
-<script type="module" src="profile.js" defer></script>
 </head>
 <body>
+  <div id="profileContainer">
+    <div id="profileHeader">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="bioInput" placeholder="Bio">
+      <input type="text" id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
 
-<div class="profile-container">
+    <div id="wallContainer">
+      <h2>Wall Comments</h2>
+      <div id="wallCommentsContainer"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment">
+      <button id="addWallCommentBtn">Post Comment</button>
+    </div>
 
-  <div class="profile-header">
-    <img id="profilePfp" src="" alt="Profile Picture">
-    <input type="file" id="profilePfpInput">
-    <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    <div id="top10FriendsSection">
+      <h2>Top 10 Friends</h2>
+      <div id="top10FriendsContainer"></div>
+    </div>
+
+    <div id="addFriendSection">
+      <h2>Add Friend</h2>
+      <input type="text" id="addFriendInput" placeholder="Enter username">
+      <div id="addFriendPreview"></div>
+      <button id="sendFriendRequestBtn">Send Friend Request</button>
+    </div>
   </div>
 
-  <div class="profile-info">
-    <input type="text" id="usernameInput" placeholder="Username">
-    <textarea id="bioInput" placeholder="Bio"></textarea>
-    <input type="text" id="locationInput" placeholder="Location">
-    <button id="saveProfileBtn">Save Profile Info</button>
-  </div>
-
-  <div class="wall-comments-section">
-    <h2>Wall Comments</h2>
-    <div id="wallCommentsContainer"></div>
-    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-    <button id="addWallCommentBtn">Post Comment</button>
-  </div>
-
-  <div class="friends-section">
-    <h2>Top 10 Friends</h2>
-    <div id="top10FriendsContainer"></div>
-
-    <h2>All Friends</h2>
-    <div id="allFriendsContainer"></div>
-
-    <h2>Pending Friend Requests</h2>
-    <div id="pendingRequestsContainer"></div>
-
-    <h2>Add Friend</h2>
-    <input type="text" id="addFriendInput" placeholder="Enter username">
-    <div id="addFriendPreview"></div>
-  </div>
-
-</div>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

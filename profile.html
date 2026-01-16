@@ -1,63 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="profile.css" />
 </head>
 <body>
-  <div class="profile-container">
-    <!-- Profile Picture -->
-    <div class="profile-pfp-section">
-      <img id="profilePfp" src="default-pfp.png" alt="Profile Picture" class="profile-pfp">
-      <input type="file" id="profilePfpInput" accept="image/*">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+
+<nav class="nav">
+  <button onclick="window.location.href='feed.html'">Feed</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
+
+<main class="profile-container">
+
+  <!-- PROFILE HEADER -->
+  <section class="profile-header">
+    <div class="pfp-wrapper">
+      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
     </div>
 
-    <!-- Profile Info -->
-    <div class="profile-info-section">
-      <label>Username:</label>
-      <input type="text" id="usernameInput" placeholder="Your username">
-      
-      <label>Bio:</label>
-      <textarea id="bioInput" placeholder="Your bio"></textarea>
-      
-      <label>Location:</label>
-      <input type="text" id="locationInput" placeholder="Your location">
-      
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
+    <input type="file" id="profilePfpInput" accept="image/*">
+    <button id="saveProfilePfpBtn">Save Profile Picture</button>
+  </section>
 
-    <!-- Wall Comments -->
-    <div class="wall-section">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer" class="wall-comments-container"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
+  <!-- PROFILE INFO -->
+  <section class="profile-info">
+    <input id="usernameInput" placeholder="Username">
+    <input id="locationInput" placeholder="Location">
+    <textarea id="bioInput" placeholder="Bio"></textarea>
+    <button id="saveProfileBtn">Save Profile Info</button>
+  </section>
 
-    <!-- Top 10 Friends -->
-    <div class="top10-section">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer" class="top10-container"></div>
-    </div>
+  <!-- TOP 10 FRIENDS -->
+  <section class="top-friends">
+    <h2>Top 10 Friends</h2>
+    <div id="top10FriendsContainer"></div>
+  </section>
 
-    <!-- Add Friend Search -->
-    <div class="add-friend-section">
-      <h3>Add Friend</h3>
-      <input type="text" id="searchUserInput" placeholder="Search username...">
-      <div id="searchUserResults" class="search-results-container"></div>
-    </div>
+  <!-- WALL -->
+  <section class="wall">
+    <h2>Wall</h2>
+    <div id="wallCommentsContainer"></div>
 
-    <!-- Navigation Buttons -->
-    <div class="nav-buttons">
-      <button onclick="window.location.href='feed.html'">Feed</button>
-      <button onclick="window.location.href='messages.html'">Messages</button>
-      <button onclick="auth.signOut()">Logout</button>
-    </div>
-  </div>
+    <textarea id="wallCommentInput" placeholder="Write on your wall..."></textarea>
+    <button id="addWallCommentBtn">Post Comment</button>
+  </section>
 
-  <script type="module" src="profile.js"></script>
+</main>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

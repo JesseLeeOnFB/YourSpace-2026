@@ -13,7 +13,6 @@ const firebaseConfig = {
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -31,7 +30,7 @@ const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
 
-// Redirect if not logged in
+// Load profile info
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -43,14 +42,12 @@ auth.onAuthStateChanged(async (user) => {
 
   if (userSnap.exists()) {
     const data = userSnap.data();
-
-    // Load profile info
     usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
     profilePfp.src = data.pfpURL || "default-avatar.png";
 
-    // Load wall comments safely
+    // Load wall comments
     commentContainer.innerHTML = "";
     const comments = data.wallComments || [];
     comments.forEach(c => {
@@ -61,12 +58,12 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-// Save profile info (username, bio, location)
+// Save profile info
 saveProfileBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
-
   const userDocRef = doc(db, "users", user.uid);
+
   try {
     await updateDoc(userDocRef, {
       username: usernameInput.value,
@@ -75,12 +72,12 @@ saveProfileBtn.addEventListener("click", async () => {
     });
     alert("Profile updated!");
   } catch (err) {
-    console.error("Error saving profile info:", err);
+    console.error("Failed to save profile info:", err);
     alert("Failed to save profile info.");
   }
 });
 
-// Save profile picture
+// Upload and save profile picture
 saveProfilePicBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
@@ -99,37 +96,34 @@ saveProfilePicBtn.addEventListener("click", async () => {
     profilePfp.src = url;
     alert("Profile picture updated!");
   } catch (err) {
-    console.error("Error uploading profile picture:", err);
+    console.error("Failed to save profile picture:", err);
     alert("Failed to save profile picture.");
   }
 });
 
-// Post a wall comment
+// Post wall comment
 postWallCommentBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
-
   const text = wallCommentInput.value.trim();
   if (!text) return;
-
-  const userDocRef = doc(db, "users", user.uid);
 
   const newComment = {
     user: usernameInput.value || user.email.split("@")[0],
     text
   };
 
+  const userDocRef = doc(db, "users", user.uid);
   try {
     await updateDoc(userDocRef, {
       wallComments: arrayUnion(newComment)
     });
-
     const div = document.createElement("div");
     div.textContent = `${newComment.user}: ${newComment.text}`;
     commentContainer.appendChild(div);
     wallCommentInput.value = "";
   } catch (err) {
-    console.error("Error posting wall comment:", err);
+    console.error("Failed to post wall comment:", err);
     alert("Failed to post comment.");
   }
 });

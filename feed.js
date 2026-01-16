@@ -4,10 +4,10 @@ import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
   updateDoc, query, orderBy, getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-// Initialize Firebase
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -16,12 +16,13 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
-// DOM elements
+// DOM
 const postsContainer = document.getElementById("postsContainer");
 const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
@@ -31,112 +32,83 @@ const postFileInput = document.getElementById("postFileInput");
 document.getElementById("feedNavBtn")?.addEventListener("click", () => {
   window.location.href = "feed.html";
 });
+
 document.getElementById("profileNavBtn")?.addEventListener("click", () => {
   window.location.href = "profile.html";
 });
 
-// UTILITY: Get username from userId
+// LOGOUT BUTTON (FIXED)
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+
+// GET DISPLAY USERNAME
 async function getUsername(userId) {
   try {
-    const userDoc = await getDoc(doc(db, "users", userId));
-    return userDoc.exists() ? (userDoc.data().username || "Anonymous") : "Anonymous";
+    const snap = await getDoc(doc(db, "users", userId));
+    return snap.exists() && snap.data().username
+      ? snap.data().username
+      : "Anonymous";
   } catch {
     return "Anonymous";
   }
 }
 
-// UTILITY: Render a post
+// RENDER POST
 async function renderPost(postData, postId) {
   const postEl = document.createElement("div");
   postEl.className = "post-container";
 
   const username = await getUsername(postData.userId);
-  const text = postData.text || "";
-  const mediaURL = postData.mediaURL || "";
-  const mediaType = postData.mediaType || "";
 
   let mediaHTML = "";
-  if (mediaType === "image") {
-    mediaHTML = `<img src="${mediaURL}" alt="Post Image" class="post-media">`;
-  } else if (mediaType === "video") {
-    mediaHTML = `<video controls class="post-media"><source src="${mediaURL}"></video>`;
+  if (postData.mediaType === "image") {
+    mediaHTML = `<img src="${postData.mediaURL}" class="post-media">`;
+  } else if (postData.mediaType === "video") {
+    mediaHTML = `<video controls class="post-media"><source src="${postData.mediaURL}"></video>`;
   }
 
   postEl.innerHTML = `
     <div class="post-header">
       <span class="post-username">${username}</span>
-      ${postData.userId === auth.currentUser.uid ? '<button class="delete-post">Delete</button>' : ''}
+      ${postData.userId === auth.currentUser.uid ? `<button class="delete-post">Delete</button>` : ""}
     </div>
     <div class="post-body">
-      <p>${text}</p>
+      <p>${postData.text || ""}</p>
       ${mediaHTML}
     </div>
     <div class="post-footer">
       <button class="like-btn">👍 ${postData.likes || 0}</button>
       <button class="dislike-btn">🖕 ${postData.dislikes || 0}</button>
-      <button class="comment-btn">Comment</button>
       <button class="share-btn">Share</button>
     </div>
-    <div class="comment-section"></div>
   `;
 
-  // DELETE
-  const deleteBtn = postEl.querySelector(".delete-post");
-  if (deleteBtn) {
-    deleteBtn.addEventListener("click", async () => {
-      try {
-        await deleteDoc(doc(db, "posts", postId));
-        postEl.remove();
-      } catch (err) {
-        console.error(err);
-        alert("Failed to delete post.");
-      }
-    });
-  }
-
-  // LIKE/DISLIKE
-  const likeBtn = postEl.querySelector(".like-btn");
-  const dislikeBtn = postEl.querySelector(".dislike-btn");
-
-  likeBtn.addEventListener("click", async () => {
-    const postRef = doc(db, "posts", postId);
-    await updateDoc(postRef, { likes: (postData.likes || 0) + 1 });
-    likeBtn.textContent = `👍 ${postData.likes + 1}`;
+  // DELETE POST
+  postEl.querySelector(".delete-post")?.addEventListener("click", async () => {
+    await deleteDoc(doc(db, "posts", postId));
+    postEl.remove();
   });
 
-  dislikeBtn.addEventListener("click", async () => {
-    const postRef = doc(db, "posts", postId);
-    await updateDoc(postRef, { dislikes: (postData.dislikes || 0) + 1 });
-    dislikeBtn.textContent = `🖕 ${postData.dislikes + 1}`;
+  // LIKE
+  postEl.querySelector(".like-btn").addEventListener("click", async () => {
+    const newLikes = (postData.likes || 0) + 1;
+    await updateDoc(doc(db, "posts", postId), { likes: newLikes });
+    postEl.querySelector(".like-btn").textContent = `👍 ${newLikes}`;
   });
 
-  // COMMENTS
-  const commentSection = postEl.querySelector(".comment-section");
-  const commentInput = document.createElement("input");
-  commentInput.type = "text";
-  commentInput.placeholder = "Write a comment...";
-  const submitComment = document.createElement("button");
-  submitComment.textContent = "Post";
-  commentSection.appendChild(commentInput);
-  commentSection.appendChild(submitComment);
-
-  submitComment.addEventListener("click", async () => {
-    const commentText = commentInput.value.trim();
-    if (!commentText) return;
-    const postRef = doc(db, "posts", postId);
-    const newComments = [...(postData.comments || []), { user: username, text: commentText }];
-    await updateDoc(postRef, { comments: newComments });
-    const commentEl = document.createElement("p");
-    commentEl.textContent = `${username}: ${commentText}`;
-    commentSection.appendChild(commentEl);
-    commentInput.value = "";
+  // DISLIKE
+  postEl.querySelector(".dislike-btn").addEventListener("click", async () => {
+    const newDislikes = (postData.dislikes || 0) + 1;
+    await updateDoc(doc(db, "posts", postId), { dislikes: newDislikes });
+    postEl.querySelector(".dislike-btn").textContent = `🖕 ${newDislikes}`;
   });
 
   // SHARE
-  const shareBtn = postEl.querySelector(".share-btn");
-  shareBtn.addEventListener("click", () => {
-    const url = `${window.location.origin}/feed.html#${postId}`;
-    navigator.clipboard.writeText(url).then(() => alert("Post link copied!"));
+  postEl.querySelector(".share-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
+    alert("Post link copied");
   });
 
   postsContainer.prepend(postEl);
@@ -144,13 +116,9 @@ async function renderPost(postData, postId) {
 
 // LOAD POSTS
 async function loadPosts() {
-  try {
-    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
-    postsContainer.innerHTML = "";
-    postsSnap.forEach(docSnap => renderPost(docSnap.data(), docSnap.id));
-  } catch (err) {
-    console.error("Failed to load posts:", err);
-  }
+  postsContainer.innerHTML = "";
+  const snap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
+  snap.forEach(docSnap => renderPost(docSnap.data(), docSnap.id));
 }
 
 // CREATE POST
@@ -158,43 +126,38 @@ postBtn.addEventListener("click", async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
 
-  if (!text && !file) return alert("Post cannot be empty.");
+  if (!text && !file) return alert("Post cannot be empty");
 
   let mediaURL = "";
   let mediaType = "";
 
   if (file) {
-    mediaType = file.type.startsWith("image/") ? "image" : "video";
+    mediaType = file.type.startsWith("image") ? "image" : "video";
     const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
     mediaURL = await getDownloadURL(storageRef);
   }
 
-  try {
-    await addDoc(collection(db, "posts"), {
-      userId: auth.currentUser.uid,
-      text,
-      mediaURL,
-      mediaType,
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      createdAt: new Date()
-    });
-    postText.value = "";
-    postFileInput.value = "";
-    loadPosts();
-  } catch (err) {
-    console.error(err);
-    alert("Post failed. Check console.");
-  }
+  await addDoc(collection(db, "posts"), {
+    userId: auth.currentUser.uid,
+    text,
+    mediaURL,
+    mediaType,
+    likes: 0,
+    dislikes: 0,
+    createdAt: new Date()
+  });
+
+  postText.value = "";
+  postFileInput.value = "";
+  loadPosts();
 });
 
-// AUTH CHECK & INITIAL LOAD
+// AUTH CHECK
 auth.onAuthStateChanged(user => {
-  if (user) {
-    loadPosts();
-  } else {
+  if (!user) {
     window.location.href = "login.html";
+  } else {
+    loadPosts();
   }
 });

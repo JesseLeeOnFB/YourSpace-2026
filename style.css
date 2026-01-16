@@ -1,90 +1,200 @@
-/* Feed - Mobile First */
-body {
-    font-family: 'Arial', sans-serif;
+/* --- General Reset & Base --- */
+* {
     margin: 0;
     padding: 0;
-    background: #f0f2f5;
+    box-sizing: border-box;
+    font-family: 'Helvetica', 'Arial', sans-serif;
 }
 
-.feed-container {
-    max-width: 900px;
+body {
+    background-color: #f5f5f5;
+    color: #222;
+    line-height: 1.5;
+    font-size: 1rem; /* scalable with rem */
+}
+
+/* --- Layout Containers --- */
+.container {
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 10px;
+    padding: 1rem;
 }
 
+/* --- Buttons --- */
+button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Inputs --- */
+input[type="text"], input[type="email"], input[type="password"], input[type="file"], textarea {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* --- Login / Signup Pages --- */
+.login-container, .signup-container {
+    max-width: 400px;
+    margin: 5% auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.login-container h2, .signup-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+/* --- Feed Posts --- */
 .post-container {
     background: #fff;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 600px;
 }
 
-.post-container .post-body p {
-    font-size: 16px;
-    line-height: 1.4;
-    word-wrap: break-word;
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.post-username {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.post-body p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .post-media {
-    width: 100%;
+    max-width: 100%;
     height: auto;
-    max-height: 400px;
-    margin-top: 10px;
-    border-radius: 12px;
-    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+}
+
+.post-footer {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
 }
 
 .post-footer button {
-    margin-right: 8px;
-    margin-top: 10px;
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
+    font-size: 0.9rem;
 }
 
-.post-footer button:hover {
-    opacity: 0.8;
-}
-
-/* Comments */
+/* --- Comments --- */
 .comment-section input {
-    width: 100%;
-    margin-top: 8px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    width: 80%;
+    margin-right: 0.5rem;
 }
 
 .comment-section button {
-    margin-top: 5px;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 8px;
-    background-color: #4267B2;
-    color: white;
-    cursor: pointer;
+    width: 18%;
 }
 
-.comment-section button:hover {
-    background-color: #365899;
+/* --- Profile Page --- */
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* MOBILE MEDIA QUERIES */
-@media (min-width: 600px) {
-    .post-container .post-body p {
-        font-size: 18px;
+.profile-pfp {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #007bff;
+    margin-bottom: 1rem;
+}
+
+.profile-info input, .profile-info textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.top-friends-container, #commentContainer {
+    background: #f0f0f0;
+    padding: 0.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+/* --- Music Player --- */
+#musicPlayerContainer iframe {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* --- Responsive --- */
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 0.95rem;
     }
-    .post-footer button {
-        font-size: 16px;
-        padding: 8px 14px;
+
+    .post-footer {
+        flex-direction: column;
+    }
+
+    .comment-section input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-section button {
+        width: 100%;
+    }
+
+    .profile-pfp {
+        width: 120px;
+        height: 120px;
+    }
+
+    .container, .profile-container {
+        padding: 0.5rem;
     }
 }
 
-@media (min-width: 900px) {
-    .post-container .post-body p {
-        font-size: 20px;
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 0.9rem;
+    }
+
+    .login-container, .signup-container {
+        margin: 10% auto;
+        padding: 1rem;
+    }
+
+    .post-container {
+        padding: 0.5rem;
     }
 }

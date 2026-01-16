@@ -1,211 +1,130 @@
-/* GENERAL RESET */
+/* Basic Reset */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* BODY */
 body {
-  background-color: #f5f5f5;
-  color: #333;
-  min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-/* TOP NAVIGATION */
-.top-nav {
-  background-color: #0044cc;
-  padding: 10px;
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+header {
+    background-color: #0a74da;
+    padding: 10px 20px;
 }
 
 .top-nav button {
-  background-color: #fff;
-  color: #0044cc;
-  border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: 0.2s;
+    background-color: white;
+    border: none;
+    margin-right: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
 .top-nav button:hover {
-  background-color: #e0e0ff;
+    background-color: #ddd;
 }
 
-/* PROFILE CONTAINER */
 .profile-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
 }
 
-/* PROFILE INFO */
-.profile-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+.profile-info, .friend-request-section, .top-friends-section,
+.wall-comments-section, .music-section {
+    margin-bottom: 30px;
 }
 
 .pfp-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .pfp-container img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #0044cc;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #0a74da;
+    margin-bottom: 10px;
 }
 
-.profile-fields {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.profile-fields label {
-  font-weight: bold;
-}
-
-.profile-fields input,
-.profile-fields textarea {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 100%;
-}
-
-.profile-fields button {
-  align-self: flex-start;
-  padding: 10px 20px;
-  background-color: #0044cc;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.profile-fields button:hover {
-  background-color: #0033aa;
-}
-
-/* FRIEND REQUESTS & ADD FRIEND */
-.friend-requests-section,
-.add-friend-section,
-.top-friends-section,
-.wall-comments-section,
-.music-section {
-  background-color: #fff;
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.friend-requests-section h3,
-.add-friend-section h3,
-.top-friends-section h3,
-.wall-comments-section h3,
-.music-section h3 {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-}
-
-#pendingRequestsContainer div,
-#topFriendsContainer div,
-#searchPreviewContainer div,
-.comment-container div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 8px;
-  background-color: #f0f0ff;
-  border-radius: 8px;
-  margin-bottom: 6px;
-}
-
-#searchPreviewContainer div {
-  background-color: #e0ffe0;
+.profile-fields input, .profile-fields textarea,
+.friend-request-section input, .wall-comments-section input,
+.music-section input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
 button {
-  cursor: pointer;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  background-color: #0044cc;
-  color: #fff;
-  transition: 0.2s;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #0a74da;
+    color: white;
+    cursor: pointer;
 }
 
 button:hover {
-  background-color: #0033aa;
+    background-color: #075bb5;
 }
 
-input[type="text"],
-textarea {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+.top-friends-container, #friendSearchResults, #commentContainer, #musicPlayerContainer {
+    margin-top: 10px;
 }
 
-/* MUSIC */
-#musicPlayerContainer iframe,
-#musicPlayerContainer audio {
-  width: 100%;
-  border-radius: 8px;
+.top-friend, .friend-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 6px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
 }
 
-/* WALL COMMENTS */
-.comment-container div {
-  flex-direction: row;
-  justify-content: space-between;
+.friend-result img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
-/* RESPONSIVE */
-@media screen and (max-width: 768px) {
-  .profile-info {
-    flex-direction: column;
-  }
-  
-  .pfp-container img {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .top-nav {
-    flex-wrap: wrap;
-  }
+.friend-name {
+    cursor: pointer;
+}
 
-  button {
-    font-size: 0.9rem;
-    padding: 6px 12px;
-  }
-  
-  .profile-fields input,
-  .profile-fields textarea {
-    font-size: 0.9rem;
-  }
+.comment-container div, .comment-container p {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+@media (max-width: 600px) {
+    .profile-container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .pfp-container img {
+        width: 120px;
+        height: 120px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 5px;
+    }
 }

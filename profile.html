@@ -5,65 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace - Profile</title>
   <link rel="stylesheet" href="profile.css">
-  <script type="module" src="profile.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="firebase_config.js"></script> <!-- Your Firebase config -->
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <button id="feedBtn">Feed</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+  <header>
+    <h1>YourSpace</h1>
+    <nav>
+      <button id="feedNavBtn">Feed</button>
+      <button id="profileNavBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
 
-  <main class="profile-container">
-
-    <!-- Profile Info -->
-    <section class="profile-info">
-      <div class="profile-pfp-frame">
-        <img id="profilePfp" src="default-profile.png" alt="Profile Picture">
+  <main>
+    <section class="profile-section">
+      <div class="profile-pfp-container">
+        <img id="profilePfp" src="default_profile.png" alt="Profile Picture">
+        <input type="file" id="profilePfpInput">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
       </div>
-      <input type="file" id="profilePfpInput" accept="image/*">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
 
-      <div class="profile-details">
-        <label>Username</label>
-        <input type="text" id="usernameInput">
-        <label>Bio</label>
+      <div class="profile-info">
+        <label>Username:</label>
+        <input id="usernameInput" type="text">
+        <label>Bio:</label>
         <textarea id="bioInput"></textarea>
-        <label>Location</label>
-        <input type="text" id="locationInput">
+        <label>Location:</label>
+        <input id="locationInput" type="text">
         <button id="saveProfileBtn">Save Profile Info</button>
       </div>
     </section>
 
-    <!-- Wall Comments -->
     <section class="wall-section">
       <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer" class="wall-comments-container"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <div id="wallCommentsContainer" class="wall-comments"></div>
+      <input id="wallCommentInput" type="text" placeholder="Write a comment...">
       <button id="addWallCommentBtn">Post Comment</button>
     </section>
 
-    <!-- Top 10 Friends -->
-    <section class="top-friends-section">
+    <section class="friends-section">
       <h2>Top 10 Friends</h2>
       <div id="top10FriendsContainer" class="top-friends-container"></div>
 
-      <div class="add-friend-section">
-        <input type="text" id="addFriendInput" placeholder="Search username...">
-        <div id="addFriendPreview" class="add-friend-preview"></div>
-        <button id="addFriendBtn">Add Friend</button>
-      </div>
+      <h3>Add Friend</h3>
+      <input id="addFriendInput" type="text" placeholder="Enter username">
+      <button id="addFriendBtn">Add Friend</button>
+      <div id="friendPreviewContainer" class="friend-preview"></div>
     </section>
-
-    <!-- Music Player -->
-    <section class="music-section">
-      <h2>Profile Music</h2>
-      <input type="text" id="profileMusicInput" placeholder="Enter YouTube link or audio URL">
-      <button id="saveProfileMusicBtn">Save & Play</button>
-      <div id="musicPlayerContainer"></div>
-    </section>
-
   </main>
+
+  <script src="profile.js"></script>
 </body>
 </html>

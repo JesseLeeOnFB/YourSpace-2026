@@ -1,73 +1,53 @@
 body {
   font-family: Arial, sans-serif;
+  background: #f5f5f5;
   margin: 0;
-  padding: 0;
-  background-color: #f2f2f2;
+  padding: 20px;
 }
 
 #profileContainer {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+  max-width: 900px;
+  margin: auto;
   background: #fff;
+  padding: 20px;
   border-radius: 8px;
 }
 
-#profileHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-#profilePfp {
+#profileHeader img {
   width: 150px;
   height: 150px;
-  border-radius: 50%;
   object-fit: cover;
+  border-radius: 50%;
+  display: block;
   margin-bottom: 10px;
 }
 
-input[type="text"], input[type="file"] {
-  margin: 5px 0;
-  padding: 8px;
-  width: 100%;
-  max-width: 400px;
-  box-sizing: border-box;
+#profileHeader input, #profileHeader button {
+  display: block;
+  margin-bottom: 10px;
 }
 
-button {
-  padding: 8px 12px;
-  margin: 5px 0;
-  cursor: pointer;
-}
-
-#friendSection, #wallSection {
-  margin-top: 20px;
-}
-
-#searchPreview, #pendingRequestsContainer, #friendsContainer, #top10FriendsContainer, #wallCommentsContainer {
+#wallCommentsContainer, #pendingRequestsList, #allFriendsList, #addFriendPreview, #top10FriendsContainer {
   margin-top: 10px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: #fafafa;
+  background: #f9f9f9;
 }
 
-.friend-preview, .pending-request, .friend, .top-friend, .wall-comment {
-  padding: 6px;
-  border-bottom: 1px solid #eee;
+.wall-comment {
+  margin-bottom: 8px;
 }
 
-.friend-preview img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-  vertical-align: middle;
+.wall-comment button {
+  margin-left: 10px;
 }
 
-.friend-preview span {
-  vertical-align: middle;
+.friend-preview {
+  cursor: pointer;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+.friend-preview:hover {
+  background: #eee;
 }

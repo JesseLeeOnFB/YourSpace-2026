@@ -1,119 +1,69 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f4f4f4;
+/* Container */
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-nav {
-    background: #222;
-    color: #fff;
-    display: flex;
-    justify-content: flex-start;
-    padding: 10px;
+/* Profile Picture */
+#profilePfp {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #3498db;
 }
 
-nav button {
-    margin-right: 10px;
-    padding: 10px 20px;
-    background: #444;
-    border: none;
-    color: #fff;
-    cursor: pointer;
+/* Inputs */
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-nav button:hover {
-    background: #555;
+/* Buttons */
+button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
-main {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+button:hover {
+  background-color: #2980b9;
 }
 
-.pfp-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.pfp-container img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    border: 2px solid #222;
-}
-
-.profile-info input, .top-friends-section input, .wall-section input, .music-section input {
-    display: block;
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.profile-info button, .top-friends-section button, .wall-section button, .music-section button {
-    padding: 8px 12px;
-    font-size: 16px;
-    cursor: pointer;
-    background: #222;
-    color: #fff;
-    border: none;
-}
-
-.profile-info button:hover, .top-friends-section button:hover, .wall-section button:hover, .music-section button:hover {
-    background: #444;
-}
-
-.top-friends-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.friend-item {
-    background: #fff;
-    padding: 8px 12px;
-    border-radius: 5px;
-    box-shadow: 0px 1px 3px rgba(0,0,0,0.2);
-    cursor: pointer;
-}
-
+/* Wall comments */
 #commentContainer {
-    background: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    max-height: 300px;
-    overflow-y: auto;
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
 }
 
-#musicPlayerContainer iframe {
-    width: 100%;
-    height: 166px;
-    margin-top: 10px;
+#commentContainer div {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
 }
 
+/* Responsive for mobile */
 @media (max-width: 600px) {
-    nav {
-        flex-direction: column;
-    }
+  #profilePfp {
+    width: 120px;
+    height: 120px;
+  }
 
-    .pfp-container img {
-        width: 120px;
-        height: 120px;
-    }
+  .profile-container {
+    padding: 10px;
+  }
 
-    .profile-info input, .top-friends-section input, .wall-section input, .music-section input {
-        font-size: 14px;
-    }
-
-    .profile-info button, .top-friends-section button, .wall-section button, .music-section button {
-        font-size: 14px;
-    }
+  button {
+    width: 100%;
+  }
 }

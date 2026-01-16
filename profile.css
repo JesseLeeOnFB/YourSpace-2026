@@ -1,96 +1,54 @@
-body {
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f5f5f5;
-}
-
-nav {
-  background: #333;
-  color: #fff;
-  display: flex;
-  gap: 10px;
-  padding: 10px;
-}
-
-nav button {
-  background: #555;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-}
-
-nav button:hover {
-  background: #777;
-}
-
-main {
   padding: 20px;
 }
 
-#profileSection {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-#profilePfpContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.profile-header, .wall-section, .friend-section {
+  background-color: #f5f5f5;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
 }
 
 #profilePfp {
   width: 150px;
   height: 150px;
-  object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #333;
+  object-fit: cover;
+  display: block;
   margin-bottom: 10px;
 }
 
-#profileInfoContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#profileInfoContainer input,
-#profileInfoContainer textarea {
-  width: 100%;
-  padding: 5px;
-  font-size: 16px;
-}
-
-#wallSection {
-  margin-bottom: 30px;
-}
-
-.wall-comment {
-  background: #fff;
+input[type=text], input[type=file] {
+  display: block;
+  margin-bottom: 10px;
   padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.wall-comment button {
-  float: right;
-  background: red;
-  color: #fff;
-  border: none;
-  padding: 3px 6px;
+button {
+  padding: 8px 12px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
-#friendsSection {
-  margin-bottom: 30px;
-}
-
-.top-friend {
-  background: #fff;
+.wall-comment {
+  background-color: #fff;
   padding: 8px;
   margin-bottom: 5px;
   border-radius: 5px;
+}
+
+.friend-preview, .top-friend, .friend-item, .pending-request {
+  background-color: #fff;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.friend-preview button, .pending-request button {
+  margin-left: 10px;
 }

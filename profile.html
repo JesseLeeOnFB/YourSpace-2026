@@ -15,11 +15,12 @@
   </header>
 
   <main class="profile-container">
+    <!-- PROFILE INFO -->
     <section class="profile-info">
       <div class="pfp-container">
         <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
         <input type="file" id="profilePfpInput" accept="image/*">
-        <button id="savePfpBtn">Save Profile Photo</button>
+        <button id="savePfpBtn">Save Profile Picture</button>
       </div>
       <div class="profile-fields">
         <label>Username</label>
@@ -32,13 +33,27 @@
       </div>
     </section>
 
-    <section class="top-friends-section">
-      <h3>Top 10 Friends</h3>
-      <div id="topFriendsContainer" class="top-friends-container"></div>
-      <input type="text" id="topFriendInput" placeholder="Add a friend by username">
-      <button id="addTopFriendBtn">Add Friend</button>
+    <!-- FRIEND REQUESTS -->
+    <section class="friend-requests-section">
+      <h3>Friend Requests</h3>
+      <div id="incomingRequestsContainer"></div>
     </section>
 
+    <!-- ADD FRIEND -->
+    <section class="add-friend-section">
+      <h3>Add Friend</h3>
+      <input type="text" id="searchUserInput" placeholder="Search username">
+      <button id="searchUserBtn">Search</button>
+      <div id="searchResultsContainer"></div>
+    </section>
+
+    <!-- TOP FRIENDS -->
+    <section class="top-friends-section">
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer"></div>
+    </section>
+
+    <!-- WALL COMMENTS -->
     <section class="wall-comments-section">
       <h3>Wall Comments</h3>
       <div id="commentContainer" class="comment-container"></div>
@@ -46,6 +61,7 @@
       <button id="postWallCommentBtn">Post Comment</button>
     </section>
 
+    <!-- MUSIC -->
     <section class="music-section">
       <h3>Music</h3>
       <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">

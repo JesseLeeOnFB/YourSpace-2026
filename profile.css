@@ -1,87 +1,47 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: Arial, sans-serif;
   background: #f0f2f5;
 }
 
-.nav {
+.top-nav {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   padding: 10px;
-  background: #222;
+  background: #4267b2;
 }
 
-.nav button {
+.top-nav button {
   color: white;
   background: none;
   border: none;
   font-size: 16px;
-  cursor: pointer;
 }
 
 .profile-container {
   max-width: 600px;
   margin: auto;
-  padding: 16px;
+  padding: 15px;
 }
 
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.pfp-wrapper {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #ddd;
-}
-
-.pfp-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-info,
-.top-friends,
-.wall {
+.card, .profile-card {
   background: white;
-  padding: 12px;
-  margin-top: 16px;
+  padding: 15px;
+  margin-bottom: 15px;
   border-radius: 8px;
 }
 
-.profile-info input,
-.profile-info textarea,
-.wall textarea {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 8px;
+.pfp-wrapper {
+  text-align: center;
 }
 
-button {
-  padding: 8px 12px;
-  cursor: pointer;
+#profilePfp {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .wall-comment {
-  border-bottom: 1px solid #ddd;
-  padding: 6px 0;
-}
-
-.wall-comment button {
-  margin-left: 8px;
-  font-size: 12px;
-}
-
-#top10FriendsContainer div {
-  padding: 4px 0;
+  margin-bottom: 6px;
 }

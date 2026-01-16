@@ -1,163 +1,88 @@
-/* Reset */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #222;
 }
 
-/* Nav */
-.top-nav {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    background-color: #222;
-    padding: 10px;
+.navbar {
+  display: flex;
+  background-color: #333;
+  padding: 10px;
+  gap: 10px;
 }
 
-.top-nav button {
-    background-color: #444;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+.navbar button {
+  color: #fff;
+  background: #555;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
-.top-nav button:hover {
-    background-color: #666;
+.navbar button:hover {
+  background-color: #777;
+  color: #fff;
 }
 
-/* Profile container */
 .profile-container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  max-width: 900px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 0 10px;
 }
 
-/* Profile info */
-.profile-info {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .pfp-container {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .pfp-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover; /* Ensures image fills circle without stretching */
-    border: 2px solid #222;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #333;
 }
 
-.pfp-container input[type="file"] {
-    margin-top: 10px;
+.profile-info input {
+  display: block;
+  margin: 5px 0;
+  padding: 8px;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
 }
 
-.pfp-container button {
-    margin-top: 5px;
-    width: 100%;
+button {
+  padding: 8px 12px;
+  margin-top: 5px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-/* Profile fields */
-.profile-fields {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.top-friends-section, .wall-comments-section, .music-section {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.profile-fields label {
-    font-weight: bold;
+.top-friends-container, #commentContainer, #friendPreview, #musicPlayerContainer {
+  margin-top: 10px;
 }
 
-.profile-fields input,
-.profile-fields textarea {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
-
-.profile-fields button {
-    width: 150px;
-    padding: 10px;
-    margin-top: 10px;
-}
-
-/* Top friends */
-.top-friends-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.top-friend {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #eee;
-    padding: 6px 10px;
-    border-radius: 4px;
-}
-
-.top-friend .friend-name {
-    cursor: pointer;
-    font-weight: bold;
-    color: #222;
-    text-decoration: underline;
-}
-
-.top-friend button {
-    padding: 4px 8px;
-}
-
-/* Wall comments */
-.comment-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.comment-container div {
-    display: flex;
-    justify-content: space-between;
-    background-color: #f0f0f0;
-    padding: 6px 10px;
-    border-radius: 4px;
-}
-
-.comment-container button {
-    padding: 2px 6px;
-}
-
-/* Music section */
-.music-section input {
-    width: 80%;
-    padding: 8px;
-    margin-right: 5px;
-}
-
-.music-section button {
-    padding: 8px 12px;
-}
-
-#musicPlayerContainer iframe,
-#musicPlayerContainer audio {
-    margin-top: 10px;
-    width: 100%;
-    max-height: 200px;
+#musicPlayerContainer iframe {
+  width: 100%;
+  height: 200px;
 }

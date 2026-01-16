@@ -1,75 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
+  <script type="module" src="profile.js" defer></script>
 </head>
 <body>
+  <header>
+    <h1>YourSpace Profile</h1>
+    <nav>
+      <button id="navFeed">Feed</button>
+      <button id="navProfile">Profile</button>
+      <button id="navMessages">Messages</button>
+      <button id="navNotifications">Notifications</button>
+    </nav>
+  </header>
 
-<div id="navbar">
-  <span id="nav-home" class="nav-btn">Home</span>
-  <span id="nav-feed" class="nav-btn">Feed</span>
-  <span id="nav-messages" class="nav-btn">Messages</span>
-  <span id="nav-notifications" class="nav-btn">Notifications <span id="notif-badge">0</span></span>
-</div>
+  <main>
+    <section class="profile-info">
+      <div class="profile-pfp-container">
+        <img id="profilePfp" alt="Profile Picture">
+        <input type="file" id="profilePfpInput">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      </div>
+      <div class="profile-fields">
+        <label>Username: <input type="text" id="usernameInput"></label>
+        <label>Bio: <input type="text" id="bioInput"></label>
+        <label>Location: <input type="text" id="locationInput"></label>
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
+    </section>
 
-<div id="profile-container">
+    <section class="top10-friends-section">
+      <h2>Top 10 Friends</h2>
+      <div id="top10FriendsContainer"></div>
+      <button id="editTop10Btn">Edit Top 10</button>
+    </section>
 
-  <!-- Profile Picture & Info -->
-  <div id="profile-info">
-    <div id="pfp-container">
-      <img id="profilePfp" src="default.png" alt="Profile Picture">
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
-    </div>
-    <div id="profile-fields">
-      <input type="text" id="usernameInput" placeholder="Username">
-      <input type="text" id="bioInput" placeholder="Bio">
-      <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Info</button>
-    </div>
-  </div>
+    <section class="comment-wall">
+      <h2>Wall Comments</h2>
+      <div id="wallCommentsContainer"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+      <button id="addWallCommentBtn">Post Comment</button>
+    </section>
 
-  <!-- Comment Wall -->
-  <div id="wall-container">
-    <h3>Wall Comments</h3>
-    <div id="wallCommentsContainer"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-    <button id="addWallCommentBtn">Post Comment</button>
-  </div>
+    <section class="themes">
+      <h2>Profile Themes</h2>
+      <select id="themesDropdown">
+        <option value="default">Default</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="black-neon">Black Neon</option>
+        <option value="animated">Animated Gradient</option>
+      </select>
+    </section>
 
-  <!-- Top 10 Friends -->
-  <div id="top10-container">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-    <button id="editTop10Btn">Edit Top 10</button>
-  </div>
-
-  <!-- Preset Themes -->
-  <div id="themes-container">
-    <h3>Preset Themes</h3>
-    <button class="theme-btn" data-theme="default">Default</button>
-    <button class="theme-btn" data-theme="gradient">Gradient</button>
-    <button class="theme-btn" data-theme="neon">Neon</button>
-  </div>
-
-  <!-- Music Player -->
-  <div id="music-container">
-    <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
-    <button id="loadMusicBtn">Load Music</button>
-    <div id="musicPlayerContainer"></div>
-  </div>
-
-  <!-- Notifications -->
-  <div id="notifications-container" class="hidden">
-    <h3>Notifications</h3>
-    <div id="notificationsList"></div>
-  </div>
-
-</div>
-
-<script type="module" src="profile.js"></script>
+    <section class="music-player">
+      <h2>Music Player</h2>
+      <div id="musicPlayerContainer"></div>
+      <input type="text" id="musicUrlInput" placeholder="Enter YouTube/SoundCloud/Pandora/Spotify URL">
+      <button id="loadMusicBtn">Load Music</button>
+    </section>
+  </main>
 </body>
 </html>

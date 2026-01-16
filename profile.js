@@ -112,7 +112,7 @@ profilePfpInput.addEventListener("change", async () => {
   if (!file) return;
 
   try {
-    const storageRef = ref(storage, `pfp/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+    const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
     profilePfp.src = url;

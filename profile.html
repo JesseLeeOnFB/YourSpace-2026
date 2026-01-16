@@ -1,56 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourSpace - Profile</title>
-    <link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <nav>
-        <button id="feedBtn">Feed</button>
-        <button id="profileBtn">Profile</button>
-        <button id="logoutBtn">Logout</button>
-    </nav>
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-    <main>
-        <section class="profile-section">
-            <div class="pfp-container">
-                <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-                <input type="file" id="profilePfpInput" accept="image/*">
-                <button id="saveProfilePfpBtn">Save Profile Picture</button>
-            </div>
+  <main class="profile-container">
+    <section class="profile-info">
+      <div class="profile-picture-container">
+        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      </div>
+      <div class="profile-fields">
+        <label>Username</label>
+        <input id="usernameInput" type="text" placeholder="Username">
+        <label>Bio</label>
+        <textarea id="bioInput" placeholder="Tell us about yourself"></textarea>
+        <label>Location</label>
+        <input id="locationInput" type="text" placeholder="Location">
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
+    </section>
 
-            <div class="profile-info">
-                <input type="text" id="usernameInput" placeholder="Username">
-                <input type="text" id="bioInput" placeholder="Bio">
-                <input type="text" id="locationInput" placeholder="Location">
-                <button id="saveProfileBtn">Save Profile Info</button>
-            </div>
-        </section>
+    <section class="top-friends-section">
+      <h2>Top Friends</h2>
+      <div class="top-friends-container"></div>
+      <input id="topFriendInput" type="text" placeholder="Add a friend">
+      <button id="addTopFriendBtn">Add Friend</button>
+    </section>
 
-        <section class="top-friends-section">
-            <h3>Top 10 Friends</h3>
-            <div class="top-friends-container"></div>
-            <input type="text" id="topFriendInput" placeholder="Search by username">
-            <button id="addTopFriendBtn">Add Friend</button>
-        </section>
+    <section class="wall-section">
+      <h2>Wall Comments</h2>
+      <div id="commentContainer" class="wall-comments"></div>
+      <input id="wallCommentInput" type="text" placeholder="Write a comment">
+      <button id="postWallCommentBtn">Post Comment</button>
+    </section>
 
-        <section class="wall-section">
-            <h3>Wall Comments</h3>
-            <div id="commentContainer"></div>
-            <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-            <button id="postWallCommentBtn">Post Comment</button>
-        </section>
+    <section class="music-section">
+      <h2>Music Player</h2>
+      <input id="musicInput" type="text" placeholder="Paste YouTube/SoundCloud/Spotify URL">
+      <button id="saveMusicBtn">Save & Play</button>
+      <div id="musicPlayerContainer"></div>
+    </section>
+  </main>
 
-        <section class="music-section">
-            <h3>Music Player</h3>
-            <input type="text" id="musicInput" placeholder="Insert YouTube/SoundCloud/Spotify link">
-            <button id="saveMusicBtn">Save & Play</button>
-            <div id="musicPlayerContainer"></div>
-        </section>
-    </main>
-
-    <script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

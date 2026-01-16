@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
 // Firebase config
@@ -21,7 +21,7 @@ const auth = getAuth(app);
 // DOM elements
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
-const saveProfilePhotoBtn = document.getElementById("saveProfilePhotoBtn");
+const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
@@ -29,11 +29,9 @@ const saveProfileBtn = document.getElementById("saveProfileBtn");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
-const feedBtn = document.getElementById("feedBtn");
-const logoutBtn = document.getElementById("logoutBtn");
 
 // AUTH STATE
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
     return;
@@ -41,10 +39,9 @@ auth.onAuthStateChanged(async (user) => {
 
   const userDocRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userDocRef);
+
   if (userSnap.exists()) {
     const data = userSnap.data();
-
-    // Profile info
     usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
@@ -66,50 +63,59 @@ saveProfileBtn.addEventListener("click", async () => {
   if (!user) return;
 
   const userDocRef = doc(db, "users", user.uid);
-  await updateDoc(userDocRef, {
-    username: usernameInput.value,
-    bio: bioInput.value,
-    location: locationInput.value
-  });
-  alert("Profile info saved!");
+  try {
+    await updateDoc(userDocRef, {
+      username: usernameInput.value,
+      bio: bioInput.value,
+      location: locationInput.value
+    });
+    alert("Profile info saved!");
+  } catch (err) {
+    alert("Failed to save profile info: " + err.message);
+  }
 });
 
-// SAVE PROFILE PHOTO
-saveProfilePhotoBtn.addEventListener("click", async () => {
+// SAVE PROFILE PICTURE
+saveProfilePfpBtn.addEventListener("click", async () => {
   const file = profilePfpInput.files[0];
+  if (!file) return alert("Please select an image first.");
+
   const user = auth.currentUser;
-  if (!file) return alert("Please select an image.");
-  if (!user) return;
-
   const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
 
-  profilePfp.src = url;
-  const userDocRef = doc(db, "users", user.uid);
-  await updateDoc(userDocRef, { pfpURL: url });
-  alert("Profile photo saved!");
+  try {
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, { pfpURL: url });
+
+    profilePfp.src = url;
+    alert("Profile picture updated!");
+  } catch (err) {
+    alert("Failed to save profile picture: " + err.message);
+  }
 });
 
-// WALL COMMENTS
+// POST WALL COMMENT
 postWallCommentBtn.addEventListener("click", async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
   const user = auth.currentUser;
-  if (!user) return;
-
   const userDocRef = doc(db, "users", user.uid);
-  await updateDoc(userDocRef, {
-    wallComments: arrayUnion({ user: usernameInput.value || "Anonymous", text })
-  });
+  const userSnap = await getDoc(userDocRef);
+  const currentComments = userSnap.data().wallComments || [];
+  const newComments = [...currentComments, { user: user.displayName || user.email.split("@")[0], text }];
 
-  const div = document.createElement("div");
-  div.textContent = `${usernameInput.value || "Anonymous"}: ${text}`;
-  commentContainer.appendChild(div);
-  wallCommentInput.value = "";
+  try {
+    await updateDoc(userDocRef, { wallComments: newComments });
+
+    const div = document.createElement("div");
+    div.textContent = `${user.displayName || user.email.split("@")[0]}: ${text}`;
+    commentContainer.appendChild(div);
+    wallCommentInput.value = "";
+  } catch (err) {
+    alert("Failed to post comment: " + err.message);
+  }
 });
-
-// NAVIGATION
-feedBtn.addEventListener("click", () => window.location.href = "feed.html");
-logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "login.html"));

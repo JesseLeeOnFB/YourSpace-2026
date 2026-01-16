@@ -15,8 +15,6 @@
     </header>
 
     <main class="profile-container">
-
-        <!-- Profile Info Section -->
         <section class="profile-info">
             <div class="pfp-container">
                 <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
@@ -34,21 +32,22 @@
             </div>
         </section>
 
-        <!-- Friend Requests Section -->
-        <section class="friend-requests-section">
-            <h3>Friend Requests</h3>
-            <div id="friendRequestsContainer"></div>
-        </section>
+        <section class="friends-section">
+            <h3>Search Users / Add Friend</h3>
+            <input type="text" id="searchUserInput" placeholder="Username or email">
+            <button id="searchUserBtn">Search</button>
+            <div id="searchResultsContainer"></div>
 
-        <!-- Top Friends Section -->
-        <section class="top-friends-section">
-            <h3>Top Friends</h3>
+            <h3>Pending Friend Requests</h3>
+            <div id="pendingRequestsContainer"></div>
+
+            <h3>Top 10 Friends</h3>
             <div id="topFriendsContainer"></div>
-            <input type="text" id="topFriendInput" placeholder="Add friend">
-            <button id="addTopFriendBtn">Add Friend</button>
+
+            <h3>All Friends</h3>
+            <div id="friendsContainer"></div>
         </section>
 
-        <!-- Wall Comments Section -->
         <section class="wall-comments-section">
             <h3>Wall Comments</h3>
             <div id="commentContainer" class="comment-container"></div>
@@ -56,14 +55,12 @@
             <button id="postWallCommentBtn">Post Comment</button>
         </section>
 
-        <!-- Music Section -->
         <section class="music-section">
             <h3>Music</h3>
             <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">
             <button id="saveMusicBtn">Save & Play</button>
             <div id="musicPlayerContainer"></div>
         </section>
-        
     </main>
 
     <script type="module" src="profile.js"></script>

@@ -1,73 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace - Profile</title>
-  <link rel="stylesheet" href="profile.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourSpace - Profile</title>
+    <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+    <header>
+        <nav class="top-nav">
+            <button id="feedNavBtn">Feed</button>
+            <button id="logoutBtn">Logout</button>
+        </nav>
+    </header>
 
-<header>
-  <nav class="top-nav">
-    <button id="feedBtn">Feed</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
-</header>
+    <main class="profile-container">
 
-<main class="profile-container">
+        <!-- PROFILE INFO -->
+        <section class="profile-info">
+            <div class="pfp-container">
+                <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+                <input type="file" id="profilePfpInput" accept="image/*">
+                <button id="savePfpBtn">Save Profile Photo</button>
+            </div>
+            <div class="profile-fields">
+                <label>Username</label>
+                <input type="text" id="usernameInput">
+                <label>Bio</label>
+                <textarea id="bioInput"></textarea>
+                <label>Location</label>
+                <input type="text" id="locationInput">
+                <button id="saveProfileBtn">Save Profile Info</button>
+            </div>
+        </section>
 
-  <!-- PROFILE INFO -->
-  <section class="profile-info">
-    <div class="pfp-container">
-      <img id="profilePfp" src="default-avatar.png" />
-      <input type="file" id="profilePfpInput" accept="image/*" />
-      <button id="savePfpBtn">Save Profile Picture</button>
-    </div>
+        <!-- TOP FRIENDS & FRIEND REQUESTS -->
+        <section class="top-friends-section">
+            <h3>Top 10 Friends</h3>
+            <div id="topFriendsContainer" class="top-friends-container"></div>
+            <input type="text" id="topFriendInput" placeholder="Add friend">
+            <button id="addTopFriendBtn">Send Friend Request</button>
 
-    <div class="profile-fields">
-      <label>Username</label>
-      <input id="usernameInput" />
+            <h3>Friend Requests</h3>
+            <div id="friendRequestsContainer" class="friend-requests-container"></div>
+        </section>
 
-      <label>Bio</label>
-      <textarea id="bioInput"></textarea>
+        <!-- WALL COMMENTS -->
+        <section class="wall-comments-section">
+            <h3>Wall Comments</h3>
+            <div id="commentContainer" class="comment-container"></div>
+            <input type="text" id="wallCommentInput" placeholder="Write a comment">
+            <button id="postWallCommentBtn">Post Comment</button>
+        </section>
 
-      <label>Location</label>
-      <input id="locationInput" />
+        <!-- MUSIC -->
+        <section class="music-section">
+            <h3>Music</h3>
+            <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify URL">
+            <button id="saveMusicBtn">Save & Play</button>
+            <div id="musicPlayerContainer"></div>
+        </section>
 
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </div>
-  </section>
+    </main>
 
-  <!-- TOP FRIENDS -->
-  <section>
-    <h3>Top Friends</h3>
-    <div id="topFriendsContainer"></div>
-
-    <input id="topFriendInput" placeholder="Enter username" />
-    <button id="addTopFriendBtn">Find User</button>
-
-    <div id="friendPreview" class="friend-preview"></div>
-  </section>
-
-  <!-- WALL -->
-  <section>
-    <h3>Wall</h3>
-    <div id="commentContainer"></div>
-    <input id="wallCommentInput" placeholder="Write a comment" />
-    <button id="postWallCommentBtn">Post</button>
-  </section>
-
-  <!-- MUSIC -->
-  <section>
-    <h3>Music</h3>
-    <input id="musicInput" placeholder="YouTube link" />
-    <button id="saveMusicBtn">Save & Play</button>
-    <div id="musicPlayerContainer"></div>
-  </section>
-
-</main>
-
-<script type="module" src="profile.js"></script>
+    <script type="module" src="profile.js"></script>
 </body>
 </html>

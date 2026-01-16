@@ -1,114 +1,73 @@
-/* PROFILE.CSS */
-
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
+  background-color: #f2f2f2;
 }
 
-.profile-container {
-  max-width: 900px;
+#profileContainer {
+  max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
+  background: #fff;
+  border-radius: 8px;
 }
 
-.profile-pfp-section {
+#profileHeader {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
   margin-bottom: 20px;
 }
 
-.profile-pfp-section img {
-  width: 120px;
-  height: 120px;
+#profilePfp {
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #333;
-}
-
-.profile-info-section label {
-  display: block;
   margin-bottom: 10px;
 }
 
-.profile-info-section input,
-.profile-info-section textarea {
+input[type="text"], input[type="file"] {
+  margin: 5px 0;
+  padding: 8px;
   width: 100%;
-  padding: 5px;
-  margin-top: 2px;
-}
-
-.wall-comments-section {
-  margin-top: 20px;
-}
-
-.wall-comments-container {
-  border: 1px solid #ccc;
-  min-height: 100px;
-  padding: 10px;
-  background-color: #fafafa;
-  margin-bottom: 10px;
-}
-
-.wall-comment {
-  border-bottom: 1px solid #ddd;
-  padding: 5px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.wall-comment button {
-  background-color: #ff4d4d;
-  color: #fff;
-  border: none;
-  padding: 3px 6px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.friends-section {
-  margin-top: 30px;
-}
-
-.friends-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.top-friend, .pending-friend {
-  padding: 5px 10px;
-  background-color: #e3e3e3;
-  border-radius: 5px;
-}
-
-#searchUserPreview {
-  margin: 10px 0;
-  padding: 5px;
-  background-color: #f1f1f1;
-  border-radius: 5px;
+  max-width: 400px;
+  box-sizing: border-box;
 }
 
 button {
+  padding: 8px 12px;
+  margin: 5px 0;
   cursor: pointer;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
 }
 
-input, textarea {
-  border: 1px solid #ccc;
-  border-radius: 5px;
+#friendSection, #wallSection {
+  margin-top: 20px;
 }
 
-h1, h2 {
-  margin-top: 0;
+#searchPreview, #pendingRequestsContainer, #friendsContainer, #top10FriendsContainer, #wallCommentsContainer {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
+}
+
+.friend-preview, .pending-request, .friend, .top-friend, .wall-comment {
+  padding: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.friend-preview img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.friend-preview span {
+  vertical-align: middle;
 }

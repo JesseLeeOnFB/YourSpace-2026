@@ -21,11 +21,12 @@ body {
 }
 
 #profilePfp {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #007bff;
+  width: 150px;       /* fixed size */
+  height: 150px;
+  border-radius: 50%; /* circular frame */
+  object-fit: cover;  /* ensures the image fills the frame without distortion */
+  border: 2px solid #ccc;
+  background-color: #f0f0f0; /* gray background for empty/transparent areas */
 }
 
 input, button, textarea {

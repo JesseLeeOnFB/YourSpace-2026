@@ -1,66 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Profile</title>
-  <link rel="stylesheet" href="profile.css" />
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-<header class="top-nav">
-  <button onclick="window.location.href='feed.html'">Feed</button>
-  <button id="logoutBtn">Logout</button>
-</header>
+  <nav class="profile-nav">
+    <button onclick="location.href='feed.html'">Feed</button>
+    <button onclick="location.href='profile.html'">Profile</button>
+    <button onclick="location.href='settings.html'">Settings</button>
+  </nav>
 
-<main class="profile-container">
+  <div class="profile-container">
 
-  <!-- PROFILE INFO -->
-  <section class="profile-card">
-    <div class="pfp-wrapper">
-      <img id="profilePfp" src="default-avatar.png" />
-      <input type="file" id="profilePfpInput" accept="image/*" />
+    <div class="profile-header">
+      <div class="pfp-wrapper">
+        <img id="profilePfp" src="default-pfp.png" alt="Profile Picture">
+      </div>
+
+      <input type="file" id="profilePfpInput" accept="image/*">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
-    <div class="profile-fields">
+    <div class="profile-info">
       <label>Username</label>
-      <input id="usernameInput" />
+      <input id="usernameInput" type="text">
 
       <label>Bio</label>
       <textarea id="bioInput"></textarea>
 
       <label>Location</label>
-      <input id="locationInput" />
+      <input id="locationInput" type="text">
 
       <button id="saveProfileBtn">Save Profile</button>
     </div>
-  </section>
 
-  <!-- TOP FRIENDS -->
-  <section class="card">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-  </section>
+    <hr>
 
-  <!-- WALL -->
-  <section class="card">
-    <h3>Wall</h3>
+    <h2>Wall</h2>
+    <div class="wall-input">
+      <input id="wallCommentInput" type="text" placeholder="Write on your wall">
+      <button id="addWallCommentBtn">Post</button>
+    </div>
+
     <div id="wallCommentsContainer"></div>
-    <input id="wallCommentInput" placeholder="Write something..." />
-    <button id="addWallCommentBtn">Post</button>
-  </section>
 
-  <!-- MUSIC -->
-  <section class="card">
-    <h3>Music</h3>
-    <input id="musicInput" placeholder="YouTube link" />
-    <button id="saveMusicBtn">Save & Play</button>
-    <div id="musicPlayerContainer"></div>
-  </section>
+    <hr>
 
-</main>
+    <h2>Top 10 Friends</h2>
+    <div id="top10FriendsContainer"></div>
 
-<script type="module" src="profile.js"></script>
+  </div>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

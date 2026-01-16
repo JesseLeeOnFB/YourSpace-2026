@@ -1,68 +1,132 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
+/* RESET */
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+  margin: 0;
+  background: #f4f6f9;
+  color: #222;
+}
+
+/* NAV */
 .top-nav {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background: #222;
+  padding: 12px;
+  background: #1e90ff;
 }
 
 .top-nav button {
   background: white;
   border: none;
-  padding: 8px 12px;
+  padding: 8px 14px;
+  font-weight: bold;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.profile-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 16px;
+.top-nav button:hover {
+  background: #e6e6e6;
 }
 
-.card {
+/* LAYOUT */
+.profile-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.card,
+.profile-card {
   background: white;
   padding: 16px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-.pfp-wrapper {
+/* PROFILE CARD */
+.profile-card {
   text-align: center;
 }
 
-.pfp-wrapper img {
-  width: 120px;
-  height: 120px;
+/* PROFILE PICTURE FIX */
+.profile-pfp-wrapper {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 10px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
+  border: 3px solid #1e90ff;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-input, textarea {
+#profilePfp {
   width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
 }
 
+/* INPUTS */
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* BUTTONS */
 button {
+  background: #1e90ff;
+  color: white;
+  border: none;
   padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.friend-preview,
-.request-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+button:hover {
+  background: #166fcb;
 }
 
-.friend-preview img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+/* TOP FRIENDS */
+.top-friends-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.top-friend {
+  padding: 8px;
+  background: #f0f2f5;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* WALL */
+#commentContainer div {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* MUSIC */
+#musicPlayerContainer iframe {
+  width: 100%;
+  border-radius: 8px;
 }

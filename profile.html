@@ -1,59 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
+<script type="module" defer src="profile.js"></script>
 </head>
 <body>
-
-  <div class="profile-container">
-    <h1>My Profile</h1>
-
-    <!-- Profile Picture -->
-    <div class="profile-pfp-section">
-      <img id="profilePfp" src="" alt="Profile Picture">
+  <div id="profileContainer">
+    <div id="profileHeader">
+      <img id="profilePfp" src="default-pfp.png" alt="Profile Picture">
       <input type="file" id="profilePfpInput" accept="image/*">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
-    </div>
-
-    <!-- Profile Info -->
-    <div class="profile-info-section">
-      <label>Username: <input type="text" id="usernameInput"></label>
-      <label>Bio: <textarea id="bioInput" rows="3"></textarea></label>
-      <label>Location: <input type="text" id="locationInput"></label>
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="bioInput" placeholder="Bio">
+      <input type="text" id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
     </div>
 
-    <!-- Wall Comments -->
-    <div class="wall-comments-section">
-      <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer" class="wall-comments-container"></div>
-      <textarea id="wallCommentInput" rows="2" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post Comment</button>
+    <div id="friendSection">
+      <h3>Add Friends</h3>
+      <input type="text" id="searchUserInput" placeholder="Search username">
+      <div id="searchPreview"></div>
+      <button id="sendFriendRequestBtn" disabled>Add Friend</button>
+
+      <h3>Pending Friend Requests</h3>
+      <div id="pendingRequestsContainer"></div>
+
+      <h3>Friends</h3>
+      <div id="friendsContainer"></div>
+
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
     </div>
 
-    <!-- Friends -->
-    <div class="friends-section">
-      <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer" class="friends-container"></div>
-
-      <h2>Pending Friend Requests</h2>
-      <div id="pendingFriendsContainer" class="friends-container"></div>
-
-      <h2>Add Friend</h2>
-      <input type="text" id="searchUserInput" placeholder="Enter username...">
-      <div id="searchUserPreview"></div>
-      <button id="sendFriendRequestBtn">Send Friend Request</button>
+    <div id="wallSection">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <input type="text" id="wallCommentInput" placeholder="Write a comment">
+      <button id="addWallCommentBtn">Add Comment</button>
     </div>
-
   </div>
-
-  <script src="profile.js"></script>
 </body>
 </html>

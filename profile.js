@@ -1,6 +1,7 @@
+// profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -27,25 +28,23 @@ const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-const topFriendInput = document.getElementById("topFriendInput");
-const addTopFriendBtn = document.getElementById("addTopFriendBtn");
-const topFriendsContainer = document.getElementById("topFriendsContainer");
-
-const friendRequestsContainer = document.getElementById("friendRequestsContainer");
-
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
-
 const musicInput = document.getElementById("musicInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 
-let currentUser;
-let currentUserData;
+const searchUserInput = document.getElementById("searchUserInput");
+const searchUserBtn = document.getElementById("searchUserBtn");
+const searchResultsContainer = document.getElementById("searchResultsContainer");
+const pendingRequestsContainer = document.getElementById("pendingRequestsContainer");
+const topFriendsContainer = document.getElementById("topFriendsContainer");
+const friendsContainer = document.getElementById("friendsContainer");
 
-// AUTH
+let currentUser;
+
+// AUTH CHECK
 auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
@@ -53,42 +52,43 @@ auth.onAuthStateChanged(async user => {
   }
   currentUser = user;
   await loadProfile();
-  await loadFriendRequests();
+  await loadPendingRequests();
 });
 
-// LOAD PROFILE
+// ---------------- PROFILE LOAD ----------------
 async function loadProfile() {
-  const refUser = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(refUser);
+  const refDoc = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(refDoc);
 
   if (!snap.exists()) {
-    await setDoc(refUser, {
+    await setDoc(refDoc, {
       username: "",
       bio: "",
       location: "",
       pfpURL: "",
       topFriends: [],
       friends: [],
-      pendingRequests: [],
+      friendRequests: [],
       wallComments: [],
       musicURL: ""
     });
     return loadProfile();
   }
 
-  currentUserData = snap.data();
+  const data = snap.data();
 
-  usernameInput.value = currentUserData.username || "";
-  bioInput.value = currentUserData.bio || "";
-  locationInput.value = currentUserData.location || "";
-  profilePfp.src = currentUserData.pfpURL || "default-avatar.png";
+  usernameInput.value = data.username || "";
+  bioInput.value = data.bio || "";
+  locationInput.value = data.location || "";
+  profilePfp.src = data.pfpURL || "default-avatar.png";
 
-  renderTopFriends(currentUserData.topFriends || []);
-  renderWallComments(currentUserData.wallComments || []);
-  if (currentUserData.musicURL) renderMusic(currentUserData.musicURL);
+  renderTopFriends(data.topFriends || []);
+  renderFriends(data.friends || []);
+  renderWallComments(data.wallComments || []);
+  if (data.musicURL) renderMusic(data.musicURL);
 }
 
-// SAVE PROFILE INFO
+// ---------------- SAVE PROFILE INFO ----------------
 saveProfileBtn.onclick = async () => {
   await updateDoc(doc(db, "users", currentUser.uid), {
     username: usernameInput.value,
@@ -98,167 +98,62 @@ saveProfileBtn.onclick = async () => {
   alert("Profile info saved");
 };
 
-// SAVE PROFILE PICTURE
+// ---------------- SAVE PROFILE PICTURE ----------------
 savePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Select an image");
 
   const storageRef = ref(storage, `profileImages/${currentUser.uid}/${file.name}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-
-  await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
-  profilePfp.src = url;
-  alert("Profile picture saved!");
-};
-
-// FRIEND SEARCH & REQUEST
-addTopFriendBtn.onclick = async () => {
-  const usernameToAdd = topFriendInput.value.trim();
-  if (!usernameToAdd) return alert("Enter a username");
-
-  // Search for user
-  const q = query(collection(db, "users"), where("username", "==", usernameToAdd));
-  const results = await getDocs(q);
-
-  if (results.empty) return alert("User not found");
-
-  const userDoc = results.docs[0];
-  const userData = userDoc.data();
-  const userId = userDoc.id;
-
-  // Check if already friends
-  if ((currentUserData.friends || []).includes(userId)) return alert("Already friends");
-
-  // Add to pending requests of that user
-  await updateDoc(doc(db, "users", userId), {
-    pendingRequests: arrayUnion(currentUser.uid)
-  });
-
-  alert(`Friend request sent to ${usernameToAdd}`);
-  topFriendInput.value = "";
-};
-
-// LOAD FRIEND REQUESTS
-async function loadFriendRequests() {
-  friendRequestsContainer.innerHTML = "";
-  const pending = currentUserData.pendingRequests || [];
-  if (!pending.length) return;
-
-  for (let requesterId of pending) {
-    const snap = await getDoc(doc(db, "users", requesterId));
-    if (!snap.exists()) continue;
-    const data = snap.data();
-
-    const div = document.createElement("div");
-    div.className = "friend-request";
-    div.innerHTML = `
-      <img src="${data.pfpURL || 'default-avatar.png'}" class="friend-request-pfp">
-      <span>${data.username}</span>
-      <button class="accept-btn">Accept</button>
-      <button class="deny-btn">Deny</button>
-    `;
-
-    // ACCEPT FRIEND REQUEST
-    div.querySelector(".accept-btn").onclick = async () => {
-      // Add each other to friends
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        friends: arrayUnion(requesterId),
-        pendingRequests: arrayRemove(requesterId)
-      });
-      await updateDoc(doc(db, "users", requesterId), {
-        friends: arrayUnion(currentUser.uid)
-      });
-      alert(`Friend request from ${data.username} accepted!`);
-      await loadProfile();
-      await loadFriendRequests();
-    };
-
-    // DENY FRIEND REQUEST
-    div.querySelector(".deny-btn").onclick = async () => {
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        pendingRequests: arrayRemove(requesterId)
-      });
-      alert(`Friend request from ${data.username} denied.`);
-      await loadFriendRequests();
-    };
-
-    friendRequestsContainer.appendChild(div);
+  try {
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
+    profilePfp.src = url;
+    alert("Profile picture saved!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile picture.");
   }
-}
+};
 
-// TOP FRIENDS DISPLAY
-function renderTopFriends(friends) {
-  topFriendsContainer.innerHTML = "";
-
-  friends.forEach((f, index) => {
-    const div = document.createElement("div");
-    div.className = "top-friend";
-
-    div.innerHTML = `
-      <strong class="friend-name">${f.username}</strong>
-      <button data-index="${index}">Remove</button>
-    `;
-
-    div.querySelector(".friend-name").onclick = () => {
-      window.location.href = `/profile.html?user=${f.username}`;
-    };
-
-    div.querySelector("button").onclick = async () => {
-      friends.splice(index, 1);
-      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
-      renderTopFriends(friends);
-    };
-
-    topFriendsContainer.appendChild(div);
-  });
-}
-
-// WALL COMMENTS
+// ---------------- WALL COMMENTS ----------------
 postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
-
-  const ref = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(ref);
+  const refDoc = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(refDoc);
   const comments = snap.data().wallComments || [];
-
   comments.push({
     uid: currentUser.uid,
-    user: currentUserData.username || currentUser.email.split("@")[0],
+    user: usernameInput.value || currentUser.email.split("@")[0],
     text
   });
-
-  await updateDoc(ref, { wallComments: comments });
+  await updateDoc(refDoc, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
 };
 
 function renderWallComments(comments) {
   commentContainer.innerHTML = "";
-
   comments.forEach((c, i) => {
     const div = document.createElement("div");
     div.innerHTML = `
       <strong>${c.user}:</strong> ${c.text}
       <button>Delete</button>
     `;
-
     div.querySelector("button").onclick = async () => {
       comments.splice(i, 1);
       await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
       renderWallComments(comments);
     };
-
     commentContainer.appendChild(div);
   });
 }
 
-// MUSIC PLAYER
+// ---------------- MUSIC PLAYER ----------------
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
-  if (!url) return alert("Enter a music URL");
-
+  if (!url) return alert("Enter a URL");
   await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
   renderMusic(url);
 };
@@ -266,12 +161,129 @@ saveMusicBtn.onclick = async () => {
 function renderMusic(url) {
   if (url.includes("youtube")) {
     const id = url.split("v=")[1]?.split("&")[0];
-    musicPlayerContainer.innerHTML = `
-      <iframe width="100%" height="200"
-      src="https://www.youtube.com/embed/${id}"
-      allowfullscreen></iframe>`;
+    musicPlayerContainer.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
   } else {
-    musicPlayerContainer.innerHTML = `
-      <audio controls src="${url}"></audio>`;
+    musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
+  }
+}
+
+// ---------------- TOP FRIENDS ----------------
+function renderTopFriends(topFriends) {
+  topFriendsContainer.innerHTML = "";
+  topFriends.forEach((f, idx) => {
+    const div = document.createElement("div");
+    div.className = "top-friend";
+    div.innerHTML = `<strong>${idx + 1}. ${f.username}</strong>
+                     <button data-index="${idx}">Remove</button>`;
+    div.querySelector("button").onclick = async () => {
+      topFriends.splice(idx, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { topFriends });
+      renderTopFriends(topFriends);
+    };
+    topFriendsContainer.appendChild(div);
+  });
+}
+
+// ---------------- ALL FRIENDS ----------------
+function renderFriends(friends) {
+  friendsContainer.innerHTML = "";
+  friends.forEach((f, idx) => {
+    const div = document.createElement("div");
+    div.className = "friend";
+    div.innerHTML = `<strong>${f.username}</strong>`;
+    div.querySelector("strong").onclick = () => {
+      window.location.href = `/profile.html?user=${f.uid}`;
+    };
+    friendsContainer.appendChild(div);
+  });
+}
+
+// ---------------- SEARCH & ADD FRIEND ----------------
+searchUserBtn.onclick = async () => {
+  const queryText = searchUserInput.value.trim();
+  if (!queryText) return;
+
+  searchResultsContainer.innerHTML = "Searching...";
+  const usersRef = collection(db, "users");
+  const q1 = query(usersRef, where("username", "==", queryText));
+  const q2 = query(usersRef, where("email", "==", queryText));
+  const results1 = await getDocs(q1);
+  const results2 = await getDocs(q2);
+  const usersFound = [...results1.docs, ...results2.docs].filter(doc => doc.id !== currentUser.uid);
+
+  searchResultsContainer.innerHTML = "";
+  if (!usersFound.length) {
+    searchResultsContainer.innerText = "No users found";
+    return;
+  }
+
+  usersFound.forEach(docSnap => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "search-result";
+    div.innerHTML = `
+      <img src="${data.pfpURL || 'default-avatar.png'}" width="40" height="40">
+      <strong>${data.username}</strong>
+      <button>Add Friend</button>
+    `;
+    div.querySelector("button").onclick = async () => {
+      try {
+        // Update target user's friendRequests array
+        const targetRef = doc(db, "users", docSnap.id);
+        const snap = await getDoc(targetRef);
+        const requests = snap.data().friendRequests || [];
+        if (requests.includes(currentUser.uid)) return alert("Request already sent");
+        requests.push(currentUser.uid);
+        await updateDoc(targetRef, { friendRequests: requests });
+        div.querySelector("button").innerText = "Pending";
+      } catch (err) {
+        console.error(err);
+        alert("Failed to send friend request");
+      }
+    };
+    searchResultsContainer.appendChild(div);
+  });
+};
+
+// ---------------- PENDING REQUESTS ----------------
+async function loadPendingRequests() {
+  const snap = await getDoc(doc(db, "users", currentUser.uid));
+  const requests = snap.data().friendRequests || [];
+  pendingRequestsContainer.innerHTML = "";
+
+  for (const uid of requests) {
+    const userSnap = await getDoc(doc(db, "users", uid));
+    const data = userSnap.data();
+    const div = document.createElement("div");
+    div.className = "pending-request";
+    div.innerHTML = `
+      <img src="${data.pfpURL || 'default-avatar.png'}" width="40" height="40">
+      <strong>${data.username}</strong>
+      <button class="accept-btn">Accept</button>
+      <button class="deny-btn">Deny</button>
+    `;
+    div.querySelector(".accept-btn").onclick = async () => {
+      // Add to friends for both users
+      const meSnap = await getDoc(doc(db, "users", currentUser.uid));
+      const meFriends = meSnap.data().friends || [];
+      meFriends.push({ username: data.username, uid });
+      const targetSnap = await getDoc(doc(db, "users", uid));
+      const targetFriends = targetSnap.data().friends || [];
+      targetFriends.push({ username: meSnap.data().username, uid: currentUser.uid });
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        friends: meFriends,
+        friendRequests: requests.filter(rid => rid !== uid)
+      });
+      await updateDoc(doc(db, "users", uid), { friends: targetFriends });
+      loadPendingRequests();
+      renderFriends(meFriends);
+    };
+    div.querySelector(".deny-btn").onclick = async () => {
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        friendRequests: requests.filter(rid => rid !== uid)
+      });
+      loadPendingRequests();
+    };
+    pendingRequestsContainer.appendChild(div);
   }
 }

@@ -1,208 +1,87 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f2f2f2;
-}
-
-.profile-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.profile-pfp-section {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.profile-pfp {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto 10px;
-  border: 2px solid #007bff;
-}
-
-.profile-info-section label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.profile-info-section input,
-.profile-info-section textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+* {
   box-sizing: border-box;
 }
 
-.profile-info-section button {
-  margin-top: 10px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f0f2f5;
 }
 
-.profile-info-section button:hover {
-  background-color: #0056b3;
-}
-
-/* Wall Comments */
-.wall-section {
-  margin-top: 30px;
-}
-
-.wall-comments-container {
-  max-height: 250px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #fafafa;
-  margin-bottom: 10px;
-}
-
-.wall-comment {
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.wall-comment button {
-  margin-left: 10px;
-  background-color: #dc3545;
-  border: none;
-  color: white;
-  padding: 3px 6px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.wall-comment button:hover {
-  background-color: #b52a37;
-}
-
-/* Top 10 Friends */
-.top10-section {
-  margin-top: 30px;
-}
-
-.top10-container {
+.nav {
   display: flex;
-  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background: #222;
+}
+
+.nav button {
+  color: white;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.profile-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 16px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 
-.top-friend {
-  text-align: center;
-  width: 70px;
-  cursor: pointer;
-}
-
-.top-friend img.top-friend-pfp {
-  width: 60px;
-  height: 60px;
+.pfp-wrapper {
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #007bff;
-}
-
-.top-friend-username {
-  display: block;
-  font-size: 0.8em;
-  margin-top: 5px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  background: #ddd;
 }
 
-/* Add Friend Section */
-.add-friend-section {
-  margin-top: 30px;
-}
-
-.search-results-container {
-  margin-top: 10px;
-}
-
-.search-user-result {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #f7f7f7;
-}
-
-.search-user-result img.search-user-pfp {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.pfp-wrapper img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  margin-right: 10px;
 }
 
-.search-user-result button {
-  margin-left: auto;
-  padding: 5px 10px;
-  background-color: #28a745;
-  border: none;
-  color: white;
-  border-radius: 5px;
+.profile-info,
+.top-friends,
+.wall {
+  background: white;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.profile-info input,
+.profile-info textarea,
+.wall textarea {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px 12px;
   cursor: pointer;
 }
 
-.search-user-result button:hover {
-  background-color: #1e7e34;
+.wall-comment {
+  border-bottom: 1px solid #ddd;
+  padding: 6px 0;
 }
 
-/* Navigation Buttons */
-.nav-buttons {
-  margin-top: 30px;
-  text-align: center;
+.wall-comment button {
+  margin-left: 8px;
+  font-size: 12px;
 }
 
-.nav-buttons button {
-  margin: 5px;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.nav-buttons button:hover {
-  background-color: #0056b3;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .profile-container {
-    padding: 10px;
-  }
-
-  .top10-container {
-    justify-content: space-between;
-  }
-
-  .top-friend {
-    width: 60px;
-  }
-
-  .top-friend img.top-friend-pfp {
-    width: 50px;
-    height: 50px;
-  }
+#top10FriendsContainer div {
+  padding: 4px 0;
 }

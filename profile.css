@@ -1,108 +1,169 @@
-body{
-  font-family: Arial, sans-serif;
-  background-color:#f4f4f4;
-  margin:0;
-  padding:0;
-}
-header{
-  background:#333;
-  color:#fff;
-  padding:10px;
-}
-header button{
-  background:none;
-  color:#fff;
-  border:none;
-  margin-right:10px;
-  cursor:pointer;
-}
-header button:hover{
-  color:#00f;
-}
-.profile-container{
-  display:flex;
-  flex-direction:column;
-  max-width:600px;
-  margin:20px auto;
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-}
-.profile-info{
-  display:flex;
-  gap:15px;
-  margin-bottom:20px;
-}
-.pfp-container img{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #333;
-}
-.profile-fields{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.profile-fields input, .profile-fields textarea{
-  padding:6px;
-  font-size:14px;
-}
-button{
-  padding:6px 10px;
-  cursor:pointer;
-  border-radius:4px;
-  border:none;
-  background:#333;
-  color:#fff;
-}
-button:hover{
-  background:#555;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
 }
 
-/* Top friends */
-.top-friends-section{
-  margin-top:20px;
-}
-.top-friend, .friend-preview, .friend-request{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:6px;
-  padding:6px;
-  background:#eee;
-  border-radius:6px;
-}
-.friend-pfp-small{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  object-fit:cover;
-}
-.friend-rank{
-  font-weight:bold;
-  margin-right:6px;
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #333;
 }
 
-/* Friend preview container */
-#friendPreviewContainer,#friendRequestsContainer{
-  margin-top:10px;
-  padding:8px;
-  background:#ddd;
-  border-radius:8px;
+.top-nav button {
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-/* Wall comments */
-.comment-container div{
-  margin-bottom:6px;
-  padding:6px;
-  background:#f1f1f1;
-  border-radius:6px;
+.top-nav button:hover {
+    text-decoration: underline;
 }
 
-/* Music player */
-#musicPlayerContainer{
-  margin-top:10px;
+.profile-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-info {
+    display: flex;
+    gap: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.pfp-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.pfp-container img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #333;
+}
+
+.profile-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-fields input,
+.profile-fields textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.top-friends-section {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.top-friends-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.top-friend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+.top-friend img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.top-friend button {
+    margin-left: auto;
+    background-color: #d9534f;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.add-friend-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.friend-preview-container {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.friend-preview-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.friend-preview-container button {
+    margin-left: auto;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.wall-comments-section, .music-section {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.comment-container div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding: 5px;
+    background: #eaeaea;
+    border-radius: 4px;
+}
+
+.comment-container button {
+    background-color: #d9534f;
+    border: none;
+    color: white;
+    padding: 3px 7px;
+    cursor: pointer;
+    border-radius: 4px;
 }

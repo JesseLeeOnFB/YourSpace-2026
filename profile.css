@@ -1,121 +1,208 @@
-/* GENERAL */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #f2f2f2;
 }
 
-header nav {
-  display: flex;
-  background-color: #222;
-  padding: 10px;
-}
-
-header nav button {
-  color: #fff;
-  background: #444;
-  border: none;
-  padding: 8px 12px;
-  margin-right: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-header nav button:hover {
-  background: #666;
-}
-
-main {
+.profile-container {
+  max-width: 800px;
+  margin: 20px auto;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* PROFILE */
-#profilePfpContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+.profile-pfp-section {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-#profilePfp {
+.profile-pfp {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #333;
+  display: block;
+  margin: 0 auto 10px;
+  border: 2px solid #007bff;
 }
 
-#profileInfoContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.profile-info-section label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-/* MUSIC */
-#musicSection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#musicPlayerContainer iframe,
-#musicPlayerContainer video,
-#musicPlayerContainer audio {
+.profile-info-section input,
+.profile-info-section textarea {
   width: 100%;
-  max-width: 500px;
-}
-
-/* WALL */
-#wallCommentsContainer .wall-comment {
   padding: 8px;
-  border-bottom: 1px solid #ccc;
+  margin-top: 4px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-.deleteWallCommentBtn {
-  margin-left: 10px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 2px 5px;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-/* FRIENDS */
-#top10FriendsContainer .top-friend {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#addFriendPreview .friend-preview {
-  padding: 5px;
-  border: 1px solid #aaa;
-  margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#addFriendPreview button {
-  padding: 3px 6px;
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
+.profile-info-section button {
+  margin-top: 10px;
+  padding: 10px 15px;
   background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-/* RESPONSIVE */
-@media(max-width: 600px) {
-  #profilePfp {
-    width: 120px;
-    height: 120px;
+.profile-info-section button:hover {
+  background-color: #0056b3;
+}
+
+/* Wall Comments */
+.wall-section {
+  margin-top: 30px;
+}
+
+.wall-comments-container {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fafafa;
+  margin-bottom: 10px;
+}
+
+.wall-comment {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.wall-comment button {
+  margin-left: 10px;
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.wall-comment button:hover {
+  background-color: #b52a37;
+}
+
+/* Top 10 Friends */
+.top10-section {
+  margin-top: 30px;
+}
+
+.top10-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.top-friend {
+  text-align: center;
+  width: 70px;
+  cursor: pointer;
+}
+
+.top-friend img.top-friend-pfp {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+}
+
+.top-friend-username {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Add Friend Section */
+.add-friend-section {
+  margin-top: 30px;
+}
+
+.search-results-container {
+  margin-top: 10px;
+}
+
+.search-user-result {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #f7f7f7;
+}
+
+.search-user-result img.search-user-pfp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.search-user-result button {
+  margin-left: auto;
+  padding: 5px 10px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-user-result button:hover {
+  background-color: #1e7e34;
+}
+
+/* Navigation Buttons */
+.nav-buttons {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.nav-buttons button {
+  margin: 5px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.nav-buttons button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 10px;
   }
-  header nav {
-    flex-direction: column;
+
+  .top10-container {
+    justify-content: space-between;
+  }
+
+  .top-friend {
+    width: 60px;
+  }
+
+  .top-friend img.top-friend-pfp {
+    width: 50px;
+    height: 50px;
   }
 }

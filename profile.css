@@ -1,170 +1,266 @@
-/* PROFILE PAGE CONTAINER */
+/* Reset and general styling */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
 }
 
-/* NAVIGATION BAR */
-nav {
+.navbar {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #1a73e8;
+  background-color: #4267B2;
   padding: 10px;
+  gap: 10px;
 }
 
-nav button {
-  background-color: transparent;
+.navbar button {
+  padding: 10px 15px;
   border: none;
-  color: white;
-  font-size: 16px;
+  background-color: white;
+  color: #4267B2;
+  font-weight: bold;
   cursor: pointer;
-  transition: color 0.2s ease;
+  border-radius: 5px;
 }
 
-nav button:hover {
-  color: #ffeb3b;
+.navbar button:hover {
+  background-color: #e1e4e8;
 }
 
-/* PROFILE SECTION */
 .profile-container {
   max-width: 900px;
   margin: 20px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.profile-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 20px;
-  flex-wrap: wrap;
+  padding: 0 10px;
 }
 
-#profilePfp {
+/* Profile info */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.profile-pfp-frame {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #1a73e8;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-info input, .profile-info textarea {
-  width: 100%;
+  overflow: hidden;
   margin-bottom: 10px;
+}
+
+.profile-pfp-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-details label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.profile-details input,
+.profile-details textarea {
+  width: 100%;
   padding: 8px;
-  font-size: 16px;
+  margin-top: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-/* BUTTONS */
-button {
-  padding: 8px 16px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  background-color: #1a73e8;
+.profile-details button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #4267B2;
   color: white;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-button:hover {
-  background-color: #155ab6;
+.profile-details button:hover {
+  background-color: #365899;
 }
 
-/* WALL COMMENTS */
+/* Wall comments */
 .wall-section {
-  margin-top: 30px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
 }
 
-.wall-section h3 {
-  margin-bottom: 10px;
-}
-
-#commentContainer {
+.wall-comments-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
-.wall-comment {
-  background-color: #f0f0f0;
+.wall-comments-container .wall-comment {
   padding: 10px;
+  background-color: #e9ebee;
   border-radius: 5px;
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.wall-comment button.deleteCommentBtn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background-color: #e53935;
-  padding: 2px 6px;
-  font-size: 12px;
+.wall-comments-container .wall-comment button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 2px 5px;
+  cursor: pointer;
+  border-radius: 3px;
 }
 
-.wall-comment button.deleteCommentBtn:hover {
-  background-color: #b71c1c;
+.wall-section textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-/* TOP FRIENDS */
+.wall-section button {
+  margin-top: 5px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4267B2;
+  color: white;
+  cursor: pointer;
+}
+
+.wall-section button:hover {
+  background-color: #365899;
+}
+
+/* Top friends */
+.top-friends-section {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
 .top-friends-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
-.top-friends-container div {
-  background-color: #e0f7fa;
-  padding: 8px 12px;
-  border-radius: 5px;
+.top-friends-container .friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+  text-align: center;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.top-friends-container div:hover {
-  background-color: #b2ebf2;
+.top-friends-container .friend img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-/* ADD FRIEND SECTION */
+/* Add friend */
 .add-friend-section {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.add-friend-preview {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.add-friend-preview img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .add-friend-section input {
-  width: calc(100% - 120px);
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
 .add-friend-section button {
-  margin-left: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4267B2;
+  color: white;
+  cursor: pointer;
 }
 
-/* RESPONSIVE */
+.add-friend-section button:hover {
+  background-color: #365899;
+}
+
+/* Music Player */
+.music-section {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.music-section input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.music-section button {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4267B2;
+  color: white;
+  cursor: pointer;
+}
+
+.music-section button:hover {
+  background-color: #365899;
+}
+
+/* Responsive */
 @media (max-width: 600px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
+  .profile-container {
+    padding: 0 10px;
   }
 
-  .profile-info input, .profile-info textarea {
-    font-size: 14px;
+  .profile-pfp-frame {
+    width: 120px;
+    height: 120px;
   }
 
-  nav button {
-    font-size: 14px;
+  .top-friends-container .friend {
+    width: 60px;
+  }
+
+  .top-friends-container .friend img {
+    width: 50px;
+    height: 50px;
   }
 }

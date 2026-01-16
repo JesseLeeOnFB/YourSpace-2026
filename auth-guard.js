@@ -1,4 +1,3 @@
-// auth-guard.js
 import { auth } from "./firebase.js";
 import {
   onAuthStateChanged,
@@ -8,11 +7,11 @@ import {
 onAuthStateChanged(auth, (user) => {
   const path = window.location.pathname;
 
-  const requiresAuth =
+  const protectedPages =
     path.endsWith("feed.html") ||
     path.endsWith("profile.html");
 
-  if (!user && requiresAuth) {
+  if (!user && protectedPages) {
     window.location.replace("login.html");
     return;
   }
@@ -23,7 +22,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// LOGOUT BUTTON (GLOBAL)
+// LOGOUT BUTTON (WORKS EVERYWHERE)
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {

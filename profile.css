@@ -1,88 +1,121 @@
+/* GENERAL */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f7f7f7;
 }
 
-.profile-container {
+header nav {
   display: flex;
-  flex-wrap: wrap;
-  max-width: 900px;
-  margin: 20px auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
-  overflow: hidden;
+  background-color: #222;
+  padding: 10px;
 }
 
-.profile-left {
-  flex: 1;
-  min-width: 250px;
+header nav button {
+  color: #fff;
+  background: #444;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+header nav button:hover {
+  background: #666;
+}
+
+main {
   padding: 20px;
-  text-align: center;
-  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.profile-left img {
+/* PROFILE */
+#profilePfpContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#profilePfp {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 10px;
+  border: 3px solid #333;
 }
 
-.profile-right {
-  flex: 2;
-  min-width: 300px;
-  padding: 20px;
+#profileInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.profile-right input, 
-.profile-right textarea {
+/* MUSIC */
+#musicSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#musicPlayerContainer iframe,
+#musicPlayerContainer video,
+#musicPlayerContainer audio {
   width: 100%;
-  margin-bottom: 10px;
+  max-width: 500px;
+}
+
+/* WALL */
+#wallCommentsContainer .wall-comment {
   padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+  border-bottom: 1px solid #ccc;
 }
 
-button {
-  padding: 8px 12px;
-  border: none;
-  background-color: #007bff;
+.deleteWallCommentBtn {
+  margin-left: 10px;
+  background-color: #ff4d4d;
   color: white;
-  border-radius: 4px;
+  border: none;
+  padding: 2px 5px;
   cursor: pointer;
+  border-radius: 3px;
+}
+
+/* FRIENDS */
+#top10FriendsContainer .top-friend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#addFriendPreview .friend-preview {
+  padding: 5px;
+  border: 1px solid #aaa;
   margin-top: 5px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.wall-comment {
-  background: #f0f0f0;
-  padding: 6px 10px;
-  margin-bottom: 6px;
-  border-radius: 4px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.wall-comment button {
-  background-color: #dc3545;
-  margin-left: 10px;
+#addFriendPreview button {
+  padding: 3px 6px;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: white;
 }
 
-.wall-comment button:hover {
-  background-color: #a71d2a;
-}
-
-#top10FriendsContainer .top-friend {
-  background: #e8e8e8;
-  padding: 5px 8px;
-  margin-bottom: 5px;
-  border-radius: 4px;
+/* RESPONSIVE */
+@media(max-width: 600px) {
+  #profilePfp {
+    width: 120px;
+    height: 120px;
+  }
+  header nav {
+    flex-direction: column;
+  }
 }

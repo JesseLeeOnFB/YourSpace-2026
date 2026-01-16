@@ -6,29 +6,25 @@
   <title>YourSpace Feed</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="default">
+<body>
 
   <!-- NAVIGATION -->
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <nav class="top-nav">
+    <a href="feed.html" class="nav-btn">Feed</a>
+    <a href="profile.html" class="nav-btn">Profile</a>
+    <a href="logout.html" class="nav-btn">Logout</a>
   </nav>
 
-  <!-- CREATE POST SECTION -->
-  <section class="createPost">
-    <h2>Create a Post</h2>
-    <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
+  <!-- CREATE POST -->
+  <section class="create-post">
+    <textarea id="postText" placeholder="What's on your mind?"></textarea>
     <input type="file" id="postFileInput" accept="image/*,video/*">
-    <img id="imagePreview" style="display:none; max-width:100%; margin-top:10px; border-radius:8px;">
-    <video id="videoPreview" style="display:none; max-width:100%; margin-top:10px;" controls></video>
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- FEED SECTION -->
-  <section class="feed">
-    <h2>Feed</h2>
-    <div id="postsContainer"></div>
+  <!-- POSTS CONTAINER -->
+  <section id="postsContainer" class="posts-container">
+    <!-- JS will prepend posts here -->
   </section>
 
   <script type="module" src="firebase.js"></script>

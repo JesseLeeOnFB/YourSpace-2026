@@ -1,5 +1,6 @@
+// profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
@@ -36,8 +37,22 @@ const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 const logoutBtn = document.getElementById("logoutBtn");
 
+// NAV BUTTONS
+document.getElementById("feedNavBtn")?.addEventListener("click", () => {
+  window.location.href = "feed.html";
+});
+document.getElementById("profileNavBtn")?.addEventListener("click", () => {
+  window.location.href = "profile.html";
+});
+
+// LOGOUT BUTTON
+logoutBtn?.addEventListener("click", async () => {
+  await auth.signOut();
+  window.location.href = "login.html";
+});
+
 // AUTH STATE
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
     return;
@@ -47,38 +62,26 @@ auth.onAuthStateChanged(async (user) => {
   const userSnap = await getDoc(userDocRef);
 
   if (!userSnap.exists()) {
+    // First-time user setup
     await setDoc(userDocRef, {
-      username: "",
+      username: user.email.split("@")[0],
       bio: "",
       location: "",
-      pfpURL: "",
+      pfpURL: "default-avatar.png",
       topFriends: [],
       wallComments: [],
       musicURL: ""
     });
   }
 
-  loadProfile(user.uid);
-});
-
-// LOGOUT
-logoutBtn.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "login.html";
-});
-
-// LOAD PROFILE
-async function loadProfile(uid) {
-  const userDocRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userDocRef);
-  const data = userSnap.data();
+  const data = (await getDoc(userDocRef)).data();
 
   usernameInput.value = data.username || "";
   bioInput.value = data.bio || "";
   locationInput.value = data.location || "";
   profilePfp.src = data.pfpURL || "default-avatar.png";
 
-  // Top friends
+  // Load top friends
   topFriendsContainer.innerHTML = "";
   (data.topFriends || []).forEach(friend => {
     const div = document.createElement("div");
@@ -86,7 +89,7 @@ async function loadProfile(uid) {
     topFriendsContainer.appendChild(div);
   });
 
-  // Wall comments
+  // Load wall comments
   commentContainer.innerHTML = "";
   (data.wallComments || []).forEach(c => {
     const div = document.createElement("div");
@@ -94,34 +97,35 @@ async function loadProfile(uid) {
     commentContainer.appendChild(div);
   });
 
-  // Music
+  // Load music
   if (data.musicURL) {
     musicPlayerContainer.innerHTML = getEmbeddedMusicHTML(data.musicURL);
   }
-}
+});
 
 // SAVE PROFILE INFO
 saveProfileBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) return alert("Not logged in");
+  if (!user) return alert("User not logged in.");
 
   try {
-    await updateDoc(doc(db, "users", user.uid), {
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, {
       username: usernameInput.value,
       bio: bioInput.value,
       location: locationInput.value
     });
     alert("Profile updated!");
-  } catch {
-    alert("Failed to save profile info");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile info.");
   }
 });
 
-// PROFILE PICTURE UPLOAD
+// PFP UPLOAD
 profilePfpInput.addEventListener("change", async () => {
   const user = auth.currentUser;
   if (!user) return;
-
   const file = profilePfpInput.files[0];
   if (!file) return;
 
@@ -130,9 +134,13 @@ profilePfpInput.addEventListener("change", async () => {
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
     profilePfp.src = url;
-    await updateDoc(doc(db, "users", user.uid), { pfpURL: url });
-  } catch {
-    alert("Failed to save profile photo");
+
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, { pfpURL: url });
+    alert("Profile picture updated!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile photo.");
   }
 });
 
@@ -140,70 +148,84 @@ profilePfpInput.addEventListener("change", async () => {
 addTopFriendBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
+
   const friend = topFriendInput.value.trim();
   if (!friend) return;
 
-  const userDocRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userDocRef);
-  const currentFriends = userSnap.data().topFriends || [];
-  if (currentFriends.length >= 10) return alert("Top 10 limit reached.");
+  try {
+    const userDocRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userDocRef);
+    const currentFriends = (userSnap.data().topFriends || []);
 
-  await updateDoc(userDocRef, { topFriends: [...currentFriends, friend] });
-  topFriendInput.value = "";
-  const div = document.createElement("div");
-  div.textContent = friend;
-  topFriendsContainer.appendChild(div);
+    if (currentFriends.length >= 10) return alert("Top 10 limit reached.");
+    await updateDoc(userDocRef, { topFriends: [...currentFriends, friend] });
+
+    const div = document.createElement("div");
+    div.textContent = friend;
+    topFriendsContainer.appendChild(div);
+    topFriendInput.value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add top friend.");
+  }
 });
 
 // WALL COMMENTS
 postWallCommentBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
+
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  const userDocRef = doc(db, "users", user.uid);
-  const userSnap = await getDoc(userDocRef);
-  const currentComments = userSnap.data().wallComments || [];
-  const newComments = [...currentComments, { user: user.email.split("@")[0], text }];
-  await updateDoc(userDocRef, { wallComments: newComments });
+  try {
+    const userDocRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userDocRef);
+    const currentComments = userSnap.data().wallComments || [];
+    const newComments = [...currentComments, { user: user.email.split("@")[0], text }];
+    await updateDoc(userDocRef, { wallComments: newComments });
 
-  const div = document.createElement("div");
-  div.textContent = `${user.email.split("@")[0]}: ${text}`;
-  commentContainer.appendChild(div);
-  wallCommentInput.value = "";
+    const div = document.createElement("div");
+    div.textContent = `${user.email.split("@")[0]}: ${text}`;
+    commentContainer.appendChild(div);
+    wallCommentInput.value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Failed to post wall comment.");
+  }
 });
 
-// MUSIC PLAYER
+// MUSIC PLAYER SAVE & PLAY
 saveMusicBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) return;
+
   const url = musicInput.value.trim();
   if (!url) return;
 
   try {
-    await updateDoc(doc(db, "users", user.uid), { musicURL: url });
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, { musicURL: url });
     musicPlayerContainer.innerHTML = getEmbeddedMusicHTML(url);
-  } catch {
-    alert("Failed to save music");
+    alert("Music saved and loaded!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save or play music.");
   }
 });
 
 // HELPER: convert music links to embed
 function getEmbeddedMusicHTML(url) {
-  if (!url) return "";
   if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    const videoId = url.includes("v=") ? url.split("v=")[1].split("&")[0] : url.split("/").pop();
-    return `<iframe width="100%" height="180" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    const videoId = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
+    return `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
   }
   if (url.includes("soundcloud.com")) {
-    return `<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}"></iframe>`;
+    return `<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+      src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}"></iframe>`;
   }
   if (url.includes("spotify.com")) {
-    return `<iframe width="100%" height="80" src="https://open.spotify.com/embed/track/${url.split("/").pop()}" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-  }
-  if (url.includes("pandora.com")) {
-    return `<iframe width="100%" height="166" src="${url}" frameborder="0" allow="autoplay"></iframe>`;
+    return `<iframe src="https://open.spotify.com/embed/track/${url.split("/").pop()}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
   }
   return "";
 }

@@ -2,58 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-
-  <nav class="profile-nav">
-    <button onclick="location.href='feed.html'">Feed</button>
-    <button onclick="location.href='profile.html'">Profile</button>
-    <button onclick="location.href='settings.html'">Settings</button>
-  </nav>
-
   <div class="profile-container">
 
     <div class="profile-header">
-      <div class="pfp-wrapper">
-        <img id="profilePfp" src="default-pfp.png" alt="Profile Picture">
-      </div>
-
-      <input type="file" id="profilePfpInput" accept="image/*">
+      <img id="profilePfp" src="" alt="Profile Picture" class="profile-pfp">
+      <input type="file" id="profilePfpInput">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
     <div class="profile-info">
       <label>Username</label>
       <input id="usernameInput" type="text">
-
       <label>Bio</label>
       <textarea id="bioInput"></textarea>
-
       <label>Location</label>
       <input id="locationInput" type="text">
-
-      <button id="saveProfileBtn">Save Profile</button>
+      <button id="saveProfileBtn">Save Profile Info</button>
     </div>
 
-    <hr>
-
-    <h2>Wall</h2>
-    <div class="wall-input">
-      <input id="wallCommentInput" type="text" placeholder="Write on your wall">
-      <button id="addWallCommentBtn">Post</button>
+    <div class="wall-section">
+      <h2>Wall Comments</h2>
+      <div id="wallCommentsContainer" class="wall-comments"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="addWallCommentBtn">Add Comment</button>
     </div>
 
-    <div id="wallCommentsContainer"></div>
-
-    <hr>
-
-    <h2>Top 10 Friends</h2>
-    <div id="top10FriendsContainer"></div>
+    <div class="top-friends-section">
+      <h2>Top 10 Friends</h2>
+      <div id="top10FriendsContainer" class="top-friends"></div>
+    </div>
 
   </div>
-
   <script type="module" src="profile.js"></script>
 </body>
 </html>

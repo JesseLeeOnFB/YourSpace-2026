@@ -1,72 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
-  <script type="module" src="profile.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <div id="profileContainer">
 
-    <!-- Profile Info -->
-    <div id="profileInfo" class="card">
-      <img id="profilePfp" src="" alt="Profile Picture">
+<div id="navbar">
+  <span id="nav-home" class="nav-btn">Home</span>
+  <span id="nav-feed" class="nav-btn">Feed</span>
+  <span id="nav-messages" class="nav-btn">Messages</span>
+  <span id="nav-notifications" class="nav-btn">Notifications <span id="notif-badge">0</span></span>
+</div>
+
+<div id="profile-container">
+
+  <!-- Profile Picture & Info -->
+  <div id="profile-info">
+    <div id="pfp-container">
+      <img id="profilePfp" src="default.png" alt="Profile Picture">
       <input type="file" id="profilePfpInput">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    </div>
+    <div id="profile-fields">
       <input type="text" id="usernameInput" placeholder="Username">
       <input type="text" id="bioInput" placeholder="Bio">
       <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Profile Info</button>
+      <button id="saveProfileBtn">Save Info</button>
     </div>
-
-    <!-- Top 10 Friends -->
-    <div id="top10Container" class="card">
-      <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer"></div>
-      <button id="editTop10Btn">Edit Top 10</button>
-    </div>
-
-    <!-- Wall Comments -->
-    <div id="wallContainer" class="card">
-      <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
-
-    <!-- Music Player -->
-    <div id="musicPlayerContainer" class="card">
-      <h2>Music Player</h2>
-      <input type="text" id="musicLinkInput" placeholder="Paste YouTube/Spotify/Pandora/SoundCloud link">
-      <button id="saveMusicBtn">Load Music</button>
-      <div id="musicEmbedContainer"></div>
-    </div>
-
-    <!-- Custom Theme / HTML Background -->
-    <div id="themeContainer" class="card">
-      <h2>Profile Theme</h2>
-      <select id="presetThemes">
-        <option value="">Select Preset Theme</option>
-        <option value="gradientRed">Red Gradient</option>
-        <option value="gradientBlue">Blue Gradient</option>
-        <option value="gradientGreen">Green Gradient</option>
-        <option value="neonBlack">Neon Black</option>
-        <option value="animatedRainbow">Animated Rainbow</option>
-      </select>
-      <textarea id="customHTML" placeholder="Custom HTML/CSS for background"></textarea>
-      <button id="applyThemeBtn">Apply Theme</button>
-    </div>
-
-    <!-- Private Messaging (UI only, ready to connect) -->
-    <div id="privateMessagingContainer" class="card">
-      <h2>Private Messages</h2>
-      <div id="messageList"></div>
-      <input type="text" id="messageRecipientInput" placeholder="Recipient Username">
-      <textarea id="messageInput" placeholder="Your message..."></textarea>
-      <button id="sendMessageBtn">Send Message</button>
-    </div>
-
   </div>
+
+  <!-- Comment Wall -->
+  <div id="wall-container">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer"></div>
+    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
+
+  <!-- Top 10 Friends -->
+  <div id="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="editTop10Btn">Edit Top 10</button>
+  </div>
+
+  <!-- Preset Themes -->
+  <div id="themes-container">
+    <h3>Preset Themes</h3>
+    <button class="theme-btn" data-theme="default">Default</button>
+    <button class="theme-btn" data-theme="gradient">Gradient</button>
+    <button class="theme-btn" data-theme="neon">Neon</button>
+  </div>
+
+  <!-- Music Player -->
+  <div id="music-container">
+    <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
+    <button id="loadMusicBtn">Load Music</button>
+    <div id="musicPlayerContainer"></div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="notifications-container" class="hidden">
+    <h3>Notifications</h3>
+    <div id="notificationsList"></div>
+  </div>
+
+</div>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

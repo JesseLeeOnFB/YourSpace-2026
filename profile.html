@@ -2,48 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
-  <script type="module" defer src="profile.js"></script>
 </head>
 <body>
-  <nav>
-    <button id="feedBtn">Feed</button>
-    <button id="logoutBtn">Logout</button>
-    <button id="profileBtn">Profile</button>
-  </nav>
+  <div class="profile-container">
+    <div class="profile-header">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      <input type="text" id="usernameInput" placeholder="Username">
+      <input type="text" id="bioInput" placeholder="Bio">
+      <input type="text" id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
 
-  <main>
-    <section id="profileSection">
-      <div id="profilePfpContainer">
-        <img id="profilePfp" src="" alt="Profile Picture">
-        <input type="file" id="profilePfpInput">
-        <button id="saveProfilePfpBtn">Save Profile Picture</button>
-      </div>
-
-      <div id="profileInfoContainer">
-        <label>Username:</label>
-        <input type="text" id="usernameInput">
-        <label>Bio:</label>
-        <textarea id="bioInput"></textarea>
-        <label>Location:</label>
-        <input type="text" id="locationInput">
-        <button id="saveProfileBtn">Save Profile Info</button>
-      </div>
-    </section>
-
-    <section id="wallSection">
-      <h2>Wall</h2>
+    <div class="wall-section">
+      <h3>Wall Comments</h3>
       <div id="wallCommentsContainer"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment...">
+      <input type="text" id="wallCommentInput" placeholder="Write a comment">
       <button id="addWallCommentBtn">Post Comment</button>
-    </section>
+    </div>
 
-    <section id="friendsSection">
-      <h2>Top 10 Friends</h2>
+    <div class="friend-section">
+      <h3>Search Users</h3>
+      <input type="text" id="searchUserInput" placeholder="Search username">
+      <div id="searchPreviewContainer"></div>
+
+      <h3>Pending Friend Requests</h3>
+      <div id="pendingRequestsContainer"></div>
+
+      <h3>All Friends</h3>
+      <div id="allFriendsContainer"></div>
+
+      <h3>Top 10 Friends</h3>
       <div id="top10FriendsContainer"></div>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

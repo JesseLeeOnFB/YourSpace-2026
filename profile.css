@@ -1,252 +1,184 @@
-/* GENERAL LAYOUT */
+/* profile.css */
+
+/* GENERAL PAGE */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
   margin: 0;
   padding: 0;
+  background: #f4f4f4;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+/* NAVIGATION */
+nav {
+  background: #1a73e8;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
 }
 
-h2 {
-  margin-top: 0;
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
 }
 
 /* PROFILE HEADER */
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  background: #fff;
   padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  gap: 20px;
 }
 
 .profile-header img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 2px solid #007bff;
+  object-fit: cover;
+  border: 3px solid #1a73e8;
 }
 
 .profile-header input[type="file"] {
-  display: none;
-}
-
-.profile-header button {
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  border: 1px solid #007bff;
-  background-color: #007bff;
-  color: white;
-}
-
-/* PROFILE INFO FORM */
-.profile-info {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.profile-info label {
-  display: block;
   margin-top: 10px;
-  font-weight: bold;
 }
 
-.profile-info input,
-.profile-info textarea {
+.profile-header .profile-info {
+  flex: 1;
+}
+
+.profile-header .profile-info input,
+.profile-header .profile-info textarea {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.profile-info button {
-  margin-top: 15px;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
+/* BUTTONS */
+button {
+  background-color: #1a73e8;
   color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+button:hover {
+  background-color: #1558b0;
+}
+
+/* WALL COMMENTS */
+#commentContainer div {
+  background: white;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* MUSIC PLAYER */
+#musicPlayerContainer iframe,
+#musicPlayerContainer audio {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 4px;
 }
 
 /* TOP FRIENDS */
 #topFriendsContainer {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .top-friend {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.top-friend:last-child {
-  border-bottom: none;
-}
-
-.friend-rank {
-  font-weight: bold;
-  margin-right: 10px;
-}
-
-.friend-name {
-  cursor: pointer;
-  color: #007bff;
-}
-
-.top-friend button {
-  padding: 3px 6px;
-  border: none;
-  border-radius: 3px;
-  background: #ff4d4d;
-  color: white;
-  cursor: pointer;
-}
-
-/* FRIEND SEARCH */
-#friendSearchResults {
-  margin-top: 10px;
-  background: #fff;
-  border-radius: 10px;
+  background: white;
   padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.friend-search-result {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.friend-search-result:last-child {
-  border-bottom: none;
-}
-
-.friend-search-result button {
-  padding: 3px 6px;
-  border-radius: 3px;
-  border: none;
-  background-color: #007bff;
-  color: white;
+  border-radius: 6px;
+  width: 100px;
   cursor: pointer;
+}
+
+.top-friend img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+
+/* SEARCH USERS */
+#searchResultsContainer {
+  margin-top: 15px;
+}
+
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+
+.search-result img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.search-result button {
+  margin-left: auto;
 }
 
 /* PENDING FRIEND REQUESTS */
 #pendingRequestsContainer {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 20px;
 }
 
 .pending-request {
   display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.pending-request:last-child {
-  border-bottom: none;
+  align-items: center;
+  gap: 10px;
+  background: #fff3cd;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 5px;
 }
 
 .pending-request button {
-  margin-left: 5px;
-  padding: 3px 6px;
-  border-radius: 3px;
-  border: none;
-  cursor: pointer;
-}
-
-.pending-request button.accept {
-  background-color: #28a745;
-  color: white;
-}
-
-.pending-request button.deny {
-  background-color: #ff4d4d;
-  color: white;
-}
-
-/* WALL COMMENTS */
-#commentContainer {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-#commentContainer div {
-  margin-bottom: 10px;
-}
-
-#commentContainer button {
-  padding: 3px 6px;
-  border: none;
-  border-radius: 3px;
-  background-color: #ff4d4d;
-  color: white;
-  cursor: pointer;
-}
-
-/* MUSIC PLAYER */
-#musicPlayerContainer {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-iframe,
-audio {
-  width: 100%;
+  padding: 4px 8px;
 }
 
 /* RESPONSIVE */
-@media (max-width: 768px) {
+@media screen and (max-width: 600px) {
   .profile-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 
-  .profile-header img {
-    width: 80px;
-    height: 80px;
+  .profile-header .profile-info {
+    width: 90%;
   }
 
-  .top-friend,
-  .friend-search-result,
-  .pending-request {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .top-friend button,
-  .friend-search-result button,
-  .pending-request button {
-    margin-top: 5px;
+  .top-friend {
+    width: 45%;
   }
 }

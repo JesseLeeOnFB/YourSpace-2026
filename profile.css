@@ -1,34 +1,68 @@
-.profile-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.top-nav {
   display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.pfp-container img, .small-pfp {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
-.top-friend, .friend-request, .search-result {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-}
-
-.top-friend button, .friend-request button, .search-result button {
-  margin-left: auto;
-}
-
-.profile-info input, .profile-info textarea, .add-friend-section input {
-  width: 100%;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  background-color: #1e90ff;
+  padding: 10px;
 }
 
 .top-nav button {
-  margin-right: 10px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.profile-info {
+  display: flex;
+  gap: 20px;
+}
+
+.pfp-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pfp-container img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-fields input, .profile-fields textarea {
+  display: block;
+  margin-bottom: 10px;
+  width: 250px;
+}
+
+.top-friends-container, .comment-container, #musicPlayerContainer {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.top-friends-container .top-friend {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.music-section input {
+  width: 100%;
+  margin-bottom: 5px;
 }

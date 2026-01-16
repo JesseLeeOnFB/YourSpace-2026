@@ -19,7 +19,7 @@
             <div class="pfp-container">
                 <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
                 <input type="file" id="profilePfpInput" accept="image/*">
-                <button id="savePfpBtn">Save Profile Photo</button>
+                <button id="savePfpBtn">Save Profile Picture</button>
             </div>
             <div class="profile-fields">
                 <label>Username</label>
@@ -32,15 +32,15 @@
             </div>
         </section>
 
-        <section class="friend-request-section">
-            <h3>Add Friends</h3>
-            <input type="text" id="friendSearchInput" placeholder="Search by username">
-            <div id="friendSearchResults"></div>
-        </section>
-
         <section class="top-friends-section">
             <h3>Top Friends</h3>
-            <div class="top-friends-container" id="topFriendsContainer"></div>
+            <div id="topFriendsContainer"></div>
+        </section>
+
+        <section class="add-friend-section">
+            <h3>Add Friend</h3>
+            <input type="text" id="searchFriendInput" placeholder="Search by username">
+            <div id="friendPreviewContainer"></div>
         </section>
 
         <section class="wall-comments-section">

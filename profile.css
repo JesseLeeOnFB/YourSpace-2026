@@ -1,40 +1,48 @@
+/* PROFILE PAGE CONTAINER */
 body {
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
   margin: 0;
   padding: 0;
 }
 
+/* NAVIGATION BAR */
 nav {
   display: flex;
-  background-color: #222;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #1a73e8;
   padding: 10px;
-  gap: 10px;
 }
 
 nav button {
-  color: white;
-  background-color: #444;
+  background-color: transparent;
   border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 nav button:hover {
-  background-color: #555;
+  color: #ffeb3b;
 }
 
+/* PROFILE SECTION */
 .profile-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 20px auto;
-  padding: 10px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.profile-picture-container {
+.profile-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 #profilePfp {
@@ -42,59 +50,121 @@ nav button:hover {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ccc;
-  background-color: #f0f0f0;
-  margin-bottom: 10px;
+  border: 3px solid #1a73e8;
 }
 
-#profilePfpInput {
-  margin-bottom: 10px;
+.profile-info {
+  flex: 1;
 }
 
-#saveProfilePfpBtn,
-#saveProfileBtn,
-#addFriendBtn,
-#postWallCommentBtn,
-#saveMusicBtn {
-  padding: 6px 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-#saveProfilePfpBtn:hover,
-#saveProfileBtn:hover,
-#addFriendBtn:hover,
-#postWallCommentBtn:hover,
-#saveMusicBtn:hover {
-  background-color: #0056b3;
-}
-
-.profile-info input,
-.top-friends-container input,
-.wall-comments-container textarea,
-.music-container input {
-  display: block;
+.profile-info input, .profile-info textarea {
   width: 100%;
-  padding: 6px;
   margin-bottom: 10px;
-  border-radius: 4px;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-.top-friends-container,
-.wall-comments-container,
-.music-container {
+/* BUTTONS */
+button {
+  padding: 8px 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #1a73e8;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #155ab6;
+}
+
+/* WALL COMMENTS */
+.wall-section {
+  margin-top: 30px;
+}
+
+.wall-section h3 {
+  margin-bottom: 10px;
+}
+
+#commentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wall-comment {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.wall-comment button.deleteCommentBtn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: #e53935;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.wall-comment button.deleteCommentBtn:hover {
+  background-color: #b71c1c;
+}
+
+/* TOP FRIENDS */
+.top-friends-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 20px;
 }
 
-#topFriendsList li,
-#wallCommentsList li {
-  margin-bottom: 8px;
-  padding: 6px;
+.top-friends-container div {
+  background-color: #e0f7fa;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.top-friends-container div:hover {
+  background-color: #b2ebf2;
+}
+
+/* ADD FRIEND SECTION */
+.add-friend-section {
+  margin-top: 20px;
+}
+
+.add-friend-section input {
+  width: calc(100% - 120px);
+  padding: 8px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+}
+
+.add-friend-section button {
+  margin-left: 10px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-info input, .profile-info textarea {
+    font-size: 14px;
+  }
+
+  nav button {
+    font-size: 14px;
+  }
 }

@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, arrayUnion
+  getFirestore, doc, getDoc, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import {
@@ -32,7 +32,6 @@ const saveProfileBtn = document.getElementById("saveProfileBtn");
 const topFriendInput = document.getElementById("topFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 const topFriendsContainer = document.getElementById("topFriendsContainer");
-const friendSearchResults = document.getElementById("friendSearchResults");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
@@ -52,30 +51,26 @@ auth.onAuthStateChanged(async user => {
   loadProfile();
 });
 
-// NAVIGATION
-document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
-document.getElementById("logoutBtn").onclick = () => auth.signOut().then(() => window.location.href = "login.html");
-
 // LOAD PROFILE
 async function loadProfile() {
-  const refDoc = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(refDoc);
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
 
   if (!snap.exists()) {
-    await setDoc(refDoc, {
+    await setDoc(ref, {
       username: "",
       bio: "",
       location: "",
       pfpURL: "",
       topFriends: [],
       wallComments: [],
-      musicURL: "",
-      friendRequests: []
+      musicURL: ""
     });
     return loadProfile();
   }
 
   const data = snap.data();
+
   usernameInput.value = data.username || "";
   bioInput.value = data.bio || "";
   locationInput.value = data.location || "";
@@ -88,90 +83,79 @@ async function loadProfile() {
 
 // SAVE PROFILE INFO
 saveProfileBtn.onclick = async () => {
-  await updateDoc(doc(db, "users", currentUser.uid), {
-    username: usernameInput.value,
-    bio: bioInput.value,
-    location: locationInput.value
-  });
-  alert("Profile info saved");
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      username: usernameInput.value,
+      bio: bioInput.value,
+      location: locationInput.value
+    });
+    alert("Profile info saved");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile info");
+  }
 };
 
 // SAVE PROFILE PICTURE
 savePfpBtn.onclick = async () => {
+  const file = profilePfpInput.files[0];
+  if (!file) return alert("Select an image");
+
   try {
-    const file = profilePfpInput.files[0];
-    if (!file) return alert("Select an image");
-    const storageRef = ref(storage, `pfp/${currentUser.uid}`);
+    const storageRef = ref(storage, `profileImages/${currentUser.uid}/${file.name}`);
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
+
     await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
     profilePfp.src = url;
     alert("Profile picture saved");
-  } catch {
+  } catch (err) {
+    console.error(err);
     alert("Failed to save profile picture");
   }
 };
 
 // TOP FRIENDS
 addTopFriendBtn.onclick = async () => {
-  const searchName = topFriendInput.value.trim();
-  if (!searchName) return alert("Enter a username");
-  friendSearchResults.innerHTML = "";
+  const name = topFriendInput.value.trim();
+  if (!name) return;
 
   try {
-    const usersSnap = await getDocs(collection(db, "users"));
-    let found = false;
+    // Search user by username in Firestore
+    const usersRef = doc(db, "users", name); // This assumes you will store UID or username matching
+    const snap = await getDoc(usersRef);
+    if (!snap.exists()) return alert("User not found");
 
-    usersSnap.forEach(docSnap => {
-      const data = docSnap.data();
-      if (data.username.toLowerCase() === searchName.toLowerCase() && docSnap.id !== currentUser.uid) {
-        found = true;
+    const ref = doc(db, "users", currentUser.uid);
+    const currentSnap = await getDoc(ref);
+    const friends = currentSnap.data().topFriends || [];
 
-        const div = document.createElement("div");
-        div.className = "friend-search-result";
-        div.innerHTML = `
-          <img src="${data.pfpURL || 'default-avatar.png'}" width="50" height="50">
-          <span class="friend-username">${data.username}</span>
-          <button class="sendRequestBtn">Send Friend Request</button>
-        `;
+    if (friends.length >= 10) return alert("Max 10 friends");
 
-        div.querySelector(".friend-username").onclick = () => window.location.href = `/profile.html?user=${data.username}`;
-
-        div.querySelector(".sendRequestBtn").onclick = async () => {
-          try {
-            await updateDoc(doc(db, "users", docSnap.id), {
-              friendRequests: arrayUnion(currentUser.uid)
-            });
-            div.querySelector(".sendRequestBtn").textContent = "Pending";
-            alert("Friend request sent!");
-          } catch {
-            alert("Failed to send friend request");
-          }
-        };
-
-        friendSearchResults.appendChild(div);
-      }
-    });
-
-    if (!found) alert("User not found");
+    friends.push({ username: name, uid: snap.id });
+    await updateDoc(ref, { topFriends: friends });
+    renderTopFriends(friends);
+    topFriendInput.value = "";
   } catch (err) {
     console.error(err);
-    alert("Search failed");
+    alert("Failed to send friend request");
   }
 };
 
 function renderTopFriends(friends) {
   topFriendsContainer.innerHTML = "";
+
   friends.forEach((f, index) => {
     const div = document.createElement("div");
     div.className = "top-friend";
+
     div.innerHTML = `
       <strong class="friend-name">${f.username}</strong>
       <button data-index="${index}">Remove</button>
     `;
 
     div.querySelector(".friend-name").onclick = () => {
-      window.location.href = `/profile.html?user=${f.username}`;
+      window.location.href = `/profile.html?user=${f.uid || f.username}`;
     };
 
     div.querySelector("button").onclick = async () => {
@@ -189,50 +173,65 @@ postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  const refDoc = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(refDoc);
+  const ref = doc(db, "users", currentUser.uid);
+  const snap = await getDoc(ref);
   const comments = snap.data().wallComments || [];
 
-  comments.push({ uid: currentUser.uid, user: usernameInput.value, text });
+  comments.push({
+    uid: currentUser.uid,
+    user: currentUser.displayName || currentUser.email.split("@")[0],
+    text
+  });
 
-  await updateDoc(refDoc, { wallComments: comments });
+  await updateDoc(ref, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
 };
 
 function renderWallComments(comments) {
   commentContainer.innerHTML = "";
+
   comments.forEach((c, i) => {
     const div = document.createElement("div");
     div.innerHTML = `
       <strong>${c.user}:</strong> ${c.text}
-      ${c.uid === currentUser.uid ? '<button>Delete</button>' : ''}
+      <button>Delete</button>
     `;
-    if (c.uid === currentUser.uid) {
-      div.querySelector("button").onclick = async () => {
-        comments.splice(i, 1);
-        await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
-        renderWallComments(comments);
-      };
-    }
+
+    div.querySelector("button").onclick = async () => {
+      comments.splice(i, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
+      renderWallComments(comments);
+    };
+
     commentContainer.appendChild(div);
   });
 }
 
-// MUSIC
+// MUSIC PLAYER
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
-  if (!url) return alert("Enter a music URL");
+  if (!url) return alert("Enter a URL");
 
-  await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
-  renderMusic(url);
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
+    renderMusic(url);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save music URL");
+  }
 };
 
 function renderMusic(url) {
+  if (!url) return;
   if (url.includes("youtube")) {
     const id = url.split("v=")[1]?.split("&")[0];
-    musicPlayerContainer.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+    musicPlayerContainer.innerHTML = `
+      <iframe width="100%" height="200"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen></iframe>`;
   } else {
-    musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
+    musicPlayerContainer.innerHTML = `
+      <audio controls src="${url}"></audio>`;
   }
 }

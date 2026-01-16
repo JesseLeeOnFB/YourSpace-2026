@@ -1,13 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import {
   getStorage, ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -30,32 +29,38 @@ const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-const friendSearchInput = document.getElementById("friendSearchInput");
-const friendSearchResults = document.getElementById("friendSearchResults");
 const topFriendsContainer = document.getElementById("topFriendsContainer");
-
+const searchFriendInput = document.getElementById("searchFriendInput");
+const friendPreviewContainer = document.getElementById("friendPreviewContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const postWallCommentBtn = document.getElementById("postWallCommentBtn");
 const commentContainer = document.getElementById("commentContainer");
-
 const musicInput = document.getElementById("musicInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
+const feedNavBtn = document.getElementById("feedNavBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 let currentUser;
 
-// Auth state
+// AUTH
 auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
   currentUser = user;
-  await loadProfile();
+  loadProfile();
 });
 
-// Load profile
+// NAVIGATION
+feedNavBtn.addEventListener("click", () => window.location.href = "feed.html");
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+
+// LOAD PROFILE
 async function loadProfile() {
   const userRef = doc(db, "users", currentUser.uid);
   const snap = await getDoc(userRef);
@@ -69,8 +74,7 @@ async function loadProfile() {
       topFriends: [],
       wallComments: [],
       musicURL: "",
-      friendRequests: [],
-      friends: []
+      friendRequests: []
     });
     return loadProfile();
   }
@@ -87,7 +91,7 @@ async function loadProfile() {
   if (data.musicURL) renderMusic(data.musicURL);
 }
 
-// Save profile info
+// SAVE PROFILE INFO
 saveProfileBtn.onclick = async () => {
   await updateDoc(doc(db, "users", currentUser.uid), {
     username: usernameInput.value,
@@ -97,69 +101,117 @@ saveProfileBtn.onclick = async () => {
   alert("Profile info saved");
 };
 
-// Save profile picture
+// SAVE PROFILE PICTURE
 savePfpBtn.onclick = async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Select an image");
 
-  const storageRef = ref(storage, `profileImages/${currentUser.uid}/${file.name}`);
+  const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
 
   await updateDoc(doc(db, "users", currentUser.uid), { pfpURL: url });
   profilePfp.src = url;
+  alert("Profile picture updated!");
 };
 
-// Friend search
-friendSearchInput.addEventListener("input", async () => {
-  const queryText = friendSearchInput.value.trim();
-  friendSearchResults.innerHTML = "";
-  if (!queryText) return;
-
-  const q = query(collection(db, "users"), where("username", "==", queryText));
-  const snap = await getDocs(q);
-  snap.forEach(docSnap => {
-    const u = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "friend-result";
-    div.innerHTML = `
-      <img src="${u.pfpURL || 'default-avatar.png'}" alt="pfp">
-      <span>${u.username}</span>
-      <button>Add Friend</button>
-    `;
-    const btn = div.querySelector("button");
-    btn.onclick = async () => {
-      const otherRef = doc(db, "users", docSnap.id);
-      await updateDoc(otherRef, { friendRequests: arrayUnion({uid: currentUser.uid, username: usernameInput.value, status: 'pending'}) });
-      btn.textContent = "Pending";
-      btn.disabled = true;
-    };
-    friendSearchResults.appendChild(div);
-  });
-});
-
-// Top friends
+// TOP FRIENDS
 function renderTopFriends(friends) {
   topFriendsContainer.innerHTML = "";
-  friends.forEach((f, i) => {
+  friends.forEach((f, index) => {
     const div = document.createElement("div");
     div.className = "top-friend";
-    div.innerHTML = `<span class="friend-name">${i + 1}. ${f.username}</span>`;
+
+    div.innerHTML = `
+      <img src="${f.pfpURL || 'default-avatar.png'}" class="friend-pfp">
+      <strong class="friend-name">${f.username}</strong>
+      <span>#${index + 1}</span>
+      <button data-index="${index}">Remove</button>
+    `;
+
     div.querySelector(".friend-name").onclick = () => {
-      if (f.uid) window.location.href = `/profile.html?user=${f.username}`;
+      if(f.uid) window.location.href = `/profile.html?user=${f.uid}`;
     };
+
+    div.querySelector("button").onclick = async () => {
+      friends.splice(index, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { topFriends: friends });
+      renderTopFriends(friends);
+    };
+
     topFriendsContainer.appendChild(div);
   });
 }
 
-// Wall comments
+// ADD FRIEND SEARCH & PREVIEW
+searchFriendInput.addEventListener("input", async () => {
+  const queryText = searchFriendInput.value.trim();
+  friendPreviewContainer.innerHTML = "";
+
+  if (!queryText) return;
+
+  const q = query(collection(db, "users"), where("username", "==", queryText));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(docSnap => {
+    const userData = docSnap.data();
+    const userId = docSnap.id;
+
+    // Skip self
+    if(userId === currentUser.uid) return;
+
+    const div = document.createElement("div");
+    div.className = "friend-preview";
+    div.innerHTML = `
+      <img src="${userData.pfpURL || 'default-avatar.png'}" class="friend-pfp">
+      <strong>${userData.username}</strong>
+      <button class="add-friend-btn">Add Friend</button>
+      <span class="request-status"></span>
+    `;
+
+    const addBtn = div.querySelector(".add-friend-btn");
+    const statusSpan = div.querySelector(".request-status");
+
+    addBtn.onclick = async () => {
+      try {
+        const otherUserRef = doc(db, "users", userId);
+        const otherSnap = await getDoc(otherUserRef);
+        const otherData = otherSnap.data();
+        const existing = otherData.friendRequests || [];
+
+        if (existing.some(r => r.uid === currentUser.uid)) {
+          statusSpan.textContent = "Pending";
+          return;
+        }
+
+        existing.push({ uid: currentUser.uid, username: usernameInput.value, status: "pending" });
+        await updateDoc(otherUserRef, { friendRequests: existing });
+        statusSpan.textContent = "Pending";
+      } catch (err) {
+        console.error(err);
+        alert("Failed to send friend request");
+      }
+    };
+
+    friendPreviewContainer.appendChild(div);
+  });
+});
+
+// WALL COMMENTS
 postWallCommentBtn.onclick = async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
+
   const ref = doc(db, "users", currentUser.uid);
   const snap = await getDoc(ref);
   const comments = snap.data().wallComments || [];
-  comments.push({uid: currentUser.uid, user: usernameInput.value, text});
+
+  comments.push({
+    uid: currentUser.uid,
+    user: usernameInput.value || currentUser.email.split("@")[0],
+    text
+  });
+
   await updateDoc(ref, { wallComments: comments });
   renderWallComments(comments);
   wallCommentInput.value = "";
@@ -169,24 +221,37 @@ function renderWallComments(comments) {
   commentContainer.innerHTML = "";
   comments.forEach((c, i) => {
     const div = document.createElement("div");
-    div.innerHTML = `<strong>${c.user}:</strong> ${c.text}`;
+    div.innerHTML = `
+      <strong>${c.user}:</strong> ${c.text}
+      <button>Delete</button>
+    `;
+    div.querySelector("button").onclick = async () => {
+      comments.splice(i, 1);
+      await updateDoc(doc(db, "users", currentUser.uid), { wallComments: comments });
+      renderWallComments(comments);
+    };
     commentContainer.appendChild(div);
   });
 }
 
-// Music
+// MUSIC PLAYER
 saveMusicBtn.onclick = async () => {
   const url = musicInput.value.trim();
   if (!url) return;
+
   await updateDoc(doc(db, "users", currentUser.uid), { musicURL: url });
   renderMusic(url);
 };
 
 function renderMusic(url) {
-  if (url.includes("youtube")) {
+  if (url.includes("youtube.com")) {
     const id = url.split("v=")[1]?.split("&")[0];
-    musicPlayerContainer.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+    musicPlayerContainer.innerHTML = `
+      <iframe width="100%" height="200"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen></iframe>`;
   } else {
-    musicPlayerContainer.innerHTML = `<audio controls src="${url}"></audio>`;
+    musicPlayerContainer.innerHTML = `
+      <audio controls src="${url}"></audio>`;
   }
 }

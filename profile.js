@@ -38,7 +38,7 @@ const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 // AUTH STATE
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
-    window.location.href = "login.html";
+    window.location.href = "feed.html";
     return;
   }
 

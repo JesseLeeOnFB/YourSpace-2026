@@ -1,7 +1,6 @@
-// PROFILE.JS - Direct Firebase connection, cache-busting included
+// PROFILE.JS - Direct Firebase connection, DOMContentLoaded wrapper
 document.addEventListener('DOMContentLoaded', async () => {
-
-  // Firebase config
+  // --- FIREBASE CONFIG ---
   const firebaseConfig = {
     apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
     authDomain: "yourspace-2026.firebaseapp.com",
@@ -12,13 +11,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     measurementId: "G-FZ4GFXWGSS"
   };
 
-  // Initialize Firebase
   const app = firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  // DOM Elements
+  // --- DOM ELEMENTS ---
   const usernameInput = document.getElementById('usernameInput');
   const bioInput = document.getElementById('bioInput');
   const locationInput = document.getElementById('locationInput');
@@ -33,107 +31,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addWallCommentBtn = document.getElementById('addWallCommentBtn');
 
   const top10FriendsContainer = document.getElementById('top10FriendsContainer');
-  const pendingFriendsContainer = document.getElementById('pendingFriendsContainer');
+  const searchUserInput = document.getElementById('searchUserInput');
+  const searchUserBtn = document.getElementById('searchUserBtn');
+  const searchResultContainer = document.getElementById('searchResultContainer');
 
-  // Cache-busting helper
-  function cacheBustedURL(url) {
-    return url + '?v=' + Date.now();
-  }
-
-  // Load user profile
+  // --- FUNCTIONS ---
   async function loadProfile() {
     const user = auth.currentUser;
     if (!user) return;
 
-    try {
-      const userDoc = await db.collection('users').doc(user.uid).get();
-      if (!userDoc.exists) return;
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    if (!userDoc.exists) return;
 
-      const data = userDoc.data();
+    const data = userDoc.data();
+    usernameInput.value = data.username || '';
+    bioInput.value = data.bio || '';
+    locationInput.value = data.location || '';
+    if (data.pfpURL) profilePfp.src = data.pfpURL;
 
-      usernameInput.value = data.username || '';
-      bioInput.value = data.bio || '';
-      locationInput.value = data.location || '';
-      if (data.pfpURL) profilePfp.src = cacheBustedURL(data.pfpURL);
-
-      // Load wall comments
-      wallCommentsContainer.innerHTML = '';
-      if (data.wallComments && data.wallComments.length) {
-        data.wallComments.forEach(comment => {
-          const div = document.createElement('div');
-          div.className = 'wall-comment';
-          div.innerHTML = `
-            <strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
-            ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
-          `;
-          if (comment.userId === user.uid) {
-            div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
-              await db.collection('users').doc(user.uid).update({
-                wallComments: firebase.firestore.FieldValue.arrayRemove(comment)
-              });
-              loadProfile();
-            });
-          }
-          wallCommentsContainer.appendChild(div);
-        });
-      }
-
-      // Top 10 Friends
-      top10FriendsContainer.innerHTML = '';
-      if (data.top10Friends && data.top10Friends.length) {
-        data.top10Friends.forEach(friend => {
-          const div = document.createElement('div');
-          div.className = 'top-friend';
-          div.textContent = friend.username || 'Unknown';
-          top10FriendsContainer.appendChild(div);
-        });
-      }
-
-      // Pending Friend Requests
-      pendingFriendsContainer.innerHTML = '';
-      if (data.pendingRequests && data.pendingRequests.length) {
-        data.pendingRequests.forEach(req => {
-          const div = document.createElement('div');
-          div.className = 'pending-friend';
-          div.textContent = req.username || 'Unknown';
-          const acceptBtn = document.createElement('button');
-          acceptBtn.textContent = 'Accept';
-          const denyBtn = document.createElement('button');
-          denyBtn.textContent = 'Deny';
-          acceptBtn.addEventListener('click', async () => {
-            // Move to friends
-            await db.collection('users').doc(user.uid).update({
-              friends: firebase.firestore.FieldValue.arrayUnion(req),
-              pendingRequests: firebase.firestore.FieldValue.arrayRemove(req)
-            });
-            // Add user to sender's friends
-            await db.collection('users').doc(req.userId).update({
-              friends: firebase.firestore.FieldValue.arrayUnion({ username: data.username, userId: user.uid })
-            });
+    // WALL COMMENTS
+    wallCommentsContainer.innerHTML = '';
+    if (data.wallComments && data.wallComments.length) {
+      data.wallComments.forEach(comment => {
+        const div = document.createElement('div');
+        div.className = 'wall-comment';
+        div.innerHTML = `<strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
+                         ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}`;
+        if (comment.userId === user.uid) {
+          div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
+            await db.collection('users').doc(user.uid)
+              .update({ wallComments: firebase.firestore.FieldValue.arrayRemove(comment) });
             loadProfile();
           });
-          denyBtn.addEventListener('click', async () => {
-            await db.collection('users').doc(user.uid).update({
-              pendingRequests: firebase.firestore.FieldValue.arrayRemove(req)
-            });
-            loadProfile();
-          });
-          div.appendChild(acceptBtn);
-          div.appendChild(denyBtn);
-          pendingFriendsContainer.appendChild(div);
-        });
-      }
+        }
+        wallCommentsContainer.appendChild(div);
+      });
+    }
 
-    } catch (err) {
-      console.error(err);
-      alert('Failed to load profile');
+    // TOP 10 FRIENDS
+    top10FriendsContainer.innerHTML = '';
+    if (data.top10Friends && data.top10Friends.length) {
+      data.top10Friends.forEach(friend => {
+        const div = document.createElement('div');
+        div.className = 'top-friend';
+        div.textContent = friend.username || 'Unknown';
+        top10FriendsContainer.appendChild(div);
+      });
     }
   }
 
-  // Save profile info
+  // --- EVENT LISTENERS ---
+
+  // SAVE PROFILE INFO
   saveProfileBtn.addEventListener('click', async () => {
     const user = auth.currentUser;
     if (!user) return;
+
     try {
       await db.collection('users').doc(user.uid).update({
         username: usernameInput.value,
@@ -141,14 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         location: locationInput.value
       });
       alert('Profile info updated!');
-      loadProfile();
     } catch (err) {
       console.error(err);
       alert('Failed to update profile info');
     }
   });
 
-  // Save profile picture
+  // SAVE PROFILE PICTURE
   saveProfilePfpBtn.addEventListener('click', async () => {
     const file = profilePfpInput.files[0];
     if (!file) return alert('Please select a picture first');
@@ -159,34 +111,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       await storageRef.put(file);
       const url = await storageRef.getDownloadURL();
 
-      profilePfp.src = cacheBustedURL(url);
-
+      profilePfp.src = url;
       await db.collection('users').doc(user.uid).update({ pfpURL: url });
       alert('Profile picture updated!');
     } catch (err) {
       console.error(err);
-      alert('Failed to update profile picture');
+      alert('Failed to save profile picture');
     }
   });
 
-  // Add wall comment
+  // ADD WALL COMMENT
   addWallCommentBtn.addEventListener('click', async () => {
     const user = auth.currentUser;
     if (!user) return;
+
     const text = wallCommentInput.value.trim();
     if (!text) return;
 
     const comment = {
       text,
-      userId: user.uid,
       username: usernameInput.value || 'Unknown',
+      userId: user.uid,
       timestamp: Date.now()
     };
 
     try {
-      await db.collection('users').doc(user.uid).update({
-        wallComments: firebase.firestore.FieldValue.arrayUnion(comment)
-      });
+      await db.collection('users').doc(user.uid)
+        .update({ wallComments: firebase.firestore.FieldValue.arrayUnion(comment) });
       wallCommentInput.value = '';
       loadProfile();
     } catch (err) {
@@ -195,7 +146,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Auth state
+  // SEARCH USER FOR FRIEND REQUEST (placeholder)
+  searchUserBtn.addEventListener('click', async () => {
+    const username = searchUserInput.value.trim();
+    if (!username) return alert('Enter a username to search');
+
+    const snapshot = await db.collection('users').where('username', '==', username).get();
+    searchResultContainer.innerHTML = '';
+
+    if (snapshot.empty) {
+      searchResultContainer.textContent = 'No user found';
+      return;
+    }
+
+    snapshot.forEach(docSnap => {
+      const userData = docSnap.data();
+      const div = document.createElement('div');
+      div.className = 'user-preview';
+      div.innerHTML = `<strong>${userData.username}</strong> <button class="addFriendBtn">Add Friend</button>`;
+      div.querySelector('.addFriendBtn').addEventListener('click', async () => {
+        alert('Friend request placeholder (will implement acceptance flow next)');
+      });
+      searchResultContainer.appendChild(div);
+    });
+  });
+
+  // --- INIT ---
   auth.onAuthStateChanged(user => {
     if (user) loadProfile();
   });

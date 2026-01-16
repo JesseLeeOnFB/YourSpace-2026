@@ -36,11 +36,11 @@ const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 
 // AUTH STATE
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = "feed.html";
-    return;
-  }
+auth.onAuthStateChanged(user => {
+    if (!user) {
+        window.location.href = "login.html"; // redirect to login instead
+    }
+});
 
   const userDocRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userDocRef);

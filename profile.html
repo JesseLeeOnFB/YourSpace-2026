@@ -17,44 +17,51 @@
 
 <main class="profile-container">
 
+  <!-- PROFILE INFO -->
   <section class="profile-info">
     <div class="pfp-container">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture" />
+      <img id="profilePfp" src="default-avatar.png" />
       <input type="file" id="profilePfpInput" accept="image/*" />
       <button id="savePfpBtn">Save Profile Picture</button>
     </div>
 
     <div class="profile-fields">
       <label>Username</label>
-      <input type="text" id="usernameInput" />
+      <input id="usernameInput" />
 
       <label>Bio</label>
       <textarea id="bioInput"></textarea>
 
       <label>Location</label>
-      <input type="text" id="locationInput" />
+      <input id="locationInput" />
 
       <button id="saveProfileBtn">Save Profile Info</button>
     </div>
   </section>
 
-  <section class="top-friends-section">
+  <!-- TOP FRIENDS -->
+  <section>
     <h3>Top Friends</h3>
-    <div id="topFriendsContainer" class="top-friends-container"></div>
-    <input type="text" id="topFriendInput" placeholder="Add username" />
-    <button id="addTopFriendBtn">Add Friend</button>
+    <div id="topFriendsContainer"></div>
+
+    <input id="topFriendInput" placeholder="Enter username" />
+    <button id="addTopFriendBtn">Find User</button>
+
+    <div id="friendPreview" class="friend-preview"></div>
   </section>
 
-  <section class="wall-comments-section">
-    <h3>Wall Comments</h3>
+  <!-- WALL -->
+  <section>
+    <h3>Wall</h3>
     <div id="commentContainer"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment" />
-    <button id="postWallCommentBtn">Post Comment</button>
+    <input id="wallCommentInput" placeholder="Write a comment" />
+    <button id="postWallCommentBtn">Post</button>
   </section>
 
-  <section class="music-section">
+  <!-- MUSIC -->
+  <section>
     <h3>Music</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube / audio URL" />
+    <input id="musicInput" placeholder="YouTube link" />
     <button id="saveMusicBtn">Save & Play</button>
     <div id="musicPlayerContainer"></div>
   </section>

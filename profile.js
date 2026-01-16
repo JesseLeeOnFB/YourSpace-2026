@@ -1,7 +1,4 @@
-// PROFILE.JS
-import { auth, db, storage } from './firebase.js';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, query, collection, where, getDocs } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// PROFILE.JS - Non-module version for YourSpace
 
 // DOM elements
 const usernameInput = document.getElementById('usernameInput');
@@ -19,113 +16,94 @@ const addWallCommentBtn = document.getElementById('addWallCommentBtn');
 
 const top10FriendsContainer = document.getElementById('top10FriendsContainer');
 const addFriendInput = document.getElementById('addFriendInput');
-const addFriendPreview = document.getElementById('addFriendPreview');
 const addFriendBtn = document.getElementById('addFriendBtn');
+const friendPreviewContainer = document.getElementById('friendPreviewContainer');
 
-// Get profile username from URL or use current user
-function getProfileUid() {
-  const params = new URLSearchParams(window.location.search);
-  const userQuery = params.get('user');
-  return userQuery ? userQuery : auth.currentUser?.uid;
-}
+// ------------------ Load Profile ------------------
+function loadProfile() {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
-// Load profile
-async function loadProfile() {
-  const profileUid = getProfileUid();
-  if (!profileUid) return;
+  const userDocRef = firebase.firestore().collection('users').doc(user.uid);
+  userDocRef.get().then(docSnap => {
+    if (!docSnap.exists) return;
 
-  const userDocRef = doc(db, 'users', profileUid);
-  const docSnap = await getDoc(userDocRef);
-  if (!docSnap.exists()) return;
-
-  const data = docSnap.data();
-
-  // Fill inputs only if viewing own profile
-  if (profileUid === auth.currentUser.uid) {
+    const data = docSnap.data();
     usernameInput.value = data.username || '';
     bioInput.value = data.bio || '';
     locationInput.value = data.location || '';
-  }
+    profilePfp.src = data.pfpURL || 'default_profile.png';
 
-  if (data.pfpURL) profilePfp.src = data.pfpURL;
+    // Load wall comments
+    wallCommentsContainer.innerHTML = '';
+    if (data.wallComments) {
+      data.wallComments.forEach(comment => {
+        const div = document.createElement('div');
+        div.className = 'wall-comment';
+        div.innerHTML = `
+          <strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
+          ${comment.userId === user.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
+        `;
+        if (comment.userId === user.uid) {
+          div.querySelector('.deleteWallCommentBtn').addEventListener('click', () => {
+            userDocRef.update({
+              wallComments: firebase.firestore.FieldValue.arrayRemove(comment)
+            }).then(() => loadProfile());
+          });
+        }
+        wallCommentsContainer.appendChild(div);
+      });
+    }
 
-  // Load wall comments
-  wallCommentsContainer.innerHTML = '';
-  if (data.wallComments?.length) {
-    data.wallComments.forEach(comment => {
-      const div = document.createElement('div');
-      div.className = 'wall-comment';
-      div.innerHTML = `
-        <strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
-        ${comment.userId === auth.currentUser.uid ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}
-      `;
-      if (comment.userId === auth.currentUser.uid) {
-        div.querySelector('.deleteWallCommentBtn').addEventListener('click', async () => {
-          await updateDoc(userDocRef, { wallComments: arrayRemove(comment) });
-          loadProfile();
-        });
-      }
-      wallCommentsContainer.appendChild(div);
-    });
-  }
-
-  // Load Top 10 Friends
-  top10FriendsContainer.innerHTML = '';
-  data.top10Friends?.forEach(friend => {
-    const div = document.createElement('div');
-    div.className = 'friend';
-    div.innerHTML = `<span class="friend-username" data-uid="${friend.uid}">${friend.username}</span>`;
-    div.addEventListener('click', () => {
-      window.location.href = `/profile.html?user=${friend.uid}`;
-    });
-    top10FriendsContainer.appendChild(div);
+    // Load Top 10 Friends
+    top10FriendsContainer.innerHTML = '';
+    if (data.top10Friends) {
+      data.top10Friends.forEach(friend => {
+        const div = document.createElement('div');
+        div.className = 'top-friend';
+        div.innerHTML = `<span>${friend.username}</span>`;
+        top10FriendsContainer.appendChild(div);
+      });
+    }
   });
 }
 
-// SAVE PROFILE INFO
-saveProfileBtn.addEventListener('click', async () => {
-  const user = auth.currentUser;
+// ------------------ Save Profile Info ------------------
+saveProfileBtn.addEventListener('click', () => {
+  const user = firebase.auth().currentUser;
   if (!user) return;
-  const userDocRef = doc(db, 'users', user.uid);
-  try {
-    await updateDoc(userDocRef, {
-      username: usernameInput.value,
-      bio: bioInput.value,
-      location: locationInput.value
-    });
-    alert('Profile info updated!');
-  } catch (err) {
-    console.error(err);
-    alert('Failed to update profile info');
-  }
+
+  const userDocRef = firebase.firestore().collection('users').doc(user.uid);
+  userDocRef.update({
+    username: usernameInput.value,
+    bio: bioInput.value,
+    location: locationInput.value
+  }).then(() => alert('Profile info updated!'))
+    .catch(err => { console.error(err); alert('Failed to update profile info'); });
 });
 
-// SAVE PROFILE PICTURE
-saveProfilePfpBtn.addEventListener('click', async () => {
+// ------------------ Save Profile Picture ------------------
+saveProfilePfpBtn.addEventListener('click', () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert('Please select a picture first');
 
-  try {
-    const user = auth.currentUser;
-    const storageRef = ref(storage, `profileImages/${user.uid}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
+  const user = firebase.auth().currentUser;
+  const storageRef = firebase.storage().ref(`profileImages/${user.uid}/${Date.now()}_${file.name}`);
 
-    profilePfp.src = url;
-
-    const userDocRef = doc(db, 'users', user.uid);
-    await updateDoc(userDocRef, { pfpURL: url });
-    alert('Profile picture updated!');
-  } catch (err) {
-    console.error(err);
-    alert('Failed to save profile picture');
-  }
+  storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
+    .then(url => {
+      profilePfp.src = url;
+      return firebase.firestore().collection('users').doc(user.uid).update({ pfpURL: url });
+    })
+    .then(() => alert('Profile picture updated!'))
+    .catch(err => { console.error(err); alert('Failed to save profile picture'); });
 });
 
-// ADD WALL COMMENT
-addWallCommentBtn.addEventListener('click', async () => {
-  const user = auth.currentUser;
+// ------------------ Add Wall Comment ------------------
+addWallCommentBtn.addEventListener('click', () => {
+  const user = firebase.auth().currentUser;
   if (!user) return;
+
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
@@ -136,52 +114,48 @@ addWallCommentBtn.addEventListener('click', async () => {
     timestamp: Date.now()
   };
 
-  const userDocRef = doc(db, 'users', getProfileUid());
-  try {
-    await updateDoc(userDocRef, { wallComments: arrayUnion(comment) });
+  const userDocRef = firebase.firestore().collection('users').doc(user.uid);
+  userDocRef.update({
+    wallComments: firebase.firestore.FieldValue.arrayUnion(comment)
+  }).then(() => {
     wallCommentInput.value = '';
     loadProfile();
-  } catch (err) {
-    console.error(err);
-    alert('Failed to post comment');
-  }
+  }).catch(err => { console.error(err); alert('Failed to post comment'); });
 });
 
-// SEARCH FRIENDS
-addFriendInput.addEventListener('input', async () => {
-  const text = addFriendInput.value.trim();
-  addFriendPreview.innerHTML = '';
-  if (!text) return;
-
-  const usersRef = collection(db, 'users');
-  const q = query(usersRef, where('username', '>=', text), where('username', '<=', text + '\uf8ff'));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const div = document.createElement('div');
-    div.className = 'friend-preview';
-    div.innerHTML = `
-      <span>${data.username}</span>
-      <button class="addFriendBtn" data-uid="${docSnap.id}">Add Friend</button>
-    `;
-    div.querySelector('.addFriendBtn').addEventListener('click', async () => {
-      const currentUserRef = doc(db, 'users', auth.currentUser.uid);
-      try {
-        await updateDoc(currentUserRef, { top10Friends: arrayUnion({ uid: docSnap.id, username: data.username }) });
-        alert('Friend added to top 10!');
-        loadProfile();
-      } catch (err) {
-        console.error(err);
-        alert('Failed to add friend');
-      }
-    });
-    addFriendPreview.appendChild(div);
-  });
-});
-
-// INIT
-auth.onAuthStateChanged(user => {
+// ------------------ Add Friend ------------------
+addFriendBtn.addEventListener('click', () => {
+  const user = firebase.auth().currentUser;
   if (!user) return;
-  loadProfile();
+  const friendName = addFriendInput.value.trim();
+  if (!friendName) return alert('Enter a username');
+
+  // Search user by username
+  firebase.firestore().collection('users').where('username', '==', friendName).get()
+    .then(snapshot => {
+      if (snapshot.empty) return alert('User not found');
+      const friendDoc = snapshot.docs[0];
+      const friendData = friendDoc.data();
+
+      // Show preview
+      friendPreviewContainer.innerHTML = `
+        <img src="${friendData.pfpURL || 'default_profile.png'}" alt="Profile" width="50">
+        <span>${friendData.username}</span>
+      `;
+
+      // Send friend request
+      firebase.firestore().collection('users').doc(friendDoc.id).update({
+        pendingRequests: firebase.firestore.FieldValue.arrayUnion({
+          fromUserId: user.uid,
+          fromUsername: usernameInput.value || 'Unknown',
+          timestamp: Date.now()
+        })
+      }).then(() => alert('Friend request sent!'))
+        .catch(err => { console.error(err); alert('Failed to send friend request'); });
+    });
+});
+
+// ------------------ Init ------------------
+firebase.auth().onAuthStateChanged(user => {
+  if (user) loadProfile();
 });

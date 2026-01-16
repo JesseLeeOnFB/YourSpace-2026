@@ -3,57 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <button id="navFeedBtn">Feed</button>
-      <button id="navProfileBtn">Profile</button>
-      <button id="logoutBtn">Logout</button>
-    </nav>
-  </header>
+  <div class="profile-container">
+    <!-- Profile Picture -->
+    <div class="profile-pfp-section">
+      <img id="profilePfp" src="default-pfp.png" alt="Profile Picture" class="profile-pfp">
+      <input type="file" id="profilePfpInput" accept="image/*">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    </div>
 
-  <main>
-    <section id="profileSection">
-      <div id="profilePfpContainer">
-        <img id="profilePfp" src="" alt="Profile Picture">
-        <input type="file" id="profilePfpInput">
-        <button id="saveProfilePfpBtn">Save Profile Picture</button>
-      </div>
+    <!-- Profile Info -->
+    <div class="profile-info-section">
+      <label>Username:</label>
+      <input type="text" id="usernameInput" placeholder="Your username">
+      
+      <label>Bio:</label>
+      <textarea id="bioInput" placeholder="Your bio"></textarea>
+      
+      <label>Location:</label>
+      <input type="text" id="locationInput" placeholder="Your location">
+      
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
 
-      <div id="profileInfoContainer">
-        <label>Username: <input type="text" id="usernameInput"></label>
-        <label>Bio: <textarea id="bioInput"></textarea></label>
-        <label>Location: <input type="text" id="locationInput"></label>
-        <button id="saveProfileBtn">Save Profile Info</button>
-      </div>
-    </section>
-
-    <section id="musicSection">
-      <h2>Music Player</h2>
-      <input type="text" id="musicInput" placeholder="Paste music/video URL">
-      <button id="savePlayMusicBtn">Save & Play</button>
-      <div id="musicPlayerContainer"></div>
-    </section>
-
-    <section id="wallSection">
-      <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer"></div>
+    <!-- Wall Comments -->
+    <div class="wall-section">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer" class="wall-comments-container"></div>
       <input type="text" id="wallCommentInput" placeholder="Write a comment...">
       <button id="addWallCommentBtn">Post Comment</button>
-    </section>
+    </div>
 
-    <section id="friendsSection">
-      <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer"></div>
+    <!-- Top 10 Friends -->
+    <div class="top10-section">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer" class="top10-container"></div>
+    </div>
 
+    <!-- Add Friend Search -->
+    <div class="add-friend-section">
       <h3>Add Friend</h3>
-      <input type="text" id="addFriendInput" placeholder="Search username...">
-      <div id="addFriendPreview"></div>
-    </section>
-  </main>
+      <input type="text" id="searchUserInput" placeholder="Search username...">
+      <div id="searchUserResults" class="search-results-container"></div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+      <button onclick="window.location.href='feed.html'">Feed</button>
+      <button onclick="window.location.href='messages.html'">Messages</button>
+      <button onclick="auth.signOut()">Logout</button>
+    </div>
+  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

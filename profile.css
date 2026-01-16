@@ -1,94 +1,85 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f2f5;
+  background: #f5f5f5;
   margin: 0;
   padding: 0;
 }
 
 .profile-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.profile-header {
   display: flex;
-  padding: 20px;
-  gap: 20px;
+  align-items: center;
+  gap: 10px;
 }
 
-.profile-left, .profile-right {
-  flex: 1;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.profile-picture-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.profile-picture-container img {
-  width: 150px;
-  height: 150px;
-  object-fit: cover; /* fits the frame properly */
+.profile-header img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  border: 2px solid #333;
 }
 
-.profile-info label {
+.profile-info input,
+.profile-info textarea {
   display: block;
-  margin: 10px 0;
-}
-
-.profile-info input {
   width: 100%;
-  padding: 5px;
-  margin-top: 2px;
+  margin: 10px 0;
+  padding: 8px;
 }
 
-button {
-  margin-top: 10px;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.wall-comments {
+.wall-comments-section {
   margin-top: 20px;
 }
 
 .wall-comment {
-  background: #e4e6eb;
+  background: #eee;
   padding: 8px;
   margin: 5px 0;
   border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .wall-comment button {
-  background: red;
-  color: white;
+  float: right;
+  background: #c00;
+  color: #fff;
   border: none;
-  padding: 3px 6px;
+  padding: 2px 6px;
   border-radius: 3px;
-}
-
-.friends-section, .friend-requests {
-  margin-top: 20px;
-}
-
-#top10FriendsContainer, #allFriendsContainer, #searchPreviewContainer {
-  margin-top: 10px;
-}
-
-.top-friend, .friend, .search-preview {
-  background: #f0f2f5;
-  padding: 6px;
-  margin: 4px 0;
-  border-radius: 5px;
-}
-
-.search-preview {
   cursor: pointer;
 }
 
-.search-preview:hover {
-  background: #d3d6db;
+.friends-section {
+  margin-top: 20px;
+}
+
+#top10FriendsContainer,
+#allFriendsContainer,
+#pendingRequestsContainer,
+#addFriendPreview {
+  background: #fafafa;
+  padding: 10px;
+  border-radius: 5px;
+  min-height: 40px;
+  margin-bottom: 15px;
+}
+
+.top-friend, .friend, .pending-request {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 5px;
+  background: #eee;
+  border-radius: 5px;
+}
+
+button {
+  cursor: pointer;
 }

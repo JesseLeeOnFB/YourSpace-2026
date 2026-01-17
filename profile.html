@@ -3,28 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
+<title>YourSpace - Profile</title>
 <link rel="stylesheet" href="profile.css">
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+<script src="profile.js" defer></script>
 </head>
 <body class="default-theme">
 
 <div class="navbar">
-  <button id="navFeed">Feed</button>
-  <button id="navProfile">Profile</button>
-  <button id="navMessages">Messages</button>
-  <button id="navLogout">Logout</button>
+  <button id="navFeedBtn">Feed</button>
+  <button id="navProfileBtn">Profile</button>
+  <button id="navMessagesBtn">Messages</button>
+  <button id="navNotificationsBtn">Notifications</button>
 </div>
 
-<div class="profile-main">
+<main class="profile-main">
+
+  <!-- Top Section: Profile Picture & Info -->
   <div class="profile-top">
     <div class="pfp-container">
       <img id="profilePfp" src="" alt="Profile Picture">
       <input type="file" id="profilePfpInput">
-      <button id="savePfpBtn">Save Profile Picture</button>
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
     <div class="profile-info-box">
@@ -32,45 +35,41 @@
       <textarea id="bioInput" placeholder="Bio"></textarea>
       <input id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
-      <select id="themeSelect">
-        <option value="default-theme">Default</option>
-        <option value="red-theme">Red</option>
-        <option value="blue-theme">Blue</option>
-        <option value="green-theme">Green</option>
-        <option value="neon-theme">Neon</option>
-      </select>
-      <button id="saveThemeBtn">Save Theme</button>
     </div>
   </div>
 
+  <!-- Top 10 Friends Section -->
+  <div class="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="saveTop10Btn">Save Top 10 Ranking</button>
+  </div>
+
+  <!-- Comment Wall -->
   <div class="wall-container">
     <h3>Wall Comments</h3>
-    <div id="wallComments"></div>
+    <div id="wallCommentsContainer"></div>
     <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
     <button id="postWallCommentBtn">Post Comment</button>
   </div>
 
-  <div class="top10-container">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-    <button id="editTop10Btn">Save Top 10</button>
-  </div>
-
+  <!-- Music Player -->
   <div class="music-player">
     <h3>Music Player</h3>
-    <input id="musicLinkInput" placeholder="YouTube/SoundCloud/Pandora/Spotify link">
-    <button id="saveMusicBtn">Play Music</button>
-    <iframe id="musicIframe"></iframe>
+    <input id="musicInput" placeholder="Paste YouTube / SoundCloud / Spotify link">
+    <button id="musicLoadBtn">Load Music</button>
+    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
   </div>
 
+  <!-- Custom HTML / Themes -->
   <div class="theme-custom-box">
-    <h3>Custom HTML / Themes</h3>
-    <textarea id="customHtmlInput" placeholder="Add your HTML, CSS, animations here..."></textarea>
-    <button id="saveCustomHtmlBtn">Save Custom HTML</button>
+    <h3>Custom HTML / Theme</h3>
+    <textarea id="customHtmlInput" placeholder="Paste custom HTML/CSS here"></textarea>
+    <button id="applyCustomHtmlBtn">Apply</button>
     <div id="customHtmlContainer"></div>
   </div>
-</div>
 
-<script src="profile.js"></script>
+</main>
+
 </body>
 </html>

@@ -1,43 +1,105 @@
-/* Reset & Base */
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Century Gothic', sans-serif; }
-body { background-color: #000; color: #fff; min-height: 100vh; }
+body {
+  font-family: 'Century Gothic', sans-serif;
+  background-color: #111;
+  color: #eee;
+  margin: 0;
+  padding: 0;
+}
 
-/* Navigation */
-#topnav { background-color: #222; padding: 10px; }
-#topnav ul { list-style: none; display: flex; gap: 10px; }
-#topnav ul li button { background-color: #444; color: #fff; border: none; padding: 8px 16px; cursor: pointer; }
-#topnav ul li button:hover { background-color: #666; }
+#topNav {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  background-color: #222;
+  padding: 10px;
+}
 
-/* Profile Container */
-#profileContainer { width: 90%; max-width: 1000px; margin: 20px auto; display: flex; flex-direction: column; gap: 20px; }
+#topNav button {
+  cursor: pointer;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
 
-/* Profile Header */
-#profileHeader { display: flex; gap: 20px; flex-wrap: wrap; }
-#profilePicContainer { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-#profilePic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
-#bioContainer { flex: 2; display: flex; flex-direction: column; gap: 10px; }
-#bioText { width: 100%; height: 80px; padding: 5px; font-size: 14px; }
+#profileContainer {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #1c1c1c;
+  border-radius: 10px;
+}
 
-/* Top 10 Friends */
-#top10Container { background-color: #111; padding: 10px; border-radius: 8px; }
-#top10FriendsList { display: flex; flex-wrap: wrap; gap: 10px; }
-.topFriend { display: flex; align-items: center; gap: 5px; cursor: pointer; }
-.topFriend img { width: 40px; height: 40px; border-radius: 50%; }
+#profileHeader {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 
-/* Music Player */
-#musicPlayerContainer { background-color: #111; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-#playlist { display: flex; flex-direction: column; gap: 5px; }
-.playlistSong { cursor: pointer; padding: 5px; background-color: #222; border-radius: 4px; }
+#profilePictureContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-/* Wall Comments */
-#wallContainer { background-color: #111; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-.wallComment { background-color: #222; padding: 5px; border-radius: 4px; }
+#profilePicture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-/* Custom HTML / Themes */
-#themeContainer { background-color: #111; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-#customHTMLInput { width: 100%; height: 100px; padding: 5px; font-size: 12px; }
-.themeBtn { padding: 5px 10px; margin-right: 5px; cursor: pointer; }
-.themeBtn:hover { background-color: #444; }
+#bioContainer textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 5px;
+  background-color: #222;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 5px;
+}
 
-/* Buttons */
-button { cursor: pointer; }
+#musicContainer, #wallContainer, #top10Container {
+  margin-bottom: 20px;
+  background-color: #222;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+#musicList div, #top10List div, #wallCommentsList div {
+  margin: 5px 0;
+}
+
+#musicPlayerContainer {
+  margin-top: 10px;
+  height: 180px;
+}
+
+iframe#musicPlayer {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+
+textarea, input[type="text"] {
+  background-color: #222;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+button {
+  cursor: pointer;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #888;
+}

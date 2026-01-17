@@ -1,270 +1,48 @@
-/* --------------------
-   Reset & Base Styles
--------------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Century Gothic', sans-serif;
-}
+/* Reset & base */
+* {margin:0;padding:0;box-sizing:border-box;font-family:Century Gothic, sans-serif;}
+body {background-color:#121212;color:#fff;line-height:1.5;}
+.profile-container {max-width:900px;margin:20px auto;padding:20px;background-color:#1e1e1e;border-radius:8px;}
 
-body {
-  background-color: #121212;
-  color: #ffffff;
-  min-height: 100vh;
-  padding: 10px;
-}
+/* Navigation */
+nav#navbar {display:flex;gap:10px;padding:10px;background:#222;}
+nav#navbar button {background:#555;color:#fff;border:none;padding:10px 15px;border-radius:4px;cursor:pointer;}
+nav#navbar button:hover {background:#777;}
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* Profile Header */
+.profile-header {text-align:center;margin-bottom:20px;}
+.profile-header img {width:120px;height:120px;border-radius:50%;border:3px solid #fbb148;}
+.profile-header h2 {margin:10px 0;font-size:24px;}
+.profile-header p {font-size:16px;}
 
-button {
-  cursor: pointer;
-  padding: 6px 12px;
-  margin-top: 4px;
-  border: none;
-  border-radius: 4px;
-  background-color: #fbb148;
-  color: #000;
-  font-weight: bold;
-}
+/* Edit Section */
+.profile-edit {display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.profile-edit input, .profile-edit select, .profile-edit textarea, .profile-edit button {padding:8px;border-radius:4px;border:none;}
+.profile-edit textarea {height:80px;resize:vertical;}
 
-button:hover {
-  background-color: #cd1045;
-  color: #fff;
-}
+/* Top 10 Friends */
+.top10-container {margin-bottom:20px;}
+#top10FriendsContainer {display:flex;flex-wrap:wrap;gap:10px;}
+.top-friend {display:flex;align-items:center;gap:5px;background:#2e2e2e;padding:5px 10px;border-radius:4px;cursor:pointer;}
+.top-friend img {width:30px;height:30px;border-radius:50%;}
 
-/* --------------------
-   Navigation Bar
--------------------- */
-#topnav {
-  width: 100%;
-  background-color: #222;
-  margin-bottom: 20px;
-}
+/* Wall */
+.wall-container {margin-bottom:20px;}
+#wallContainer .wall-post {background:#2a2a2a;padding:10px;margin-top:5px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;}
+#wallContainer .wall-post button {padding:2px 5px;cursor:pointer;}
 
-#topnav ul {
-  display: flex;
-  list-style: none;
-  padding: 10px;
-}
+/* Music Player */
+.music-container {margin-bottom:20px;}
+#musicPlaylistContainer {display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.music-song {cursor:pointer;background:#2a2a2a;padding:5px;border-radius:4px;}
+#musicPlayer {width:100%;height:150px;margin-top:10px;border-radius:4px;}
 
-#topnav ul li {
-  margin-right: 15px;
-}
+/* Themes */
+.theme-dark {background-color:#121212;color:#fff;}
+.theme-light {background-color:#f5f5f5;color:#000;}
+.theme-retro {background-color:#fffcf0;color:#333;}
 
-#topnav ul li a,
-#topnav ul li button {
-  color: #fff;
-  font-weight: bold;
-  background: none;
-  border: none;
-  font-size: 16px;
-}
-
-#topnav ul li a:hover,
-#topnav ul li button:hover {
-  color: #fbb148;
-}
-
-/* --------------------
-   Profile Container
--------------------- */
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-  padding-bottom: 20px;
-}
-
-/* --------------------
-   Profile Boxes
--------------------- */
-.profile-box {
-  background-color: rgba(0,0,0,0.6);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-
-/* --------------------
-   Profile Info
--------------------- */
-.profile-avatar {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 10px;
-  border: 3px solid #fbb148;
-}
-
-#profileName {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-#profileBio {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.edit-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-/* --------------------
-   Wall Posts
--------------------- */
-.wall-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.wall-post {
-  background-color: rgba(255,255,255,0.1);
-  padding: 8px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* --------------------
-   Top 10 Friends
--------------------- */
-.top10-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.top10-friend {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 70px;
-}
-
-.top10-friend img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 4px;
-  border: 2px solid #fbb148;
-}
-
-.top10-friend a {
-  font-size: 12px;
-  text-align: center;
-  color: #fff;
-}
-
-.top10-friend a:hover {
-  color: #fbb148;
-}
-
-/* --------------------
-   Music Playlist
--------------------- */
-.playlist-container {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.playlist-container button {
-  width: 100%;
-  text-align: left;
-  background-color: rgba(255,255,255,0.1);
-  color: #fff;
-}
-
-.playlist-container button:hover {
-  background-color: #fbb148;
-  color: #000;
-}
-
-#musicPlayer {
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 6px;
-}
-
-/* --------------------
-   Theme Styles
--------------------- */
-body.theme-dark {
-  background-color: #121212;
-  color: #fff;
-}
-
-body.theme-light {
-  background-color: #f0f0f0;
-  color: #000;
-}
-
-body.theme-light .profile-box {
-  background-color: rgba(255,255,255,0.9);
-  color: #000;
-}
-
-body.theme-retro {
-  background-color: #fffae6;
-  color: #222;
-}
-
-body.theme-retro .profile-box {
-  background-color: rgba(0,0,0,0.7);
-  color: #fff;
-}
-
-/* --------------------
-   Responsive
--------------------- */
-@media screen and (max-width: 768px) {
-  .profile-container {
-    padding: 10px;
-  }
-
-  .profile-avatar {
-    width: 120px;
-    height: 120px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  #topnav ul {
-    flex-direction: column;
-  }
-
-  .profile-avatar {
-    width: 100px;
-    height: 100px;
-  }
-
-  button {
-    font-size: 14px;
-  }
-
-  .top10-friend {
-    width: 60px;
-  }
-
-  .top10-friend img {
-    width: 40px;
-    height: 40px;
-  }
+/* Responsive */
+@media screen and (max-width:768px){
+  .profile-container {padding:10px;}
+  nav#navbar {flex-direction:column;gap:5px;}
 }

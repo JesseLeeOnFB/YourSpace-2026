@@ -6,48 +6,55 @@
 <title>YourSpace Profile</title>
 <link rel="stylesheet" href="profile.css">
 </head>
-<body class="theme-dark">
+<body>
+  <header>
+    <nav>
+      <button id="feedNavBtn">Feed</button>
+      <button id="profileNavBtn">Profile</button>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
 
-<header>
-  <h1 id="profileName">YourSpace User</h1>
-</header>
+  <main>
+    <section id="profileInfo">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
+      <h2 id="profileName">Loading...</h2>
+      <p id="profileBio">This is the bio lol</p>
+      
+      <input type="text" id="bioInput" placeholder="Update your bio">
+      <button id="saveBioBtn">Save Bio</button>
 
-<section class="profile-section">
-  <div class="profile-left">
-    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
-    <input type="file" id="pfpInput">
-    <button id="savePfpBtn">Save Profile Picture</button>
+      <input type="file" id="pfpInput">
+      <button id="savePfpBtn">Save Profile Picture</button>
 
-    <h3>Bio</h3>
-    <p id="profileBio">This is the bio lol</p>
-    <textarea id="bioInput" placeholder="Edit your bio"></textarea>
-    <button id="saveBioBtn">Save Bio</button>
+      <select id="themeSelect">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
+      </select>
+    </section>
 
-    <h3>Themes</h3>
-    <select id="themeSelect">
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-      <option value="retro">Retro</option>
-    </select>
+    <section id="top10Section">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
+    </section>
 
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer" class="top10-container"></div>
+    <section id="wallSection">
+      <h3>Wall</h3>
+      <input type="text" id="wallInput" placeholder="Write something on the wall...">
+      <button id="postWallBtn">Post</button>
+      <div id="wallContainer"></div>
+    </section>
 
-    <h3>Music Player</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify URL">
-    <button id="addMusicBtn">Add Song</button>
-    <div id="musicListContainer"></div>
-    <div id="musicPlayerContainer"></div>
-  </div>
+    <section id="musicSection">
+      <h3>Music Playlist</h3>
+      <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud URL">
+      <button id="addMusicBtn">Add Song</button>
+      <div id="playlistContainer"></div>
+      <div id="musicPlayer"></div>
+    </section>
+  </main>
 
-  <div class="profile-right">
-    <h3>Wall</h3>
-    <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
-    <button id="postWallBtn">Post</button>
-    <div id="wallContainer"></div>
-  </div>
-</section>
-
-<script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

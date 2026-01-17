@@ -9,7 +9,7 @@
 </head>
 <body class="default-theme">
 
-<!-- Navigation -->
+<!-- NAVIGATION -->
 <div class="navbar">
   <button id="navFeedBtn">Feed</button>
   <button id="navProfileBtn">Profile</button>
@@ -17,10 +17,9 @@
   <button id="navNotificationsBtn">Notifications</button>
 </div>
 
-<!-- Profile main container -->
 <div class="profile-main">
 
-  <!-- Top Section: PFP + Profile Info -->
+  <!-- TOP SECTION: PFP + Info -->
   <div class="profile-top">
     <div class="pfp-container">
       <img id="profilePfp" src="" alt="Profile Picture">
@@ -33,27 +32,19 @@
       <textarea id="bioInput" placeholder="Bio"></textarea>
       <input id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
+
+      <select id="themeSelector">
+        <option value="default-theme">Default</option>
+        <option value="red-theme">Red</option>
+        <option value="blue-theme">Blue</option>
+        <option value="green-theme">Green</option>
+        <option value="neon-theme">Neon</option>
+      </select>
+      <button id="saveThemeBtn">Save Theme</button>
     </div>
   </div>
 
-  <!-- Theme selection -->
-  <div class="theme-custom-box">
-    <h3>Select Theme</h3>
-    <select id="themeSelect">
-      <option value="default-theme">Default</option>
-      <option value="red-theme">Red</option>
-      <option value="blue-theme">Blue</option>
-      <option value="green-theme">Green</option>
-      <option value="neon-theme">Neon Animated</option>
-    </select>
-    <button id="saveThemeBtn">Save Theme</button>
-
-    <h3>Custom HTML/CSS</h3>
-    <textarea id="customHtmlInput" placeholder="Enter HTML or CSS for background, animations, etc."></textarea>
-    <div id="customHtmlContainer"></div>
-  </div>
-
-  <!-- Wall Comments -->
+  <!-- WALL COMMENTS -->
   <div class="wall-container">
     <h3>Wall Comments</h3>
     <div id="wallCommentsContainer"></div>
@@ -61,19 +52,28 @@
     <button id="addWallCommentBtn">Post Comment</button>
   </div>
 
-  <!-- Top 10 Friends -->
+  <!-- TOP 10 FRIENDS -->
   <div class="top10-container">
     <h3>Top 10 Friends</h3>
     <div id="top10FriendsContainer"></div>
     <button id="editTop10Btn">Save Top 10 Order</button>
   </div>
 
-  <!-- Music Player -->
+  <!-- CUSTOM HTML/THEME BOX -->
+  <div class="theme-custom-box">
+    <h3>Custom HTML/CSS/Animations</h3>
+    <textarea id="customHtmlInput" placeholder="Enter custom HTML/CSS/JS"></textarea>
+    <button id="previewCustomHtmlBtn">Preview</button>
+    <div id="customHtmlContainer"></div>
+  </div>
+
+  <!-- MUSIC PLAYER -->
   <div class="music-player">
     <h3>Music Player</h3>
-    <input id="musicLinkInput" placeholder="Paste YouTube, SoundCloud, Pandora, or Spotify link">
+    <input id="musicInput" placeholder="Paste YouTube, SoundCloud, or Spotify link">
     <button id="loadMusicBtn">Load Music</button>
-    <iframe id="musicIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <button id="playPauseMusicBtn">Play/Pause</button>
+    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
   </div>
 
 </div>

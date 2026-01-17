@@ -1,76 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
-<body class="theme-dark">
-  <!-- Navigation Bar -->
-  <nav id="navBar">
+<body>
+  <!-- Navigation -->
+  <nav id="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
-    <button id="messagesNavBtn">Messages</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Section -->
-  <div class="profile-container">
-    <div class="profile-header">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <h2 id="profileName">YourSpace User</h2>
-      <p id="profileBio">This is the bio lol</p>
-    </div>
+  <!-- Profile Header -->
+  <section id="profileHeader">
+    <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+    <h1 id="profileName">User</h1>
+    <p id="profileBio">This is the bio lol</p>
+    <input type="file" id="pfpInput" style="display:none;">
+    <button id="savePfpBtn" style="display:none;">Change Picture</button>
+    <textarea id="bioInput" style="display:none;"></textarea>
+    <button id="saveBioBtn" style="display:none;">Save Bio</button>
+    <select id="themeSelect" style="display:none;">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="retro">Retro</option>
+    </select>
+    <button id="sendMessageBtn" style="display:none;">Send Message</button>
+  </section>
 
-    <!-- Editable only if own profile -->
-    <div class="profile-edit">
-      <input type="file" id="pfpInput" accept="image/*">
-      <button id="savePfpBtn">Save Profile Picture</button>
+  <!-- Top 10 Friends -->
+  <section id="top10FriendsContainer"></section>
 
-      <textarea id="bioInput" placeholder="Edit your bio"></textarea>
-      <button id="saveBioBtn">Save Bio</button>
+  <!-- Music Player -->
+  <section id="musicSection">
+    <h2>Music Playlist</h2>
+    <div id="musicList"></div>
+    <audio id="musicPlayer" controls></audio>
+  </section>
 
-      <select id="themeSelect">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="retro">Retro</option>
-      </select>
-    </div>
+  <!-- Wall Comments -->
+  <section id="wallSection">
+    <h2>Wall Comments</h2>
+    <textarea id="wallInput"></textarea>
+    <button id="postWallBtn">Post on Wall</button>
+    <div id="wallContainer"></div>
+  </section>
 
-    <!-- Music Player -->
-    <div class="music-player">
-      <h3>Music Playlist</h3>
-      <input type="text" id="musicInput" placeholder="Paste song URL">
-      <button id="addMusicBtn">Add Song</button>
-      <ul id="playlist"></ul>
-      <audio id="audioPlayer" controls></audio>
-    </div>
-
-    <!-- Top 10 Friends -->
-    <div class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <ul id="top10FriendsContainer"></ul>
-    </div>
-
-    <!-- Wall Comments -->
-    <div class="wall-container">
-      <h3>Wall Comments</h3>
-      <textarea id="wallInput" placeholder="Write something on the wall"></textarea>
-      <button id="postWallBtn">Post</button>
-      <div id="wallContainer"></div>
-    </div>
-
-    <!-- Custom HTML / MySpace-style customization -->
-    <div class="custom-html-container">
-      <h3>Custom Profile Layout (HTML/CSS)</h3>
-      <textarea id="customHTMLInput" placeholder="Enter HTML/CSS"></textarea>
-      <button id="applyCustomHTMLBtn">Apply</button>
-      <button id="resetCustomHTMLBtn">Reset to Default</button>
-      <div id="customHTMLPreview"></div>
-    </div>
-  </div>
-
-  <script type="module" src="profile.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

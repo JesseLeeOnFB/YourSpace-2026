@@ -208,3 +208,60 @@ async function loadThreads() {
   threadsSnap.forEach(doc => {
     const thread = doc.data();
     const div = document.createElement('div');
+    div.className = 'thread';
+    div.textContent = `Thread with: ${thread.participantsNames.join(', ')}`;
+    div.onclick = () => loadThreadMessages(doc.id);
+    threadsContainer.appendChild(div);
+  });
+}
+
+async function loadThreadMessages(threadId) {
+  const messagesSnap = await db.collection('messages').doc(threadId)
+    .collection('items').orderBy('timestamp', 'asc').get();
+  threadsContainer.innerHTML = '';
+  messagesSnap.forEach(doc => {
+    const msg = doc.data();
+    const div = document.createElement('div');
+    div.className = 'message';
+    div.textContent = `${msg.senderName}: ${msg.text}`;
+    threadsContainer.appendChild(div);
+  });
+}
+
+sendMessageBtn.onclick = async () => {
+  if (!currentUser) return;
+  const recipientUsername = messageRecipient.value.trim();
+  const text = messageText.value.trim();
+  if (!recipientUsername || !text) return;
+
+  const userQuery = await db.collection('users').where('username', '==', recipientUsername).get();
+  if (userQuery.empty) return alert('Recipient not found');
+  const recipientDoc = userQuery.docs[0];
+  const recipientId = recipientDoc.id;
+
+  let threadId = null;
+  const threadQuery = await db.collection('messages')
+    .where('participants', 'array-contains', currentUser.uid).get();
+  threadQuery.forEach(doc => {
+    const participants = doc.data().participants;
+    if (participants.includes(recipientId)) threadId = doc.id;
+  });
+
+  if (!threadId) {
+    const newThread = await db.collection('messages').add({
+      participants: [currentUser.uid, recipientId],
+      participantsNames: [usernameInput.value, recipientDoc.data().username]
+    });
+    threadId = newThread.id;
+  }
+
+  await db.collection('messages').doc(threadId).collection('items').add({
+    senderId: currentUser.uid,
+    senderName: usernameInput.value,
+    text,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  messageText.value = '';
+  loadThreadMessages(threadId);
+};

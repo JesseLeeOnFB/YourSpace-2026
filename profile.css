@@ -16,9 +16,9 @@ body.neon-theme { animation: neonBg 5s infinite; }
 #profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
 
 .profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
+.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; box-sizing: border-box; }
 
-.wall-container, .top10-container, .theme-custom-box { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
+.wall-container, .top10-container, .theme-custom-box, .private-messages { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
 .wall-container h3, .top10-container h3 { margin-top: 0; }
 
 .wall-comment { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
@@ -35,3 +35,6 @@ body.neon-theme { animation: neonBg 5s infinite; }
 
 .theme-custom-box textarea { width: 100%; min-height: 80px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
 #customHtmlContainer { margin-top: 10px; }
+
+.private-messages input, .private-messages textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #aaa; }
+#pmInbox { margin-top: 10px; max-height: 300px; overflow-y: auto; }

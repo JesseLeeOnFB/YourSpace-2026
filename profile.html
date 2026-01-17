@@ -2,35 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
-<body>
+<body class="theme-dark">
+
   <!-- Navigation -->
-  <nav id="topNav">
-    <ul>
-      <li><a href="feed.html">Feed</a></li>
-      <li><a href="profile.html">Profile</a></li>
-      <li><a href="messages.html">Messages</a></li>
-      <li><button id="logoutBtn">Logout</button></li>
-    </ul>
+  <nav id="mainNav">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profile-container">
-    <!-- Profile Section -->
-    <section class="profile-section">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-picture">
-      <h1 id="profileName">YourSpace User</h1>
-      <p id="profileBio">This is the bio lol</p>
+  <main id="profileMain">
+    <section id="profileHeader">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+      <h1 id="profileName">Loading...</h1>
+      <p id="profileBio">Loading bio...</p>
 
-      <!-- Edit Own Profile -->
-      <input type="text" id="bioInput" placeholder="Update your bio">
+      <!-- Editable if own profile -->
+      <input type="file" id="pfpInput">
+      <button id="savePfpBtn">Save Profile Picture</button>
+
+      <textarea id="bioInput" placeholder="Update your bio"></textarea>
       <button id="saveBioBtn">Save Bio</button>
-      <input type="file" id="pfpInput" accept="image/*">
-      <button id="savePfpBtn">Change Profile Picture</button>
 
-      <label for="themeSelect">Theme:</label>
       <select id="themeSelect">
         <option value="dark">Dark</option>
         <option value="light">Light</option>
@@ -38,31 +34,27 @@
       </select>
     </section>
 
-    <!-- Top 10 Friends -->
-    <section class="top10-section">
+    <section id="top10Section">
       <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer" class="top10-container"></div>
+      <div id="top10FriendsContainer"></div>
     </section>
 
-    <!-- Wall Comments -->
-    <section class="wall-section">
-      <h2>Wall</h2>
-      <div id="wallContainer" class="wall-container"></div>
-      <input type="text" id="wallInput" placeholder="Write a comment...">
-      <button id="postWallBtn">Post</button>
-    </section>
-
-    <!-- Music Player -->
-    <section class="music-section">
+    <section id="musicSection">
       <h2>Music Playlist</h2>
-      <div id="musicPlaylistContainer" class="music-buttons-container"></div>
-      <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify link">
+      <input type="text" id="musicInput" placeholder="Paste song link here">
       <button id="addMusicBtn">Add Song</button>
-      <iframe id="musicPlayerIframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen class="music-player"></iframe>
+      <div id="musicPlayer"></div>
+      <ul id="musicList"></ul>
+    </section>
+
+    <section id="wallSection">
+      <h2>Wall</h2>
+      <textarea id="wallInput" placeholder="Write on wall"></textarea>
+      <button id="postWallBtn">Post</button>
+      <div id="wallContainer"></div>
     </section>
   </main>
 
   <script type="module" src="profile.js"></script>
-  <script type="module" src="auth-guard.js"></script>
 </body>
 </html>

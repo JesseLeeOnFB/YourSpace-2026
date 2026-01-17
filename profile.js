@@ -1,9 +1,9 @@
 // ---------------------
-// Profile.js
+// Firebase Imports & Init
 // ---------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, updateDoc, collection, addDoc, getDocs, query, orderBy
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, orderBy, query
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
@@ -28,20 +28,25 @@ const auth = getAuth(app);
 // ---------------------
 // DOM Elements
 // ---------------------
-const profilePicture = document.getElementById("profilePicture");
-const profilePicInput = document.getElementById("profilePicInput");
-const savePfpBtn = document.getElementById("savePfpBtn");
-
-const bioText = document.getElementById("bioText");
-const saveBioBtn = document.getElementById("saveBioBtn");
-
-const wallContainer = document.getElementById("wallContainer");
-const wallInput = document.getElementById("wallInput");
-const postWallBtn = document.getElementById("postWallBtn");
-
+const logoutBtn = document.getElementById("logoutBtn");
 const navFeedBtn = document.getElementById("feedNavBtn");
 const navProfileBtn = document.getElementById("profileNavBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+
+const pfpInput = document.getElementById("pfpInput");
+const bioInput = document.getElementById("bioInput");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+const wallInput = document.getElementById("wallInput");
+const wallBtn = document.getElementById("wallBtn");
+const wallContainer = document.getElementById("wallContainer");
+
+const themeSelect = document.getElementById("themeSelect");
+const customHtmlInput = document.getElementById("customHtmlInput");
+const saveCustomHtmlBtn = document.getElementById("saveCustomHtmlBtn");
+const resetCustomHtmlBtn = document.getElementById("resetCustomHtmlBtn");
+
+const profilePicImg = document.getElementById("profilePic");
+const bioDisplay = document.getElementById("bioDisplay");
 
 // ---------------------
 // Navigation
@@ -56,96 +61,140 @@ logoutBtn?.addEventListener("click", async () => {
 // ---------------------
 // Helpers
 // ---------------------
-async function getUserDoc(uid) {
+async function getUsername(userId) {
   try {
-    const snap = await getDoc(doc(db, "users", uid));
-    return snap.exists() ? snap.data() : null;
+    const snap = await getDoc(doc(db, "users", userId));
+    return snap.exists() && snap.data().username ? snap.data().username : "Anonymous";
   } catch {
-    return null;
+    return "Anonymous";
   }
 }
 
 // ---------------------
-// Profile Picture
+// Load Profile Info
 // ---------------------
-savePfpBtn?.addEventListener("click", async () => {
-  const file = profilePicInput.files[0];
-  if (!file) return alert("Select an image first");
+async function loadProfile() {
+  const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+  if (!userSnap.exists()) return;
 
-  try {
-    const storageRef = ref(storage, `profilePics/${auth.currentUser.uid}`);
+  const data = userSnap.data();
+  profilePicImg.src = data.pfpURL || "default-avatar.png";
+  bioDisplay.textContent = data.bio || "This is the bio lol";
+  bioInput.value = data.bio || "";
+  themeSelect.value = data.theme || "dark";
+  document.body.className = `theme-${themeSelect.value}`;
+
+  customHtmlInput.value = data.customHtml || "";
+  applyCustomHtml(data.customHtml);
+}
+
+// ---------------------
+// Apply Custom HTML/CSS
+// ---------------------
+function applyCustomHtml(code) {
+  let customContainer = document.getElementById("customHtmlContainer");
+  if (!customContainer) {
+    customContainer = document.createElement("div");
+    customContainer.id = "customHtmlContainer";
+    document.body.prepend(customContainer);
+  }
+  customContainer.innerHTML = code || "";
+}
+
+// ---------------------
+// Save Profile Info
+// ---------------------
+saveProfileBtn?.addEventListener("click", async () => {
+  const bio = bioInput.value.trim();
+  let pfpURL = profilePicImg.src;
+
+  if (pfpInput.files[0]) {
+    const file = pfpInput.files[0];
+    const storageRef = ref(storage, `pfps/${auth.currentUser.uid}_${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { pfpURL: url });
-    profilePicture.src = url;
-    alert("Profile picture updated!");
-  } catch (err) {
-    console.error(err);
-    alert("Error updating profile picture: " + err.message);
+    pfpURL = await getDownloadURL(storageRef);
+    profilePicImg.src = pfpURL;
   }
+
+  await setDoc(doc(db, "users", auth.currentUser.uid), {
+    bio,
+    pfpURL,
+    theme: themeSelect.value
+  }, { merge: true });
+
+  bioDisplay.textContent = bio;
+  document.body.className = `theme-${themeSelect.value}`;
 });
 
 // ---------------------
-// Bio
+// Theme Selector
 // ---------------------
-saveBioBtn?.addEventListener("click", async () => {
-  const text = bioText.value.trim();
-  try {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { bio: text });
-    alert("Bio updated!");
-  } catch (err) {
-    console.error(err);
-    alert("Error updating bio: " + err.message);
-  }
+themeSelect?.addEventListener("change", () => {
+  document.body.className = `theme-${themeSelect.value}`;
 });
 
 // ---------------------
-// Wall
+// Custom HTML Save & Reset
 // ---------------------
-async function loadWall() {
+saveCustomHtmlBtn?.addEventListener("click", async () => {
+  const code = customHtmlInput.value;
+  applyCustomHtml(code);
+  await updateDoc(doc(db, "users", auth.currentUser.uid), { customHtml: code });
+});
+
+resetCustomHtmlBtn?.addEventListener("click", async () => {
+  customHtmlInput.value = "";
+  applyCustomHtml("");
+  await updateDoc(doc(db, "users", auth.currentUser.uid), { customHtml: "" });
+});
+
+// ---------------------
+// Wall Comments
+// ---------------------
+async function loadWallComments() {
   wallContainer.innerHTML = "";
-  const wallSnap = await getDocs(query(collection(db, "wall"), orderBy("createdAt", "asc")));
-  wallSnap.forEach(docSnap => {
+  const wallSnap = await getDocs(query(collection(db, "users", auth.currentUser.uid, "wall"), orderBy("createdAt", "asc")));
+  wallSnap.forEach(async (docSnap) => {
     const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "wall-comment";
-    div.textContent = `${data.username || "Anonymous"}: ${data.text}`;
-    wallContainer.appendChild(div);
+    const username = await getUsername(data.userId);
+    const p = document.createElement("p");
+    p.textContent = `${username}: ${data.text}`;
+
+    if (data.userId === auth.currentUser.uid) {
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.style.marginLeft = "5px";
+      delBtn.addEventListener("click", async () => {
+        await deleteDoc(doc(db, "users", auth.currentUser.uid, "wall", docSnap.id));
+        loadWallComments();
+      });
+      p.appendChild(delBtn);
+    }
+
+    wallContainer.appendChild(p);
   });
 }
 
-postWallBtn?.addEventListener("click", async () => {
+wallBtn?.addEventListener("click", async () => {
   const text = wallInput.value.trim();
-  if (!text) return alert("Write something first!");
-
-  try {
-    const userData = await getUserDoc(auth.currentUser.uid);
-    await addDoc(collection(db, "wall"), {
-      userId: auth.currentUser.uid,
-      username: userData?.username || "Anonymous",
-      text,
-      createdAt: new Date()
-    });
-    wallInput.value = "";
-    loadWall();
-  } catch (err) {
-    console.error(err);
-    alert("Error posting on wall: " + err.message);
-  }
+  if (!text) return;
+  await addDoc(collection(db, "users", auth.currentUser.uid, "wall"), {
+    userId: auth.currentUser.uid,
+    text,
+    createdAt: new Date()
+  });
+  wallInput.value = "";
+  loadWallComments();
 });
 
 // ---------------------
 // Auth State
 // ---------------------
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    const userData = await getUserDoc(user.uid);
-    if (userData?.pfpURL) profilePicture.src = userData.pfpURL;
-    if (userData?.bio) bioText.value = userData.bio;
-
-    loadWall();
+    loadProfile();
+    loadWallComments();
   }
 });

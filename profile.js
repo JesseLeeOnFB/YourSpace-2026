@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import {
+  getFirestore, doc, getDoc, updateDoc, collection, addDoc, getDocs, query, orderBy
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 // ---------------------
@@ -30,6 +32,8 @@ const wallPostBtn = document.getElementById("wallPostBtn");
 const top10Container = document.getElementById("top10Container");
 const customHtmlInput = document.getElementById("customHtmlInput");
 const saveCustomHtmlBtn = document.getElementById("saveCustomHtmlBtn");
+const resetCustomHtmlBtn = document.getElementById("resetCustomHtmlBtn");
+const presetThemeSelect = document.getElementById("presetThemeSelect");
 const customProfileContainer = document.getElementById("customProfileContainer");
 
 const navFeedBtn = document.getElementById("feedNavBtn");
@@ -54,29 +58,37 @@ async function getUserData(userId) {
   return snap.exists() ? snap.data() : null;
 }
 
+// Render wall comments for a profile
+async function renderWallComments(profileId) {
+  wallContainer.innerHTML = "";
+  const wallSnap = await getDocs(query(collection(db, "users", profileId, "wall"), orderBy("createdAt", "asc")));
+  wallSnap.forEach(docSnap => {
+    const post = docSnap.data();
+    const p = document.createElement("div");
+    p.className = "wall-comment";
+    p.innerHTML = `<strong>${post.username || "Anonymous"}:</strong> ${post.text}`;
+    wallContainer.appendChild(p);
+  });
+}
+
 // ---------------------
 // Load Profile
 // ---------------------
 async function loadProfile() {
-  const user = auth.currentUser;
-  if (!user) return;
+  const currentUser = auth.currentUser;
+  if (!currentUser) return;
 
-  const data = await getUserData(user.uid);
+  // Load user profile (visiting your own profile)
+  const profileId = currentUser.uid;
+  const data = await getUserData(profileId);
   if (!data) return;
 
   profilePfp.src = data.pfpURL || "default-avatar.png";
   profileUsername.textContent = data.username || "Anonymous";
   profileBio.textContent = data.bio || "";
 
-  // Wall posts
-  wallContainer.innerHTML = "";
-  const wallSnap = await getDocs(query(collection(db, "users", user.uid, "wall"), orderBy("createdAt", "desc")));
-  wallSnap.forEach(docSnap => {
-    const post = docSnap.data();
-    const p = document.createElement("p");
-    p.textContent = `${post.username || "Anonymous"}: ${post.text}`;
-    wallContainer.appendChild(p);
-  });
+  // Wall posts (yearbook style)
+  await renderWallComments(profileId);
 
   // Top 10 friends
   top10Container.innerHTML = "";
@@ -91,19 +103,26 @@ async function loadProfile() {
   // Custom HTML/CSS
   if (data.customHtml) {
     customProfileContainer.innerHTML = data.customHtml;
+    customHtmlInput.value = data.customHtml;
+  } else if (data.presetTheme) {
+    applyPresetTheme(data.presetTheme);
+    presetThemeSelect.value = data.presetTheme;
+  } else {
+    customProfileContainer.innerHTML = "";
   }
 }
 
 // ---------------------
 // Post on Wall
 // ---------------------
-wallPostBtn.addEventListener("click", async () => {
+wallPostBtn?.addEventListener("click", async () => {
   const text = wallInput.value.trim();
   if (!text) return;
 
   const user = auth.currentUser;
   const userData = await getUserData(user.uid);
 
+  // Add comment to your own profile wall
   await addDoc(collection(db, "users", user.uid, "wall"), {
     username: userData.username || "Anonymous",
     text,
@@ -111,7 +130,7 @@ wallPostBtn.addEventListener("click", async () => {
   });
 
   wallInput.value = "";
-  loadProfile();
+  await renderWallComments(user.uid);
 });
 
 // ---------------------
@@ -122,7 +141,55 @@ saveCustomHtmlBtn?.addEventListener("click", async () => {
   customProfileContainer.innerHTML = htmlCode;
 
   await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    customHtml: htmlCode
+    customHtml: htmlCode,
+    presetTheme: "" // clear preset if user added custom
+  });
+});
+
+// ---------------------
+// Reset Customization
+// ---------------------
+resetCustomHtmlBtn?.addEventListener("click", async () => {
+  customProfileContainer.innerHTML = "";
+  customHtmlInput.value = "";
+  presetThemeSelect.value = "";
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    customHtml: "",
+    presetTheme: ""
+  });
+});
+
+// ---------------------
+// Preset Theme Selection
+// ---------------------
+function applyPresetTheme(theme) {
+  switch(theme) {
+    case "dark":
+      customProfileContainer.style.backgroundColor = "#333";
+      customProfileContainer.style.color = "#fff";
+      break;
+    case "light":
+      customProfileContainer.style.backgroundColor = "#f0f0f0";
+      customProfileContainer.style.color = "#000";
+      break;
+    case "orange":
+      customProfileContainer.style.backgroundColor = "#fbb148";
+      customProfileContainer.style.color = "#000";
+      break;
+    default:
+      customProfileContainer.style.backgroundColor = "";
+      customProfileContainer.style.color = "";
+  }
+}
+
+presetThemeSelect?.addEventListener("change", async () => {
+  const theme = presetThemeSelect.value;
+  applyPresetTheme(theme);
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    presetTheme: theme,
+    customHtml: "" // clear custom HTML when preset applied
   });
 });
 

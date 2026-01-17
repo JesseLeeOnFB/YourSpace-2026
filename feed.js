@@ -1,14 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
-  updateDoc, query, orderBy, increment
+  updateDoc, query, orderBy, increment, getDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// ---------------------
 // Firebase Config
-// ---------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -23,54 +21,44 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
-// ---------------------
 // DOM Elements
-// ---------------------
 const postsContainer = document.getElementById("postsContainer");
 const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
 
-const navFeedBtn = document.getElementById("feedNavBtn");
-const navProfileBtn = document.getElementById("profileNavBtn");
+const feedNavBtn = document.getElementById("feedNavBtn");
+const profileNavBtn = document.getElementById("profileNavBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-// ---------------------
 // Navigation
-// ---------------------
-navFeedBtn?.addEventListener("click", () => window.location.href = "feed.html");
-navProfileBtn?.addEventListener("click", () => window.location.href = "profile.html");
+feedNavBtn?.addEventListener("click", () => window.location.href = "feed.html");
+profileNavBtn?.addEventListener("click", () => window.location.href = "profile.html");
 logoutBtn?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
 });
 
-// ---------------------
 // Helpers
-// ---------------------
-async function getUsername(uid) {
-  try {
-    const snap = await getDocs(query(collection(db, "users")));
-    const userSnap = await getDoc(doc(db, "users", uid));
-    return userSnap.exists() ? userSnap.data().username : "Anonymous";
-  } catch { return "Anonymous"; }
+async function getUsername(userId) {
+  const snap = await getDoc(doc(db, "users", userId));
+  return snap.exists() && snap.data().username ? snap.data().username : "Anonymous";
 }
 
+// Render comments
 async function renderComments(postId, commentsContainer) {
   commentsContainer.innerHTML = "";
-  const snap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
-  snap.forEach(async cSnap => {
+  const commentsSnap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
+  commentsSnap.forEach(async cSnap => {
     const data = cSnap.data();
     const username = await getUsername(data.userId);
-    const p = document.createElement("p");
-    p.innerHTML = `<span class="comment-user" data-uid="${data.userId}">${username}</span>: ${data.text}`;
-    p.querySelector(".comment-user").addEventListener("click", e => {
-      window.location.href = `profile.html?uid=${e.target.dataset.uid}`;
-    });
-    commentsContainer.appendChild(p);
+    const div = document.createElement("div");
+    div.innerHTML = `<a href="profile.html?uid=${data.userId}">${username}</a>: ${data.text}`;
+    commentsContainer.appendChild(div);
   });
 }
 
+// Render post
 async function renderPost(postData, postId) {
   const postEl = document.createElement("div");
   postEl.className = "post-container";
@@ -78,12 +66,12 @@ async function renderPost(postData, postId) {
   const username = await getUsername(postData.userId);
 
   let mediaHTML = "";
-  if (postData.mediaType === "image") mediaHTML = `<img src="${postData.mediaURL}" class="post-media">`;
-  else if (postData.mediaType === "video") mediaHTML = `<video controls class="post-media"><source src="${postData.mediaURL}"></video>`;
+  if (postData.mediaType === "image") mediaHTML = `<img src="${postData.mediaURL}">`;
+  else if (postData.mediaType === "video") mediaHTML = `<video controls><source src="${postData.mediaURL}"></video>`;
 
   postEl.innerHTML = `
     <div class="post-header">
-      <span class="post-username" data-uid="${postData.userId}">${username}</span>
+      <span class="post-username"><a href="profile.html?uid=${postData.userId}">${username}</a></span>
       ${postData.userId === auth.currentUser.uid ? `<button class="delete-post">Delete</button>` : ""}
     </div>
     <div class="post-body">
@@ -102,18 +90,13 @@ async function renderPost(postData, postId) {
     </div>
   `;
 
-  postEl.querySelector(".post-username").addEventListener("click", e => {
-    window.location.href = `profile.html?uid=${e.target.dataset.uid}`;
-  });
-
   const commentsContainer = postEl.querySelector(".comments-container");
   const commentInput = postEl.querySelector(".comment-input");
   const commentBtn = postEl.querySelector(".comment-btn");
 
-  // Load comments
   renderComments(postId, commentsContainer);
 
-  // Add comment
+  // Add Comment
   commentBtn.addEventListener("click", async () => {
     const text = commentInput.value.trim();
     if (!text) return;
@@ -132,12 +115,14 @@ async function renderPost(postData, postId) {
     postEl.remove();
   });
 
-  // Like / Dislike
+  // Like
   postEl.querySelector(".like-btn").addEventListener("click", async () => {
     await updateDoc(doc(db, "posts", postId), { likes: increment(1) });
     postData.likes = (postData.likes || 0) + 1;
     postEl.querySelector(".like-btn").textContent = `👍 ${postData.likes}`;
   });
+
+  // Dislike
   postEl.querySelector(".dislike-btn").addEventListener("click", async () => {
     await updateDoc(doc(db, "posts", postId), { dislikes: increment(1) });
     postData.dislikes = (postData.dislikes || 0) + 1;
@@ -147,32 +132,28 @@ async function renderPost(postData, postId) {
   // Share
   postEl.querySelector(".share-btn").addEventListener("click", () => {
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
-    alert("Post link copied!");
+    alert("Post link copied");
   });
 
   postsContainer.appendChild(postEl);
 }
 
-// ---------------------
-// Load Posts
-// ---------------------
+// Load posts
 async function loadPosts() {
   postsContainer.innerHTML = "";
   const snap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
   snap.forEach(docSnap => renderPost(docSnap.data(), docSnap.id));
 }
 
-// ---------------------
-// Create Post
-// ---------------------
+// Create post
 postBtn?.addEventListener("click", async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
-
-  if (!text && !file) return alert("Post cannot be empty");
+  if (!text && !file) return alert("Cannot post empty");
 
   let mediaURL = "";
   let mediaType = "";
+
   if (file) {
     mediaType = file.type.startsWith("image") ? "image" : "video";
     const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
@@ -192,13 +173,11 @@ postBtn?.addEventListener("click", async () => {
 
   postText.value = "";
   postFileInput.value = "";
-  await loadPosts();
+  loadPosts();
 });
 
-// ---------------------
-// Auth State
-// ---------------------
+// Auth state
 onAuthStateChanged(auth, user => {
-  if (!user) return window.location.href = "login.html";
-  loadPosts();
+  if (!user) window.location.href = "login.html";
+  else loadPosts();
 });

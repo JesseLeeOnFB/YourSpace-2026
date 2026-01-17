@@ -7,57 +7,113 @@
 <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-<div id="profilePage">
-
-  <!-- NAVIGATION -->
-  <nav id="topnav">
-    <ul>
-      <li><a href="#" id="feedNavBtn">Feed</a></li>
-      <li><a href="#" id="profileNavBtn">Profile</a></li>
-      <li><button id="logoutBtn">Logout</button></li>
-    </ul>
+  <!-- Navigation -->
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- HEADER / PROFILE INFO -->
-  <div class="profile-header">
-    <img id="pfp" src="default-avatar.png" alt="Profile Picture">
-    <h2 id="usernameDisplay">Username</h2>
-    <p id="bioDisplay">This is the bio.</p>
+  <!-- Profile Container -->
+  <div class="profile-container">
+
+    <!-- Profile Picture -->
+    <div class="pfp-container">
+      <img id="pfpImg" src="default-avatar.png" alt="Profile Picture">
+      <input type="file" id="pfpInput">
+      <button id="savePfpBtn">Save Profile Picture</button>
+    </div>
+
+    <!-- Bio -->
+    <div class="bio-container">
+      <h2>Bio</h2>
+      <textarea id="bioTextarea" placeholder="Write something about yourself..."></textarea>
+      <button id="saveBioBtn">Save Bio</button>
+    </div>
+
+    <!-- Wall -->
+    <div class="wall-container">
+      <h2>Wall</h2>
+      <div id="wallContainer"></div>
+      <input type="text" id="wallInput" placeholder="Write on the wall...">
+      <button id="postWallBtn">Post</button>
+    </div>
+
+    <!-- Music -->
+    <div class="music-container">
+      <h2>Music</h2>
+      <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
+      <button id="musicBtn">Add Music</button>
+      <div id="musicIframeContainer"></div>
+    </div>
+
+    <!-- Custom Theme/HTML -->
+    <div class="theme-container">
+      <h2>Custom HTML / Theme</h2>
+      <textarea id="customHTMLInput" placeholder="Paste custom HTML or CSS"></textarea>
+      <button id="applyCustomHTMLBtn">Apply</button>
+      <button id="resetCustomHTMLBtn">Reset to Default</button>
+    </div>
+
+    <!-- Preset Themes -->
+    <div class="preset-theme-container">
+      <h2>Preset Themes</h2>
+      <button class="preset-theme-btn" data-theme="dark">Dark</button>
+      <button class="preset-theme-btn" data-theme="light">Light</button>
+      <button class="preset-theme-btn" data-theme="retro">Retro</button>
+    </div>
+
   </div>
 
-  <!-- CUSTOM HTML / THEME INJECTOR -->
-  <div class="custom-html-section">
-    <h3>💻 Custom HTML / Theme</h3>
-    <textarea id="customHtmlInput" placeholder="Paste HTML/CSS here"></textarea>
-    <button id="applyCustomBtn">Apply</button>
-    <button id="resetCustomBtn">Reset</button>
-  </div>
+  <script type="module" src="profile.js"></script>
+  <script>
+    // ---------------------
+    // Custom HTML / Preset Themes
+    // ---------------------
+    const customHTMLInput = document.getElementById("customHTMLInput");
+    const applyCustomHTMLBtn = document.getElementById("applyCustomHTMLBtn");
+    const resetCustomHTMLBtn = document.getElementById("resetCustomHTMLBtn");
+    const presetThemeBtns = document.querySelectorAll(".preset-theme-btn");
 
-  <!-- TOP 10 FRIENDS -->
-  <div class="top10-container">
-    <h3>⭐ Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-  </div>
+    applyCustomHTMLBtn.addEventListener("click", () => {
+      const code = customHTMLInput.value;
+      const styleTag = document.getElementById("customHTMLStyle") || document.createElement("style");
+      styleTag.id = "customHTMLStyle";
+      styleTag.innerHTML = code;
+      document.head.appendChild(styleTag);
+      alert("Custom code applied!");
+      localStorage.setItem("customHTML", code);
+    });
 
-  <!-- WALL -->
-  <div class="wall-section">
-    <h3>📝 Wall</h3>
-    <div id="wallPostsContainer"></div>
-    <textarea id="wallInput" placeholder="Write on this wall"></textarea>
-    <button id="postWallBtn">Post</button>
-  </div>
+    resetCustomHTMLBtn.addEventListener("click", () => {
+      const styleTag = document.getElementById("customHTMLStyle");
+      styleTag?.remove();
+      localStorage.removeItem("customHTML");
+      alert("Reset to default!");
+    });
 
-  <!-- MUSIC PLAYER -->
-  <div class="music-player">
-    <h3>🎵 Profile Music</h3>
-    <input type="text" id="musicLinkInput" placeholder="Paste YouTube, Spotify, or SoundCloud link">
-    <button id="saveMusicBtn">Save Music</button>
-    <button id="clearMusicBtn">Reset</button>
-    <div id="musicEmbedContainer"></div>
-  </div>
+    presetThemeBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.body.className = ""; // reset previous
+        document.body.classList.add(btn.dataset.theme);
+        localStorage.setItem("presetTheme", btn.dataset.theme);
+      });
+    });
 
-</div>
+    // Load saved custom code and preset theme
+    window.addEventListener("load", () => {
+      const savedCode = localStorage.getItem("customHTML");
+      if (savedCode) {
+        const styleTag = document.createElement("style");
+        styleTag.id = "customHTMLStyle";
+        styleTag.innerHTML = savedCode;
+        document.head.appendChild(styleTag);
+        customHTMLInput.value = savedCode;
+      }
 
-<script type="module" src="profile.js"></script>
+      const savedTheme = localStorage.getItem("presetTheme");
+      if (savedTheme) document.body.classList.add(savedTheme);
+    });
+  </script>
 </body>
 </html>

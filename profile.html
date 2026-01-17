@@ -1,101 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body class="default-theme">
 
-  <!-- Navigation -->
+  <!-- NAVIGATION -->
   <div class="navbar">
-    <button id="feedBtn">Feed</button>
-    <button id="profileBtn">Profile</button>
-    <button id="messagesNavBtn">Messages</button>
-    <button id="settingsBtn">Settings</button>
+    <button data-target="feed">Feed</button>
+    <button data-target="profile">Profile</button>
+    <button data-target="messages">Messages</button>
+    <button data-target="settings">Settings</button>
   </div>
 
-  <!-- Profile Main Container -->
   <div class="profile-main">
 
-    <!-- Profile Top Section -->
+    <!-- PROFILE TOP -->
     <div class="profile-top">
 
-      <!-- Profile Picture -->
+      <!-- PROFILE PICTURE -->
       <div class="pfp-container">
         <img id="profilePfp" src="" alt="Profile Picture">
-        <input type="file" id="pfpInput">
-        <button id="savePfpBtn">Save Profile Picture</button>
+        <input type="file" id="profilePfpInput">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
       </div>
 
-      <!-- Profile Info -->
+      <!-- PROFILE INFO -->
       <div class="profile-info-box">
         <input id="usernameInput" placeholder="Username">
         <textarea id="bioInput" placeholder="Bio"></textarea>
         <input id="locationInput" placeholder="Location">
         <button id="saveProfileBtn">Save Profile Info</button>
-        <select id="themeSelect">
-          <option value="default-theme">Default</option>
-          <option value="red-theme">Red</option>
-          <option value="blue-theme">Blue</option>
-          <option value="green-theme">Green</option>
-          <option value="neon-theme">Neon</option>
-        </select>
-        <button id="saveThemeBtn">Apply Theme</button>
       </div>
 
     </div>
 
-    <!-- Wall Comments -->
+    <!-- WALL COMMENTS -->
     <div class="wall-container">
-      <h3>Comments</h3>
-      <div id="wallComments"></div>
-      <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
-      <button id="postWallCommentBtn">Post Comment</button>
+      <h3>Comments Wall</h3>
+      <div id="wallContainer"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="wallCommentBtn">Post Comment</button>
     </div>
 
-    <!-- Top 10 Friends -->
+    <!-- TOP 10 FRIENDS -->
     <div class="top10-container">
       <h3>Top 10 Friends</h3>
       <div id="top10FriendsContainer"></div>
       <button id="editTop10Btn">Save Top 10</button>
     </div>
 
-    <!-- Music Player -->
+    <!-- MUSIC PLAYER -->
     <div class="music-player">
-      <input type="text" id="musicLinkInput" placeholder="YouTube/SoundCloud link">
-      <button id="playMusicBtn">Play Music</button>
+      <h3>Music Player</h3>
+      <input type="text" id="musicInput" placeholder="Paste YouTube or SoundCloud URL">
+      <button id="musicPlayBtn">Play</button>
+      <button id="musicPauseBtn">Pause</button>
       <iframe id="musicIframe"></iframe>
-      <button id="pauseMusicBtn">Pause Music</button>
     </div>
 
-    <!-- Custom HTML / Themes -->
+    <!-- CUSTOM HTML / THEMES -->
     <div class="theme-custom-box">
-      <h3>Custom HTML & Animations</h3>
-      <textarea id="customHtmlInput" placeholder="Enter HTML code for background, animation, etc."></textarea>
+      <h3>Custom HTML / Backgrounds / Animations</h3>
+      <textarea id="customHtmlInput" placeholder="Paste custom HTML or code here"></textarea>
+      <button id="applyCustomHtmlBtn">Apply</button>
       <div id="customHtmlContainer"></div>
-      <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
-    </div>
-
-    <!-- Messaging -->
-    <div class="messages-container">
-      <h3>Private Messages</h3>
-      <div id="threadsContainer"></div>
-      <div class="new-message-box">
-        <input id="messageRecipient" placeholder="Recipient username">
-        <textarea id="messageText" placeholder="Type your message here..."></textarea>
-        <button id="sendMessageBtn">Send Message</button>
-      </div>
     </div>
 
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-  <script src="profile.js"></script>
-
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

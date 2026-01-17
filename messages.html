@@ -3,30 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace - Messages</title>
+<title>YourSpace Messages</title>
 <link rel="stylesheet" href="messages.css">
 </head>
 <body>
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<nav>
-  <button id="navFeed">Feed</button>
-  <button id="navProfile">Profile</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
-
-<div class="messages-page">
-  <div class="conversations-list">
-    <h3>Conversations</h3>
-    <div id="conversationsContainer"></div>
+  <div class="messages-container">
+    <div class="conversation-list">
+      <h3>Conversations</h3>
+      <ul id="conversationList"></ul>
+    </div>
+    <div class="chat-box">
+      <h3 id="chatHeader">Select a conversation</h3>
+      <div id="messagesContainer" class="messages-container-inner"></div>
+      <input type="text" id="messageInput" placeholder="Type a message...">
+      <input type="file" id="attachmentInput">
+      <button id="sendMessageBtn">Send</button>
+    </div>
   </div>
-  <div class="chat-container">
-    <h3 id="chatTitle">Select a conversation</h3>
-    <div id="messagesContainer" class="messages-container"></div>
-    <textarea id="messageInput" placeholder="Type a message..."></textarea>
-    <input type="file" id="messageFileInput">
-    <button id="sendMessageBtn">Send</button>
-  </div>
-</div>
 
 <script type="module" src="messages.js"></script>
 </body>

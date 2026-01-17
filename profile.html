@@ -3,68 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace - Profile</title>
+<title>YourSpace Profile</title>
 <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <nav>
+  <!-- Navigation -->
+  <nav id="topNav">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div id="themeContainer">
-    <label for="themeSelect">Select Theme:</label>
-    <select id="themeSelect">
+  <!-- Preset Theme Selector -->
+  <div id="themeSelector">
+    <label>Theme:</label>
+    <select id="presetThemes">
       <option value="dark">Dark</option>
       <option value="light">Light</option>
       <option value="retro">Retro</option>
     </select>
-    <button id="applyThemeBtn">Apply Theme</button>
     <button id="resetThemeBtn">Reset Default</button>
   </div>
 
+  <!-- Custom HTML/CSS Injector -->
+  <div id="customHtmlContainer">
+    <label>Custom HTML/CSS:</label>
+    <textarea id="customHtmlInput" placeholder="Paste your custom code here"></textarea>
+    <button id="applyCustomBtn">Apply</button>
+    <button id="resetCustomBtn">Reset</button>
+  </div>
+
+  <!-- Profile Info -->
   <div id="profileContainer">
-    <div id="profileHeader">
-      <div id="pfpContainer">
-        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput">
-        <button id="savePfpBtn">Save Profile Picture</button>
-      </div>
-      <div id="bioContainer">
-        <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
-        <input type="text" id="locationInput" placeholder="Location">
-        <button id="saveBioBtn">Save Bio & Location</button>
+    <div id="profileLeft">
+      <img id="profilePFP" src="default-avatar.png" alt="Profile Picture">
+      <input type="file" id="changePFPInput">
+      <button id="savePFPBtn">Save Picture</button>
+
+      <h3>Bio</h3>
+      <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
+      <button id="saveBioBtn">Save Bio</button>
+
+      <!-- Music Player -->
+      <div id="musicContainer">
+        <label>Music Embed URL:</label>
+        <input type="text" id="musicInput" placeholder="YouTube/Spotify/etc.">
+        <button id="saveMusicBtn">Save & Play</button>
+        <div id="musicPlayer"></div>
       </div>
     </div>
 
-    <div id="top10Container">
+    <div id="profileRight">
+      <!-- Top 10 Friends -->
       <h3>Top 10 Friends</h3>
-      <div id="top10Friends"></div>
-    </div>
+      <div id="top10Container"></div>
 
-    <div id="wallContainer">
-      <h3>Wall</h3>
+      <!-- Wall Posts -->
+      <h3>Wall Comments</h3>
       <div id="wallPostsContainer"></div>
-      <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
-      <button id="postWallBtn">Post</button>
-    </div>
-
-    <div id="musicContainer">
-      <h3>Music Player</h3>
-      <input type="text" id="musicUrlInput" placeholder="Paste YouTube/Spotify/SoundCloud URL">
-      <button id="playMusicBtn">Play</button>
-      <div id="musicPlayer"></div>
-    </div>
-
-    <div id="customHtmlContainer">
-      <h3>Custom HTML / CSS</h3>
-      <textarea id="customHtmlInput" placeholder="Paste custom code here"></textarea>
-      <button id="applyCustomHtmlBtn">Apply Custom HTML</button>
-      <button id="resetCustomHtmlBtn">Reset Custom HTML</button>
+      <textarea id="wallCommentInput" placeholder="Leave a comment"></textarea>
+      <button id="postWallCommentBtn">Post Comment</button>
     </div>
   </div>
 
-  <script type="module" src="profile.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

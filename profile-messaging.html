@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace - Messages</title>
+<link rel="stylesheet" href="profile.css">
+</head>
+<body class="default-theme">
+
+<div class="navbar">
+  <button id="navFeed">Feed</button>
+  <button id="navProfile">Profile</button>
+  <button id="navMessages">Messages</button>
+  <button id="navSettings">Settings</button>
+</div>
+
+<div class="profile-main">
+  <div class="messages-container">
+    <h3>Private Messages</h3>
+    <div id="threadsContainer"></div>
+    <div class="new-message-box">
+      <input id="recipientInput" placeholder="Enter username">
+      <textarea id="messageInput" placeholder="Type your message"></textarea>
+      <button id="sendMessageBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="profile-messaging.js"></script>
+</body>
+</html>

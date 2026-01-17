@@ -15,31 +15,34 @@
   </nav>
 
   <main id="profileMain">
-    <section id="profileHeader">
+
+    <!-- PROFILE HEADER -->
+    <section id="profileHeader" class="containerBox">
       <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
       <h1 id="profileName">Loading...</h1>
       <p id="profileBio">Loading bio...</p>
 
-      <!-- Editable if own profile -->
-      <input type="file" id="pfpInput">
-      <button id="savePfpBtn">Save Profile Picture</button>
-
-      <textarea id="bioInput" placeholder="Update your bio"></textarea>
-      <button id="saveBioBtn">Save Bio</button>
-
-      <select id="themeSelect">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="retro">Retro</option>
-      </select>
+      <div class="editSection">
+        <input type="file" id="pfpInput">
+        <button id="savePfpBtn">Save Profile Picture</button>
+        <textarea id="bioInput" placeholder="Update your bio"></textarea>
+        <button id="saveBioBtn">Save Bio</button>
+        <select id="themeSelect">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="retro">Retro</option>
+        </select>
+      </div>
     </section>
 
-    <section id="top10Section">
+    <!-- TOP 10 FRIENDS -->
+    <section id="top10Section" class="containerBox">
       <h2>Top 10 Friends</h2>
       <div id="top10FriendsContainer"></div>
     </section>
 
-    <section id="musicSection">
+    <!-- MUSIC -->
+    <section id="musicSection" class="containerBox">
       <h2>Music Playlist</h2>
       <input type="text" id="musicInput" placeholder="Paste song link here">
       <button id="addMusicBtn">Add Song</button>
@@ -47,12 +50,14 @@
       <ul id="musicList"></ul>
     </section>
 
-    <section id="wallSection">
+    <!-- WALL -->
+    <section id="wallSection" class="containerBox">
       <h2>Wall</h2>
       <textarea id="wallInput" placeholder="Write on wall"></textarea>
       <button id="postWallBtn">Post</button>
       <div id="wallContainer"></div>
     </section>
+
   </main>
 
   <script type="module" src="profile.js"></script>

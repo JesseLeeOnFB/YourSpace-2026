@@ -5,26 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YourSpace Feed</title>
 <link rel="stylesheet" href="profile.css">
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+<script type="module" src="firebase-init.js"></script>
+<script type="module" src="feed.js" defer></script>
 </head>
 <body class="default-theme">
+  <!-- NAVIGATION -->
+  <div class="navbar">
+    <button id="navFeedBtn">Feed</button>
+    <button id="navProfileBtn">Profile</button>
+    <button id="navMessagesBtn">Messages</button>
+    <button id="navSettingsBtn">Settings</button>
+  </div>
 
-<div class="navbar">
-  <button id="navFeed">Feed</button>
-  <button id="navProfile">Profile</button>
-  <button id="navMessages">Messages</button>
-  <button id="navLogout">Logout</button>
-</div>
+  <!-- FEED MAIN -->
+  <div class="feed-main">
+    <div id="feedPostInputBox">
+      <textarea id="newPostInput" placeholder="What's on your mind?"></textarea>
+      <button id="postButton">Post</button>
+    </div>
 
-<div class="profile-main">
-  <div id="postsContainer"></div>
-  <textarea id="newPostInput" placeholder="What's on your mind?"></textarea>
-  <button id="postBtn">Post</button>
-</div>
-
-<script src="feed.js"></script>
+    <div id="feedPostsContainer">
+      <!-- Posts will load here -->
+    </div>
+  </div>
 </body>
 </html>

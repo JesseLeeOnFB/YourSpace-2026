@@ -7,25 +7,23 @@
 <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <button id="feedNavBtn">Feed</button>
-      <button id="profileNavBtn">Profile</button>
-      <button id="logoutBtn">Logout</button>
-    </nav>
-  </header>
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
   <main>
-    <section id="profileInfo">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
-      <h2 id="profileName">Loading...</h2>
+    <section class="profile-header">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
+      <h1 id="profileName">YourSpace User</h1>
       <p id="profileBio">This is the bio lol</p>
-      
-      <input type="text" id="bioInput" placeholder="Update your bio">
-      <button id="saveBioBtn">Save Bio</button>
 
       <input type="file" id="pfpInput">
       <button id="savePfpBtn">Save Profile Picture</button>
+
+      <textarea id="bioInput" placeholder="Update your bio"></textarea>
+      <button id="saveBioBtn">Save Bio</button>
 
       <select id="themeSelect">
         <option value="dark">Dark</option>
@@ -34,24 +32,23 @@
       </select>
     </section>
 
-    <section id="top10Section">
-      <h3>Top 10 Friends</h3>
+    <section class="music-player-section">
+      <h2>Music Player</h2>
+      <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/etc link">
+      <button id="addMusicBtn">Add Song</button>
+      <div id="musicPlayerContainer"></div>
+    </section>
+
+    <section class="top10-friends-section">
+      <h2>Top 10 Friends</h2>
       <div id="top10FriendsContainer"></div>
     </section>
 
-    <section id="wallSection">
-      <h3>Wall</h3>
-      <input type="text" id="wallInput" placeholder="Write something on the wall...">
+    <section class="wall-section">
+      <h2>Wall</h2>
+      <textarea id="wallInput" placeholder="Write on the wall"></textarea>
       <button id="postWallBtn">Post</button>
       <div id="wallContainer"></div>
-    </section>
-
-    <section id="musicSection">
-      <h3>Music Playlist</h3>
-      <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud URL">
-      <button id="addMusicBtn">Add Song</button>
-      <div id="playlistContainer"></div>
-      <div id="musicPlayer"></div>
     </section>
   </main>
 

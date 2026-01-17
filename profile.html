@@ -1,64 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
-<body class="theme-dark">
-
+<body>
   <!-- Navigation -->
-  <nav id="mainNav">
+  <nav id="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main id="profileMain">
+  <!-- Profile Header -->
+  <div id="profileHeader" class="container-box">
+    <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+    <h1 id="profileName">YourSpace User</h1>
+    <p id="profileBio">This is the bio lol</p>
+    <input type="file" id="pfpInput" style="display:none;">
+    <button id="savePfpBtn" style="display:none;">Save Profile Picture</button>
+    <textarea id="bioInput" placeholder="Update your bio" style="display:none;"></textarea>
+    <button id="saveBioBtn" style="display:none;">Save Bio</button>
+  </div>
 
-    <!-- PROFILE HEADER -->
-    <section id="profileHeader" class="containerBox">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <h1 id="profileName">Loading...</h1>
-      <p id="profileBio">Loading bio...</p>
+  <!-- Top 10 Friends -->
+  <div id="top10FriendsContainer" class="container-box">
+    <h2>Top 10 Friends</h2>
+    <div id="top10List"></div>
+  </div>
 
-      <div class="editSection">
-        <input type="file" id="pfpInput">
-        <button id="savePfpBtn">Save Profile Picture</button>
-        <textarea id="bioInput" placeholder="Update your bio"></textarea>
-        <button id="saveBioBtn">Save Bio</button>
-        <select id="themeSelect">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="retro">Retro</option>
-        </select>
-      </div>
-    </section>
+  <!-- Music Player -->
+  <div id="musicPlayerContainer" class="container-box">
+    <h2>Music Player</h2>
+    <input type="text" id="musicInput" placeholder="Paste song URL">
+    <button id="addSongBtn">Add Song</button>
+    <div id="playlistContainer"></div>
+    <audio id="audioPlayer" controls></audio>
+  </div>
 
-    <!-- TOP 10 FRIENDS -->
-    <section id="top10Section" class="containerBox">
-      <h2>Top 10 Friends</h2>
-      <div id="top10FriendsContainer"></div>
-    </section>
+  <!-- Wall Comments -->
+  <div id="wallContainerBox" class="container-box">
+    <h2>Wall Comments</h2>
+    <textarea id="wallInput" placeholder="Write on the wall"></textarea>
+    <button id="postWallBtn">Post</button>
+    <div id="wallContainer"></div>
+  </div>
 
-    <!-- MUSIC -->
-    <section id="musicSection" class="containerBox">
-      <h2>Music Playlist</h2>
-      <input type="text" id="musicInput" placeholder="Paste song link here">
-      <button id="addMusicBtn">Add Song</button>
-      <div id="musicPlayer"></div>
-      <ul id="musicList"></ul>
-    </section>
-
-    <!-- WALL -->
-    <section id="wallSection" class="containerBox">
-      <h2>Wall</h2>
-      <textarea id="wallInput" placeholder="Write on wall"></textarea>
-      <button id="postWallBtn">Post</button>
-      <div id="wallContainer"></div>
-    </section>
-
-  </main>
+  <!-- Private Messages -->
+  <div id="privateMessagesBox" class="container-box">
+    <h2>Private Messages</h2>
+    <div id="conversationsContainer"></div>
+    <button id="newConversationBtn">New Message</button>
+  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

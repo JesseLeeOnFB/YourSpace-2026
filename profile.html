@@ -1,81 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body class="default-theme">
 
-<!-- Navbar -->
-<div class="navbar">
-  <button id="navFeed">Feed</button>
-  <button id="navProfile">Profile</button>
-  <button id="navMessages">Messages</button>
-  <button id="navSettings">Settings</button>
-</div>
+  <!-- Navigation -->
+  <div class="navbar">
+    <button id="feedBtn">Feed</button>
+    <button id="profileBtn">Profile</button>
+    <button id="messagesNavBtn">Messages</button>
+    <button id="settingsBtn">Settings</button>
+  </div>
 
-<!-- Main Profile Container -->
-<div class="profile-main">
+  <!-- Profile Main Container -->
+  <div class="profile-main">
 
-  <!-- Top Section: PFP + Profile Info -->
-  <div class="profile-top">
+    <!-- Profile Top Section -->
+    <div class="profile-top">
 
-    <!-- Profile Picture -->
-    <div class="pfp-container">
-      <img id="profilePfp" src="" alt="Profile Picture">
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      <!-- Profile Picture -->
+      <div class="pfp-container">
+        <img id="profilePfp" src="" alt="Profile Picture">
+        <input type="file" id="pfpInput">
+        <button id="savePfpBtn">Save Profile Picture</button>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="profile-info-box">
+        <input id="usernameInput" placeholder="Username">
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input id="locationInput" placeholder="Location">
+        <button id="saveProfileBtn">Save Profile Info</button>
+        <select id="themeSelect">
+          <option value="default-theme">Default</option>
+          <option value="red-theme">Red</option>
+          <option value="blue-theme">Blue</option>
+          <option value="green-theme">Green</option>
+          <option value="neon-theme">Neon</option>
+        </select>
+        <button id="saveThemeBtn">Apply Theme</button>
+      </div>
+
     </div>
 
-    <!-- Profile Info -->
-    <div class="profile-info-box">
-      <input id="usernameInput" placeholder="Username">
-      <textarea id="bioInput" placeholder="Bio"></textarea>
-      <input id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Profile Info</button>
+    <!-- Wall Comments -->
+    <div class="wall-container">
+      <h3>Comments</h3>
+      <div id="wallComments"></div>
+      <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
+      <button id="postWallCommentBtn">Post Comment</button>
+    </div>
+
+    <!-- Top 10 Friends -->
+    <div class="top10-container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
+      <button id="editTop10Btn">Save Top 10</button>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player">
+      <input type="text" id="musicLinkInput" placeholder="YouTube/SoundCloud link">
+      <button id="playMusicBtn">Play Music</button>
+      <iframe id="musicIframe"></iframe>
+      <button id="pauseMusicBtn">Pause Music</button>
+    </div>
+
+    <!-- Custom HTML / Themes -->
+    <div class="theme-custom-box">
+      <h3>Custom HTML & Animations</h3>
+      <textarea id="customHtmlInput" placeholder="Enter HTML code for background, animation, etc."></textarea>
+      <div id="customHtmlContainer"></div>
+      <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
+    </div>
+
+    <!-- Messaging -->
+    <div class="messages-container">
+      <h3>Private Messages</h3>
+      <div id="threadsContainer"></div>
+      <div class="new-message-box">
+        <input id="messageRecipient" placeholder="Recipient username">
+        <textarea id="messageText" placeholder="Type your message here..."></textarea>
+        <button id="sendMessageBtn">Send Message</button>
+      </div>
     </div>
 
   </div>
 
-  <!-- Top 10 Friends -->
-  <div class="top10-container">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-    <button id="editTop10Btn">Save Top 10</button>
-  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="profile.js"></script>
 
-  <!-- Wall Comments -->
-  <div class="wall-container">
-    <h3>Wall Comments</h3>
-    <div id="wallCommentsContainer"></div>
-    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-    <button id="addWallCommentBtn">Post Comment</button>
-  </div>
-
-  <!-- Music Player -->
-  <div class="music-player">
-    <h3>Music Player</h3>
-    <input type="text" id="musicLinkInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
-    <button id="playMusicBtn">Play Music</button>
-    <button id="pauseMusicBtn">Pause Music</button>
-    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
-  </div>
-
-  <!-- Custom HTML / Themes -->
-  <div class="theme-custom-box">
-    <h3>Custom HTML / Themes</h3>
-    <textarea id="customHtmlInput" placeholder="Add custom HTML, background images, animations"></textarea>
-    <div id="customHtmlContainer"></div>
-  </div>
-
-</div>
-
-<script src="profile.js"></script>
 </body>
 </html>

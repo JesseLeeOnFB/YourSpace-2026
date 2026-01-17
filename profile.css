@@ -27,11 +27,14 @@ textarea, input {
 }
 
 #profilePic {
-  width:150px;
-  height:150px;
-  border-radius:50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #444;
+  display: block;
+  margin-bottom: 10px;
 }
-
 .wall-post {
   background:#2a2a2a;
   padding:10px;

@@ -2,51 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
+  <title>YourSpace - Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <nav>
+  <div id="nav">
     <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-  </nav>
+  </div>
 
-  <main>
-    <section id="profileSection">
-      <div id="profileHeader">
+  <div id="profileContainer">
+    <div id="profileLeft">
+      <div id="pfpContainer">
         <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
         <input type="file" id="pfpInput">
-        <button id="savePfpBtn">Save Profile Picture</button>
-        <textarea id="bioInput" placeholder="This is your bio"></textarea>
-        <button id="saveBioBtn">Save Bio</button>
+        <button id="pfpSaveBtn">Save PFP</button>
+      </div>
+      <div id="bioContainer">
+        <h3>Bio</h3>
+        <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
+        <button id="bioSaveBtn">Save Bio</button>
+      </div>
+      <div id="wallContainer">
+        <h3>Wall Comments</h3>
+        <div id="wallComments"></div>
+        <input type="text" id="wallCommentInput" placeholder="Write on the wall...">
+        <button id="wallCommentBtn">Post</button>
+      </div>
+    </div>
+
+    <div id="profileRight">
+      <div id="top10Container">
+        <h3>Top 10 Friends</h3>
+        <div id="top10List"></div>
       </div>
 
-      <div id="musicSection">
-        <input type="text" id="musicInput" placeholder="Paste music URL">
-        <button id="musicBtn">Play Music</button>
-        <div id="musicContainer"></div>
+      <div id="musicContainer">
+        <h3>Music Player</h3>
+        <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/etc link">
+        <button id="musicBtn">Play</button>
+        <div id="musicEmbed"></div>
       </div>
 
-      <div id="customThemeSection">
-        <textarea id="customHtmlInput" placeholder="Add custom HTML/CSS for profile layout"></textarea>
-        <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
-        <button id="resetCustomHtmlBtn">Reset to Default</button>
+      <div id="themeContainer">
+        <h3>Custom Theme / HTML</h3>
+        <textarea id="customHTML" placeholder="Paste your code here"></textarea>
+        <button id="applyThemeBtn">Apply</button>
+        <button id="resetThemeBtn">Reset</button>
       </div>
-
-      <div id="top10Section">
-        <h2>Top 10 Friends</h2>
-        <div id="top10Container"></div>
-      </div>
-
-      <div id="wallSection">
-        <h2>Wall Comments</h2>
-        <div id="wallCommentsContainer"></div>
-        <textarea id="wallCommentInput" placeholder="Write a comment"></textarea>
-        <button id="postWallCommentBtn">Post Comment</button>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

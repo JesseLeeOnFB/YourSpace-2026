@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace - Messages</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Messages</title>
+  <link rel="stylesheet" href="messages.css">
 </head>
-<body class="theme-dark">
+<body>
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<nav>
-  <button id="feedNavBtn">Feed</button>
-  <button id="profileNavBtn">Profile</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <main>
+    <h1>Private Messages</h1>
 
-<h1>Private Messages</h1>
+    <div id="conversationsContainer">
+      <h2>Your Conversations</h2>
+      <ul id="conversationList"></ul>
+    </div>
 
-<div id="conversationsContainer"></div>
+    <div id="chatContainer" style="display:none;">
+      <h2 id="chatWith"></h2>
+      <div id="messagesContainer"></div>
+      <input type="text" id="messageInput" placeholder="Type a message">
+      <input type="file" id="attachmentInput">
+      <button id="sendBtn">Send</button>
+      <button id="backBtn">Back to Conversations</button>
+    </div>
+  </main>
 
-<div id="messageSection" style="display:none;">
-  <h2 id="chatWith"></h2>
-  <div id="messagesContainer" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:5px; margin-bottom:10px;"></div>
-  <textarea id="messageInput" placeholder="Type a message..." rows="2" style="width:100%;"></textarea>
-  <input type="file" id="messageFileInput">
-  <button id="sendMessageBtn">Send</button>
-  <button id="backToConversationsBtn">Back</button>
-</div>
-
-<script type="module" src="messages.js"></script>
+  <script type="module" src="messages.js"></script>
 </body>
 </html>

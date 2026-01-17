@@ -6,65 +6,58 @@
   <link rel="stylesheet" href="profile.css">
 </head>
 <body class="default-theme">
-
-  <!-- Navigation -->
-  <div class="navbar">
+  <header class="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-  </div>
+  </header>
 
-  <!-- Main Profile Section -->
-  <div class="profile-main">
+  <main class="profile-main">
 
     <!-- Top Section: PFP + Info -->
     <div class="profile-top">
       <div class="pfp-container">
         <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="pfpInput">
+        <input type="file" id="pfpUpload">
       </div>
-
       <div class="profile-info-box">
-        <input type="text" id="usernameInput" placeholder="Username">
-        <textarea id="bioInput" placeholder="Write something about yourself..."></textarea>
-        <select id="themeSelect">
-          <option value="default-theme">Default</option>
-          <option value="red-theme">Red</option>
-          <option value="blue-theme">Blue</option>
-          <option value="green-theme">Green</option>
-          <option value="neon-theme">Neon</option>
-        </select>
-        <button id="saveProfileBtn">Save</button>
+        <input id="profileUsername" placeholder="Username">
+        <textarea id="profileBio" placeholder="Bio"></textarea>
+        <button id="saveProfileBtn">Save Profile</button>
       </div>
     </div>
 
-    <!-- Custom HTML Background Section -->
-    <div class="custom-html-container">
-      <h3>Custom HTML Background / Theme</h3>
-      <textarea id="customHtmlInput" placeholder="Paste your HTML/JS/CSS here"></textarea>
-      <button id="applyCustomHtmlBtn">Apply</button>
-      <div id="customHtmlPreview"></div>
-    </div>
-
-    <!-- Top 10 Friends Section -->
+    <!-- Top 10 Friends -->
     <div class="top10-container">
       <h3>Top 10 Friends</h3>
-      <div id="top10Container"></div>
-      <div id="top10EditPanel" style="display:none; margin-top:10px;">
-        <p>Drag to reorder friends. Click to change friend.</p>
-        <div id="top10EditList"></div>
-      </div>
+      <div id="top10FriendsContainer"></div>
+      <button id="editTop10Btn">Edit Top 10</button>
     </div>
 
-    <!-- Wall Comments Section -->
+    <!-- Wall Comments -->
     <div class="wall-container">
-      <h3>Wall Comments</h3>
+      <h3>Wall</h3>
       <div id="wallCommentsContainer"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment"></textarea>
+      <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
       <button id="postWallCommentBtn">Post Comment</button>
     </div>
 
-  </div>
+    <!-- Music Player -->
+    <div class="music-player">
+      <h3>Music Player</h3>
+      <input type="text" id="musicInput" placeholder="Paste music embed URL">
+      <iframe id="musicIframe" src="" frameborder="0"></iframe>
+      <button id="saveMusicBtn">Save Music</button>
+    </div>
+
+    <!-- Custom HTML / Full Page Background -->
+    <div class="custom-html-container">
+      <h3>Custom Profile HTML / CSS / JS</h3>
+      <textarea id="customHtmlInput" placeholder="Drop custom HTML/CSS/JS here"></textarea>
+      <button id="saveCustomHtmlBtn">Apply Custom Code</button>
+    </div>
+
+  </main>
 
   <script type="module" src="profile.js"></script>
 </body>

@@ -48,6 +48,10 @@ const resetCustomHtmlBtn = document.getElementById("resetCustomHtmlBtn");
 const profilePicImg = document.getElementById("profilePic");
 const bioDisplay = document.getElementById("bioDisplay");
 
+const musicInput = document.getElementById("musicInput");
+const addMusicBtn = document.getElementById("addMusicBtn");
+const musicContainer = document.getElementById("musicContainer");
+
 // ---------------------
 // Navigation
 // ---------------------
@@ -86,6 +90,9 @@ async function loadProfile() {
 
   customHtmlInput.value = data.customHtml || "";
   applyCustomHtml(data.customHtml);
+
+  // Load music
+  loadMusic(data.music || []);
 }
 
 // ---------------------
@@ -185,6 +192,48 @@ wallBtn?.addEventListener("click", async () => {
   });
   wallInput.value = "";
   loadWallComments();
+});
+
+// ---------------------
+// Music Player
+// ---------------------
+function embedMusic(url) {
+  let embed = "";
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    const videoId = url.split("v=")[1] || url.split("/").pop();
+    embed = `<iframe width="300" height="80" src="https://www.youtube.com/embed/${videoId}?autoplay=0" frameborder="0" allowfullscreen></iframe>`;
+  } else if (url.includes("spotify.com")) {
+    embed = `<iframe src="https://open.spotify.com/embed/track/${url.split("/").pop()}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+  } else if (url.includes("soundcloud.com")) {
+    embed = `<iframe width="300" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}"></iframe>`;
+  } else if (url.includes("pandora.com")) {
+    embed = `<iframe src="${url}" width="300" height="80" frameborder="0"></iframe>`;
+  } else {
+    embed = `<p>Unsupported link</p>`;
+  }
+  return embed;
+}
+
+function loadMusic(musicArray) {
+  musicContainer.innerHTML = "";
+  musicArray.forEach(url => {
+    const div = document.createElement("div");
+    div.className = "music-item";
+    div.innerHTML = embedMusic(url);
+    musicContainer.appendChild(div);
+  });
+}
+
+addMusicBtn?.addEventListener("click", async () => {
+  const url = musicInput.value.trim();
+  if (!url) return;
+  const userRef = doc(db, "users", auth.currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const musicArray = userSnap.exists() && userSnap.data().music ? userSnap.data().music : [];
+  musicArray.push(url);
+  await updateDoc(userRef, { music: musicArray });
+  musicInput.value = "";
+  loadMusic(musicArray);
 });
 
 // ---------------------

@@ -1,54 +1,28 @@
-/* ==============================
-   Body Themes
-============================== */
-body.default-theme { background: #f0f0f0; color: #222; font-family: Arial, sans-serif; }
-body.red-theme { background: linear-gradient(red, darkred); color: white; }
-body.blue-theme { background: linear-gradient(blue, darkblue); color: white; }
-body.green-theme { background: linear-gradient(green, darkgreen); color: white; }
-body.neon-theme { animation: neonBg 5s infinite; }
-@keyframes neonBg { 0%{background-color:#ff00ff;} 25%{background-color:#00ffff;} 50%{background-color:#ffff00;} 75%{background-color:#00ff00;} 100%{background-color:#ff00ff;} }
+body.default-theme { background-color:#f0f0f0; color:#000; font-family:sans-serif; }
+body.red-theme { background: linear-gradient(to right, #ff4b1f, #ff9068); color:#fff; }
+body.blue-theme { background: linear-gradient(to right, #1f3c88, #4b79a1); color:#fff; }
+body.green-theme { background: linear-gradient(to right, #56ab2f, #a8e063); color:#000; }
+body.neon-theme { background-color:#000; color:#0ff; animation: neonGlow 2s infinite alternate; }
 
-/* ==============================
-   Navigation
-============================== */
-.navbar { display: flex; gap: 15px; padding: 10px; background: #333; color: #fff; }
-.navbar button { color: white; background: #444; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-.navbar button:hover { background: #555; }
+@keyframes neonGlow { 0% { text-shadow:0 0 5px #0ff;} 100% { text-shadow:0 0 20px #0ff;} }
 
-/* ==============================
-   Main layout
-============================== */
-.profile-main { padding: 20px; max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+.navbar { display:flex; gap:5px; padding:10px; background:#222; color:#fff; }
+.navbar button { padding:5px 10px; background:#444; color:#fff; border:none; cursor:pointer; }
+.navbar button:hover { background:#666; }
 
-/* Top section: pfp + info */
-.profile-top { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
-.pfp-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-#profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
+.profile-main { padding:20px; max-width:1000px; margin:auto; display:flex; flex-direction:column; gap:20px; }
 
-/* Profile info box */
-.profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
+.profile-top { display:flex; gap:20px; }
+.pfp-container img { width:150px; height:150px; border-radius:50%; border:2px solid #333; }
+.profile-info-box input, .profile-info-box textarea { display:block; margin-bottom:10px; padding:5px; width:250px; }
 
-/* Top 10 friends */
-.top10-container, .wall-container, .music-player, .custom-html-container { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); }
-.top10-container h3, .wall-container h3, .music-player h3, .custom-html-container h3 { margin-top: 0; }
-#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
-.top-friend { display: flex; gap: 10px; align-items: center; }
-.top-friend button { margin-left: auto; }
+.theme-container textarea { width:100%; height:150px; margin-top:10px; }
 
-/* Wall Comments */
-#wallCommentsContainer { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
-.wall-comment { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
-.wall-comment button { background: #e33; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; }
+.music-player iframe { width:100%; height:80px; margin-top:10px; }
 
-/* Music Player */
-#musicIframe { width: 100%; height: 80px; border: none; margin-top: 10px; }
+.wall-container, .top10-container { padding:10px; background:#eee; border-radius:5px; }
 
-/* Custom HTML */
-#customHtmlInput { width: 100%; min-height: 150px; margin-top: 5px; padding: 8px; border-radius: 4px; border: 1px solid #aaa; background: #f9f9f9; }
+.top-friend { display:flex; align-items:center; gap:5px; margin-bottom:5px; }
+.top-friend img { border-radius:50%; }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .profile-top { flex-direction: column; align-items: center; }
-  .profile-info-box { width: 100%; }
-}
+#customProfileContainer { z-index:-1; position:fixed; top:0; left:0; width:100%; height:100%; }

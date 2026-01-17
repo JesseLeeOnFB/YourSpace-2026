@@ -1,48 +1,126 @@
-/* Reset & base */
-* {margin:0;padding:0;box-sizing:border-box;font-family:Century Gothic, sans-serif;}
-body {background-color:#121212;color:#fff;line-height:1.5;}
-.profile-container {max-width:900px;margin:20px auto;padding:20px;background-color:#1e1e1e;border-radius:8px;}
+/* Global */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #111;
+  color: #fff;
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 10px;
+}
 
 /* Navigation */
-nav#navbar {display:flex;gap:10px;padding:10px;background:#222;}
-nav#navbar button {background:#555;color:#fff;border:none;padding:10px 15px;border-radius:4px;cursor:pointer;}
-nav#navbar button:hover {background:#777;}
+nav#topNav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #222;
+  padding: 10px;
+}
+
+nav#topNav button {
+  color: #fff;
+  background: #444;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+nav#topNav button:hover {
+  background-color: #666;
+}
 
 /* Profile Header */
-.profile-header {text-align:center;margin-bottom:20px;}
-.profile-header img {width:120px;height:120px;border-radius:50%;border:3px solid #fbb148;}
-.profile-header h2 {margin:10px 0;font-size:24px;}
-.profile-header p {font-size:16px;}
+.profile-header {
+  text-align: center;
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+}
 
-/* Edit Section */
-.profile-edit {display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
-.profile-edit input, .profile-edit select, .profile-edit textarea, .profile-edit button {padding:8px;border-radius:4px;border:none;}
-.profile-edit textarea {height:80px;resize:vertical;}
+.profile-header img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
 
-/* Top 10 Friends */
-.top10-container {margin-bottom:20px;}
-#top10FriendsContainer {display:flex;flex-wrap:wrap;gap:10px;}
-.top-friend {display:flex;align-items:center;gap:5px;background:#2e2e2e;padding:5px 10px;border-radius:4px;cursor:pointer;}
-.top-friend img {width:30px;height:30px;border-radius:50%;}
+.profile-header textarea, 
+.profile-header input[type="file"] {
+  margin: 5px 0;
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-/* Wall */
-.wall-container {margin-bottom:20px;}
-#wallContainer .wall-post {background:#2a2a2a;padding:10px;margin-top:5px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;}
-#wallContainer .wall-post button {padding:2px 5px;cursor:pointer;}
+.profile-header button {
+  margin: 5px;
+  padding: 5px 10px;
+}
 
 /* Music Player */
-.music-container {margin-bottom:20px;}
-#musicPlaylistContainer {display:flex;flex-direction:column;gap:5px;margin-top:10px;}
-.music-song {cursor:pointer;background:#2a2a2a;padding:5px;border-radius:4px;}
-#musicPlayer {width:100%;height:150px;margin-top:10px;border-radius:4px;}
+.music-container {
+  background-color: #222;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.music-container input, .music-container button {
+  margin: 5px;
+}
+
+/* Top 10 Friends */
+.top10-container {
+  background-color: #222;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.top-friend {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.top-friend img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Wall Comments */
+.wall-container {
+  background-color: #222;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.wall-container textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.wall-container button {
+  margin-top: 5px;
+  padding: 5px 10px;
+}
 
 /* Themes */
-.theme-dark {background-color:#121212;color:#fff;}
-.theme-light {background-color:#f5f5f5;color:#000;}
-.theme-retro {background-color:#fffcf0;color:#333;}
+.theme-dark { background-color: #111; color: #fff; }
+.theme-light { background-color: #f9f9f9; color: #111; }
+.theme-retro { background-color: #222; color: #ff0; }
 
 /* Responsive */
-@media screen and (max-width:768px){
-  .profile-container {padding:10px;}
-  nav#navbar {flex-direction:column;gap:5px;}
+@media (max-width: 768px) {
+  .profile-container { padding: 5px; }
+  nav#topNav { flex-direction: column; }
+  nav#topNav button { margin: 5px 0; }
 }

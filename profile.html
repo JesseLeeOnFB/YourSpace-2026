@@ -3,73 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
+<title>YourSpace - Profile</title>
 <link rel="stylesheet" href="profile.css">
-<script type="module" src="profile.js" defer></script>
 </head>
 <body>
+  <nav id="topNav">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<!-- Navigation -->
-<nav id="topnav">
-  <ul>
-    <li><button id="feedNavBtn">Feed</button></li>
-    <li><button id="profileNavBtn">Profile</button></li>
-    <li><button id="logoutBtn">Logout</button></li>
-  </ul>
-</nav>
-
-<!-- Profile Container -->
-<div id="profileContainer">
-  <div id="profileHeader">
-    <div id="profilePicContainer">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <input type="file" id="profilePicInput">
-      <button id="saveProfilePicBtn">Save Profile Picture</button>
+  <div id="profileContainer">
+    <div id="profileHeader">
+      <div id="profilePictureContainer">
+        <img id="profilePicture" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePicInput">
+        <button id="saveProfilePicBtn">Save Picture</button>
+      </div>
+      <div id="bioContainer">
+        <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
+        <button id="saveBioBtn">Save Bio</button>
+      </div>
     </div>
-    <div id="bioContainer">
-      <h2>Bio</h2>
-      <textarea id="bioText" placeholder="This is your bio..."></textarea>
-      <button id="saveBioBtn">Save Bio</button>
+
+    <div id="musicContainer">
+      <h3>Music Playlist</h3>
+      <input type="text" id="musicURLInput" placeholder="Paste YouTube/Spotify link">
+      <button id="addMusicBtn">Add Song</button>
+      <div id="musicList"></div>
+      <div id="musicPlayerContainer">
+        <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
     </div>
-  </div>
 
-  <!-- Top 10 Friends -->
-  <div id="top10Container">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsList"></div>
-  </div>
-
-  <!-- Music Player -->
-  <div id="musicPlayerContainer">
-    <h3>Music Player</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/Pandora/SoundCloud URL">
-    <button id="addMusicBtn">Add Song</button>
-    <div id="playlist"></div>
-    <div id="musicPlayer"></div>
-  </div>
-
-  <!-- Wall Comments -->
-  <div id="wallContainer">
-    <h3>Wall Comments</h3>
-    <div id="wallCommentsList"></div>
-    <textarea id="wallCommentInput" placeholder="Write something on this wall..."></textarea>
-    <button id="postWallCommentBtn">Post Comment</button>
-  </div>
-
-  <!-- Custom HTML/Themes -->
-  <div id="themeContainer">
-    <h3>Custom HTML / Theme</h3>
-    <textarea id="customHTMLInput" placeholder="Add custom HTML or CSS here..."></textarea>
-    <button id="applyCustomHTMLBtn">Apply</button>
-    <button id="resetCustomHTMLBtn">Reset to Default</button>
-    <div id="presetThemes">
-      <button class="themeBtn" data-theme="dark">Dark</button>
-      <button class="themeBtn" data-theme="light">Light</button>
-      <button class="themeBtn" data-theme="retro">Retro</button>
+    <div id="wallContainer">
+      <h3>Wall Comments</h3>
+      <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
+      <button id="postWallCommentBtn">Post</button>
+      <div id="wallCommentsList"></div>
     </div>
+
+    <div id="top10Container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10List"></div>
+    </div>
+
+    <button id="sendMessageBtn">Send Private Message</button>
   </div>
 
-</div>
-
+<script type="module" src="profile.js"></script>
 </body>
 </html>

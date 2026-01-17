@@ -1,266 +1,37 @@
-/* ==========================
-   THEMES
-========================== */
-body.default-theme {
-  background: #f0f0f0;
-  color: #222;
-  font-family: Arial, sans-serif;
-}
+body.default-theme { background: #f0f0f0; color: #222; font-family: Arial, sans-serif; }
+body.red-theme { background: linear-gradient(red, darkred); color: white; }
+body.blue-theme { background: linear-gradient(blue, darkblue); color: white; }
+body.green-theme { background: linear-gradient(green, darkgreen); color: white; }
+body.neon-theme { animation: neonBg 5s infinite; }
+@keyframes neonBg { 0%{background-color:#ff00ff;} 25%{background-color:#00ffff;} 50%{background-color:#ffff00;} 75%{background-color:#00ff00;} 100%{background-color:#ff00ff;} }
 
-body.red-theme {
-  background: linear-gradient(red, darkred);
-  color: white;
-}
+.navbar { display: flex; gap: 15px; padding: 10px; background: #333; color: #fff; }
+.navbar button { color: white; background: #444; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+.navbar button:hover { background: #555; }
 
-body.blue-theme {
-  background: linear-gradient(blue, darkblue);
-  color: white;
-}
+.profile-main { padding: 20px; max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+.profile-top { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
 
-body.green-theme {
-  background: linear-gradient(green, darkgreen);
-  color: white;
-}
+.pfp-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
 
-body.neon-theme {
-  animation: neonBg 5s infinite;
-}
+.profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
 
-@keyframes neonBg {
-  0% { background-color: #ff00ff; }
-  25% { background-color: #00ffff; }
-  50% { background-color: #ffff00; }
-  75% { background-color: #00ff00; }
-  100% { background-color: #ff00ff; }
-}
+.wall-container, .top10-container, .theme-custom-box { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
+.wall-container h3, .top10-container h3 { margin-top: 0; }
 
-/* ==========================
-   NAVIGATION
-========================== */
-.navbar {
-  display: flex;
-  gap: 15px;
-  padding: 10px;
-  background: #333;
-  color: #fff;
-  flex-wrap: wrap;
-}
+.wall-comment { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+.wall-comment button { background: #e33; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; }
 
-.navbar button {
-  color: white;
-  background: #444;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-}
+#wallCommentInput { width: 100%; min-height: 50px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
 
-.navbar button:hover {
-  background: #555;
-}
+#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
+.top-friend { display: flex; gap: 10px; align-items: center; cursor: grab; }
 
-/* ==========================
-   PROFILE MAIN CONTAINER
-========================== */
-.profile-main {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
+.music-player { display: flex; flex-direction: column; gap: 10px; }
+.music-player input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #aaa; }
+#musicIframe { width: 100%; height: 80px; border: none; }
 
-/* ==========================
-   PROFILE TOP SECTION
-========================== */
-.profile-top {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-/* PROFILE PICTURE */
-.pfp-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-#profilePfp {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #444;
-  background: #222;
-}
-
-/* ==========================
-   PROFILE INFO BOX
-========================== */
-.profile-info-box {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-  background: rgba(255,255,255,0.1);
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.profile-info-box input,
-.profile-info-box textarea,
-.profile-info-box select {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 14px;
-}
-
-/* ==========================
-   WALL COMMENTS
-========================== */
-.wall-container {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
-  margin-bottom: 20px;
-}
-
-.wall-container h3 {
-  margin-top: 0;
-}
-
-.wall-comment {
-  margin-bottom: 10px;
-  padding: 5px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.wall-comment button {
-  background: #e33;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 2px 6px;
-  font-size: 12px;
-}
-
-#wallCommentInput {
-  width: 100%;
-  min-height: 50px;
-  margin-top: 5px;
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-  box-sizing: border-box;
-  font-size: 14px;
-}
-
-/* ==========================
-   TOP 10 FRIENDS
-========================== */
-.top10-container {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
-}
-
-.top10-container h3 {
-  margin-top: 0;
-}
-
-#top10FriendsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.top-friend {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.top-friend img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #444;
-}
-
-/* ==========================
-   MUSIC PLAYER
-========================== */
-.music-player {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.music-player input {
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-  box-sizing: border-box;
-}
-
-#musicIframe {
-  width: 100%;
-  height: 80px;
-  border: none;
-}
-
-/* ==========================
-   LAYOUT CLEANUP & TEXTURE
-========================== */
-.container-box {
-  background: rgba(255,255,255,0.1);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.profile-info-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.profile-info-group label {
-  font-weight: bold;
-  font-size: 13px;
-}
-
-.profile-info-group input,
-.profile-info-group textarea {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-  .profile-top {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .profile-info-box {
-    width: 100%;
-  }
-}
+.theme-custom-box textarea { width: 100%; min-height: 80px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
+#customHtmlContainer { margin-top: 10px; }

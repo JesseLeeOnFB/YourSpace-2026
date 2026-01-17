@@ -1,62 +1,75 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
+  margin: 0;
   background-color: #111;
   color: #fff;
 }
 
-nav {
-  background-color: #222;
-  padding: 10px;
+#nav {
   display: flex;
   gap: 10px;
+  padding: 10px;
+  background-color: #222;
+}
+
+#profileContainer {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+#profileLeft, #profileRight {
+  flex: 1;
+}
+
+#profileLeft {
+  max-width: 400px;
+}
+
+#pfpContainer img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: block;
+  margin-bottom: 10px;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  margin-bottom: 5px;
 }
 
 button {
   cursor: pointer;
+  margin-bottom: 10px;
 }
 
-main {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 10px;
-}
-
-#profileHeader {
-  background-color: #333;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-#profileHeader img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-#musicSection, #customThemeSection, #top10Section, #wallSection {
+#wallComments p {
   background-color: #222;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 15px;
-}
-
-textarea {
-  width: 100%;
-  margin-top: 5px;
   padding: 5px;
   border-radius: 5px;
+  margin-bottom: 3px;
+  word-break: break-word;
 }
 
-.wallComment {
-  background-color: #333;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 5px;
+.top10Friend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
-.wallComment p {
-  margin: 0;
+.top10Friend img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+#musicEmbed iframe {
+  width: 100%;
+  height: 100px;
+}
+
+#customHTML {
+  height: 100px;
 }

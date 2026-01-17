@@ -1,8 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -18,7 +19,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM Elements
 const profilePfp = document.getElementById('profilePfp');
 const profilePfpInput = document.getElementById('profilePfpInput');
 const saveProfilePfpBtn = document.getElementById('saveProfilePfpBtn');
@@ -40,47 +40,66 @@ const saveThemeBtn = document.getElementById('saveThemeBtn');
 const customHtmlInput = document.getElementById('customHtmlInput');
 const customHtmlContainer = document.getElementById('customHtmlContainer');
 
+const musicLinkInput = document.getElementById('musicLinkInput');
+const loadMusicBtn = document.getElementById('loadMusicBtn');
+const musicIframe = document.getElementById('musicIframe');
+
 let currentUser = null;
 
-// --- Load Profile ---
+// CACHE BUSTER
+const cacheBust = Date.now();
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
+  currentUser = user;
+  await loadProfile();
+});
+
 async function loadProfile() {
   if (!currentUser) return;
   const userDocRef = doc(db, 'users', currentUser.uid);
   const docSnap = await getDoc(userDocRef);
   if (!docSnap.exists()) return;
+
   const data = docSnap.data();
 
+  // Profile info
   usernameInput.value = data.username || '';
   bioInput.value = data.bio || '';
   locationInput.value = data.location || '';
-  profilePfp.src = data.pfpURL || '';
 
-  // Wall Comments
+  // Profile picture
+  if (data.pfpURL) profilePfp.src = data.pfpURL + '?cb=' + cacheBust;
+
+  // Wall comments
   wallCommentsContainer.innerHTML = '';
   (data.wallComments || []).forEach(comment => {
     const div = document.createElement('div');
     div.className = 'wall-comment';
-    div.innerHTML = `<strong>${comment.username || 'Unknown'}</strong>: ${comment.text}`;
-    if (currentUser.uid === data.uid || currentUser.uid === comment.userId) {
-      const delBtn = document.createElement('button');
-      delBtn.textContent = 'Delete';
-      delBtn.onclick = async () => {
-        // Delete logic here, optional based on Firestore structure
-      };
-      div.appendChild(delBtn);
-    }
+    div.innerHTML = `<strong>${comment.username || 'Unknown'}</strong>: ${comment.text}
+      ${currentUser.uid === comment.userId || currentUser.uid === currentUser.uid ? '<button class="deleteCommentBtn">Delete</button>' : ''}`;
     wallCommentsContainer.appendChild(div);
+    const delBtn = div.querySelector('.deleteCommentBtn');
+    if (delBtn) {
+      delBtn.addEventListener('click', async () => {
+        await updateDoc(userDocRef, {
+          wallComments: data.wallComments.filter(c => c !== comment)
+        });
+        loadProfile();
+      });
+    }
   });
 
-  // Top 10 Friends
+  // Top 10 friends
   renderTop10(data.top10Friends || []);
-  // Themes
+
+  // Theme
   document.body.className = data.theme || 'default-theme';
-  customHtmlContainer.innerHTML = data.customHtml || '';
+  if (data.customHtml) customHtmlContainer.innerHTML = data.customHtml;
 }
 
-// --- Save Profile Info ---
-saveProfileBtn.onclick = async () => {
+// Save profile info
+saveProfileBtn.addEventListener('click', async () => {
   if (!currentUser) return;
   const userDocRef = doc(db, 'users', currentUser.uid);
   await updateDoc(userDocRef, {
@@ -89,31 +108,35 @@ saveProfileBtn.onclick = async () => {
     location: locationInput.value
   });
   loadProfile();
-};
+});
 
-// --- Save Profile Picture ---
-saveProfilePfpBtn.onclick = async () => {
-  if (!currentUser || !profilePfpInput.files[0]) return;
+// Save profile picture
+saveProfilePfpBtn.addEventListener('click', async () => {
+  if (!currentUser) return;
   const file = profilePfpInput.files[0];
+  if (!file) return alert('Select a picture');
   const storageRef = ref(storage, `profilePictures/${currentUser.uid}/${Date.now()}_${file.name}`);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);
-  profilePfp.src = url;
-  const userDocRef = doc(db, 'users', currentUser.uid);
-  await updateDoc(userDocRef, { pfpURL: url });
-};
+  await updateDoc(doc(db, 'users', currentUser.uid), { pfpURL: url });
+  profilePfp.src = url + '?cb=' + cacheBust;
+});
 
-// --- Add Wall Comment ---
-addWallCommentBtn.onclick = async () => {
+// Wall comments
+addWallCommentBtn.addEventListener('click', async () => {
   if (!currentUser) return;
+  const text = wallCommentInput.value.trim();
+  if (!text) return;
   const userDocRef = doc(db, 'users', currentUser.uid);
-  const comment = { text: wallCommentInput.value, username: usernameInput.value, userId: currentUser.uid, timestamp: Date.now() };
-  await updateDoc(userDocRef, { wallComments: arrayUnion(comment) });
+  const docSnap = await getDoc(userDocRef);
+  const currentComments = docSnap.data().wallComments || [];
+  currentComments.push({ text, username: usernameInput.value, userId: currentUser.uid });
+  await updateDoc(userDocRef, { wallComments: currentComments });
   wallCommentInput.value = '';
   loadProfile();
-};
+});
 
-// --- Top 10 Friends Drag-and-Drop ---
+// Top 10 friends drag-and-drop
 function renderTop10(friends) {
   top10FriendsContainer.innerHTML = '';
   friends.forEach((friend, index) => {
@@ -124,9 +147,9 @@ function renderTop10(friends) {
     div.textContent = `${index + 1}. ${friend.username}`;
     top10FriendsContainer.appendChild(div);
 
-    div.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', index));
-    div.addEventListener('dragover', (e) => e.preventDefault());
-    div.addEventListener('drop', (e) => {
+    div.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', index));
+    div.addEventListener('dragover', e => e.preventDefault());
+    div.addEventListener('drop', e => {
       const fromIndex = e.dataTransfer.getData('text/plain');
       const toIndex = index;
       if (fromIndex == toIndex) return;
@@ -137,31 +160,38 @@ function renderTop10(friends) {
   });
 }
 
-editTop10Btn.onclick = async () => {
+editTop10Btn.addEventListener('click', async () => {
   if (!currentUser) return;
   const userDocRef = doc(db, 'users', currentUser.uid);
-  const friends = Array.from(top10FriendsContainer.children).map(div => ({ username: div.textContent.replace(/^\d+\.\s/, '') }));
+  const friends = Array.from(top10FriendsContainer.children).map(div => ({
+    username: div.textContent.replace(/^\d+\.\s/, '')
+  }));
   await updateDoc(userDocRef, { top10Friends: friends });
   renderTop10(friends);
-};
+});
 
-// --- Theme Selection ---
-saveThemeBtn.onclick = async () => {
+// Theme save
+saveThemeBtn.addEventListener('click', async () => {
   if (!currentUser) return;
-  const theme = themeSelect.value;
-  document.body.className = theme;
   const userDocRef = doc(db, 'users', currentUser.uid);
-  await updateDoc(userDocRef, { theme });
-};
-
-// --- Custom HTML ---
-customHtmlInput.oninput = () => {
-  customHtmlContainer.innerHTML = customHtmlInput.value;
-};
-
-// --- Auth ---
-onAuthStateChanged(auth, (user) => {
-  if (!user) return;
-  currentUser = user;
+  const theme = themeSelect.value;
+  const customHtml = customHtmlInput.value;
+  await updateDoc(userDocRef, { theme, customHtml });
   loadProfile();
+});
+
+// Music player
+loadMusicBtn.addEventListener('click', () => {
+  let link = musicLinkInput.value.trim();
+  if (!link) return;
+
+  // Convert standard links to embed
+  if (link.includes('youtube.com') || link.includes('youtu.be')) {
+    const videoId = link.includes('youtu.be') ? link.split('/').pop() : new URL(link).searchParams.get('v');
+    musicIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  } else if (link.includes('soundcloud.com')) {
+    musicIframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(link)}&auto_play=true`;
+  } else {
+    musicIframe.src = link; // fallback
+  }
 });

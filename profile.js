@@ -1,9 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -18,12 +17,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ----------------------------
-// Cache-buster helper
 function cacheBuster(url) { return url + "?v=" + Date.now(); }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // DOM Elements
   const usernameInput = document.getElementById("usernameInput");
   const bioInput = document.getElementById("bioInput");
   const locationInput = document.getElementById("locationInput");
@@ -43,14 +39,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const loadMusicBtn = document.getElementById("loadMusicBtn");
   const musicIframe = document.getElementById("musicIframe");
   const pauseMusicBtn = document.getElementById("pauseMusicBtn");
+  const pmRecipient = document.getElementById("pmRecipient");
+  const pmMessage = document.getElementById("pmMessage");
+  const sendPmBtn = document.getElementById("sendPmBtn");
+  const pmInbox = document.getElementById("pmInbox");
 
-  // -------- Load profile
   onAuthStateChanged(auth, async user => {
     if (!user) return;
-
-    const userDocRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userDocRef);
-    const data = docSnap.exists() ? docSnap.data() : {};
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    const data = userSnap.exists() ? userSnap.data() : {};
 
     usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
@@ -59,42 +57,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (data.theme) document.body.className = data.theme;
     if (data.customHtml) customHtmlContainer.innerHTML = data.customHtml;
 
-    // Load wall comments
+    // Wall comments
     wallCommentsContainer.innerHTML = "";
-    if (data.wallComments && data.wallComments.length > 0) {
-      data.wallComments.forEach(comment => {
+    if (data.wallComments) {
+      data.wallComments.forEach(c => {
         const div = document.createElement("div");
         div.className = "wall-comment";
-        div.innerHTML = `<strong>${comment.username || "Unknown"}</strong>: ${comment.text} 
-          ${(user.uid === user.uid || user.uid === comment.userId) ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}`;
-        if (user.uid === user.uid || user.uid === comment.userId) {
+        div.innerHTML = `<strong class="clickable-username" data-uid="${c.userId}">${c.username || "Unknown"}</strong>: ${c.text} 
+          ${(c.userId === user.uid) ? '<button class="deleteWallCommentBtn">Delete</button>' : ''}`;
+        if (c.userId === user.uid) {
           div.querySelector(".deleteWallCommentBtn").addEventListener("click", async () => {
-            await updateDoc(userDocRef, { wallComments: arrayRemove(comment) });
+            await updateDoc(userRef, { wallComments: arrayRemove(c) });
             location.reload();
           });
         }
+        div.querySelector(".clickable-username")?.addEventListener("click", () => {
+          alert(`Navigate to profile of UID: ${c.userId}`);
+        });
         wallCommentsContainer.appendChild(div);
+      });
+    }
+
+    // Inbox messages
+    pmInbox.innerHTML = "";
+    if (data.messages) {
+      data.messages.forEach(msg => {
+        const div = document.createElement("div");
+        div.textContent = `From ${msg.fromUsername}: ${msg.text}`;
+        pmInbox.appendChild(div);
       });
     }
   });
 
-  // -------- Save profile info
   saveProfileBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-    const userDocRef = doc(db, "users", user.uid);
-    await updateDoc(userDocRef, {
+    const user = auth.currentUser; if (!user) return;
+    await updateDoc(doc(db, "users", user.uid), {
       username: usernameInput.value,
       bio: bioInput.value,
       location: locationInput.value
     });
-    alert("Profile info updated!");
   });
 
-  // -------- Save profile picture
   saveProfilePfpBtn.addEventListener("click", async () => {
-    const file = profilePfpInput.files[0];
-    if (!file) return alert("Select a picture first");
+    const file = profilePfpInput.files[0]; if (!file) return;
     const user = auth.currentUser;
     const storageRef = ref(storage, `profilePictures/${user.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
@@ -103,34 +108,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     await updateDoc(doc(db, "users", user.uid), { pfpURL: url });
   });
 
-  // -------- Wall comments
   addWallCommentBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const comment = { text: wallCommentInput.value, username: usernameInput.value, userId: user.uid };
     await updateDoc(doc(db, "users", user.uid), { wallComments: arrayUnion(comment) });
     location.reload();
   });
 
-  // -------- Theme selection
   saveThemeBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const theme = themeSelect.value;
     document.body.className = theme;
     await updateDoc(doc(db, "users", user.uid), { theme });
   });
 
-  // -------- Custom HTML
   saveCustomHtmlBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser; if (!user) return;
     const html = customHtmlInput.value;
     customHtmlContainer.innerHTML = html;
     await updateDoc(doc(db, "users", user.uid), { customHtml: html });
   });
 
-  // -------- Music Player
   function convertToEmbed(url) {
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
       const videoId = url.split("v=")[1] || url.split("/").pop();
@@ -140,9 +138,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (url.includes("spotify.com")) return `https://open.spotify.com/embed/${url.split(".com/").pop()}`;
     return url;
   }
-  loadMusicBtn.addEventListener("click", () => {
-    const embedUrl = convertToEmbed(musicUrlInput.value);
-    musicIframe.src = cacheBuster(embedUrl);
+  loadMusicBtn.addEventListener("click", () => musicIframe.src = cacheBuster(convertToEmbed(musicUrlInput.value)));
+  pauseMusicBtn.addEventListener("click", () => musicIframe.src = "");
+
+  sendPmBtn.addEventListener("click", async () => {
+    const user = auth.currentUser; if (!user) return;
+    const recipientName = pmRecipient.value;
+    const recipientSnap = await getDocs(collection(db, "users"));
+    const recipientDoc = recipientSnap.docs.find(d => d.data().username === recipientName);
+    if (!recipientDoc) return alert("User not found");
+    const msg = { fromUsername: usernameInput.value, text: pmMessage.value };
+    await updateDoc(doc(db, "users", recipientDoc.id), { messages: arrayUnion(msg) });
+    pmMessage.value = "";
+    alert("Message sent!");
   });
-  pauseMusicBtn.addEventListener("click", () => { musicIframe.src = ""; });
 });

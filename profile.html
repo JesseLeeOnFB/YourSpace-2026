@@ -1,74 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace - Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <nav id="topNav">
+  <nav>
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main id="profileMain">
+  <div id="themeContainer">
+    <label for="themeSelect">Select Theme:</label>
+    <select id="themeSelect">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="retro">Retro</option>
+    </select>
+    <button id="applyThemeBtn">Apply Theme</button>
+    <button id="resetThemeBtn">Reset Default</button>
+  </div>
 
-    <!-- Profile Info Box -->
-    <section class="content-box" id="profileInfoBox">
+  <div id="profileContainer">
+    <div id="profileHeader">
       <div id="pfpContainer">
-        <img id="profilePFP" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="pfpInput">
-        <button id="savePFPBtn">Save PFP</button>
+        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePicInput">
+        <button id="savePfpBtn">Save Profile Picture</button>
       </div>
       <div id="bioContainer">
-        <textarea id="bioInput" placeholder="Write your bio..."></textarea>
-        <button id="saveBioBtn">Save Bio</button>
-      </div>
-      <div id="locationContainer">
+        <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
         <input type="text" id="locationInput" placeholder="Location">
-        <button id="saveLocationBtn">Save Location</button>
+        <button id="saveBioBtn">Save Bio & Location</button>
       </div>
-    </section>
+    </div>
 
-    <!-- Top 10 Friends -->
-    <section class="content-box" id="top10Box">
-      <h2>Top 10 Friends</h2>
-      <div id="top10Container"></div>
-    </section>
+    <div id="top10Container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10Friends"></div>
+    </div>
 
-    <!-- Wall -->
-    <section class="content-box" id="wallBox">
-      <h2>Wall</h2>
-      <div id="wallCommentsContainer"></div>
+    <div id="wallContainer">
+      <h3>Wall</h3>
+      <div id="wallPostsContainer"></div>
       <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
       <button id="postWallBtn">Post</button>
-    </section>
+    </div>
 
-    <!-- Music Player -->
-    <section class="content-box" id="musicBox">
-      <h2>Music Player</h2>
-      <input type="text" id="musicURLInput" placeholder="Paste YouTube / Spotify / SoundCloud URL">
+    <div id="musicContainer">
+      <h3>Music Player</h3>
+      <input type="text" id="musicUrlInput" placeholder="Paste YouTube/Spotify/SoundCloud URL">
       <button id="playMusicBtn">Play</button>
-      <div id="musicPlayerContainer"></div>
-    </section>
+      <div id="musicPlayer"></div>
+    </div>
 
-    <!-- Custom HTML / Theme Injector -->
-    <section class="content-box" id="customHTMLBox">
-      <h2>Custom HTML/CSS</h2>
-      <textarea id="customHTMLInput" placeholder="Add custom HTML/CSS code here"></textarea>
-      <button id="applyCustomHTMLBtn">Apply</button>
-      <button id="resetCustomHTMLBtn">Reset to Default</button>
-      <select id="presetThemeSelect">
-        <option value="default">Default</option>
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="retro">Retro</option>
-      </select>
-    </section>
-
-  </main>
+    <div id="customHtmlContainer">
+      <h3>Custom HTML / CSS</h3>
+      <textarea id="customHtmlInput" placeholder="Paste custom code here"></textarea>
+      <button id="applyCustomHtmlBtn">Apply Custom HTML</button>
+      <button id="resetCustomHtmlBtn">Reset Custom HTML</button>
+    </div>
+  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

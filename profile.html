@@ -1,39 +1,95 @@
-<div class="profile-header">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YourSpace – Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- PROFILE PICTURE -->
-  <div class="profile-picture-box">
-    <img id="profilePfp" src="" alt="Profile Picture">
+  <!-- Firebase SDKs (DIRECT, NO firebase.js) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-    <input type="file" id="profilePfpInput" accept="image/*">
-    <button id="saveProfilePfpBtn">Save Profile Picture</button>
+  <!-- CSS -->
+  <link rel="stylesheet" href="profile.css?v=<?= Date.now() ?>">
+</head>
+
+<body class="theme-default">
+
+  <!-- ================= NAV BAR ================= -->
+  <nav class="top-nav">
+    <button id="navFeed">Feed</button>
+    <button id="navProfile">Profile</button>
+    <button id="navMessages">Messages</button>
+    <button id="navNotifications">Notifications</button>
+    <button id="navLogout">Logout</button>
+  </nav>
+
+  <!-- ================= PROFILE CONTAINER ================= -->
+  <div class="profile-page">
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+
+      <!-- PROFILE PICTURE -->
+      <div class="pfp-container">
+        <img id="profilePfp" src="" alt="Profile Picture">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="saveProfilePfpBtn">Save Profile Picture</button>
+      </div>
+
+      <!-- PROFILE INFO -->
+      <div class="profile-info">
+        <input id="usernameInput" placeholder="Username">
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input id="locationInput" placeholder="Location">
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
+
+      <!-- THEME SELECTION -->
+      <div class="theme-box">
+        <select id="themeSelect">
+          <option value="theme-default">Default</option>
+          <option value="theme-red">Red</option>
+          <option value="theme-blue">Blue</option>
+          <option value="theme-green">Green</option>
+          <option value="theme-black">Black Neon</option>
+          <option value="theme-animated">Animated</option>
+        </select>
+        <button id="saveThemeBtn">Apply Theme</button>
+      </div>
+
+    </div>
+
+    <!-- ================= MUSIC PLAYER ================= -->
+    <div class="music-box">
+      <input id="musicLinkInput" placeholder="Paste YouTube / SoundCloud / Spotify link">
+      <button id="saveMusicBtn">Save & Play</button>
+      <div id="musicPlayer"></div>
+    </div>
+
+    <!-- ================= TOP 10 FRIENDS ================= -->
+    <div class="top10-box">
+      <h2>Top 10 Friends</h2>
+      <button id="editTop10Btn">Edit Top 10</button>
+      <div id="top10FriendsContainer"></div>
+    </div>
+
+    <!-- ================= WALL COMMENTS ================= -->
+    <div class="wall-box">
+      <h2>Comment Wall</h2>
+
+      <textarea id="wallCommentInput" placeholder="Write on the wall..."></textarea>
+      <button id="addWallCommentBtn">Post Comment</button>
+
+      <div id="wallCommentsContainer"></div>
+    </div>
+
   </div>
 
-  <!-- PROFILE INFO -->
-  <div class="profile-info-box">
+  <!-- ================= PROFILE JS ================= -->
+  <script src="profile.js?v=<?= Date.now() ?>"></script>
 
-    <label>Username</label>
-    <input id="usernameInput" type="text" placeholder="Your username">
-
-    <label>Bio</label>
-    <textarea id="bioInput" placeholder="Tell people about yourself"></textarea>
-
-    <label>Location</label>
-    <input id="locationInput" type="text" placeholder="City, Country">
-
-    <button id="saveProfileBtn">Save Profile Info</button>
-
-    <!-- THEME SELECTION -->
-    <label>Profile Theme</label>
-    <select id="themeSelect">
-      <option value="theme-default">Default</option>
-      <option value="theme-red">Red</option>
-      <option value="theme-blue">Blue</option>
-      <option value="theme-green">Green</option>
-      <option value="theme-black">Black Neon</option>
-      <option value="theme-animated">Animated</option>
-    </select>
-
-    <button id="saveThemeBtn">Save Theme</button>
-
-  </div>
-</div>
+</body>
+</html>

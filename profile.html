@@ -7,39 +7,32 @@
 <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav id="navbar">
+  <!-- Navigation -->
+  <nav id="topNav">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Profile Container -->
+  <!-- Profile Section -->
   <div class="profile-container">
     <div class="profile-header">
       <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <h2 id="profileName">YourSpace User</h2>
+      <h1 id="profileName">Username</h1>
       <p id="profileBio">This is the bio lol</p>
+      <input type="file" id="pfpInput">
+      <button id="savePfpBtn">Save Profile Picture</button>
+      <textarea id="bioInput" placeholder="Update your bio"></textarea>
+      <button id="saveBioBtn">Save Bio</button>
     </div>
 
-    <!-- Edit Bio & Profile Picture (only visible on own profile) -->
-    <div class="profile-edit">
-      <input type="text" id="bioInput" placeholder="Edit your bio">
-      <button id="saveBioBtn">Save Bio</button>
-
-      <input type="file" id="pfpInput" accept="image/*">
-      <button id="savePfpBtn">Save Profile Picture</button>
-
-      <select id="themeSelect">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="retro">Retro</option>
-      </select>
-
-      <!-- Custom HTML container -->
-      <textarea id="customHtmlInput" placeholder="Paste your custom HTML code"></textarea>
-      <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
-      <button id="resetCustomHtmlBtn">Reset to Default</button>
+    <!-- Music Playlist -->
+    <div class="music-container">
+      <h3>Music Player</h3>
+      <input type="text" id="musicInput" placeholder="Paste song link here">
+      <button id="addSongBtn">Add Song</button>
+      <ul id="musicPlaylist"></ul>
+      <audio id="musicPlayer" controls></audio>
     </div>
 
     <!-- Top 10 Friends -->
@@ -50,22 +43,22 @@
 
     <!-- Wall Comments -->
     <div class="wall-container">
-      <h3>Wall</h3>
-      <textarea id="wallInput" placeholder="Write something on the wall..."></textarea>
-      <button id="postWallBtn">Post</button>
+      <h3>Wall Comments</h3>
       <div id="wallContainer"></div>
+      <textarea id="wallInput" placeholder="Write on the wall"></textarea>
+      <button id="postWallBtn">Post</button>
     </div>
 
-    <!-- Music Player -->
-    <div class="music-container">
-      <h3>Music Playlist</h3>
-      <input type="text" id="musicUrlInput" placeholder="Paste YouTube/Spotify URL">
-      <button id="addMusicBtn">Add Song</button>
-      <div id="musicPlaylistContainer"></div>
-      <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <!-- Theme Selector -->
+    <div class="theme-selector">
+      <select id="themeSelect">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
+      </select>
     </div>
   </div>
 
-<script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

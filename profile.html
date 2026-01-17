@@ -2,32 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
+  <script type="module" src="profile.js" defer></script>
 </head>
 <body class="default-theme">
-  <!-- NAVBAR -->
   <div class="navbar">
-    <button id="navFeed">Feed</button>
-    <button id="navProfile">Profile</button>
-    <button id="navMessages">Messages</button>
-    <button id="navSettings">Settings</button>
+    <button id="navFeedBtn">Feed</button>
+    <button id="navProfileBtn">Profile</button>
+    <button id="navMessagesBtn">Messages</button>
+    <button id="navSettingsBtn">Settings</button>
   </div>
 
-  <!-- MAIN PROFILE SECTION -->
-  <div class="profile-main">
-
-    <!-- PROFILE TOP -->
+  <main class="profile-main">
     <div class="profile-top">
-      <!-- PROFILE PICTURE -->
       <div class="pfp-container">
         <img id="profilePfp" src="" alt="Profile Picture">
         <input type="file" id="pfpInput">
         <button id="savePfpBtn">Save Profile Picture</button>
       </div>
 
-      <!-- PROFILE INFO -->
       <div class="profile-info-box">
         <input id="usernameInput" placeholder="Username">
         <textarea id="bioInput" placeholder="Bio"></textarea>
@@ -36,57 +30,12 @@
       </div>
     </div>
 
-    <!-- WALL COMMENTS -->
     <div class="wall-container">
       <h3>Wall Comments</h3>
-      <div id="wallComments"></div>
+      <div id="wallCommentsList"></div>
       <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
       <button id="postWallCommentBtn">Post Comment</button>
     </div>
-
-    <!-- TOP 10 FRIENDS -->
-    <div class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer"></div>
-      <button id="editTop10Btn">Save Top 10 Order</button>
-    </div>
-
-    <!-- MUSIC PLAYER -->
-    <div class="music-player">
-      <input type="text" id="musicInput" placeholder="Paste YouTube / SoundCloud / Spotify link">
-      <button id="loadMusicBtn">Load Music</button>
-      <iframe id="musicIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-
-    <!-- CUSTOM HTML / THEMES -->
-    <div class="theme-custom-box">
-      <h3>Custom HTML / Themes</h3>
-      <textarea id="customHtmlInput" placeholder="Add custom HTML, CSS, animations here"></textarea>
-      <button id="applyCustomHtmlBtn">Apply</button>
-      <select id="presetThemeSelect">
-        <option value="default-theme">Default</option>
-        <option value="red-theme">Red</option>
-        <option value="blue-theme">Blue</option>
-        <option value="green-theme">Green</option>
-        <option value="neon-theme">Neon</option>
-      </select>
-      <button id="saveThemeBtn">Save Theme</button>
-      <div id="customHtmlContainer"></div>
-    </div>
-
-    <!-- MESSAGING ENTRY -->
-    <div class="messages-container">
-      <h3>Messages</h3>
-      <div id="threadsContainer"></div>
-      <div class="new-message-box">
-        <input id="messageRecipient" placeholder="Recipient username or email">
-        <textarea id="messageContent" placeholder="Type your message..."></textarea>
-        <button id="sendMessageBtn">Send Message</button>
-      </div>
-    </div>
-
-  </div>
-
-  <script type="module" src="profile.js"></script>
+  </main>
 </body>
 </html>

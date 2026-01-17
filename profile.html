@@ -1,49 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <header>
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </header>
 
-  <main>
-    <!-- User Info -->
-    <div class="profile-section">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture" width="100">
-      <h2 id="profileUsername">Username</h2>
-      <p id="profileBio">Bio goes here...</p>
-    </div>
+<nav>
+  <button onclick="location.href='feed.html'">Feed</button>
+  <button onclick="location.href='profile.html'">Profile</button>
+</nav>
 
-    <!-- Wall Posts -->
-    <div class="profile-section">
-      <h3>Wall / Memories</h3>
-      <div id="wallContainer"></div>
-      <input type="text" id="wallInput" placeholder="Write on the wall">
-      <button id="wallPostBtn">Post</button>
-    </div>
+<div class="profile-container">
 
-    <!-- Top 10 Friends -->
-    <div class="profile-section">
-      <h3>Top 10 Friends</h3>
-      <div id="top10Container"></div>
-    </div>
+  <img id="profilePic" src="default-avatar.png">
+  <input type="file" id="pfpUpload">
 
-    <!-- Custom HTML / CSS Injector -->
-    <div class="profile-section">
-      <h3>Custom Layout / Theme</h3>
-      <textarea id="customHtmlInput" placeholder="Drop your HTML/CSS here"></textarea>
-      <button id="saveCustomHtmlBtn">Save Custom Layout</button>
-      <div id="customProfileContainer"></div>
-    </div>
-  </main>
+  <textarea id="bioInput" placeholder="Your bio"></textarea>
+  <input id="locationInput" placeholder="Location">
+  <button id="saveProfileBtn">Save</button>
 
-  <script type="module" src="profile.js"></script>
+  <h3>Custom CSS (MySpace Style)</h3>
+  <textarea id="customCss"></textarea>
+  <button id="saveCustomCss">Save Custom Code</button>
+  <button id="resetCustomCss">Reset</button>
+
+  <h3>Wall</h3>
+  <textarea id="wallInput"></textarea>
+  <button id="wallPostBtn">Post</button>
+  <div id="wallPosts"></div>
+
+</div>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

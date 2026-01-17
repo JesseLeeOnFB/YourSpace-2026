@@ -1,62 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <!-- Navigation -->
-  <nav>
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
 
-  <!-- Profile Section -->
-  <section id="profileSection">
-    <h2>Profile</h2>
-    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
-    <input type="file" id="pfpInput">
-    <div>
-      <label for="bioInput">Bio:</label>
-      <textarea id="bioInput" rows="4"></textarea>
-      <div id="bioDisplay"></div>
+<!-- Navigation -->
+<nav>
+  <button id="feedNavBtn">Feed</button>
+  <button id="profileNavBtn">Profile</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
+
+<!-- Profile Section -->
+<section id="profileSection">
+  <div class="profile-box">
+    <h2>Your Profile</h2>
+
+    <!-- Profile Picture -->
+    <div class="pfp-container">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
+      <input type="file" id="profilePicInput">
     </div>
-    <button id="saveProfileBtn">Save Profile</button>
-  </section>
+
+    <!-- Bio -->
+    <div class="bio-container">
+      <h3>Bio</h3>
+      <p id="bioDisplay">This is the bio lol</p>
+      <textarea id="bioInput" placeholder="Write your bio"></textarea>
+      <button id="bioSaveBtn">Save Bio</button>
+    </div>
+  </div>
 
   <!-- Wall Section -->
-  <section id="wallSection">
+  <div class="wall-box">
     <h3>Wall</h3>
-    <textarea id="wallInput" placeholder="Write on your wall..." rows="3"></textarea>
-    <button id="wallBtn">Post</button>
+    <textarea id="wallInput" placeholder="Write on the wall"></textarea>
+    <button id="wallPostBtn">Post</button>
     <div id="wallContainer"></div>
-  </section>
+  </div>
 
   <!-- Music Section -->
-  <section id="musicSection">
+  <div class="music-box">
     <h3>Music</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud link">
-    <button id="addMusicBtn">Add Music</button>
+    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
+    <button id="musicAddBtn">Add Music</button>
     <div id="musicContainer"></div>
-  </section>
+  </div>
 
-  <!-- Theme & Custom HTML -->
-  <section id="customizationSection">
-    <h3>Theme & Custom HTML</h3>
-    <label for="themeSelect">Preset Theme:</label>
+  <!-- Themes & Custom HTML -->
+  <div class="customization-box">
+    <h3>Theme</h3>
     <select id="themeSelect">
+      <option value="default">Default</option>
       <option value="dark">Dark</option>
       <option value="light">Light</option>
       <option value="retro">Retro</option>
     </select>
-    <textarea id="customHtmlInput" rows="5" placeholder="Custom HTML/CSS code here"></textarea>
-    <button id="saveCustomHtmlBtn">Save Customization</button>
-    <button id="resetCustomHtmlBtn">Reset Custom HTML</button>
-    <div id="customHtmlContainer"></div>
-  </section>
 
-  <script type="module" src="profile.js"></script>
+    <h3>Custom HTML</h3>
+    <textarea id="customHtmlInput" placeholder="Add custom HTML code here"></textarea>
+    <button id="customHtmlSaveBtn">Apply</button>
+    <div id="customHtmlContainer"></div>
+  </div>
+</section>
+
+<script type="module" src="profile.js"></script>
 </body>
 </html>

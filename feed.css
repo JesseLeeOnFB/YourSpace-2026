@@ -1,90 +1,105 @@
 body {
-  margin: 0;
-  padding: 0;
   font-family: 'Century Gothic', sans-serif;
   background-color: #111;
-  color: #fff;
+  color: #eee;
+  margin: 0;
+  padding: 0;
 }
 
-#navBar {
+#topNav {
   display: flex;
   gap: 10px;
-  padding: 10px;
   background-color: #222;
+  padding: 10px;
 }
 
-#navBar button {
-  padding: 8px 12px;
-  background-color: #fbb148;
-  border: none;
+#topNav button {
   cursor: pointer;
-  border-radius: 5px;
-}
-
-#navBar button:hover { background-color: #999f2e; color: #fff; }
-
-#feedContainer {
-  width: 80%;
-  max-width: 1000px;
-  margin: 20px auto;
-}
-
-#createPostContainer textarea {
-  width: 100%;
-  min-height: 60px;
-  margin-bottom: 10px;
-  background-color: #333;
+  background-color: #444;
   color: #fff;
   border: none;
-  border-radius: 5px;
-  padding: 5px;
+  padding: 8px 12px;
+  border-radius: 4px;
 }
 
-#createPostContainer input, #createPostContainer button {
-  margin-bottom: 10px;
+#feedContainer {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+#newPostContainer textarea {
+  width: 100%;
+  height: 80px;
+  background-color: #222;
+  color: #eee;
+  border-radius: 5px;
+  border: 1px solid #555;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+#newPostContainer input[type="file"] {
+  margin-bottom: 5px;
+}
+
+#postsContainer {
+  margin-top: 20px;
 }
 
 .post-container {
   background-color: #222;
+  border-radius: 10px;
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  margin-bottom: 15px;
 }
 
 .post-header {
-  font-weight: bold;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .post-username {
+  font-weight: bold;
   cursor: pointer;
+  color: #cd1045;
 }
 
-.post-body p {
-  margin: 5px 0;
-}
-
-.post-media {
+.post-body img, .post-body video {
   max-width: 100%;
+  border-radius: 10px;
   margin-top: 5px;
 }
 
 .post-footer button {
-  margin-right: 5px;
   cursor: pointer;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  margin-right: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
 .comment-section {
   margin-top: 10px;
 }
 
-.comment-input {
+.comment-section input {
   width: 80%;
   padding: 5px;
-  margin-right: 5px;
+  border-radius: 5px;
+  background-color: #222;
+  color: #eee;
+  border: 1px solid #555;
 }
 
-.comments-container p {
-  margin: 2px 0;
+.comment-section button {
+  padding: 5px 8px;
+  margin-left: 5px;
+  border-radius: 5px;
+  background-color: #555;
+  color: #fff;
+  border: none;
 }

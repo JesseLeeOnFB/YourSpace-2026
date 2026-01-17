@@ -1,76 +1,26 @@
-body {
-  background: #f4f4f4;
-  font-family: Arial, sans-serif;
-  margin: 0;
-}
-
-.top-bar {
-  background: #111;
-  padding: 10px;
-  display: flex;
-  gap: 10px;
-}
-
-.top-bar button {
-  background: #fff;
+.conversation-item button {
+  display: block;
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 5px;
+  background-color: #444;
+  color: #fff;
   border: none;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-.messages-wrapper {
-  max-width: 900px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  height: 80vh;
-}
-
-.messages-container {
-  flex: 1;
-  background: #fff;
-  padding: 15px;
-  overflow-y: auto;
-  border-radius: 6px;
-}
-
-.my-message {
-  text-align: right;
-  margin-bottom: 10px;
-}
-
-.their-message {
   text-align: left;
-  margin-bottom: 10px;
 }
 
-.message-bubble {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 12px;
-  max-width: 60%;
+.message-sent {
+  background-color: #99ccff;
+  padding: 5px;
+  margin: 3px;
+  border-radius: 5px;
+  text-align: right;
 }
 
-.my-message .message-bubble {
-  background: #007bff;
-  color: white;
-}
-
-.their-message .message-bubble {
-  background: #eee;
-}
-
-.message-input {
-  display: flex;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.message-input input[type="text"] {
-  flex: 1;
-  padding: 8px;
-}
-
-.message-input button {
-  padding: 8px 12px;
+.message-received {
+  background-color: #eee;
+  padding: 5px;
+  margin: 3px;
+  border-radius: 5px;
+  text-align: left;
 }

@@ -1,17 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import {
   getFirestore,
   collection,
   addDoc,
   getDocs,
   doc,
-  setDoc,
   query,
+  where,
   orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -21,10 +16,11 @@ import {
   uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// ---------------------
+// --------------------
 // Firebase Init
-// ---------------------
+// --------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -39,147 +35,159 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ---------------------
+// --------------------
 // DOM Elements
-// ---------------------
-const feedNavBtn = document.getElementById("feedNavBtn");
-const profileNavBtn = document.getElementById("profileNavBtn");
+// --------------------
+const navFeed = document.getElementById("navFeed");
+const navProfile = document.getElementById("navProfile");
 const logoutBtn = document.getElementById("logoutBtn");
 
-const conversationList = document.getElementById("conversationList");
 const conversationsContainer = document.getElementById("conversationsContainer");
+const conversationsList = document.getElementById("conversationsList");
+
 const chatContainer = document.getElementById("chatContainer");
 const chatWithEl = document.getElementById("chatWith");
 const messagesContainer = document.getElementById("messagesContainer");
 const messageInput = document.getElementById("messageInput");
-const attachmentInput = document.getElementById("attachmentInput");
-const sendBtn = document.getElementById("sendBtn");
-const backBtn = document.getElementById("backBtn");
+const messageFileInput = document.getElementById("messageFileInput");
+const sendMessageBtn = document.getElementById("sendMessageBtn");
+const backToConversations = document.getElementById("backToConversations");
 
-// ---------------------
+// --------------------
 // State
-// ---------------------
+// --------------------
 let currentUser = null;
 let activeConversationId = null;
 
-// ---------------------
-// Navigation
-// ---------------------
-feedNavBtn?.addEventListener("click", () => window.location.href = "feed.html");
-profileNavBtn?.addEventListener("click", () => window.location.href = "profile.html");
-logoutBtn?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
-
-// ---------------------
+// --------------------
 // Auth
-// ---------------------
+// --------------------
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
   currentUser = user;
-  loadConversations();
+  await loadConversations();
+
+  // If URL has convId, open chat directly
+  const urlParams = new URLSearchParams(window.location.search);
+  const convId = urlParams.get("convId");
+  if (convId) openConversation(convId);
 });
 
-// ---------------------
-// Load Conversations
-// ---------------------
-async function loadConversations() {
-  conversationList.innerHTML = "";
-  const q = query(collection(db, "messages"));
-  const snap = await getDocs(q);
+// --------------------
+// Navigation
+// --------------------
+navFeed.onclick = () => window.location.href = "feed.html";
+navProfile.onclick = () => window.location.href = "profile.html";
+logoutBtn.onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
 
+// --------------------
+// Load Conversations
+// --------------------
+async function loadConversations() {
+  conversationsList.innerHTML = "";
+  const q = query(
+    collection(db, "messages"),
+    where("userIds", "array-contains", currentUser.uid),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
   snap.forEach(docSnap => {
-    const conv = docSnap.data();
-    const li = document.createElement("li");
-    const otherUserId = conv.userIds.find(id => id !== currentUser.uid);
-    li.textContent = conv.name || "Conversation";
-    li.onclick = () => openConversation(docSnap.id, otherUserId);
-    conversationList.appendChild(li);
+    const data = docSnap.data();
+    const otherUserId = data.userIds.find(id => id !== currentUser.uid);
+    const div = document.createElement("div");
+    div.className = "conversation";
+    div.textContent = `Conversation with ${otherUserId}`;
+    div.onclick = () => openConversation(docSnap.id);
+    conversationsList.appendChild(div);
   });
 }
 
-// ---------------------
+// --------------------
 // Open Conversation
-// ---------------------
-async function openConversation(convId, otherUserId) {
+// --------------------
+async function openConversation(convId) {
   activeConversationId = convId;
   conversationsContainer.style.display = "none";
   chatContainer.style.display = "block";
 
-  const otherUserSnap = await getDoc(doc(db, "users", otherUserId));
-  const otherUserName = otherUserSnap.data()?.username || "User";
-  chatWithEl.textContent = `Chat with ${otherUserName}`;
-
-  loadMessages();
+  messagesContainer.innerHTML = "";
+  const convDoc = doc(db, "messages", convId);
+  const msgsSnap = await getDocs(
+    query(collection(convDoc, "messages"), orderBy("createdAt", "asc"))
+  );
+  msgsSnap.forEach(docSnap => {
+    displayMessage(docSnap.data());
+  });
 }
 
-// ---------------------
-// Load Messages
-// ---------------------
-async function loadMessages() {
-  messagesContainer.innerHTML = "";
+// --------------------
+// Display Message
+// --------------------
+function displayMessage(data) {
+  const div = document.createElement("div");
+  div.className = "message";
+  div.innerHTML = `<span class="sender">${data.username}</span>: ${data.text || ""}`;
 
-  if (!activeConversationId) return;
-
-  const q = query(
-    collection(db, "messages", activeConversationId, "messages"),
-    orderBy("createdAt", "asc")
-  );
-
-  const snap = await getDocs(q);
-
-  snap.forEach(msgSnap => {
-    const data = msgSnap.data();
-    const div = document.createElement("div");
-    div.className = "message " + (data.userId === currentUser.uid ? "self" : "other");
-    div.innerHTML = `
-      ${data.text || ""}
-      ${data.mediaURL ? `<br><a href="${data.mediaURL}" target="_blank">Attachment</a>` : ""}
-    `;
-    messagesContainer.appendChild(div);
-  });
-
+  if (data.mediaURL) {
+    if (data.mediaType === "image") {
+      const img = document.createElement("img");
+      img.src = data.mediaURL;
+      div.appendChild(img);
+    } else if (data.mediaType === "video") {
+      const vid = document.createElement("video");
+      vid.controls = true;
+      vid.src = data.mediaURL;
+      div.appendChild(vid);
+    }
+  }
+  messagesContainer.appendChild(div);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// ---------------------
+// --------------------
 // Send Message
-// ---------------------
-sendBtn?.addEventListener("click", async () => {
-  if (!activeConversationId) return;
-  const text = messageInput.value.trim();
-  const file = attachmentInput.files[0];
+// --------------------
+sendMessageBtn.onclick = async () => {
+  if (!messageInput.value.trim() && !messageFileInput.files[0]) return;
 
   let mediaURL = "";
+  let mediaType = "";
+
+  const file = messageFileInput.files[0];
   if (file) {
-    const storageRef = ref(storage, `messages/${activeConversationId}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    mediaURL = await getDownloadURL(storageRef);
+    mediaType = file.type.startsWith("image") ? "image" : "video";
+    const fileRef = ref(storage, `messages/${activeConversationId}/${Date.now()}_${file.name}`);
+    await uploadBytes(fileRef, file);
+    mediaURL = await getDownloadURL(fileRef);
   }
 
-  if (!text && !mediaURL) return;
+  const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+  const username = userSnap.data()?.username || "User";
 
   await addDoc(collection(db, "messages", activeConversationId, "messages"), {
+    text: messageInput.value.trim(),
     userId: currentUser.uid,
-    text,
+    username,
     mediaURL,
+    mediaType,
     createdAt: serverTimestamp()
   });
 
   messageInput.value = "";
-  attachmentInput.value = "";
-  loadMessages();
-});
+  messageFileInput.value = "";
+  openConversation(activeConversationId);
+};
 
-// ---------------------
-// Back Button
-// ---------------------
-backBtn?.addEventListener("click", () => {
+// --------------------
+// Back to Conversations
+// --------------------
+backToConversations.onclick = () => {
   chatContainer.style.display = "none";
   conversationsContainer.style.display = "block";
-  activeConversationId = null;
-});
+};

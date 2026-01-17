@@ -1,55 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace - Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-  <nav id="topNav">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
 
-  <div id="profileContainer">
-    <div id="profileHeader">
-      <div id="profilePictureContainer">
-        <img id="profilePicture" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput">
-        <button id="saveProfilePicBtn">Save Picture</button>
-      </div>
-      <div id="bioContainer">
-        <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
-        <button id="saveBioBtn">Save Bio</button>
-      </div>
-    </div>
+<header class="nav">
+  <button onclick="location.href='feed.html'">Feed</button>
+  <button onclick="location.href='profile.html'">My Profile</button>
+  <button onclick="location.href='messages.html'">Messages</button>
+</header>
 
-    <div id="musicContainer">
-      <h3>Music Playlist</h3>
-      <input type="text" id="musicURLInput" placeholder="Paste YouTube/Spotify link">
-      <button id="addMusicBtn">Add Song</button>
-      <div id="musicList"></div>
-      <div id="musicPlayerContainer">
-        <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-      </div>
-    </div>
+<main class="profile-page">
 
-    <div id="wallContainer">
-      <h3>Wall Comments</h3>
-      <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
-      <button id="postWallCommentBtn">Post</button>
-      <div id="wallCommentsList"></div>
-    </div>
+  <section class="profile-header">
+    <img id="profilePic" src="default-pfp.png">
+    <input type="file" id="pfpInput">
+    <button id="savePfpBtn">Save Profile Picture</button>
 
-    <div id="top10Container">
-      <h3>Top 10 Friends</h3>
-      <div id="top10List"></div>
-    </div>
+    <h2 id="usernameDisplay"></h2>
+    <p id="bioDisplay"></p>
 
-    <button id="sendMessageBtn">Send Private Message</button>
-  </div>
+    <button id="pmBtn" style="display:none;">Send Message</button>
+  </section>
+
+  <section class="music-player">
+    <h3>Music</h3>
+    <input type="text" id="musicUrl" placeholder="Paste YouTube / Spotify / SoundCloud link">
+    <button id="saveMusicBtn">Add Song</button>
+    <div id="musicEmbed"></div>
+  </section>
+
+  <section class="top10">
+    <h3>Top 10 Friends</h3>
+    <div id="top10List"></div>
+  </section>
+
+  <section class="wall">
+    <h3>Wall</h3>
+    <textarea id="wallText" placeholder="Write something..."></textarea>
+    <button id="postWallBtn">Post</button>
+    <div id="wallComments"></div>
+  </section>
+
+</main>
 
 <script type="module" src="profile.js"></script>
 </body>

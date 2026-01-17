@@ -1,11 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
-  getFirestore, doc, getDoc, setDoc, addDoc,
-  getDocs, deleteDoc, collection, query, orderBy
+  getFirestore, collection, addDoc, getDocs, doc,
+  updateDoc, getDoc, query, orderBy
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
+// ---------------------
+// Firebase Config
+// ---------------------
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -18,112 +20,145 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 
-const bioInput = document.getElementById("bioInput");
-const locationInput = document.getElementById("locationInput");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-const pfpImg = document.getElementById("profilePic");
-const pfpUpload = document.getElementById("pfpUpload");
+// ---------------------
+// DOM Elements
+// ---------------------
+const pfpImg = document.getElementById("pfp");
+const usernameDisplay = document.getElementById("usernameDisplay");
+const bioDisplay = document.getElementById("bioDisplay");
 
+const wallContainer = document.getElementById("wallPostsContainer");
 const wallInput = document.getElementById("wallInput");
-const wallBtn = document.getElementById("wallPostBtn");
-const wallContainer = document.getElementById("wallPosts");
+const postWallBtn = document.getElementById("postWallBtn");
 
-const customCssInput = document.getElementById("customCss");
-const saveCustomCssBtn = document.getElementById("saveCustomCss");
-const resetCustomCssBtn = document.getElementById("resetCustomCss");
+const customHtmlInput = document.getElementById("customHtmlInput");
+const applyCustomBtn = document.getElementById("applyCustomBtn");
+const resetCustomBtn = document.getElementById("resetCustomBtn");
 
-const styleEl = document.createElement("style");
-document.head.appendChild(styleEl);
+const top10Container = document.getElementById("top10FriendsContainer");
 
-let profileId;
-let currentUser;
+const musicInput = document.getElementById("musicLinkInput");
+const saveMusicBtn = document.getElementById("saveMusicBtn");
+const clearMusicBtn = document.getElementById("clearMusicBtn");
+const musicEmbedContainer = document.getElementById("musicEmbedContainer");
 
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-  currentUser = user;
-  profileId = new URLSearchParams(window.location.search).get("id") || user.uid;
-  await loadProfile();
-  await loadWall();
-});
+// NAVIGATION
+document.getElementById("feedNavBtn").addEventListener("click", () => window.location.href = "feed.html");
+document.getElementById("profileNavBtn").addEventListener("click", () => window.location.href = "profile.html");
 
+// ---------------------
+// Helpers
+// ---------------------
 async function loadProfile() {
-  const snap = await getDoc(doc(db, "users", profileId));
+  const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
   if (!snap.exists()) return;
+
   const data = snap.data();
+  pfpImg.src = data.pfpURL || "default-avatar.png";
+  usernameDisplay.textContent = data.username || "Anonymous";
+  bioDisplay.textContent = data.bio || "No bio set";
 
-  bioInput.value = data.bio || "";
-  locationInput.value = data.location || "";
-  if (data.pfpURL) pfpImg.src = data.pfpURL;
+  // Load Top 10 friends
+  top10Container.innerHTML = "";
+  (data.top10Friends || []).forEach(f => {
+    const div = document.createElement("div");
+    div.className = "top-friend";
+    div.innerHTML = `<img src="${f.pfpURL||'default-avatar.png'}" width="30" height="30" style="border-radius:50%;"> ${f.username || 'Unknown'}`;
+    top10Container.appendChild(div);
+  });
 
-  if (data.customCss) styleEl.innerHTML = data.customCss;
+  // Load music
+  if (data.musicURL) {
+    musicEmbedContainer.innerHTML = `<iframe src="${data.musicURL}" allow="autoplay; encrypted-media"></iframe>`;
+  }
 }
 
-saveProfileBtn.addEventListener("click", async () => {
-  await setDoc(doc(db, "users", currentUser.uid), {
-    bio: bioInput.value,
-    location: locationInput.value
-  }, { merge: true });
-  alert("Profile saved");
-});
-
-pfpUpload.addEventListener("change", async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const r = ref(storage, `profilePictures/${currentUser.uid}/${file.name}`);
-  await uploadBytes(r, file);
-  const url = await getDownloadURL(r);
-  await setDoc(doc(db, "users", currentUser.uid), { pfpURL: url }, { merge: true });
-  pfpImg.src = url;
-});
-
-saveCustomCssBtn.addEventListener("click", async () => {
-  await setDoc(doc(db, "users", currentUser.uid), {
-    customCss: customCssInput.value
-  }, { merge: true });
-  styleEl.innerHTML = customCssInput.value;
-});
-
-resetCustomCssBtn.addEventListener("click", async () => {
-  await setDoc(doc(db, "users", currentUser.uid), { customCss: "" }, { merge: true });
-  styleEl.innerHTML = "";
-  customCssInput.value = "";
-});
-
-async function loadWall() {
+// ---------------------
+// WALL POSTS
+// ---------------------
+async function loadWallPosts() {
   wallContainer.innerHTML = "";
-  const q = query(collection(db, "walls", profileId, "posts"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-  snap.forEach(d => {
-    const p = d.data();
+  const snap = await getDocs(query(collection(db, "wall"), orderBy("createdAt", "desc")));
+  snap.forEach(docSnap => {
+    const post = docSnap.data();
     const div = document.createElement("div");
     div.className = "wall-post";
-    div.innerHTML = `<strong>${p.username}</strong>: ${p.text}`;
-    if (p.userId === currentUser.uid || profileId === currentUser.uid) {
-      const del = document.createElement("button");
-      del.textContent = "Delete";
-      del.onclick = async () => {
-        await deleteDoc(doc(db, "walls", profileId, "posts", d.id));
-        loadWall();
-      };
-      div.appendChild(del);
-    }
+    div.innerHTML = `<p><strong>${post.username}:</strong> ${post.text}</p>`;
     wallContainer.appendChild(div);
   });
 }
 
-wallBtn.addEventListener("click", async () => {
-  if (!wallInput.value.trim()) return;
-  await addDoc(collection(db, "walls", profileId, "posts"), {
-    userId: currentUser.uid,
-    username: currentUser.email,
-    text: wallInput.value,
+postWallBtn?.addEventListener("click", async () => {
+  const text = wallInput.value.trim();
+  if (!text) return;
+  const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
+  const username = snap.exists() ? snap.data().username : "Anonymous";
+
+  await addDoc(collection(db, "wall"), {
+    userId: auth.currentUser.uid,
+    username,
+    text,
     createdAt: new Date()
   });
+
   wallInput.value = "";
-  loadWall();
+  loadWallPosts();
+});
+
+// ---------------------
+// CUSTOM HTML / THEME
+// ---------------------
+applyCustomBtn?.addEventListener("click", () => {
+  const code = customHtmlInput.value.trim();
+  const container = document.getElementById("profilePage");
+  container.innerHTML += code;
+});
+
+resetCustomBtn?.addEventListener("click", () => {
+  location.reload();
+});
+
+// ---------------------
+// MUSIC PLAYER
+// ---------------------
+function convertToEmbed(url) {
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    const id = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
+    return `https://www.youtube.com/embed/${id}`;
+  }
+  if (url.includes("spotify.com")) {
+    return url.replace("open.spotify.com", "open.spotify.com/embed");
+  }
+  if (url.includes("soundcloud.com")) {
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`;
+  }
+  return null;
+}
+
+saveMusicBtn?.addEventListener("click", async () => {
+  const link = musicInput.value.trim();
+  const embed = convertToEmbed(link);
+  if (!embed) return alert("Unsupported link");
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), { musicURL: embed });
+  musicEmbedContainer.innerHTML = `<iframe src="${embed}" allow="autoplay; encrypted-media"></iframe>`;
+  musicInput.value = "";
+});
+
+clearMusicBtn?.addEventListener("click", async () => {
+  await updateDoc(doc(db, "users", auth.currentUser.uid), { musicURL: "" });
+  musicEmbedContainer.innerHTML = "";
+});
+
+// ---------------------
+// LOAD ALL ON AUTH
+// ---------------------
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadProfile();
+    loadWallPosts();
+  }
 });

@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -22,9 +22,11 @@ const auth = getAuth(app);
 const navFeedBtn = document.getElementById("navFeedBtn");
 const navProfileBtn = document.getElementById("navProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 const profilePfp = document.getElementById("profilePfp");
+
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
@@ -32,6 +34,7 @@ const saveProfileBtn = document.getElementById("saveProfileBtn");
 
 const themeSelect = document.getElementById("themeSelect");
 const saveThemeBtn = document.getElementById("saveThemeBtn");
+
 const customHtmlInput = document.getElementById("customHtmlInput");
 const saveCustomHtmlBtn = document.getElementById("saveCustomHtmlBtn");
 const customHtmlPreview = document.getElementById("customProfileContainer");
@@ -56,12 +59,11 @@ logoutBtn?.addEventListener("click", async () => {
 // Profile Functions
 // ---------------------
 saveProfileBtn?.addEventListener("click", async () => {
-  const data = {
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
     username: usernameInput.value,
     bio: bioInput.value,
     location: locationInput.value
-  };
-  await updateDoc(doc(db, "users", auth.currentUser.uid), data);
+  });
   alert("Profile info saved");
 });
 
@@ -92,10 +94,8 @@ saveCustomHtmlBtn?.addEventListener("click", async () => {
   await updateDoc(doc(db, "users", auth.currentUser.uid), { customHtml: htmlCode });
 });
 
-async function loadCustomHtml() {
-  const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-  if (!userSnap.exists()) return;
-  const htmlCode = userSnap.data().customHtml || "";
+async function loadCustomHtml(userData) {
+  const htmlCode = userData.customHtml || "";
   if (htmlCode) customHtmlPreview.innerHTML = htmlCode;
 }
 
@@ -119,8 +119,8 @@ async function loadWallComments() {
   const snap = await getDocs(query(collection(db, "users", auth.currentUser.uid, "wallComments"), orderBy("createdAt", "desc")));
   snap.forEach(async docSnap => {
     const data = docSnap.data();
-    const p = document.createElement("p");
     const username = (await getDoc(doc(db, "users", data.userId)))?.data()?.username || "Anonymous";
+    const p = document.createElement("p");
     p.textContent = `${username}: ${data.text}`;
     wallCommentsContainer.appendChild(p);
   });
@@ -129,11 +129,9 @@ async function loadWallComments() {
 // ---------------------
 // Top 10 Friends (visible for visitors)
 // ---------------------
-async function loadTop10Friends() {
+async function loadTop10Friends(userData) {
   top10Container.innerHTML = "";
-  const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-  if (!userSnap.exists()) return;
-  const friends = userSnap.data().top10Friends || [];
+  const friends = userData.top10Friends || [];
   friends.forEach(f => {
     const div = document.createElement("div");
     div.className = "top-friend";
@@ -145,11 +143,26 @@ async function loadTop10Friends() {
 // ---------------------
 // Load on Auth
 // ---------------------
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "login.html";
-  else {
-    loadCustomHtml();
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+    if (!userSnap.exists()) return;
+    const userData = userSnap.data();
+
+    // Load profile info
+    usernameInput.value = userData.username || "";
+    bioInput.value = userData.bio || "";
+    locationInput.value = userData.location || "";
+    profilePfp.src = userData.pfpURL || "default-avatar.png";
+
+    // Load theme, custom html, wall comments, top 10 friends
+    document.body.className = userData.theme || "default-theme";
+    themeSelect.value = userData.theme || "default-theme";
+
+    loadCustomHtml(userData);
     loadWallComments();
-    loadTop10Friends();
+    loadTop10Friends(userData);
   }
 });

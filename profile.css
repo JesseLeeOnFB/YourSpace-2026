@@ -1,0 +1,181 @@
+/* ================= RESET ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #111;
+  color: #eee;
+  min-height: 100vh;
+}
+
+/* ================= NAV ================= */
+.top-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #1b1b1b;
+  padding: 12px;
+  border-bottom: 2px solid #333;
+}
+
+.top-nav button {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.top-nav button:hover {
+  background: #444;
+}
+
+/* ================= PAGE ================= */
+.profile-page {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+/* ================= PROFILE CARD ================= */
+.profile-card {
+  display: flex;
+  gap: 20px;
+  background: #1c1c1c;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+/* ================= PROFILE PFP ================= */
+.pfp-container {
+  width: 180px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+#profilePfp {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #444;
+  background: #222;
+}
+
+#profilePfpInput {
+  margin-top: 8px;
+}
+
+#saveProfilePfpBtn {
+  margin-top: 6px;
+  width: 100%;
+}
+
+/* ================= PROFILE INFO ================= */
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-info input,
+.profile-info textarea {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px;
+}
+
+.profile-info textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+#saveProfileBtn {
+  align-self: flex-start;
+  padding: 8px 14px;
+}
+
+/* ================= THEME ================= */
+.theme-box {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+/* ================= MUSIC ================= */
+.music-box {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+#musicPlayer iframe {
+  width: 100%;
+  height: 80px;
+  border: none;
+}
+
+/* ================= TOP 10 ================= */
+.top10-box {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+#top10FriendsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* ================= WALL ================= */
+.wall-box {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  padding: 15px;
+}
+
+#wallCommentInput {
+  width: 100%;
+  min-height: 60px;
+  margin-bottom: 8px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px;
+}
+
+.wall-comment {
+  background: #111;
+  border: 1px solid #333;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+/* ================= THEMES ================= */
+.theme-default { background: #111; }
+.theme-red { background: linear-gradient(135deg, #300, #000); }
+.theme-blue { background: linear-gradient(135deg, #003, #000); }
+.theme-green { background: linear-gradient(135deg, #030, #000); }
+.theme-black { background: #000; color: #0f0; }
+.theme-animated {
+  background: linear-gradient(270deg, red, blue, green);
+  background-size: 600% 600%;
+  animation: bgShift 10s ease infinite;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

@@ -1,143 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>YourSpace — Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Base Styles -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="profile.css" />
-
-  <!-- Firebase Auth Guard -->
-  <script type="module" src="auth-guard.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
+<body class="theme-dark">
 
-<body class="default-theme">
+<header>
+  <h1 id="profileName">YourSpace User</h1>
+</header>
 
-  <!-- =========================
-       TOP NAVIGATION
-  ========================== -->
-  <header class="navbar">
-    <div class="nav-left">
-      <strong class="logo">YourSpace</strong>
-    </div>
-    <div class="nav-right">
-      <button id="feedNavBtn">Feed</button>
-      <button id="profileNavBtn">Profile</button>
-      <button id="messagesNavBtn">Messages</button>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </header>
+<section class="profile-section">
+  <div class="profile-left">
+    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
+    <input type="file" id="pfpInput">
+    <button id="savePfpBtn">Save Profile Picture</button>
 
-  <!-- =========================
-       CUSTOM HTML / CSS INJECTOR
-       (FULL PAGE CONTROL)
-  ========================== -->
-  <div id="customHtmlInjector"></div>
+    <h3>Bio</h3>
+    <p id="profileBio">This is the bio lol</p>
+    <textarea id="bioInput" placeholder="Edit your bio"></textarea>
+    <button id="saveBioBtn">Save Bio</button>
 
-  <!-- =========================
-       PROFILE PAGE CONTENT
-  ========================== -->
-  <main class="profile-main">
+    <h3>Themes</h3>
+    <select id="themeSelect">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="retro">Retro</option>
+    </select>
 
-    <!-- ===== TOP SECTION ===== -->
-    <section class="profile-top">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer" class="top10-container"></div>
 
-      <!-- Profile Picture -->
-      <div class="pfp-container">
-        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture" />
-        <input type="file" id="pfpInput" accept="image/*" />
-        <button id="savePfpBtn">Save Profile Picture</button>
-      </div>
+    <h3>Music Player</h3>
+    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify URL">
+    <button id="addMusicBtn">Add Song</button>
+    <div id="musicListContainer"></div>
+    <div id="musicPlayerContainer"></div>
+  </div>
 
-      <!-- Profile Info -->
-      <div class="profile-info-box">
-        <h2 id="profileUsername">Username</h2>
+  <div class="profile-right">
+    <h3>Wall</h3>
+    <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
+    <button id="postWallBtn">Post</button>
+    <div id="wallContainer"></div>
+  </div>
+</section>
 
-        <label for="bioInput">Bio</label>
-        <textarea id="bioInput" placeholder="Tell the world about yourself..."></textarea>
-        <button id="saveBioBtn">Save Bio</button>
-
-        <!-- Message Button (for visitors) -->
-        <button id="messageUserBtn" class="message-btn">
-          Send Message
-        </button>
-      </div>
-
-    </section>
-
-    <!-- ===== WALL COMMENTS ===== -->
-    <section class="wall-container">
-      <h3>Wall</h3>
-
-      <div id="wallComments"></div>
-
-      <textarea
-        id="wallCommentInput"
-        placeholder="Write something on this wall..."
-      ></textarea>
-      <button id="postWallCommentBtn">Post</button>
-    </section>
-
-    <!-- ===== TOP 10 FRIENDS ===== -->
-    <section class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer"></div>
-    </section>
-
-    <!-- ===== MUSIC PLAYER ===== -->
-    <section class="music-player">
-      <h3>Music</h3>
-
-      <input
-        type="text"
-        id="musicLinkInput"
-        placeholder="Paste YouTube / Spotify / SoundCloud link"
-      />
-      <button id="addMusicBtn">Add to Playlist</button>
-
-      <div id="musicPlaylist"></div>
-
-      <iframe
-        id="musicIframe"
-        allow="autoplay"
-        allowfullscreen
-      ></iframe>
-    </section>
-
-    <!-- ===== THEMES ===== -->
-    <section class="theme-container">
-      <h3>Themes</h3>
-      <select id="themeSelector">
-        <option value="default-theme">Default</option>
-        <option value="dark-theme">Dark</option>
-        <option value="light-theme">Light</option>
-        <option value="retro-theme">Retro</option>
-        <option value="neon-theme">Neon</option>
-      </select>
-    </section>
-
-    <!-- ===== CUSTOM HTML / CSS ===== -->
-    <section class="custom-html-container">
-      <h3>Custom HTML / CSS</h3>
-      <textarea
-        id="customHtmlInput"
-        placeholder="Paste custom HTML or CSS here (MySpace style)"
-      ></textarea>
-
-      <div class="custom-html-actions">
-        <button id="saveCustomHtmlBtn">Save</button>
-        <button id="resetCustomHtmlBtn">Reset to Default</button>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- =========================
-       PROFILE LOGIC
-  ========================== -->
-  <script type="module" src="profile.js"></script>
-
+<script type="module" src="profile.js"></script>
 </body>
 </html>

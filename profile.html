@@ -1,76 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
   <!-- Navigation Bar -->
-  <header id="topnav">
-    <ul>
-      <li><a href="feed.html">Feed</a></li>
-      <li><a href="profile.html">Profile</a></li>
-      <li><a href="messages.html">Messages</a></li>
-      <li><button id="logoutBtn">Logout</button></li>
-    </ul>
-  </header>
+  <nav id="navbar">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-  <!-- Main Profile Container -->
+  <!-- Profile Container -->
   <div class="profile-container">
-    <!-- Profile Info Box -->
-    <div class="profile-box">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-avatar">
-      <h1 id="profileName">YourSpace User</h1>
+    <div class="profile-header">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+      <h2 id="profileName">YourSpace User</h2>
       <p id="profileBio">This is the bio lol</p>
-
-      <!-- Edit Own Profile -->
-      <div class="edit-section">
-        <textarea id="bioInput" placeholder="Update your bio"></textarea>
-        <button id="saveBioBtn">Save Bio</button>
-
-        <input type="file" id="pfpInput" accept="image/*">
-        <button id="savePfpBtn">Save Profile Picture</button>
-
-        <select id="themeSelect">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="retro">Retro</option>
-        </select>
-      </div>
     </div>
 
-    <!-- Top 10 Friends Box -->
-    <div class="profile-box">
-      <h2>Top 10 Friends</h2>
-      <div id="top10List" class="top10-container">
-        <!-- Dynamically filled via JS -->
-      </div>
+    <!-- Edit Bio & Profile Picture (only visible on own profile) -->
+    <div class="profile-edit">
+      <input type="text" id="bioInput" placeholder="Edit your bio">
+      <button id="saveBioBtn">Save Bio</button>
+
+      <input type="file" id="pfpInput" accept="image/*">
+      <button id="savePfpBtn">Save Profile Picture</button>
+
+      <select id="themeSelect">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
+      </select>
+
+      <!-- Custom HTML container -->
+      <textarea id="customHtmlInput" placeholder="Paste your custom HTML code"></textarea>
+      <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
+      <button id="resetCustomHtmlBtn">Reset to Default</button>
     </div>
 
-    <!-- Wall Comments Box -->
-    <div class="profile-box">
-      <h2>Wall</h2>
-      <textarea id="wallInput" placeholder="Write on this user's wall"></textarea>
+    <!-- Top 10 Friends -->
+    <div class="top10-container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
+    </div>
+
+    <!-- Wall Comments -->
+    <div class="wall-container">
+      <h3>Wall</h3>
+      <textarea id="wallInput" placeholder="Write something on the wall..."></textarea>
       <button id="postWallBtn">Post</button>
-      <div id="wallContainer" class="wall-container">
-        <!-- Wall posts loaded here -->
-      </div>
+      <div id="wallContainer"></div>
     </div>
 
-    <!-- Music Playlist Box -->
-    <div class="profile-box">
-      <h2>Music Playlist</h2>
-      <div id="playlistContainer" class="playlist-container">
-        <!-- Playlist songs loaded here -->
-      </div>
-      <audio id="musicPlayer" controls></audio>
+    <!-- Music Player -->
+    <div class="music-container">
+      <h3>Music Playlist</h3>
+      <input type="text" id="musicUrlInput" placeholder="Paste YouTube/Spotify URL">
+      <button id="addMusicBtn">Add Song</button>
+      <div id="musicPlaylistContainer"></div>
+      <iframe id="musicPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script type="module" src="profile.js"></script>
-  <script type="module" src="auth-guard.js"></script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>

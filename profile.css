@@ -1,215 +1,278 @@
 /* --------------------
-   GLOBAL STYLES
+   Global Reset & Body
 -------------------- */
-body {
+* {
   margin: 0;
   padding: 0;
-  font-family: "Century Gothic", sans-serif;
-  background-color: #121212;
-  color: #ffffff;
+  box-sizing: border-box;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* --------------------
-   THEMES
--------------------- */
-.theme-dark {
-  background-color: #121212;
-  color: #ffffff;
-}
-
-.theme-light {
-  background-color: #f4f4f4;
-  color: #222222;
-}
-
-.theme-retro {
-  background-color: #fffae3;
-  color: #000000;
-}
-
-/* --------------------
-   MAIN PROFILE CONTAINER
--------------------- */
-.profile-container {
-  max-width: 1100px;
-  margin: 30px auto;
+body {
+  font-family: 'Century Gothic', sans-serif;
+  background-color: #111;
+  color: #fff;
+  min-height: 100vh;
   padding: 20px;
-  background-color: rgba(0,0,0,0.7);
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
-/* --------------------
-   HEADER (PROFILE PIC + NAME)
--------------------- */
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.profile-header img#profilePic {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #cd1045;
-}
-
-.profile-header .profile-name {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-/* --------------------
-   BIO
--------------------- */
-.profile-bio {
-  margin-bottom: 20px;
-  font-size: 16px;
-  line-height: 1.4;
-}
-
-/* --------------------
-   INPUTS & BUTTONS
--------------------- */
-input, textarea, select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  border: 1px solid #aaa;
-  font-family: "Century Gothic", sans-serif;
-  font-size: 14px;
 }
 
 button {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  background-color: #cd1045;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-  font-size: 14px;
-}
-
-button:hover {
-  background-color: #fbb148;
-}
-
-/* --------------------
-   WALL POSTS
--------------------- */
-.wall-post {
-  padding: 10px;
-  margin-bottom: 8px;
-  background-color: rgba(255,255,255,0.05);
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.wall-post strong {
-  color: #fbb148;
   cursor: pointer;
 }
 
-.wall-post button {
-  background-color: #999f2e;
-  font-size: 12px;
-  padding: 4px 8px;
+/* --------------------
+   Navigation
+-------------------- */
+nav#topNav {
+  background-color: #222;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
-/* --------------------
-   TOP 10 FRIENDS
--------------------- */
-#top10FriendsContainer {
+nav#topNav ul {
+  list-style: none;
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+}
+
+nav#topNav ul li button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+nav#topNav ul li button:hover {
+  background-color: #fbb148;
+  color: #000;
+}
+
+/* --------------------
+   Profile Header
+-------------------- */
+.profile-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-header .profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #fbb148;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.profile-header h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.profile-header p {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.profile-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 20px;
+}
+
+.profile-controls input,
+.profile-controls textarea,
+.profile-controls select {
+  padding: 8px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+}
+
+.profile-controls button {
+  padding: 8px 15px;
+  background-color: #fbb148;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+}
+
+/* --------------------
+   Sections
+-------------------- */
+section {
+  margin-bottom: 30px;
+  background-color: #1a1a1a;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+  color: #fbb148;
+}
+
+/* --------------------
+   Top 10 Friends
+-------------------- */
+.top10-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .top-friend {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  width: 70px;
-  font-size: 12px;
-  text-align: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: #222;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.top-friend:hover {
+  background-color: #fbb148;
+  color: #000;
 }
 
 .top-friend img {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 4px;
-  border: 2px solid #fbb148;
 }
 
-.top-friend a {
+/* --------------------
+   Wall
+-------------------- */
+.wall-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.wall-controls textarea {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 5px;
+  padding: 8px;
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+}
+
+.wall-controls button {
+  width: 100px;
+  align-self: flex-end;
+  background-color: #fbb148;
+  color: #000;
+}
+
+.wall-container .wall-post {
+  background-color: #2a2a2a;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+}
+
+.wall-post button {
+  margin-left: 10px;
+  background-color: #ff4444;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+/* --------------------
+   Music Player
+-------------------- */
+.music-section input {
+  width: 60%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+}
+
+.music-section button {
+  padding: 8px 12px;
+  margin-left: 5px;
+  background-color: #fbb148;
+  border: none;
+  border-radius: 5px;
+  color: #000;
+}
+
+.music-playlist {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.music-item {
+  padding: 5px 10px;
+  background-color: #222;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.music-item:hover {
+  background-color: #fbb148;
+  color: #000;
+}
+
+/* --------------------
+   Themes
+-------------------- */
+body.theme-dark {
+  background-color: #111;
+  color: #fff;
+}
+
+body.theme-light {
+  background-color: #f0f0f0;
+  color: #111;
+}
+
+body.theme-light section {
+  background-color: #fff;
+  color: #111;
+}
+
+body.theme-retro {
+  background-color: #000;
   color: #fbb148;
 }
 
-.top-friend a:hover {
-  text-decoration: underline;
+body.theme-retro section {
+  background-color: #222;
+  color: #fbb148;
 }
 
 /* --------------------
-   MUSIC PLAYER
+   Responsive
 -------------------- */
-#musicPlayerContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-#musicPlayerContainer iframe {
-  border-radius: 8px;
-  width: 100%;
-  height: 180px;
-}
-
-/* --------------------
-   CUSTOM THEME SELECTOR
--------------------- */
-#themeSelect {
-  margin-top: 10px;
-}
-
-/* --------------------
-   RESPONSIVE DESIGN
--------------------- */
-@media screen and (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: flex-start;
+@media (max-width: 768px) {
+  .profile-controls input,
+  .profile-controls textarea,
+  .profile-controls select {
+    width: 90%;
   }
 
-  .profile-header img#profilePic {
-    width: 100px;
-    height: 100px;
-  }
-
-  .profile-container {
-    padding: 15px;
-  }
-
-  #musicPlayerContainer iframe {
-    height: 150px;
+  .music-section input {
+    width: 70%;
   }
 }

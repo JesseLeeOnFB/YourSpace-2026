@@ -2,24 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 </head>
 <body class="default-theme">
-  <!-- NAVIGATION -->
+
+  <!-- Navbar -->
   <div class="navbar">
-    <button id="navFeedBtn">Feed</button>
-    <button id="navProfileBtn">Profile</button>
-    <button id="navMessagesBtn">Messages</button>
-    <button id="navNotificationsBtn">Notifications</button>
+    <button id="navFeed">Feed</button>
+    <button id="navProfile">Profile</button>
+    <button id="navMessages">Messages</button>
+    <button id="navNotifications">Notifications</button>
   </div>
 
-  <div class="profile-main">
-    <!-- PROFILE TOP -->
+  <main class="profile-main">
+    
+    <!-- Top Section: Profile Picture + Info -->
     <div class="profile-top">
       <div class="pfp-container">
         <img id="profilePfp" src="" alt="Profile Picture">
@@ -35,8 +34,24 @@
       </div>
     </div>
 
-    <!-- THEME & CUSTOM HTML -->
+    <!-- Wall Comments -->
+    <div class="wall-container">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="addWallCommentBtn">Post Comment</button>
+    </div>
+
+    <!-- Top 10 Friends -->
+    <div class="top10-container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
+      <button id="editTop10Btn">Edit Top 10</button>
+    </div>
+
+    <!-- Theme Selector -->
     <div class="theme-custom-box">
+      <h3>Theme</h3>
       <select id="themeSelect">
         <option value="default-theme">Default</option>
         <option value="red-theme">Red</option>
@@ -45,35 +60,26 @@
         <option value="neon-theme">Neon</option>
       </select>
       <button id="saveThemeBtn">Save Theme</button>
-      <textarea id="customHtmlInput" placeholder="Custom HTML"></textarea>
-      <button id="saveCustomHtmlBtn">Apply Custom HTML</button>
+
+      <h3>Custom HTML / Background</h3>
+      <textarea id="customHtmlInput" placeholder="Enter custom HTML or CSS"></textarea>
       <div id="customHtmlContainer"></div>
     </div>
 
-    <!-- WALL COMMENTS -->
-    <div class="wall-container">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
-
-    <!-- TOP 10 FRIENDS -->
-    <div class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer" class="top10-list"></div>
-      <button id="editTop10Btn">Edit Top 10</button>
-    </div>
-
-    <!-- MUSIC PLAYER -->
+    <!-- Music Player -->
     <div class="music-player">
-      <input id="musicLinkInput" placeholder="Paste YouTube / SoundCloud / Spotify link">
-      <button id="playMusicBtn">Play Music</button>
-      <iframe id="musicIframe" src="" allow="autoplay"></iframe>
-      <button id="pauseMusicBtn">Pause Music</button>
+      <h3>Music Player</h3>
+      <input id="musicLinkInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
+      <button id="saveMusicBtn">Play Music</button>
+      <iframe id="musicIframe" allow="autoplay"></iframe>
     </div>
-  </div>
 
-  <script src="profile.js?cb=<?=Date.now()?>"></script>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="profile.js" type="module"></script>
 </body>
 </html>

@@ -1,128 +1,179 @@
-/* --------------------
-   Global Reset & Body
--------------------- */
+/* ----------------------------
+   GENERAL RESET & BODY
+---------------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Century Gothic', sans-serif;
 }
 
 body {
-  font-family: 'Century Gothic', sans-serif;
-  background-color: #111;
+  background-color: #121212;
   color: #fff;
   min-height: 100vh;
   padding: 20px;
 }
 
-button {
+/* ----------------------------
+   NAVIGATION
+---------------------------- */
+nav#topnav {
+  background-color: #1f1f1f;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+nav#topnav ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-start;
+}
+
+nav#topnav ul li {
+  margin-right: 10px;
+}
+
+nav#topnav ul li button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-/* --------------------
-   Navigation
--------------------- */
-nav#topNav {
-  background-color: #222;
-  padding: 10px 20px;
+nav#topnav ul li button:hover {
+  background-color: #555;
+}
+
+/* ----------------------------
+   PROFILE SECTION
+---------------------------- */
+#profileSection {
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-radius: 10px;
   margin-bottom: 20px;
-  border-radius: 8px;
-}
-
-nav#topNav ul {
-  list-style: none;
-  display: flex;
-  gap: 10px;
-}
-
-nav#topNav ul li button {
-  background-color: #444;
-  color: #fff;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  transition: background 0.3s;
-}
-
-nav#topNav ul li button:hover {
-  background-color: #fbb148;
-  color: #000;
-}
-
-/* --------------------
-   Profile Header
--------------------- */
-.profile-header {
   text-align: center;
-  margin-bottom: 30px;
 }
 
-.profile-header .profile-pic {
-  width: 150px;
-  height: 150px;
+.profile-avatar {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 3px solid #fbb148;
   object-fit: cover;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  border: 3px solid #fff;
 }
 
-.profile-header h1 {
-  font-size: 28px;
+#profileName {
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 10px;
 }
 
-.profile-header p {
+#profileBio {
   font-size: 16px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-.profile-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+/* Inputs and buttons (own profile) */
+#bioInput,
+#pfpInput,
+#saveBioBtn,
+#savePfpBtn,
+#themeSelect {
+  margin: 5px 0;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+}
+
+#saveBioBtn,
+#savePfpBtn {
+  background-color: #ff8c00;
+  color: #fff;
+  cursor: pointer;
+}
+
+#saveBioBtn:hover,
+#savePfpBtn:hover {
+  background-color: #ffa733;
+}
+
+/* ----------------------------
+   WALL COMMENTS
+---------------------------- */
+#wallSection {
+  background-color: #1f1f1f;
+  padding: 15px;
+  border-radius: 10px;
   margin-bottom: 20px;
 }
 
-.profile-controls input,
-.profile-controls textarea,
-.profile-controls select {
-  padding: 8px;
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
-}
-
-.profile-controls button {
-  padding: 8px 15px;
-  background-color: #fbb148;
-  color: #000;
-  border: none;
-  border-radius: 5px;
-}
-
-/* --------------------
-   Sections
--------------------- */
-section {
-  margin-bottom: 30px;
-  background-color: #1a1a1a;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-h2 {
+#wallSection h3 {
   margin-bottom: 10px;
-  font-size: 22px;
-  color: #fbb148;
 }
 
-/* --------------------
-   Top 10 Friends
--------------------- */
-.top10-container {
+#wallInput {
+  width: calc(100% - 100px);
+  padding: 6px 10px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+}
+
+#postWallBtn {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #ff8c00;
+  color: #fff;
+  cursor: pointer;
+}
+
+#postWallBtn:hover {
+  background-color: #ffa733;
+}
+
+.wall-post {
+  background-color: #2b2b2b;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wall-post button {
+  background-color: #ff4d4d;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.wall-post button:hover {
+  background-color: #ff6666;
+}
+
+/* ----------------------------
+   TOP 10 FRIENDS
+---------------------------- */
+#top10Section {
+  background-color: #1f1f1f;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+#top10FriendsContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -131,148 +182,113 @@ h2 {
 .top-friend {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  background-color: #222;
-  border-radius: 5px;
+  gap: 6px;
+  background-color: #2b2b2b;
+  padding: 6px 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
-}
-
-.top-friend:hover {
-  background-color: #fbb148;
-  color: #000;
 }
 
 .top-friend img {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
-/* --------------------
-   Wall
--------------------- */
-.wall-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 15px;
+/* ----------------------------
+   MUSIC PLAYER
+---------------------------- */
+#musicSection {
+  background-color: #1f1f1f;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-.wall-controls textarea {
-  width: 100%;
-  min-height: 60px;
+#musicInput {
+  width: calc(100% - 100px);
+  padding: 6px 10px;
+  margin-right: 5px;
   border-radius: 5px;
-  padding: 8px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
-}
-
-.wall-controls button {
-  width: 100px;
-  align-self: flex-end;
-  background-color: #fbb148;
-  color: #000;
-}
-
-.wall-container .wall-post {
-  background-color: #2a2a2a;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  border-radius: 5px;
-}
-
-.wall-post button {
-  margin-left: 10px;
-  background-color: #ff4444;
-  color: #fff;
   border: none;
-  border-radius: 3px;
-  padding: 2px 6px;
+  font-size: 14px;
 }
 
-/* --------------------
-   Music Player
--------------------- */
-.music-section input {
-  width: 60%;
-  padding: 8px;
+#addMusicBtn {
+  padding: 6px 12px;
   border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
-}
-
-.music-section button {
-  padding: 8px 12px;
-  margin-left: 5px;
-  background-color: #fbb148;
   border: none;
-  border-radius: 5px;
-  color: #000;
-}
-
-.music-playlist {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.music-item {
-  padding: 5px 10px;
-  background-color: #222;
-  border-radius: 5px;
+  background-color: #ff8c00;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
-.music-item:hover {
-  background-color: #fbb148;
-  color: #000;
+#addMusicBtn:hover {
+  background-color: #ffa733;
 }
 
-/* --------------------
-   Themes
--------------------- */
+#musicPlaylistContainer {
+  margin-top: 10px;
+}
+
+#musicPlaylistContainer button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 5px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #2b2b2b;
+  color: #fff;
+  cursor: pointer;
+}
+
+#musicPlaylistContainer button:hover {
+  background-color: #3a3a3a;
+}
+
+#musicPlayerIframe {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+/* ----------------------------
+   THEMES
+---------------------------- */
 body.theme-dark {
-  background-color: #111;
+  background-color: #121212;
   color: #fff;
 }
 
 body.theme-light {
   background-color: #f0f0f0;
-  color: #111;
+  color: #000;
 }
 
-body.theme-light section {
+body.theme-light .wall-post,
+body.theme-light .top-friend,
+body.theme-light #profileSection,
+body.theme-light #wallSection,
+body.theme-light #top10Section,
+body.theme-light #musicSection {
   background-color: #fff;
-  color: #111;
+  color: #000;
 }
 
 body.theme-retro {
+  background-color: #fbe4c4;
+  color: #333;
+}
+
+body.theme-retro .wall-post,
+body.theme-retro .top-friend,
+body.theme-retro #profileSection,
+body.theme-retro #wallSection,
+body.theme-retro #top10Section,
+body.theme-retro #musicSection {
   background-color: #000;
-  color: #fbb148;
-}
-
-body.theme-retro section {
-  background-color: #222;
-  color: #fbb148;
-}
-
-/* --------------------
-   Responsive
--------------------- */
-@media (max-width: 768px) {
-  .profile-controls input,
-  .profile-controls textarea,
-  .profile-controls select {
-    width: 90%;
-  }
-
-  .music-section input {
-    width: 70%;
-  }
+  color: #ff0;
 }

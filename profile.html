@@ -1,70 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8" />
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css?v=1.0">
 </head>
-<body class="default">
-  <!-- NAVIGATION -->
-  <nav class="navbar">
-    <button class="navBtn" data-target="feed.html">Feed</button>
-    <button class="navBtn" data-target="profile.html">Profile</button>
-    <button class="navBtn" data-target="messages.html">Messages</button>
-    <button class="navBtn" data-target="notifications.html">Notifications</button>
+<body class="theme-default">
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <button onclick="location.href='feed.html'">Feed</button>
+    <button onclick="location.href='profile.html'">Profile</button>
+    <button onclick="location.href='messages.html'">Messages</button>
+    <button onclick="location.href='settings.html'">Settings</button>
   </nav>
 
-  <main class="profile-container">
-    <!-- PROFILE INFO -->
-    <section class="profile-info">
-      <img id="profilePfp" src="default.png" alt="Profile Picture" class="profile-picture"/>
-      <input type="file" id="profilePfpInput"/>
+  <main class="profile-page">
+
+    <!-- PROFILE CARD -->
+    <section class="profile-card">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
 
-      <input type="text" id="usernameInput" placeholder="Username"/>
-      <input type="text" id="bioInput" placeholder="Bio"/>
-      <input type="text" id="locationInput" placeholder="Location"/>
+      <input id="usernameInput" placeholder="Username">
+      <textarea id="bioInput" placeholder="Bio"></textarea>
+      <input id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
     </section>
 
-    <!-- WALL COMMENTS -->
-    <section class="wall-comments">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer" class="comments-container"></div>
-      <input type="text" id="wallCommentInput" placeholder="Write a comment..."/>
-      <button id="addWallCommentBtn">Post Comment</button>
-    </section>
-
-    <!-- TOP 10 FRIENDS -->
-    <section class="top-friends">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer" class="friends-container"></div>
-      <button id="editTop10Btn">Edit Top 10</button>
-    </section>
-
-    <!-- THEME SELECTION -->
-    <section class="themes">
-      <h3>Select Theme</h3>
+    <!-- THEME -->
+    <section class="theme-card">
+      <h3>Themes</h3>
       <select id="themeSelect">
-        <option value="default">Default</option>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-        <option value="black-neon">Black Neon</option>
-        <option value="animated">Animated</option>
+        <option value="theme-default">Default</option>
+        <option value="theme-red">Red</option>
+        <option value="theme-blue">Blue</option>
+        <option value="theme-green">Green</option>
+        <option value="theme-neon">Neon</option>
+        <option value="theme-animated">Animated</option>
       </select>
-      <button id="saveThemeBtn">Save Theme</button>
+      <button id="saveThemeBtn">Apply Theme</button>
     </section>
 
-    <!-- MUSIC PLAYER -->
-    <section class="music-player">
-      <h3>Music Player</h3>
-      <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud link"/>
-      <button id="loadMusicBtn">Load Music</button>
-      <div id="musicContainer" class="music-container"></div>
+    <!-- WALL -->
+    <section class="wall-card">
+      <h3>Comment Wall</h3>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="addWallCommentBtn">Post Comment</button>
+      <div id="wallCommentsContainer"></div>
     </section>
+
   </main>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <script src="profile.js?v=1.0"></script>
 </body>
-<script src="profile.js"></script>
 </html>

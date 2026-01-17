@@ -16,50 +16,38 @@ body.neon-theme { animation: neonBg 5s infinite; }
 .navbar button:hover { background: #555; }
 
 /* ==============================
-   Profile Layout
+   Main layout
 ============================== */
 .profile-main { padding: 20px; max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+
+/* Top section: pfp + info */
 .profile-top { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
 .pfp-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 #profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
+
+/* Profile info box */
 .profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
 .profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
-.profile-info-box button { padding: 8px; border-radius: 4px; border: none; background: #1a1a1a; color: #fff; cursor: pointer; }
-.profile-info-box button:hover { background: #333; }
 
-/* ==============================
-   Custom HTML / Theme Section
-============================== */
-.custom-html-container textarea { width: 100%; min-height: 100px; border-radius: 5px; border: 1px solid #aaa; padding: 5px; }
-#customHtmlPreview { border: 1px solid #aaa; min-height: 200px; margin-top: 10px; padding: 10px; background: #f9f9f9; }
+/* Top 10 friends */
+.top10-container, .wall-container, .music-player, .custom-html-container { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); }
+.top10-container h3, .wall-container h3, .music-player h3, .custom-html-container h3 { margin-top: 0; }
+#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
+.top-friend { display: flex; gap: 10px; align-items: center; }
+.top-friend button { margin-left: auto; }
 
-/* ==============================
-   Top 10 Friends
-============================== */
-.top-friend { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-.top-friend img { width: 30px; height: 30px; border-radius: 50%; }
-
-/* Top 10 Edit Panel */
-#top10EditList { display: flex; flex-direction: column; gap: 5px; }
-.top10-slot { display: flex; align-items: center; gap: 10px; padding: 5px; border: 1px solid #aaa; border-radius: 5px; background: #f9f9f9; cursor: grab; }
-.top10-slot.dragging { opacity: 0.5; }
-.top10-slot img { width: 30px; height: 30px; border-radius: 50%; }
-.top10-slot input { flex: 1; padding: 4px 6px; border-radius: 4px; border: 1px solid #ccc; }
-.top10-slot button { padding: 4px 8px; border: none; background: #1a1a1a; color: #fff; border-radius: 4px; cursor: pointer; }
-.top10-slot button:hover { background: #333; }
-
-/* ==============================
-   Wall Comments
-============================== */
-.wall-container { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); }
-.wall-container textarea { width: 100%; min-height: 50px; border-radius: 4px; border: 1px solid #aaa; margin-top: 5px; padding: 5px; }
-.wall-container button { margin-top: 5px; padding: 6px 12px; border-radius: 4px; border: none; background: #1a1a1a; color: #fff; cursor: pointer; }
-.wall-comment { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px solid #eee; padding: 4px; }
+/* Wall Comments */
+#wallCommentsContainer { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
+.wall-comment { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
 .wall-comment button { background: #e33; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; }
 
-/* ==============================
-   Responsive
-============================== */
+/* Music Player */
+#musicIframe { width: 100%; height: 80px; border: none; margin-top: 10px; }
+
+/* Custom HTML */
+#customHtmlInput { width: 100%; min-height: 150px; margin-top: 5px; padding: 8px; border-radius: 4px; border: 1px solid #aaa; background: #f9f9f9; }
+
+/* Responsive */
 @media (max-width: 600px) {
   .profile-top { flex-direction: column; align-items: center; }
   .profile-info-box { width: 100%; }

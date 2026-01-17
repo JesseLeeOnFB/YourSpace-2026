@@ -15,59 +15,43 @@
   <button id="logoutBtn">Logout</button>
 </nav>
 
-<!-- Profile Header -->
-<div class="profile-header">
-  <div class="profile-picture-container">
-    <img id="profilePicture" src="default-avatar.png" alt="Profile Picture">
+<!-- Main Profile Container -->
+<div class="profile-container">
+
+  <!-- Profile Picture -->
+  <div class="profile-section">
+    <h2>Profile Picture</h2>
+    <img id="profilePicture" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
     <input type="file" id="profilePicInput">
-    <button id="savePfpBtn">Save</button>
+    <button id="savePfpBtn">Save Profile Picture</button>
   </div>
-  <div class="profile-info">
-    <textarea id="bioInput" placeholder="This is the bio lol"></textarea>
+
+  <!-- Bio -->
+  <div class="profile-section">
+    <h2>Bio</h2>
+    <textarea id="bioText" rows="4" placeholder="This is your bio..."></textarea>
     <button id="saveBioBtn">Save Bio</button>
-    <div id="locationDisplay"></div>
   </div>
+
+  <!-- Wall -->
+  <div class="profile-section">
+    <h2>Wall</h2>
+    <div id="wallContainer" class="wall-container">
+      <!-- Wall comments load here -->
+    </div>
+    <input type="text" id="wallInput" placeholder="Write on the wall...">
+    <button id="postWallBtn">Post</button>
+  </div>
+
+  <!-- Custom HTML / Themes (Placeholder) -->
+  <div class="profile-section">
+    <h2>Custom Layout / Theme</h2>
+    <textarea id="customHtmlInput" rows="6" placeholder="Paste your custom HTML/CSS here..."></textarea>
+    <button id="applyCustomHtmlBtn">Apply</button>
+    <button id="resetCustomHtmlBtn">Reset to Default</button>
+  </div>
+
 </div>
-
-<!-- Top 10 Friends -->
-<section class="top10-section">
-  <h3>Top 10 Friends</h3>
-  <div id="top10Container"></div>
-</section>
-
-<!-- Wall Comments -->
-<section class="wall-section">
-  <h3>Wall Comments</h3>
-  <div id="wallContainer"></div>
-  <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
-  <button id="postWallBtn">Post</button>
-</section>
-
-<!-- Music Player -->
-<section class="music-section">
-  <h3>Music Player</h3>
-  <input type="text" id="musicInput" placeholder="Paste YouTube/SoundCloud/Spotify link">
-  <button id="playMusicBtn">Play</button>
-  <div id="musicPlayer"></div>
-</section>
-
-<!-- Theme Selector -->
-<section class="themes-section">
-  <h3>Theme Selector</h3>
-  <button class="theme-btn" data-theme="dark">Dark</button>
-  <button class="theme-btn" data-theme="light">Light</button>
-  <button class="theme-btn" data-theme="retro">Retro</button>
-  <button id="resetThemeBtn">Reset</button>
-</section>
-
-<!-- Custom HTML Box -->
-<section class="custom-html-section">
-  <h3>Custom HTML/Code</h3>
-  <textarea id="customHtmlInput" placeholder="Drop your HTML/CSS/JS code here"></textarea>
-  <button id="applyCustomHtmlBtn">Apply</button>
-  <button id="resetCustomHtmlBtn">Reset</button>
-  <div id="customHtmlContainer"></div>
-</section>
 
 <script type="module" src="profile.js"></script>
 </body>

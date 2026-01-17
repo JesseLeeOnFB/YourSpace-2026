@@ -1,73 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body class="default-theme">
 
-<!-- Navigation -->
-<div class="navbar">
-  <button id="navFeedBtn">Feed</button>
-  <button id="navProfileBtn">Profile</button>
-  <button id="navSettingsBtn">Settings</button>
-  <button id="logoutBtn">Logout</button>
-</div>
+  <!-- Navigation -->
+  <div class="navbar">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
 
-<div class="profile-main">
+  <!-- Main Profile Section -->
+  <div class="profile-main">
 
-  <!-- Profile top section -->
-  <div class="profile-top">
+    <!-- Top Section: PFP + Info -->
+    <div class="profile-top">
+      <div class="pfp-container">
+        <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="pfpInput">
+      </div>
 
-    <!-- Profile Picture -->
-    <div class="pfp-container">
-      <img id="profilePfp" src="default-avatar.png" alt="Profile Picture">
+      <div class="profile-info-box">
+        <input type="text" id="usernameInput" placeholder="Username">
+        <textarea id="bioInput" placeholder="Write something about yourself..."></textarea>
+        <select id="themeSelect">
+          <option value="default-theme">Default</option>
+          <option value="red-theme">Red</option>
+          <option value="blue-theme">Blue</option>
+          <option value="green-theme">Green</option>
+          <option value="neon-theme">Neon</option>
+        </select>
+        <button id="saveProfileBtn">Save</button>
+      </div>
     </div>
 
-    <!-- Profile Info -->
-    <div class="profile-info-box">
-      <label>Bio:</label>
-      <textarea id="profileBio" placeholder="Bio"></textarea>
+    <!-- Custom HTML Background Section -->
+    <div class="custom-html-container">
+      <h3>Custom HTML Background / Theme</h3>
+      <textarea id="customHtmlInput" placeholder="Paste your HTML/JS/CSS here"></textarea>
+      <button id="applyCustomHtmlBtn">Apply</button>
+      <div id="customHtmlPreview"></div>
     </div>
+
+    <!-- Top 10 Friends Section -->
+    <div class="top10-container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10Container"></div>
+      <div id="top10EditPanel" style="display:none; margin-top:10px;">
+        <p>Drag to reorder friends. Click to change friend.</p>
+        <div id="top10EditList"></div>
+      </div>
+    </div>
+
+    <!-- Wall Comments Section -->
+    <div class="wall-container">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment"></textarea>
+      <button id="postWallCommentBtn">Post Comment</button>
+    </div>
+
   </div>
 
-  <!-- Themes -->
-  <div class="theme-container">
-    <label>Theme:</label>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="red">Red Gradient</option>
-      <option value="blue">Blue Gradient</option>
-      <option value="green">Green Gradient</option>
-      <option value="neon">Neon Animated</option>
-    </select>
-  </div>
-
-  <!-- Music Player -->
-  <div class="music-player">
-    <label>Music URL:</label>
-    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud, Pandora link">
-    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
-  </div>
-
-  <!-- Wall Comments -->
-  <div class="wall-container-section">
-    <h3>Wall Comments</h3>
-    <div id="wallContainer" class="wall-container"></div>
-    <input type="text" id="wallCommentInput" placeholder="Write a comment...">
-    <button id="wallCommentBtn">Post Comment</button>
-  </div>
-
-  <!-- Top 10 Friends -->
-  <div class="top10-container">
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-  </div>
-
-</div>
-
-<script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

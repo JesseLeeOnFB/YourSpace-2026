@@ -8,61 +8,71 @@
 </head>
 <body class="default-theme">
 
-<nav class="navbar">
+<!-- NAVBAR -->
+<div class="navbar">
   <button id="navFeedBtn">Feed</button>
   <button id="navProfileBtn">Profile</button>
   <button id="navMessagesBtn">Messages</button>
-  <button id="navNotificationsBtn">Notifications</button>
-</nav>
+  <button id="navSettingsBtn">Settings</button>
+</div>
 
-<main class="profile-main">
-  <section class="profile-top">
+<!-- MAIN PROFILE -->
+<div class="profile-main">
+
+  <!-- TOP SECTION: PFP & Upload -->
+  <div class="profile-top">
     <div class="pfp-container">
       <img id="profilePfp" src="" alt="Profile Picture">
       <input type="file" id="profilePfpInput" accept="image/*">
       <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
+    <!-- PROFILE INFO -->
     <div class="profile-info-box">
       <input id="usernameInput" placeholder="Username">
       <textarea id="bioInput" placeholder="Bio"></textarea>
       <input id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
+
       <select id="themeSelect">
         <option value="default-theme">Default</option>
         <option value="red-theme">Red</option>
         <option value="blue-theme">Blue</option>
         <option value="green-theme">Green</option>
-        <option value="neon-theme">Animated Neon</option>
+        <option value="neon-theme">Neon</option>
       </select>
       <button id="saveThemeBtn">Save Theme</button>
     </div>
-  </section>
+  </div>
 
-  <section class="profile-middle">
-    <div class="wall-container">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
+  <!-- WALL COMMENTS -->
+  <div class="wall-container">
+    <h3>Comment Wall</h3>
+    <div id="wallCommentsContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
 
-    <div class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <div id="top10FriendsContainer"></div>
-      <button id="editTop10Btn">Edit Top 10</button>
-    </div>
-  </section>
+  <!-- TOP 10 FRIENDS (visual only) -->
+  <div class="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="editTop10Btn">Edit Top 10</button>
+  </div>
 
-  <section class="profile-bottom">
-    <div class="music-player">
-      <input id="musicUrlInput" placeholder="Enter YouTube/SoundCloud/Pandora/Spotify URL">
-      <button id="loadMusicBtn">Load Music</button>
-      <iframe id="musicIframe" src="" allow="autoplay" frameborder="0"></iframe>
-    </div>
-  </section>
-</main>
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <input type="text" id="musicLinkInput" placeholder="Paste YouTube / SoundCloud link">
+    <button id="loadMusicBtn">Load Music</button>
+    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
+  </div>
 
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 <script src="profile.js"></script>
 </body>
 </html>

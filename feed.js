@@ -31,7 +31,6 @@ const postsContainer = document.getElementById("postsContainer");
 const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
-const top10Container = document.getElementById("top10FriendsContainer");
 
 const navFeedBtn = document.getElementById("feedNavBtn");
 const navProfileBtn = document.getElementById("profileNavBtn");
@@ -59,41 +58,33 @@ async function getUsername(userId) {
   }
 }
 
-// ---------------------
-// COMMENTS
-// ---------------------
-async function renderComments(postId, commentsContainer, postUserId) {
+// Render comments for a post
+async function renderComments(postId, commentsContainer) {
   commentsContainer.innerHTML = "";
   const commentsSnap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
   commentsSnap.forEach(async cSnap => {
     const data = cSnap.data();
-    const commentId = cSnap.id;
     const username = await getUsername(data.userId);
-
-    const commentEl = document.createElement("div");
-    commentEl.className = "comment-item";
-    commentEl.innerHTML = `
+    const div = document.createElement("div");
+    div.className = "comment-item";
+    div.innerHTML = `
       <span><strong>${username}:</strong> ${data.text}</span>
-      ${data.userId === auth.currentUser.uid || postUserId === auth.currentUser.uid ? '<button class="delete-comment">Delete</button>' : ''}
+      ${(data.userId === auth.currentUser.uid) ? `<button class="delete-comment">X</button>` : ""}
     `;
-
-    // Delete comment if allowed
-    commentEl.querySelector(".delete-comment")?.addEventListener("click", async () => {
+    // DELETE COMMENT
+    div.querySelector(".delete-comment")?.addEventListener("click", async () => {
       try {
-        await deleteDoc(doc(db, "posts", postId, "comments", commentId));
-        renderComments(postId, commentsContainer, postUserId);
+        await deleteDoc(doc(db, "posts", postId, "comments", cSnap.id));
+        renderComments(postId, commentsContainer);
       } catch (err) {
         alert("Error deleting comment: " + err.message);
       }
     });
-
-    commentsContainer.appendChild(commentEl);
+    commentsContainer.appendChild(div);
   });
 }
 
-// ---------------------
-// RENDER POST
-// ---------------------
+// Render individual post
 async function renderPost(postData, postId) {
   const postEl = document.createElement("div");
   postEl.className = "post-container";
@@ -101,8 +92,11 @@ async function renderPost(postData, postId) {
   const username = await getUsername(postData.userId);
 
   let mediaHTML = "";
-  if (postData.mediaType === "image") mediaHTML = `<img src="${postData.mediaURL}" class="post-media">`;
-  else if (postData.mediaType === "video") mediaHTML = `<video controls class="post-media"><source src="${postData.mediaURL}"></video>`;
+  if (postData.mediaType === "image") {
+    mediaHTML = `<img src="${postData.mediaURL}" class="post-media">`;
+  } else if (postData.mediaType === "video") {
+    mediaHTML = `<video controls class="post-media"><source src="${postData.mediaURL}"></video>`;
+  }
 
   postEl.innerHTML = `
     <div class="post-header">
@@ -129,10 +123,10 @@ async function renderPost(postData, postId) {
   const commentInput = postEl.querySelector(".comment-input");
   const commentBtn = postEl.querySelector(".comment-btn");
 
-  // Load comments
-  renderComments(postId, commentsContainer, postData.userId);
+  // LOAD COMMENTS
+  renderComments(postId, commentsContainer);
 
-  // Add comment
+  // ADD COMMENT
   commentBtn.addEventListener("click", async () => {
     const text = commentInput.value.trim();
     if (!text) return;
@@ -142,7 +136,7 @@ async function renderPost(postData, postId) {
       createdAt: new Date()
     });
     commentInput.value = "";
-    renderComments(postId, commentsContainer, postData.userId);
+    renderComments(postId, commentsContainer);
   });
 
   // DELETE POST
@@ -183,11 +177,11 @@ async function renderPost(postData, postId) {
     alert("Post link copied");
   });
 
-  postsContainer.prepend(postEl); // newest posts on top
+  postsContainer.appendChild(postEl);
 }
 
 // ---------------------
-// LOAD POSTS
+// Load all posts
 // ---------------------
 async function loadPosts() {
   postsContainer.innerHTML = "";
@@ -196,33 +190,12 @@ async function loadPosts() {
 }
 
 // ---------------------
-// Top 10 Friends
-// ---------------------
-async function loadTop10Friends() {
-  if (!top10Container) return;
-  const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-  if (!userSnap.exists()) return;
-
-  const friends = userSnap.data().top10Friends || [];
-  top10Container.innerHTML = "";
-
-  friends.forEach(f => {
-    const div = document.createElement("div");
-    div.className = "top-friend";
-    div.innerHTML = `
-      <img src="${f.pfpURL || 'default-avatar.png'}" width="30" height="30" style="border-radius:50%;">
-      ${f.username || 'Unknown'}
-    `;
-    top10Container.appendChild(div);
-  });
-}
-
-// ---------------------
-// CREATE POST
+// Create Post
 // ---------------------
 postBtn?.addEventListener("click", async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
+
   if (!text && !file) return alert("Post cannot be empty");
 
   let mediaURL = "";
@@ -251,12 +224,12 @@ postBtn?.addEventListener("click", async () => {
 });
 
 // ---------------------
-// AUTH STATE
+// Auth State
 // ---------------------
 onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "login.html";
-  else {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
     loadPosts();
-    loadTop10Friends();
   }
 });

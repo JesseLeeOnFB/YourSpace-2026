@@ -1,34 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body>
+<div id="profilePage">
 
-<nav>
-  <button onclick="location.href='feed.html'">Feed</button>
-  <button onclick="location.href='profile.html'">Profile</button>
-</nav>
+  <!-- NAVIGATION -->
+  <nav id="topnav">
+    <ul>
+      <li><a href="#" id="feedNavBtn">Feed</a></li>
+      <li><a href="#" id="profileNavBtn">Profile</a></li>
+      <li><button id="logoutBtn">Logout</button></li>
+    </ul>
+  </nav>
 
-<div class="profile-container">
+  <!-- HEADER / PROFILE INFO -->
+  <div class="profile-header">
+    <img id="pfp" src="default-avatar.png" alt="Profile Picture">
+    <h2 id="usernameDisplay">Username</h2>
+    <p id="bioDisplay">This is the bio.</p>
+  </div>
 
-  <img id="profilePic" src="default-avatar.png">
-  <input type="file" id="pfpUpload">
+  <!-- CUSTOM HTML / THEME INJECTOR -->
+  <div class="custom-html-section">
+    <h3>💻 Custom HTML / Theme</h3>
+    <textarea id="customHtmlInput" placeholder="Paste HTML/CSS here"></textarea>
+    <button id="applyCustomBtn">Apply</button>
+    <button id="resetCustomBtn">Reset</button>
+  </div>
 
-  <textarea id="bioInput" placeholder="Your bio"></textarea>
-  <input id="locationInput" placeholder="Location">
-  <button id="saveProfileBtn">Save</button>
+  <!-- TOP 10 FRIENDS -->
+  <div class="top10-container">
+    <h3>⭐ Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+  </div>
 
-  <h3>Custom CSS (MySpace Style)</h3>
-  <textarea id="customCss"></textarea>
-  <button id="saveCustomCss">Save Custom Code</button>
-  <button id="resetCustomCss">Reset</button>
+  <!-- WALL -->
+  <div class="wall-section">
+    <h3>📝 Wall</h3>
+    <div id="wallPostsContainer"></div>
+    <textarea id="wallInput" placeholder="Write on this wall"></textarea>
+    <button id="postWallBtn">Post</button>
+  </div>
 
-  <h3>Wall</h3>
-  <textarea id="wallInput"></textarea>
-  <button id="wallPostBtn">Post</button>
-  <div id="wallPosts"></div>
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <h3>🎵 Profile Music</h3>
+    <input type="text" id="musicLinkInput" placeholder="Paste YouTube, Spotify, or SoundCloud link">
+    <button id="saveMusicBtn">Save Music</button>
+    <button id="clearMusicBtn">Reset</button>
+    <div id="musicEmbedContainer"></div>
+  </div>
 
 </div>
 

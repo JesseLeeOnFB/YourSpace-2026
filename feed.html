@@ -3,30 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
+<title>YourSpace Profile</title>
 <link rel="stylesheet" href="profile.css">
-<script type="module" src="firebase-init.js"></script>
-<script type="module" src="feed.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 </head>
 <body class="default-theme">
-  <!-- NAVIGATION -->
-  <div class="navbar">
-    <button id="navFeedBtn">Feed</button>
-    <button id="navProfileBtn">Profile</button>
-    <button id="navMessagesBtn">Messages</button>
-    <button id="navSettingsBtn">Settings</button>
-  </div>
 
-  <!-- FEED MAIN -->
-  <div class="feed-main">
-    <div id="feedPostInputBox">
-      <textarea id="newPostInput" placeholder="What's on your mind?"></textarea>
-      <button id="postButton">Post</button>
+<!-- Navbar -->
+<div class="navbar">
+  <button>Feed</button>
+  <button>Profile</button>
+  <button>Messages</button>
+  <button>Settings</button>
+</div>
+
+<div class="profile-main">
+
+  <!-- Profile top -->
+  <div class="profile-top">
+
+    <!-- Profile picture -->
+    <div class="pfp-container">
+      <img id="profilePfp" src="default-pfp.jpg" alt="Profile Picture">
+      <input type="file" id="pfpUpload">
+      <button id="savePfpBtn">Save Profile Picture</button>
     </div>
 
-    <div id="feedPostsContainer">
-      <!-- Posts will load here -->
+    <!-- Profile info -->
+    <div class="profile-info-box">
+      <input id="usernameInput" placeholder="Username">
+      <textarea id="bioInput" placeholder="Bio"></textarea>
+      <input id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
     </div>
+
   </div>
+
+  <!-- Wall comments -->
+  <div class="wall-container">
+    <h3>Comment Wall</h3>
+    <div id="wallContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Leave a comment..."></textarea>
+    <button id="postWallBtn">Post Comment</button>
+  </div>
+
+  <!-- Top 10 friends -->
+  <div class="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="editTop10Btn">Save Top 10</button>
+  </div>
+
+  <!-- Music player -->
+  <div class="music-player">
+    <h3>Music Player</h3>
+    <input id="musicInput" placeholder="YouTube or SoundCloud URL">
+    <button id="playMusicBtn">Play</button>
+    <button id="pauseMusicBtn">Pause</button>
+    <iframe id="musicIframe"></iframe>
+  </div>
+
+  <!-- Theme & custom HTML -->
+  <div class="theme-custom-box">
+    <h3>Themes & Custom HTML</h3>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="red">Red</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+      <option value="neon">Neon</option>
+    </select>
+    <textarea id="customHtmlBox" placeholder="Add custom HTML"></textarea>
+    <button id="saveThemeBtn">Save Theme & Custom HTML</button>
+    <div id="customHtmlContainer"></div>
+  </div>
+
+</div>
+
+<script src="profile.js"></script>
 </body>
 </html>

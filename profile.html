@@ -1,58 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+  <!-- Navigation -->
+  <nav>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<!-- Navigation -->
-<nav>
-  <button id="feedNavBtn">Feed</button>
-  <button id="profileNavBtn">Profile</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
-
-<!-- Main Profile Container -->
-<div class="profile-container">
-
-  <!-- Profile Picture -->
-  <div class="profile-section">
-    <h2>Profile Picture</h2>
-    <img id="profilePicture" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
-    <input type="file" id="profilePicInput">
-    <button id="savePfpBtn">Save Profile Picture</button>
-  </div>
-
-  <!-- Bio -->
-  <div class="profile-section">
-    <h2>Bio</h2>
-    <textarea id="bioText" rows="4" placeholder="This is your bio..."></textarea>
-    <button id="saveBioBtn">Save Bio</button>
-  </div>
-
-  <!-- Wall -->
-  <div class="profile-section">
-    <h2>Wall</h2>
-    <div id="wallContainer" class="wall-container">
-      <!-- Wall comments load here -->
+  <!-- Profile Section -->
+  <section id="profileSection">
+    <h2>Profile</h2>
+    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
+    <input type="file" id="pfpInput">
+    <div>
+      <label for="bioInput">Bio:</label>
+      <textarea id="bioInput" rows="4"></textarea>
+      <div id="bioDisplay"></div>
     </div>
-    <input type="text" id="wallInput" placeholder="Write on the wall...">
-    <button id="postWallBtn">Post</button>
-  </div>
+    <button id="saveProfileBtn">Save Profile</button>
+  </section>
 
-  <!-- Custom HTML / Themes (Placeholder) -->
-  <div class="profile-section">
-    <h2>Custom Layout / Theme</h2>
-    <textarea id="customHtmlInput" rows="6" placeholder="Paste your custom HTML/CSS here..."></textarea>
-    <button id="applyCustomHtmlBtn">Apply</button>
-    <button id="resetCustomHtmlBtn">Reset to Default</button>
-  </div>
+  <!-- Wall Section -->
+  <section id="wallSection">
+    <h3>Wall</h3>
+    <textarea id="wallInput" placeholder="Write on your wall..." rows="3"></textarea>
+    <button id="wallBtn">Post</button>
+    <div id="wallContainer"></div>
+  </section>
 
-</div>
+  <!-- Music Section -->
+  <section id="musicSection">
+    <h3>Music</h3>
+    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud link">
+    <button id="addMusicBtn">Add Music</button>
+    <div id="musicContainer"></div>
+  </section>
 
-<script type="module" src="profile.js"></script>
+  <!-- Theme & Custom HTML -->
+  <section id="customizationSection">
+    <h3>Theme & Custom HTML</h3>
+    <label for="themeSelect">Preset Theme:</label>
+    <select id="themeSelect">
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="retro">Retro</option>
+    </select>
+    <textarea id="customHtmlInput" rows="5" placeholder="Custom HTML/CSS code here"></textarea>
+    <button id="saveCustomHtmlBtn">Save Customization</button>
+    <button id="resetCustomHtmlBtn">Reset Custom HTML</button>
+    <div id="customHtmlContainer"></div>
+  </section>
+
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

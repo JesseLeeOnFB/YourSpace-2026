@@ -1,13 +1,20 @@
-/* --------------------- */
-/* Base Styles */
-/* --------------------- */
+/* ---------------------------
+   Reset & Base
+--------------------------- */
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #121212; /* Default dark theme background */
-  color: #fff;
+  font-family: 'Century Gothic', sans-serif;
+  background-color: #f0f0f0;
+  color: #000;
 }
 
+h2, h3, h4 {
+  margin: 0 0 10px 0;
+}
+
+/* ---------------------------
+   Navigation
+--------------------------- */
 nav {
   display: flex;
   gap: 10px;
@@ -16,159 +23,141 @@ nav {
 }
 
 nav button {
-  padding: 8px 16px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   background-color: #444;
   color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 nav button:hover {
   background-color: #666;
 }
 
-.profile-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* --------------------- */
-/* Profile Sections */
-/* --------------------- */
-.profile-section {
-  background-color: #1e1e1e;
+/* ---------------------------
+   Sections
+--------------------------- */
+section {
+  background-color: #fff;
   padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  margin: 15px auto;
+  border-radius: 10px;
+  max-width: 800px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
 }
 
-.profile-section h2 {
-  margin-top: 0;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.profile-pic {
-  width: 150px;
-  height: 150px;
+/* ---------------------------
+   Profile Section
+--------------------------- */
+#profilePic {
+  display: block;
+  margin: 0 auto 10px auto;
   border-radius: 50%;
   object-fit: cover;
-  display: block;
-  margin-bottom: 10px;
+  width: 150px;
+  height: 150px;
+  border: 3px solid #444;
 }
 
-textarea, input[type="text"], input[type="file"] {
+#bioInput, #wallInput, #customHtmlInput {
   width: 100%;
   padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #555;
-  background-color: #2c2c2c;
-  color: #fff;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  font-family: 'Century Gothic', sans-serif;
+}
+
+#bioDisplay {
+  margin-top: 10px;
+  padding: 5px;
+  background-color: #eee;
+  border-radius: 5px;
+  min-height: 40px;
+}
+
+/* ---------------------------
+   Wall Section
+--------------------------- */
+#wallContainer {
+  margin-top: 10px;
+}
+
+.wall-post {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0;
+}
+
+/* ---------------------------
+   Music Section
+--------------------------- */
+#musicContainer {
+  margin-top: 10px;
+}
+
+.music-item {
   margin-bottom: 10px;
 }
 
-textarea:focus, input:focus {
-  outline: 2px solid #777;
+/* ---------------------------
+   Custom HTML Section
+--------------------------- */
+#customHtmlContainer {
+  margin-top: 10px;
+  min-height: 50px;
 }
 
-/* Buttons inside profile sections */
-.profile-section button {
-  padding: 8px 16px;
-  border-radius: 4px;
+/* ---------------------------
+   Buttons
+--------------------------- */
+button {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 5px;
   border: none;
   background-color: #444;
-  color: #fff;
-  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  margin-top: 5px;
 }
 
-.profile-section button:hover {
+button:hover {
   background-color: #666;
 }
 
-/* --------------------- */
-/* Wall Section */
-/* --------------------- */
-.wall-container {
-  max-height: 300px;
-  overflow-y: auto;
-  background-color: #2a2a2a;
-  padding: 10px;
-  border-radius: 4px;
+/* ---------------------------
+   Themes
+--------------------------- */
+body[data-theme="dark"] {
+  background-color: #111;
+  color: #eee;
 }
 
-.wall-container p {
-  margin: 5px 0;
-  padding: 5px;
-  background-color: #333;
-  border-radius: 4px;
+body[data-theme="light"] {
+  background-color: #fff;
+  color: #222;
 }
 
-/* --------------------- */
-/* Preset Themes */
-/* --------------------- */
+body[data-theme="retro"] {
+  background-color: #222;
+  color: #f0f0f0;
+}
 
-/* Dark Theme */
-body.theme-dark {
-  background-color: #121212;
+body[data-theme="retro"] section {
+  background-color: #000;
   color: #fff;
 }
-body.theme-dark .profile-section {
-  background-color: #1e1e1e;
-}
-body.theme-dark .wall-container {
-  background-color: #2a2a2a;
-}
 
-/* Light Theme */
-body.theme-light {
-  background-color: #f4f4f4;
-  color: #111;
-}
-body.theme-light .profile-section {
-  background-color: #fff;
-  color: #111;
-}
-body.theme-light textarea, body.theme-light input[type="text"], body.theme-light input[type="file"] {
-  background-color: #fff;
-  color: #111;
-  border: 1px solid #ccc;
-}
-body.theme-light .wall-container {
-  background-color: #eaeaea;
-  color: #111;
-}
+/* ---------------------------
+   Responsive
+--------------------------- */
+@media (max-width: 768px) {
+  section {
+    margin: 10px;
+  }
 
-/* Retro Theme */
-body.theme-retro {
-  background-color: #ffefd5;
-  color: #000;
-}
-body.theme-retro .profile-section {
-  background-color: #000;
-  color: #ff0;
-}
-body.theme-retro textarea, body.theme-retro input[type="text"], body.theme-retro input[type="file"] {
-  background-color: #222;
-  color: #0f0;
-  border: 1px solid #0f0;
-}
-body.theme-retro .wall-container {
-  background-color: #111;
-  color: #0f0;
-}
-
-/* --------------------- */
-/* Custom HTML / CSS Injector Container */
-/* --------------------- */
-#customHtmlInput {
-  font-family: monospace;
-  font-size: 12px;
-  color: #0f0;
-  background-color: #000;
-  border: 1px solid #0f0;
+  #profilePic {
+    width: 120px;
+    height: 120px;
+  }
 }

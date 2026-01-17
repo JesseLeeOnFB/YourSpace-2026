@@ -7,75 +7,68 @@
   <link rel="stylesheet" href="profile.css">
 </head>
 <body class="theme-dark">
+  <!-- Navigation -->
+  <nav id="topNav">
+    <ul>
+      <li><button id="feedNavBtn">Feed</button></li>
+      <li><button id="profileNavBtn">Profile</button></li>
+      <li><button id="messagesNavBtn">Messages</button></li>
+      <li><button id="logoutBtn">Logout</button></li>
+    </ul>
+  </nav>
 
-  <div class="profile-container">
-    <!-- PROFILE HEADER -->
-    <div class="profile-header">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <div class="profile-name" id="profileName">YourSpace User</div>
+  <!-- Profile Header -->
+  <section class="profile-header">
+    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
+    <h1 id="profileName">YourSpace User</h1>
+    <p id="profileBio">This is the bio lol</p>
+
+    <!-- Profile Owner Controls -->
+    <div class="profile-controls">
+      <input type="file" id="pfpInput">
+      <button id="savePfpBtn">Save Profile Picture</button>
+      <textarea id="bioInput" placeholder="Update your bio"></textarea>
+      <button id="saveBioBtn">Save Bio</button>
+      <select id="themeSelect">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
+      </select>
     </div>
+  </section>
 
-    <!-- BIO -->
-    <div class="profile-bio" id="profileBio">This is the bio lol</div>
-    <textarea id="bioInput" placeholder="Update your bio"></textarea>
-    <button id="saveBioBtn">Save Bio</button>
+  <!-- Top 10 Friends -->
+  <section class="top10-section">
+    <h2>Top 10 Friends</h2>
+    <div id="top10Container" class="top10-container">
+      <!-- Populated dynamically -->
+    </div>
+  </section>
 
-    <!-- PROFILE PICTURE -->
-    <input type="file" id="pfpInput" accept="image/*">
-    <button id="savePfpBtn">Update Profile Picture</button>
+  <!-- Wall -->
+  <section class="wall-section">
+    <h2>Wall</h2>
+    <div class="wall-controls">
+      <textarea id="wallInput" placeholder="Write something on the wall"></textarea>
+      <button id="postWallBtn">Post</button>
+    </div>
+    <div id="wallContainer" class="wall-container">
+      <!-- Wall comments populated dynamically -->
+    </div>
+  </section>
 
-    <!-- THEME SELECTOR -->
-    <select id="themeSelect">
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-      <option value="retro">Retro</option>
-    </select>
+  <!-- Music Player -->
+  <section class="music-section">
+    <h2>Music Player</h2>
+    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud link">
+    <button id="addMusicBtn">Add Song</button>
+    <div id="musicPlaylist" class="music-playlist">
+      <!-- Playlist populated dynamically -->
+    </div>
+    <audio id="musicPlayer" controls></audio>
+  </section>
 
-    <!-- TOP 10 FRIENDS -->
-    <h3>Top 10 Friends</h3>
-    <div id="top10FriendsContainer"></div>
-
-    <!-- WALL POSTS -->
-    <h3>Wall</h3>
-    <textarea id="wallInput" placeholder="Write something on the wall..."></textarea>
-    <button id="postWallBtn">Post</button>
-    <div id="wallContainer"></div>
-
-    <!-- MUSIC PLAYER -->
-    <h3>Music Player</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
-    <button id="playMusicBtn">Play</button>
-    <div id="musicPlayerContainer"></div>
-  </div>
-
-  <!-- JS -->
+  <!-- Scripts -->
   <script type="module" src="profile.js"></script>
-  <script>
-    // MUSIC PLAYER BUTTON
-    const playMusicBtn = document.getElementById("playMusicBtn");
-    const musicInput = document.getElementById("musicInput");
-    const musicPlayerContainer = document.getElementById("musicPlayerContainer");
-
-    playMusicBtn.addEventListener("click", () => {
-      const url = musicInput.value.trim();
-      if (!url) return;
-
-      let embedURL = "";
-
-      if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const videoId = url.split("v=")[1] || url.split("/")[3];
-        embedURL = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-      } else if (url.includes("spotify.com")) {
-        embedURL = url.replace("/track/", "/embed/track/");
-      } else if (url.includes("soundcloud.com")) {
-        embedURL = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true`;
-      } else {
-        alert("Unsupported link");
-        return;
-      }
-
-      musicPlayerContainer.innerHTML = `<iframe src="${embedURL}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    });
-  </script>
 </body>
 </html>

@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>YourSpace Messages</title>
-  <link rel="stylesheet" href="messages.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace - Messages</title>
+<link rel="stylesheet" href="profile.css">
 </head>
-<body>
+<body class="theme-dark">
 
-<header class="top-bar">
-  <button onclick="window.location.href='feed.html'">Feed</button>
-  <button onclick="window.location.href='profile.html'">Profile</button>
-</header>
+<nav>
+  <button id="feedNavBtn">Feed</button>
+  <button id="profileNavBtn">Profile</button>
+  <button id="logoutBtn">Logout</button>
+</nav>
 
-<div class="messages-wrapper">
-  <div id="messagesContainer" class="messages-container"></div>
+<h1>Private Messages</h1>
 
-  <div class="message-input">
-    <input type="text" id="messageText" placeholder="Type a message">
-    <input type="file" id="messageFile">
-    <button id="sendMessageBtn">Send</button>
-  </div>
+<div id="conversationsContainer"></div>
+
+<div id="messageSection" style="display:none;">
+  <h2 id="chatWith"></h2>
+  <div id="messagesContainer" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:5px; margin-bottom:10px;"></div>
+  <textarea id="messageInput" placeholder="Type a message..." rows="2" style="width:100%;"></textarea>
+  <input type="file" id="messageFileInput">
+  <button id="sendMessageBtn">Send</button>
+  <button id="backToConversationsBtn">Back</button>
 </div>
 
 <script type="module" src="messages.js"></script>

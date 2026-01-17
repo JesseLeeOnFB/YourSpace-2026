@@ -1,16 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-import {
-  getFirestore, doc, getDoc, setDoc, updateDoc,
-  collection, addDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
 // --------------------
 // Firebase Init
@@ -50,15 +41,18 @@ const themeSelect = document.getElementById("themeSelect");
 
 const top10Container = document.getElementById("top10FriendsContainer");
 
-const musicInput = document.getElementById("musicInput");
-const addMusicBtn = document.getElementById("addMusicBtn");
-const playlistEl = document.getElementById("playlist");
-const audioPlayer = document.getElementById("audioPlayer");
+const musicList = document.getElementById("musicList");
+const musicPlayer = document.getElementById("musicPlayer");
 
-const customHTMLInput = document.getElementById("customHTMLInput");
-const applyCustomHTMLBtn = document.getElementById("applyCustomHTMLBtn");
-const resetCustomHTMLBtn = document.getElementById("resetCustomHTMLBtn");
-const customHTMLPreview = document.getElementById("customHTMLPreview");
+const sendMessageBtn = document.getElementById("sendMessageBtn");
+
+// Navigation buttons
+document.getElementById("feedNavBtn").addEventListener("click", ()=> window.location.href="feed.html");
+document.getElementById("profileNavBtn").addEventListener("click", ()=> window.location.href="profile.html");
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await auth.signOut();
+  window.location.href="login.html";
+});
 
 // --------------------
 // State
@@ -69,11 +63,8 @@ let viewedUserId = null;
 // --------------------
 // Auth Handling
 // --------------------
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.replace("login.html");
-    return;
-  }
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href="login.html"; return; }
   currentUser = user;
 
   const params = new URLSearchParams(window.location.search);
@@ -82,166 +73,172 @@ onAuthStateChanged(auth, async (user) => {
   await loadProfile(viewedUserId);
   await loadWall(viewedUserId);
   await loadTop10(viewedUserId);
-  await loadPlaylist(viewedUserId);
+  await loadMusic(viewedUserId);
 
-  const isOwnProfile = viewedUserId === user.uid;
+  const isOwnProfile = currentUser.uid === viewedUserId;
   bioInput.style.display = isOwnProfile ? "block" : "none";
   saveBioBtn.style.display = isOwnProfile ? "block" : "none";
   pfpInput.style.display = isOwnProfile ? "block" : "none";
   savePfpBtn.style.display = isOwnProfile ? "block" : "none";
   themeSelect.style.display = isOwnProfile ? "block" : "none";
-  musicInput.style.display = isOwnProfile ? "block" : "none";
-  addMusicBtn.style.display = isOwnProfile ? "block" : "none";
-  customHTMLInput.style.display = isOwnProfile ? "block" : "none";
-  applyCustomHTMLBtn.style.display = isOwnProfile ? "block" : "none";
-  resetCustomHTMLBtn.style.display = isOwnProfile ? "block" : "none";
+  sendMessageBtn.style.display = !isOwnProfile ? "block" : "none";
+
+  if(!isOwnProfile){
+    sendMessageBtn.onclick = ()=> openPrivateMessage(viewedUserId);
+  }
 });
 
 // --------------------
-// Load Profile
+// Profile Loading
 // --------------------
-async function loadProfile(uid) {
-  const userRef = doc(db, "users", uid);
+async function loadProfile(uid){
+  const userRef = doc(db,"users",uid);
   const snap = await getDoc(userRef);
 
-  if (!snap.exists()) {
-    await setDoc(userRef, { bio: "", profilePicture: "", theme: "dark", top10Friends: [], musicPlaylist: [], createdAt: serverTimestamp() });
+  if(!snap.exists()){
+    await setDoc(userRef,{bio:"",profilePicture:"",theme:"dark",createdAt:serverTimestamp()});
   }
 
   const data = (await getDoc(userRef)).data();
+
   profileName.textContent = data.username || "YourSpace User";
   profileBio.textContent = data.bio || "This is the bio lol";
 
-  profilePic.src = data.profilePicture || "default-avatar.png";
+  if(data.profilePicture) profilePic.src=data.profilePicture;
+  else profilePic.src="default-avatar.png";
+
   applyTheme(data.theme || "dark");
 }
 
 // --------------------
 // Save Bio
 // --------------------
-saveBioBtn?.addEventListener("click", async () => {
-  if (!bioInput.value.trim()) return;
-  await updateDoc(doc(db, "users", currentUser.uid), { bio: bioInput.value.trim() });
+saveBioBtn?.addEventListener("click", async ()=>{
+  if(!bioInput.value.trim()) return;
+  await updateDoc(doc(db,"users",currentUser.uid),{bio: bioInput.value.trim()});
   profileBio.textContent = bioInput.value.trim();
-  bioInput.value = "";
+  bioInput.value="";
 });
 
 // --------------------
 // Save Profile Picture
 // --------------------
-savePfpBtn?.addEventListener("click", async () => {
+savePfpBtn?.addEventListener("click", async ()=>{
   const file = pfpInput.files[0];
-  if (!file) return alert("Select an image first");
+  if(!file){ alert("Select an image first"); return; }
   const pfpRef = ref(storage, `profilePictures/${currentUser.uid}`);
-  await uploadBytes(pfpRef, file);
+  await uploadBytes(pfpRef,file);
   const url = await getDownloadURL(pfpRef);
-  await updateDoc(doc(db, "users", currentUser.uid), { profilePicture: url });
-  profilePic.src = url;
-  pfpInput.value = "";
+  await updateDoc(doc(db,"users",currentUser.uid),{profilePicture:url});
+  profilePic.src=url;
+  pfpInput.value="";
 });
 
 // --------------------
 // Wall Comments
 // --------------------
-async function loadWall(uid) {
-  wallContainer.innerHTML = "";
-  const q = query(collection(db, "users", uid, "wallComments"), orderBy("createdAt", "desc"));
+async function loadWall(uid){
+  wallContainer.innerHTML="";
+  const q = query(collection(db,"users",uid,"wallComments"),orderBy("createdAt","desc"));
   const snap = await getDocs(q);
-  snap.forEach((docSnap) => {
+
+  snap.forEach((docSnap)=>{
     const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "wall-post";
-    div.innerHTML = `<strong>${data.username}</strong>: ${data.text}`;
-    if (currentUser.uid === data.userId || currentUser.uid === uid) {
+    const div=document.createElement("div");
+    div.className="wall-post";
+    div.innerHTML=`<strong>${data.username}</strong>: ${data.text}`;
+
+    if(currentUser.uid===data.userId || currentUser.uid===uid){
       const del = document.createElement("button");
-      del.textContent = "Delete";
-      del.onclick = async () => { await deleteDoc(doc(db, "users", uid, "wallComments", docSnap.id)); loadWall(uid); };
+      del.textContent="Delete";
+      del.onclick=async()=>{
+        await deleteDoc(doc(db,"users",uid,"wallComments",docSnap.id));
+        loadWall(uid);
+      };
       div.appendChild(del);
     }
+
+    // Clickable username in wall
+    div.querySelector("strong").style.cursor="pointer";
+    div.querySelector("strong").onclick=()=> window.location.href=`profile.html?uid=${data.userId}`;
+
     wallContainer.appendChild(div);
   });
 }
 
-postWallBtn?.addEventListener("click", async () => {
-  if (!wallInput.value.trim()) return;
-  const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+postWallBtn?.addEventListener("click", async ()=>{
+  if(!wallInput.value.trim()) return;
+  const userSnap = await getDoc(doc(db,"users",currentUser.uid));
   const username = userSnap.data()?.username || "User";
-  await addDoc(collection(db, "users", viewedUserId, "wallComments"), { text: wallInput.value.trim(), userId: currentUser.uid, username, createdAt: serverTimestamp() });
-  wallInput.value = "";
+  await addDoc(collection(db,"users",viewedUserId,"wallComments"),{
+    text: wallInput.value.trim(),
+    userId: currentUser.uid,
+    username,
+    createdAt: serverTimestamp()
+  });
+  wallInput.value="";
   loadWall(viewedUserId);
 });
 
 // --------------------
 // Themes
 // --------------------
-themeSelect?.addEventListener("change", async (e) => {
-  const theme = e.target.value;
+themeSelect?.addEventListener("change", async (e)=>{
+  const theme=e.target.value;
   applyTheme(theme);
-  await updateDoc(doc(db, "users", currentUser.uid), { theme });
+  await updateDoc(doc(db,"users",currentUser.uid),{theme});
 });
 
-function applyTheme(theme) {
-  document.body.className = "";
+function applyTheme(theme){
+  document.body.className="";
   document.body.classList.add(`theme-${theme}`);
 }
 
 // --------------------
 // Top 10 Friends
 // --------------------
-async function loadTop10(uid) {
-  const snap = await getDoc(doc(db, "users", uid));
-  const friends = snap.data()?.top10Friends || [];
-  top10Container.innerHTML = "";
-  friends.forEach(f => {
-    const li = document.createElement("li");
-    li.innerHTML = `<img src="${f.pfpURL || 'default-avatar.png'}"><span>${f.username || 'Unknown'}</span>`;
-    li.onclick = () => { window.location.href = `profile.html?uid=${f.uid}`; };
-    top10Container.appendChild(li);
+async function loadTop10(uid){
+  top10Container.innerHTML="";
+  const snap = await getDoc(doc(db,"users",uid));
+  const friends = snap.data()?.top10Friends||[];
+
+  friends.forEach(f=>{
+    const div=document.createElement("div");
+    div.className="top-friend";
+    div.innerHTML=`<img src="${f.pfpURL||'default-avatar.png'}" width="40" height="40" style="border-radius:50%;">
+                   <span class="topFriendName" style="cursor:pointer;">${f.username||'Unknown'}</span>`;
+    div.querySelector(".topFriendName").onclick=()=> window.location.href=`profile.html?uid=${f.uid}`;
+    top10Container.appendChild(div);
   });
 }
 
 // --------------------
 // Music Player
 // --------------------
-addMusicBtn?.addEventListener("click", async () => {
-  const url = musicInput.value.trim();
-  if (!url) return;
-  const snap = await getDoc(doc(db, "users", currentUser.uid));
-  const playlist = snap.data()?.musicPlaylist || [];
-  playlist.push(url);
-  await updateDoc(doc(db, "users", currentUser.uid), { musicPlaylist: playlist });
-  musicInput.value = "";
-  loadPlaylist(currentUser.uid);
-});
+async function loadMusic(uid){
+  musicList.innerHTML="";
+  const snap = await getDoc(doc(db,"users",uid));
+  const songs = snap.data()?.musicPlaylist||[];
 
-async function loadPlaylist(uid) {
-  playlistEl.innerHTML = "";
-  const snap = await getDoc(doc(db, "users", uid));
-  const playlist = snap.data()?.musicPlaylist || [];
-  playlist.forEach(url => {
-    const li = document.createElement("li");
-    li.textContent = url;
-    li.onclick = () => { audioPlayer.src = convertToEmbed(url); audioPlayer.play(); };
-    playlistEl.appendChild(li);
+  songs.forEach((s,i)=>{
+    const div=document.createElement("div");
+    div.className="music-item";
+    div.textContent=s.title||s.url||`Song ${i+1}`;
+    div.style.cursor="pointer";
+    div.onclick=()=>{
+      musicPlayer.src=s.url;
+      musicPlayer.play();
+    };
+    musicList.appendChild(div);
   });
 }
 
-function convertToEmbed(url) {
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    const videoId = url.split("v=")[1] || url.split("/").pop();
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  }
-  return url;
+// --------------------
+// Private Messages
+// --------------------
+function openPrivateMessage(otherUid){
+  // This would redirect to a privateMessages.html page with conversationId
+  // conversationId can be deterministic: sort uids alphabetically and join
+  const conversationId = [currentUser.uid,otherUid].sort().join("_");
+  window.location.href=`privateMessages.html?cid=${conversationId}&other=${otherUid}`;
 }
-
-// --------------------
-// Custom HTML
-// --------------------
-applyCustomHTMLBtn?.addEventListener("click", () => {
-  customHTMLPreview.innerHTML = customHTMLInput.value;
-});
-
-resetCustomHTMLBtn?.addEventListener("click", () => {
-  customHTMLPreview.innerHTML = "";
-  customHTMLInput.value = "";
-});

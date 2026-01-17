@@ -1,169 +1,92 @@
-/* ----- Global ----- */
 body {
-  font-family: "Century Gothic", sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Century Gothic', sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #121212;
+  color: #ffffff;
 }
 
-nav#topNav {
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
+nav {
   display: flex;
+  justify-content: flex-start;
+  background-color: #222;
+  padding: 10px;
   gap: 10px;
 }
 
-nav#topNav button {
-  padding: 8px 12px;
-  border: none;
+button {
   cursor: pointer;
-  color: #fff;
-  background-color: #555;
-  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
 }
 
-nav#topNav button:hover {
-  background-color: #777;
-}
-
-main#profileMain {
+#profileContainer {
+  max-width: 900px;
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 20px;
-  padding: 20px;
 }
 
-/* ----- Content Boxes ----- */
-.content-box {
-  background-color: #fff;
-  padding: 15px;
-  width: 90%;
-  max-width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
-}
-
-.content-box:hover {
-  transform: translateY(-3px);
-}
-
-/* ----- Profile Info ----- */
-#pfpContainer {
+#profileHeader {
   display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 10px;
+  gap: 20px;
 }
 
 #pfpContainer img {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #333;
+  border: 2px solid #fff;
 }
 
-#bioContainer textarea,
-#locationContainer input {
+#bioContainer, #musicContainer, #customHtmlContainer {
+  background-color: #1e1e1e;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+textarea, input[type=text] {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
+  padding: 5px;
+  margin: 5px 0;
+  border-radius: 3px;
+  border: none;
 }
 
-/* ----- Top 10 Friends ----- */
-#top10Container {
+#top10Container, #wallContainer {
+  background-color: #1e1e1e;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#top10Friends, #wallPostsContainer {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .top-friend {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #eee;
-  padding: 5px;
-  border-radius: 4px;
-  cursor: grab;
 }
 
 .top-friend img {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  object-fit: cover;
 }
 
-/* ----- Wall ----- */
-#wallCommentsContainer {
-  max-height: 200px;
-  overflow-y: auto;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
-  padding: 5px;
-  background-color: #fafafa;
+.wall-post {
+  background-color: #2a2a2a;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-#wallCommentsContainer p {
-  margin: 2px 0;
+.comment {
+  padding-left: 10px;
+  font-size: 13px;
+  color: #ccc;
 }
-
-#wallInput {
-  width: 100%;
-  height: 50px;
-  padding: 5px;
-  margin-bottom: 5px;
-}
-
-/* ----- Music Player ----- */
-#musicPlayerContainer iframe {
-  width: 100%;
-  height: 166px;
-  margin-top: 10px;
-}
-
-/* ----- Custom HTML Box ----- */
-#customHTMLInput {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 5px;
-}
-
-/* ----- Buttons ----- */
-button {
-  padding: 6px 10px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background-color: #333;
-  color: #fff;
-}
-
-button:hover {
-  background-color: #555;
-}
-
-/* ----- Preset Theme Classes ----- */
-body.theme-dark {
-  background-color: #121212;
-  color: #fff;
-}
-
-body.theme-light {
-  background-color: #fdfdfd;
-  color: #000;
-}
-
-body.theme-retro {
-  background-color: #f4e2c2;
-  color: #333;
-}
-
-body.theme-dark .content-box { background-color: #1e1e1e; }
-body.theme-light .content-box { background-color: #ffffff; }
-body.theme-retro .content-box { background-color: #f9f0d9; }

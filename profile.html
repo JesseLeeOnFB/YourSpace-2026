@@ -1,64 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css?v=1.0">
-</head>
-<body class="theme-default">
+<div class="profile-header">
 
-  <!-- NAV -->
-  <nav class="top-nav">
-    <button onclick="location.href='feed.html'">Feed</button>
-    <button onclick="location.href='profile.html'">Profile</button>
-    <button onclick="location.href='messages.html'">Messages</button>
-    <button onclick="location.href='settings.html'">Settings</button>
-  </nav>
+  <!-- PROFILE PICTURE -->
+  <div class="profile-picture-box">
+    <img id="profilePfp" src="" alt="Profile Picture">
 
-  <main class="profile-page">
+    <input type="file" id="profilePfpInput" accept="image/*">
+    <button id="saveProfilePfpBtn">Save Profile Picture</button>
+  </div>
 
-    <!-- PROFILE CARD -->
-    <section class="profile-card">
-      <img id="profilePfp" src="" alt="Profile Picture">
-      <input type="file" id="profilePfpInput">
-      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+  <!-- PROFILE INFO -->
+  <div class="profile-info-box">
 
-      <input id="usernameInput" placeholder="Username">
-      <textarea id="bioInput" placeholder="Bio"></textarea>
-      <input id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Profile Info</button>
-    </section>
+    <label>Username</label>
+    <input id="usernameInput" type="text" placeholder="Your username">
 
-    <!-- THEME -->
-    <section class="theme-card">
-      <h3>Themes</h3>
-      <select id="themeSelect">
-        <option value="theme-default">Default</option>
-        <option value="theme-red">Red</option>
-        <option value="theme-blue">Blue</option>
-        <option value="theme-green">Green</option>
-        <option value="theme-neon">Neon</option>
-        <option value="theme-animated">Animated</option>
-      </select>
-      <button id="saveThemeBtn">Apply Theme</button>
-    </section>
+    <label>Bio</label>
+    <textarea id="bioInput" placeholder="Tell people about yourself"></textarea>
 
-    <!-- WALL -->
-    <section class="wall-card">
-      <h3>Comment Wall</h3>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post Comment</button>
-      <div id="wallCommentsContainer"></div>
-    </section>
+    <label>Location</label>
+    <input id="locationInput" type="text" placeholder="City, Country">
 
-  </main>
+    <button id="saveProfileBtn">Save Profile Info</button>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <!-- THEME SELECTION -->
+    <label>Profile Theme</label>
+    <select id="themeSelect">
+      <option value="theme-default">Default</option>
+      <option value="theme-red">Red</option>
+      <option value="theme-blue">Blue</option>
+      <option value="theme-green">Green</option>
+      <option value="theme-black">Black Neon</option>
+      <option value="theme-animated">Animated</option>
+    </select>
 
-  <script src="profile.js?v=1.0"></script>
-</body>
-</html>
+    <button id="saveThemeBtn">Save Theme</button>
+
+  </div>
+</div>

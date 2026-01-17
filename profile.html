@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YourSpace Profile</title>
 <link rel="stylesheet" href="profile.css">
+<script type="module" src="profile.js" defer></script>
 </head>
 <body class="default-theme">
 
+<!-- Navigation -->
 <div class="navbar">
   <button id="navFeedBtn">Feed</button>
   <button id="navProfileBtn">Profile</button>
@@ -15,9 +17,10 @@
   <button id="navNotificationsBtn">Notifications</button>
 </div>
 
+<!-- Profile main container -->
 <div class="profile-main">
-  
-  <!-- Top section: Profile Picture + Info -->
+
+  <!-- Top Section: PFP + Profile Info -->
   <div class="profile-top">
     <div class="pfp-container">
       <img id="profilePfp" src="" alt="Profile Picture">
@@ -30,23 +33,24 @@
       <textarea id="bioInput" placeholder="Bio"></textarea>
       <input id="locationInput" placeholder="Location">
       <button id="saveProfileBtn">Save Profile Info</button>
-
-      <div class="theme-selection">
-        <select id="themeSelect">
-          <option value="default-theme">Default</option>
-          <option value="red-theme">Red</option>
-          <option value="blue-theme">Blue</option>
-          <option value="green-theme">Green</option>
-          <option value="neon-theme">Neon</option>
-        </select>
-        <button id="saveThemeBtn">Save Theme</button>
-      </div>
-
-      <div class="theme-custom-box">
-        <textarea id="customHtmlInput" placeholder="Custom HTML for backgrounds, themes, animations"></textarea>
-        <div id="customHtmlContainer"></div>
-      </div>
     </div>
+  </div>
+
+  <!-- Theme selection -->
+  <div class="theme-custom-box">
+    <h3>Select Theme</h3>
+    <select id="themeSelect">
+      <option value="default-theme">Default</option>
+      <option value="red-theme">Red</option>
+      <option value="blue-theme">Blue</option>
+      <option value="green-theme">Green</option>
+      <option value="neon-theme">Neon Animated</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
+
+    <h3>Custom HTML/CSS</h3>
+    <textarea id="customHtmlInput" placeholder="Enter HTML or CSS for background, animations, etc."></textarea>
+    <div id="customHtmlContainer"></div>
   </div>
 
   <!-- Wall Comments -->
@@ -66,12 +70,12 @@
 
   <!-- Music Player -->
   <div class="music-player">
-    <input type="text" id="musicUrlInput" placeholder="Enter YouTube, SoundCloud, Pandora, Spotify link">
-    <iframe id="musicIframe" src="" allow="autoplay" allowfullscreen></iframe>
+    <h3>Music Player</h3>
+    <input id="musicLinkInput" placeholder="Paste YouTube, SoundCloud, Pandora, or Spotify link">
+    <button id="loadMusicBtn">Load Music</button>
+    <iframe id="musicIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 
 </div>
-
-<script type="module" src="profile.js"></script>
 </body>
 </html>

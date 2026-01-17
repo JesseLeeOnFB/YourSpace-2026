@@ -1,184 +1,123 @@
-/* -----------------------------
-  Base Styling
--------------------------------- */
+/* Basic layout */
 body {
+  font-family: 'Century Gothic', sans-serif;
   margin: 0;
-  font-family: Arial, sans-serif;
+  padding: 0;
   background-color: #121212;
   color: #ffffff;
 }
 
 nav#navBar {
+  background-color: #1f1f1f;
   display: flex;
   justify-content: space-around;
-  background-color: #1f1f1f;
   padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 nav#navBar button {
-  background-color: #333333;
+  background: none;
   color: #fff;
-  border: none;
-  padding: 8px 12px;
+  border: 1px solid #fff;
+  padding: 5px 10px;
   cursor: pointer;
 }
 
 nav#navBar button:hover {
-  background-color: #555555;
+  background-color: #fff;
+  color: #000;
 }
 
 .profile-container {
   max-width: 900px;
-  margin: 20px auto;
-  padding: 10px;
-  background-color: #1b1b1b;
-  border-radius: 8px;
+  margin: auto;
+  padding: 20px;
 }
 
-/* Profile Header */
 .profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  text-align: center;
   margin-bottom: 20px;
 }
 
 .profile-header img {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
 }
 
-/* Editable Profile */
-.profile-edit {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.profile-header input, .profile-header button {
+  display: block;
+  margin: 10px auto;
+}
+
+.profile-bio, .top10-container, .music-container, .wall-container, .custom-html-container, .theme-container {
+  background-color: #1f1f1f;
+  padding: 15px;
   margin-bottom: 20px;
+  border-radius: 10px;
 }
 
-.profile-edit input,
-.profile-edit textarea,
-.profile-edit select {
-  padding: 8px;
-  border-radius: 4px;
+textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
   border: 1px solid #555;
-  background-color: #222;
+  background-color: #121212;
   color: #fff;
 }
 
-/* Music Player */
-.music-player {
-  margin-bottom: 20px;
-}
-
-.music-player ul {
-  list-style: none;
-  padding: 0;
-}
-
-.music-player li {
+button {
   cursor: pointer;
-  padding: 5px;
-  border-bottom: 1px solid #555;
-}
-
-.music-player li:hover {
-  background-color: #333;
-}
-
-/* Top 10 Friends */
-.top10-container ul {
-  display: flex;
-  gap: 10px;
-  padding: 0;
-  list-style: none;
-}
-
-.top10-container li {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-}
-
-.top10-container li img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* Wall Comments */
-.wall-container {
-  margin-bottom: 20px;
+  border-radius: 5px;
 }
 
 .wall-post {
-  background-color: #222;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  border-bottom: 1px solid #555;
+  padding: 5px 0;
 }
 
 .wall-post button {
   margin-left: 10px;
+  padding: 2px 5px;
+}
+
+/* Top 10 friends */
+#top10FriendsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#top10FriendsContainer div.top-friend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
 }
 
-/* Custom HTML Container */
-.custom-html-container {
-  margin-bottom: 20px;
+/* Music player playlist */
+#musicPlaylist div.song-item {
+  padding: 5px;
+  cursor: pointer;
+  border-bottom: 1px solid #555;
 }
 
-#customHTMLPreview {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #1b1b1b;
-  border-radius: 5px;
-  min-height: 100px;
+#musicPlaylist div.song-item:hover {
+  background-color: #333;
 }
 
-/* -----------------------------
-  Theme Overrides
--------------------------------- */
-body.theme-light {
-  background-color: #f5f5f5;
-  color: #222;
-}
+/* Themes */
+body.theme-dark { background-color: #121212; color: #ffffff; }
+body.theme-light { background-color: #f4f4f4; color: #000; }
+body.theme-retro { background-color: #fdf0d5; color: #000; }
 
-body.theme-light .profile-container {
-  background-color: #fff;
-  color: #222;
-}
-
-body.theme-retro {
-  background-color: #ffefd5;
-  color: #333;
-}
-
-body.theme-retro .profile-container {
-  background-color: #222;
-  color: #fff;
-}
-
-/* -----------------------------
-  Responsive
--------------------------------- */
-@media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  nav#navBar {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .top10-container ul {
-    flex-wrap: wrap;
-  }
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .profile-container { padding: 10px; }
+  .profile-header img { width: 120px; height: 120px; }
 }

@@ -1,74 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body class="theme-dark">
-  <!-- Navigation -->
-  <nav id="topNav">
-    <ul>
-      <li><button id="feedNavBtn">Feed</button></li>
-      <li><button id="profileNavBtn">Profile</button></li>
-      <li><button id="messagesNavBtn">Messages</button></li>
-      <li><button id="logoutBtn">Logout</button></li>
-    </ul>
-  </nav>
 
-  <!-- Profile Header -->
-  <section class="profile-header">
-    <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-pic">
-    <h1 id="profileName">YourSpace User</h1>
-    <p id="profileBio">This is the bio lol</p>
+<!-- Navigation -->
+<nav id="topnav">
+  <ul>
+    <li><button id="feedNavBtn">Feed</button></li>
+    <li><button id="profileNavBtn">Profile</button></li>
+  </ul>
+</nav>
 
-    <!-- Profile Owner Controls -->
-    <div class="profile-controls">
-      <input type="file" id="pfpInput">
-      <button id="savePfpBtn">Save Profile Picture</button>
-      <textarea id="bioInput" placeholder="Update your bio"></textarea>
-      <button id="saveBioBtn">Save Bio</button>
-      <select id="themeSelect">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="retro">Retro</option>
-      </select>
-    </div>
-  </section>
+<!-- Profile Info -->
+<section id="profileSection">
+  <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-avatar">
+  <h2 id="profileName">User Name</h2>
+  <p id="profileBio">This is the bio lol</p>
 
-  <!-- Top 10 Friends -->
-  <section class="top10-section">
-    <h2>Top 10 Friends</h2>
-    <div id="top10Container" class="top10-container">
-      <!-- Populated dynamically -->
-    </div>
-  </section>
+  <!-- Edit Own Profile -->
+  <input type="text" id="bioInput" placeholder="Edit bio">
+  <button id="saveBioBtn">Save Bio</button>
 
-  <!-- Wall -->
-  <section class="wall-section">
-    <h2>Wall</h2>
-    <div class="wall-controls">
-      <textarea id="wallInput" placeholder="Write something on the wall"></textarea>
-      <button id="postWallBtn">Post</button>
-    </div>
-    <div id="wallContainer" class="wall-container">
-      <!-- Wall comments populated dynamically -->
-    </div>
-  </section>
+  <input type="file" id="pfpInput">
+  <button id="savePfpBtn">Change Profile Picture</button>
 
-  <!-- Music Player -->
-  <section class="music-section">
-    <h2>Music Player</h2>
-    <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify/SoundCloud link">
-    <button id="addMusicBtn">Add Song</button>
-    <div id="musicPlaylist" class="music-playlist">
-      <!-- Playlist populated dynamically -->
-    </div>
-    <audio id="musicPlayer" controls></audio>
-  </section>
+  <select id="themeSelect">
+    <option value="dark">Dark</option>
+    <option value="light">Light</option>
+    <option value="retro">Retro</option>
+  </select>
+</section>
 
-  <!-- Scripts -->
-  <script type="module" src="profile.js"></script>
+<!-- Wall Comments -->
+<section id="wallSection">
+  <h3>Wall</h3>
+  <input type="text" id="wallInput" placeholder="Write on wall">
+  <button id="postWallBtn">Post</button>
+  <div id="wallContainer"></div>
+</section>
+
+<!-- Top 10 Friends -->
+<section id="top10Section">
+  <h3>Top 10 Friends</h3>
+  <div id="top10FriendsContainer"></div>
+</section>
+
+<!-- Music Player -->
+<section id="musicSection">
+  <h3>Music Playlist</h3>
+  <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
+  <button id="addMusicBtn">Add Song</button>
+  <div id="musicPlaylistContainer"></div>
+  <iframe id="musicPlayerIframe" width="300" height="80" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</section>
+
+<!-- Firebase & JS -->
+<script type="module" src="profile.js"></script>
 </body>
 </html>

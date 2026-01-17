@@ -1,179 +1,112 @@
-/* ----------------------------
-   GENERAL RESET & BODY
----------------------------- */
+/* --------------------
+   Reset / Base Styles
+-------------------- */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: 'Century Gothic', sans-serif;
+  font-family: "Century Gothic", sans-serif;
 }
 
 body {
-  background-color: #121212;
-  color: #fff;
   min-height: 100vh;
+  background-color: #1a1a1a;
+  color: #ffffff;
   padding: 20px;
 }
 
-/* ----------------------------
-   NAVIGATION
----------------------------- */
-nav#topnav {
-  background-color: #1f1f1f;
-  padding: 10px;
-  border-radius: 8px;
+/* --------------------
+   Navigation Bar
+-------------------- */
+nav#topNav {
+  background-color: #333;
+  padding: 10px 20px;
   margin-bottom: 20px;
+  border-radius: 5px;
 }
 
-nav#topnav ul {
+nav#topNav ul {
   display: flex;
   list-style: none;
-  justify-content: flex-start;
+  gap: 15px;
 }
 
-nav#topnav ul li {
-  margin-right: 10px;
-}
-
-nav#topnav ul li button {
-  background-color: #333;
+nav#topNav ul li a,
+nav#topNav ul li button {
+  text-decoration: none;
   color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 5px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 3px;
   cursor: pointer;
+  background: none;
+  border: none;
 }
 
-nav#topnav ul li button:hover {
+nav#topNav ul li a:hover,
+nav#topNav ul li button:hover {
   background-color: #555;
 }
 
-/* ----------------------------
-   PROFILE SECTION
----------------------------- */
-#profileSection {
-  background-color: #1f1f1f;
+/* --------------------
+   Main Container
+-------------------- */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* --------------------
+   Profile Section
+-------------------- */
+.profile-section {
+  background-color: #222;
   padding: 20px;
   border-radius: 10px;
-  margin-bottom: 20px;
   text-align: center;
 }
 
-.profile-avatar {
-  width: 120px;
-  height: 120px;
+.profile-section h1 {
+  margin: 10px 0;
+  font-size: 28px;
+}
+
+.profile-section p {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.profile-section input,
+.profile-section select,
+.profile-section button {
+  margin: 5px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+}
+
+.profile-picture {
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 10px;
-  border: 3px solid #fff;
+  border: 3px solid #cd1045;
 }
 
-#profileName {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-#profileBio {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-/* Inputs and buttons (own profile) */
-#bioInput,
-#pfpInput,
-#saveBioBtn,
-#savePfpBtn,
-#themeSelect {
-  margin: 5px 0;
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: none;
-  font-size: 14px;
-}
-
-#saveBioBtn,
-#savePfpBtn {
-  background-color: #ff8c00;
-  color: #fff;
-  cursor: pointer;
-}
-
-#saveBioBtn:hover,
-#savePfpBtn:hover {
-  background-color: #ffa733;
-}
-
-/* ----------------------------
-   WALL COMMENTS
----------------------------- */
-#wallSection {
-  background-color: #1f1f1f;
-  padding: 15px;
+/* --------------------
+   Top 10 Friends
+-------------------- */
+.top10-section {
+  background-color: #222;
+  padding: 20px;
   border-radius: 10px;
-  margin-bottom: 20px;
 }
 
-#wallSection h3 {
-  margin-bottom: 10px;
-}
-
-#wallInput {
-  width: calc(100% - 100px);
-  padding: 6px 10px;
-  margin-right: 5px;
-  border-radius: 5px;
-  border: none;
-  font-size: 14px;
-}
-
-#postWallBtn {
-  padding: 6px 12px;
-  border-radius: 5px;
-  border: none;
-  background-color: #ff8c00;
-  color: #fff;
-  cursor: pointer;
-}
-
-#postWallBtn:hover {
-  background-color: #ffa733;
-}
-
-.wall-post {
-  background-color: #2b2b2b;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.wall-post button {
-  background-color: #ff4d4d;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
-}
-
-.wall-post button:hover {
-  background-color: #ff6666;
-}
-
-/* ----------------------------
-   TOP 10 FRIENDS
----------------------------- */
-#top10Section {
-  background-color: #1f1f1f;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-#top10FriendsContainer {
+.top10-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -182,113 +115,117 @@ nav#topnav ul li button:hover {
 .top-friend {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background-color: #2b2b2b;
-  padding: 6px 10px;
-  border-radius: 8px;
+  gap: 5px;
+  background-color: #333;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 .top-friend img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-/* ----------------------------
-   MUSIC PLAYER
----------------------------- */
-#musicSection {
-  background-color: #1f1f1f;
-  padding: 15px;
+/* --------------------
+   Wall Section
+-------------------- */
+.wall-section {
+  background-color: #222;
+  padding: 20px;
   border-radius: 10px;
-  margin-bottom: 20px;
 }
 
-#musicInput {
-  width: calc(100% - 100px);
-  padding: 6px 10px;
-  margin-right: 5px;
-  border-radius: 5px;
-  border: none;
-  font-size: 14px;
+.wall-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-#addMusicBtn {
-  padding: 6px 12px;
+.wall-post {
+  background-color: #333;
+  padding: 10px;
   border-radius: 5px;
-  border: none;
-  background-color: #ff8c00;
+  position: relative;
+}
+
+.wall-post button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* --------------------
+   Music Player Section
+-------------------- */
+.music-section {
+  background-color: #222;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.music-buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.music-buttons-container button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #333;
   color: #fff;
+  border: none;
   cursor: pointer;
 }
 
-#addMusicBtn:hover {
-  background-color: #ffa733;
+.music-buttons-container button:hover {
+  background-color: #555;
 }
 
-#musicPlaylistContainer {
+.music-player {
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
   margin-top: 10px;
 }
 
-#musicPlaylistContainer button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 5px;
-  padding: 6px 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #2b2b2b;
-  color: #fff;
-  cursor: pointer;
+/* --------------------
+   Themes
+-------------------- */
+.theme-dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
-#musicPlaylistContainer button:hover {
-  background-color: #3a3a3a;
+.theme-light {
+  background-color: #f5f5f5;
+  color: #222222;
 }
 
-#musicPlayerIframe {
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 8px;
+.theme-light .profile-section,
+.theme-light .top10-section,
+.theme-light .wall-section,
+.theme-light .music-section {
+  background-color: #ffffff;
+  color: #222222;
 }
 
-/* ----------------------------
-   THEMES
----------------------------- */
-body.theme-dark {
-  background-color: #121212;
-  color: #fff;
+.theme-retro {
+  background-color: #ffefd5;
+  color: #333333;
 }
 
-body.theme-light {
-  background-color: #f0f0f0;
-  color: #000;
-}
-
-body.theme-light .wall-post,
-body.theme-light .top-friend,
-body.theme-light #profileSection,
-body.theme-light #wallSection,
-body.theme-light #top10Section,
-body.theme-light #musicSection {
-  background-color: #fff;
-  color: #000;
-}
-
-body.theme-retro {
-  background-color: #fbe4c4;
-  color: #333;
-}
-
-body.theme-retro .wall-post,
-body.theme-retro .top-friend,
-body.theme-retro #profileSection,
-body.theme-retro #wallSection,
-body.theme-retro #top10Section,
-body.theme-retro #musicSection {
-  background-color: #000;
-  color: #ff0;
+.theme-retro .profile-section,
+.theme-retro .top10-section,
+.theme-retro .wall-section,
+.theme-retro .music-section {
+  background-color: #000000;
+  color: #ffcc00;
 }

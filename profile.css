@@ -1,272 +1,66 @@
-/* RESET */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 body {
-  background: #f0f2f5;
-  color: #111;
-  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 200vh;
 }
 
-/* ================= NAV BAR ================= */
-.navbar {
+.top-nav {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px;
-  background: linear-gradient(90deg, #2a6cff, #4da3ff);
-  border-bottom: 2px solid #1d4ed8;
-}
-
-.navBtn {
-  background: white;
-  color: #1d4ed8;
-  border: none;
-  padding: 8px 16px;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.navBtn:hover {
-  background: #e0e7ff;
-}
-
-/* ================= MAIN LAYOUT ================= */
-.profile-container {
-  max-width: 900px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 10px;
-}
-
-/* ================= CONTAINERS ================= */
-section {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* ================= PROFILE INFO ================= */
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 10px;
+  padding: 10px;
+  background: #111;
 }
 
-.profile-picture {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #3b82f6;
-  background: #ddd;
-}
-
-.profile-info input[type="text"],
-.profile-info input[type="file"] {
-  width: 100%;
-  max-width: 320px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.profile-info button {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  background: #3b82f6;
+.top-nav button {
   color: white;
-  font-weight: bold;
+  background: #333;
+  border: none;
+  padding: 8px 12px;
   cursor: pointer;
 }
 
-.profile-info button:hover {
-  background: #2563eb;
-}
-
-/* ================= WALL COMMENTS ================= */
-.wall-comments h3 {
-  margin-bottom: 10px;
-}
-
-.comments-container {
+.profile-page {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 30px;
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+section {
+  background: rgba(255,255,255,0.9);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-card img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  display: block;
   margin-bottom: 10px;
 }
 
 .wall-comment {
-  background: #f1f5f9;
-  padding: 8px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0;
 }
 
-.wall-comment strong {
-  color: #1d4ed8;
+/* THEMES */
+.theme-default { background: #f0f0f0; }
+.theme-red { background: #ffdddd; }
+.theme-blue { background: #dde8ff; }
+.theme-green { background: #ddffdd; }
+.theme-neon { background: black; color: #39ff14; }
+.theme-animated {
+  animation: rainbow 5s infinite;
 }
 
-.wall-comment button {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-
-.wall-comment button:hover {
-  background: #dc2626;
-}
-
-.wall-comments input {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.wall-comments button {
-  margin-top: 6px;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  background: #10b981;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.wall-comments button:hover {
-  background: #059669;
-}
-
-/* ================= TOP 10 FRIENDS ================= */
-.top-friends h3 {
-  margin-bottom: 10px;
-}
-
-.friends-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-}
-
-.top-friend {
-  background: #e0e7ff;
-  padding: 8px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-}
-
-#editTop10Btn {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  background: #6366f1;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* ================= THEMES ================= */
-.themes select {
-  padding: 8px;
-  border-radius: 6px;
-  width: 200px;
-}
-
-.themes button {
-  margin-left: 10px;
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  background: #3b82f6;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* ================= MUSIC PLAYER ================= */
-.music-player input {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.music-player button {
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  background: #f59e0b;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.music-container iframe {
-  width: 100%;
-  height: 80px;
-  margin-top: 10px;
-  border-radius: 8px;
-}
-
-/* ================= THEMES ================= */
-body.default {
-  background: #f0f2f5;
-}
-
-body.red {
-  background: linear-gradient(135deg, #ff4d4d, #ff9999);
-}
-
-body.blue {
-  background: linear-gradient(135deg, #3b82f6, #93c5fd);
-}
-
-body.green {
-  background: linear-gradient(135deg, #22c55e, #86efac);
-}
-
-body.black-neon {
-  background: #000;
-  color: #39ff14;
-}
-
-body.animated {
-  animation: bgShift 6s infinite alternate;
-}
-
-@keyframes bgShift {
-  0% { background: #ff0080; }
-  50% { background: #7928ca; }
-  100% { background: #2afadf; }
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 600px) {
-  .navbar {
-    flex-wrap: wrap;
-  }
-
-  .profile-container {
-    margin: 10px;
-  }
+@keyframes rainbow {
+  0% { background: red; }
+  25% { background: blue; }
+  50% { background: green; }
+  75% { background: purple; }
+  100% { background: red; }
 }

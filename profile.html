@@ -1,73 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Profile</title>
-<link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+  <nav id="topNav">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
 
-<!-- Navigation -->
-<nav>
-  <button id="feedNavBtn">Feed</button>
-  <button id="profileNavBtn">Profile</button>
-  <button id="logoutBtn">Logout</button>
-</nav>
+  <main id="profileMain">
 
-<!-- Profile Section -->
-<section id="profileSection">
-  <div class="profile-box">
-    <h2>Your Profile</h2>
+    <!-- Profile Info Box -->
+    <section class="content-box" id="profileInfoBox">
+      <div id="pfpContainer">
+        <img id="profilePFP" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="pfpInput">
+        <button id="savePFPBtn">Save PFP</button>
+      </div>
+      <div id="bioContainer">
+        <textarea id="bioInput" placeholder="Write your bio..."></textarea>
+        <button id="saveBioBtn">Save Bio</button>
+      </div>
+      <div id="locationContainer">
+        <input type="text" id="locationInput" placeholder="Location">
+        <button id="saveLocationBtn">Save Location</button>
+      </div>
+    </section>
 
-    <!-- Profile Picture -->
-    <div class="pfp-container">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" width="150" height="150">
-      <input type="file" id="profilePicInput">
-    </div>
+    <!-- Top 10 Friends -->
+    <section class="content-box" id="top10Box">
+      <h2>Top 10 Friends</h2>
+      <div id="top10Container"></div>
+    </section>
 
-    <!-- Bio -->
-    <div class="bio-container">
-      <h3>Bio</h3>
-      <p id="bioDisplay">This is the bio lol</p>
-      <textarea id="bioInput" placeholder="Write your bio"></textarea>
-      <button id="bioSaveBtn">Save Bio</button>
-    </div>
-  </div>
+    <!-- Wall -->
+    <section class="content-box" id="wallBox">
+      <h2>Wall</h2>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
+      <button id="postWallBtn">Post</button>
+    </section>
 
-  <!-- Wall Section -->
-  <div class="wall-box">
-    <h3>Wall</h3>
-    <textarea id="wallInput" placeholder="Write on the wall"></textarea>
-    <button id="wallPostBtn">Post</button>
-    <div id="wallContainer"></div>
-  </div>
+    <!-- Music Player -->
+    <section class="content-box" id="musicBox">
+      <h2>Music Player</h2>
+      <input type="text" id="musicURLInput" placeholder="Paste YouTube / Spotify / SoundCloud URL">
+      <button id="playMusicBtn">Play</button>
+      <div id="musicPlayerContainer"></div>
+    </section>
 
-  <!-- Music Section -->
-  <div class="music-box">
-    <h3>Music</h3>
-    <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
-    <button id="musicAddBtn">Add Music</button>
-    <div id="musicContainer"></div>
-  </div>
+    <!-- Custom HTML / Theme Injector -->
+    <section class="content-box" id="customHTMLBox">
+      <h2>Custom HTML/CSS</h2>
+      <textarea id="customHTMLInput" placeholder="Add custom HTML/CSS code here"></textarea>
+      <button id="applyCustomHTMLBtn">Apply</button>
+      <button id="resetCustomHTMLBtn">Reset to Default</button>
+      <select id="presetThemeSelect">
+        <option value="default">Default</option>
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
+      </select>
+    </section>
 
-  <!-- Themes & Custom HTML -->
-  <div class="customization-box">
-    <h3>Theme</h3>
-    <select id="themeSelect">
-      <option value="default">Default</option>
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-      <option value="retro">Retro</option>
-    </select>
+  </main>
 
-    <h3>Custom HTML</h3>
-    <textarea id="customHtmlInput" placeholder="Add custom HTML code here"></textarea>
-    <button id="customHtmlSaveBtn">Apply</button>
-    <div id="customHtmlContainer"></div>
-  </div>
-</section>
-
-<script type="module" src="profile.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

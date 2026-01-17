@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YourSpace Messages</title>
+  <link rel="stylesheet" href="messages.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <button onclick="window.location.href='feed.html'">Feed</button>
+  <button onclick="window.location.href='profile.html'">Profile</button>
+</header>
+
+<div class="messages-wrapper">
+  <div id="messagesContainer" class="messages-container"></div>
+
+  <div class="message-input">
+    <input type="text" id="messageText" placeholder="Type a message">
+    <input type="file" id="messageFile">
+    <button id="sendMessageBtn">Send</button>
+  </div>
+</div>
+
+<script type="module" src="messages.js"></script>
+</body>
+</html>

@@ -26,7 +26,7 @@ body.neon-theme { animation: neonBg 5s infinite; }
 
 #wallCommentInput { width: 100%; min-height: 50px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
 
-#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
+#top10FriendsContainer, #allUsersContainer { display: flex; flex-direction: column; gap: 5px; min-height: 50px; }
 .top-friend { display: flex; gap: 10px; align-items: center; cursor: grab; }
 
 .music-player { display: flex; flex-direction: column; gap: 10px; }

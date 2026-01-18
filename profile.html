@@ -1,51 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Profile</title>
-  <link rel="stylesheet" href="profile.css?v=2026-01" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body class="default">
 
-<body class="default-theme">
-
+  <!-- NAVIGATION -->
   <nav class="navbar">
-    <button onclick="location.href='feed.html?v=2026-01'">Feed</button>
-    <button onclick="location.href='profile.html?v=2026-01'">Profile</button>
-    <button onclick="location.href='messages.html?v=2026-01'">Messages</button>
-    <button onclick="location.href='logout.html?v=2026-01'">Logout</button>
+    <button id="homeBtn">Home</button>
+    <button id="profileBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <main class="profile-main">
+  <!-- PROFILE SECTION -->
+  <section class="profile-section">
+    <div class="profile-header">
+      <img id="profilePic" src="" alt="Profile Picture" class="profile-picture">
+      <input type="file" id="profilePicInput" accept="image/*">
+      <button id="savePfpBtn">Save Profile Picture</button> <!-- Save button -->
+      <progress id="uploadProgress" value="0" max="100" style="display: none; width: 100%; margin-top: 10px;"></progress> <!-- Progress bar -->
 
-    <section class="profile-top">
+      <h2 id="displayName">Username</h2>
+      <p id="location">Location</p>
+      <p id="bio">Bio</p>
+    </div>
 
-      <div class="pfp-container">
-        <img id="profilePic" src="default-avatar.png" alt="Profile Picture" />
-        <input type="file" id="pfpInput" accept="image/*" />
-        <button id="savePfpBtn">Save Profile Picture</button>
+    <div class="edit-profile">
+      <h3>Edit Profile</h3>
+      <input type="text" id="bioInput" placeholder="Update your bio">
+      <input type="text" id="locationInput" placeholder="Update your location">
+      <input type="text" id="musicInput" placeholder="Add music link (YouTube/SoundCloud/Spotify)">
+      <button id="saveProfileBtn">Save Profile</button>
+      <button id="saveMusicBtn">Save Music</button>
+    </div>
 
-        <progress id="uploadProgress" value="0" max="100" style="display:none;"></progress>
-      </div>
+    <!-- FRIENDS -->
+    <div class="friends-section">
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer"></div>
+      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
+      <button id="addTopFriendBtn">Add to Top 10</button>
+    </div>
 
-      <div class="profile-info-box">
-        <input id="usernameInput" placeholder="Username" disabled />
-        <textarea id="bioInput" placeholder="Bio"></textarea>
-        <input id="locationInput" placeholder="Location" />
-        <button id="saveProfileBtn">Save Profile</button>
-      </div>
+    <div class="friend-requests-section">
+      <h3>Friend Requests</h3>
+      <div id="friendRequestsContainer"></div>
+    </div>
 
-    </section>
+    <!-- COMMENTS WALL -->
+    <div class="comments-section">
+      <h3>Comments Wall</h3>
+      <div id="commentsContainer"></div>
+      <textarea id="commentInput" placeholder="Leave a comment"></textarea>
+      <button id="addCommentBtn">Post Comment</button>
+    </div>
 
-    <section class="wall-container">
-      <h2>Wall</h2>
-      <div id="wallContainer"></div>
-      <input id="wallInput" placeholder="Write something..." />
-      <button id="postWallBtn">Post</button>
-    </section>
+    <!-- MUSIC PLAYER -->
+    <div class="music-player-section">
+      <h3>Music Player</h3>
+      <div id="musicPlayerContainer"></div>
+    </div>
+  </section>
 
-  </main>
-
-  <script type="module" src="profile.js?v=2026-01"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

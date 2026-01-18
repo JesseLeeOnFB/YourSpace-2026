@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace - Feed</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-  <!-- Navigation – IDs only, no onclick -->
+  <!-- Navigation -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
     <button id="navProfileBtn">Profile</button>
@@ -20,16 +19,22 @@
     <h1>Global Feed</h1>
 
     <!-- New Post Form -->
-    <div class="new-post">
-      <textarea id="postText" placeholder="What's on your mind?"></textarea>
-      <input type="file" id="postImage" accept="image/*">
-      <button id="postBtn">Post</button>
+    <div class="new-post-card">
+      <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
+      <div class="post-actions">
+        <label for="postImage" class="image-upload-label">📷 Add Image</label>
+        <input type="file" id="postImage" accept="image/*" style="display: none;">
+        <button id="postBtn">Post</button>
+      </div>
+      <progress id="uploadProgress" value="0" max="100" class="hidden-progress"></progress>
+      <p id="uploadStatus" class="upload-status"></p>
     </div>
 
     <!-- Feed Posts -->
-    <div id="feedContainer"></div>
+    <div id="feedPosts"></div>
   </div>
 
+  <!-- Scripts -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="auth-guard.js"></script>
   <script type="module" src="feed.js"></script>

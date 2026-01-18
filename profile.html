@@ -1,94 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="profile.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourSpace – Profile</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="profile.css?v=2026-01" />
 </head>
-<body class="default-theme">
+
+<body class="theme-light">
 
   <!-- Navigation -->
-  <nav class="navbar">
-    <button id="navFeedBtn">Feed</button>
-    <button id="navProfileBtn">Profile</button>
-    <button id="logoutBtn">Logout</button>
+  <nav class="nav-bar">
+    <a href="feed.html?v=2026-01">Feed</a>
+    <a href="profile.html?v=2026-01">Profile</a>
+    <a href="messages.html?v=2026-01">Messages</a>
+    <a href="logout.html?v=2026-01">Logout</a>
   </nav>
 
-  <div class="profile-main">
+  <!-- Profile Header -->
+  <main class="profile-page">
 
-    <!-- Profile Top Section -->
-    <div class="profile-top">
+    <section class="profile-header">
 
-      <!-- Profile Picture -->
-      <div class="pfp-container">
-        <img id="profilePfp" src="" alt="Profile Picture">
-        <input type="file" id="profilePfpInput" accept="image/*">
-        <button id="saveProfilePfpBtn">Upload & Save Picture</button>
-      </div>
+      <img
+        id="profilePic"
+        src="default-avatar.png"
+        alt="Profile Picture"
+        class="profile-pic"
+      />
 
-      <!-- Profile Info -->
-      <div class="profile-info-box">
-        <input id="usernameInput" placeholder="Username" disabled>
-        <textarea id="bioInput" placeholder="Bio"></textarea>
-        <input id="locationInput" placeholder="Location">
-        <button id="saveProfileBtn">Save Profile Info</button>
-      </div>
-    </div>
+      <h1 id="profileName">User</h1>
+      <p id="profileBio">This is the bio lol</p>
 
-    <!-- Theme Selector -->
-    <div class="theme-container">
-      <h3>Theme</h3>
-      <select id="themeSelect">
-        <option value="default-theme">Default</option>
-        <option value="red-theme">Red Gradient</option>
-        <option value="blue-theme">Blue Gradient</option>
-        <option value="green-theme">Green Gradient</option>
-        <option value="neon-theme">Neon</option>
-      </select>
-      <button id="saveThemeBtn">Apply Theme</button>
-      <button id="resetThemeBtn">Reset to Default</button>
-    </div>
+      <!-- Edit Bio -->
+      <input
+        type="text"
+        id="bioInput"
+        placeholder="Edit your bio"
+      />
+      <button id="saveBioBtn">Save Bio</button>
 
-    <!-- Custom HTML -->
-    <div class="custom-html-section">
-      <h3>Custom Profile HTML/CSS</h3>
-      <textarea id="customHtmlInput" placeholder="Add custom HTML/CSS for MySpace-style customization"></textarea>
-      <button id="saveCustomHtmlBtn">Save Custom HTML</button>
-      <div id="customHtmlPreview"></div>
-    </div>
+      <!-- Profile Picture Upload -->
+      <input
+        type="file"
+        id="pfpInput"
+        accept="image/*"
+      />
+      <button id="savePfpBtn">Save Profile Picture</button>
 
-    <!-- Music Player -->
-    <div class="music-player">
-      <h3>Music Playlist (Up to 4 songs)</h3>
-      <div id="musicPlaylist"></div>
-      <input type="text" id="musicTitleInput" placeholder="Song title">
-      <input type="text" id="musicLinkInput" placeholder="YouTube/Spotify/SoundCloud/Pandora link">
-      <button id="addMusicBtn">Add Song</button>
-      <iframe id="musicIframe" src="" allow="autoplay"></iframe>
-    </div>
+      <!-- Upload Progress -->
+      <progress
+        id="uploadProgress"
+        value="0"
+        max="100"
+        style="display:none; width: 100%; margin-top: 10px;"
+      ></progress>
+
+    </section>
 
     <!-- Top 10 Friends -->
-    <div class="top10-container">
-      <h3>Top 10 Friends (Drag to reorder)</h3>
-      <ul id="top10FriendsList"></ul>
-      <input type="text" id="addFriendInput" placeholder="Add friend username">
-      <button id="addTopFriendBtn">Add to Top 10</button>
-    </div>
+    <section class="top10-section">
+      <h2>Top 10 Friends</h2>
+      <div id="top10Container" class="top10-container">
+        <!-- JS renders friends here -->
+      </div>
+    </section>
 
-    <!-- Wall Comments -->
-    <div class="wall-container">
-      <h3>Wall Comments</h3>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post Comment</button>
-    </div>
+    <!-- Wall -->
+    <section class="wall-section">
+      <h2>Wall</h2>
 
-  </div>
+      <div id="wallContainer" class="wall-container">
+        <!-- Wall posts load here -->
+      </div>
 
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="auth-guard.js"></script>
-  <script type="module" src="profile.js"></script>
+      <input
+        type="text"
+        id="wallInput"
+        placeholder="Write on this wall..."
+      />
+      <button id="postWallBtn">Post</button>
+    </section>
+
+    <!-- Music -->
+    <section class="music-section">
+      <h2>Music</h2>
+
+      <ul id="musicList"></ul>
+
+      <input
+        type="text"
+        id="musicInput"
+        placeholder="Paste YouTube / Spotify link"
+      />
+      <button id="addMusicBtn">Add Song</button>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="profile.js?v=2026-01"></script>
+
 </body>
 </html>

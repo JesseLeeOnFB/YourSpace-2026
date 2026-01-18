@@ -3,29 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed</title>
+  <title>YourSpace - Feed</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-  <!-- NAVIGATION -->
-  <nav class="nav-bar">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
+  <nav class="navbar">
+    <button id="navFeedBtn">Feed</button>
+    <button id="navProfileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- CREATE POST -->
-  <section class="create-post">
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
-    <input type="file" id="postFileInput" accept="image/*,video/*">
-    <button id="postBtn">Post</button>
-  </section>
+  <div class="feed-container">
+    <h1>Global Feed</h1>
 
-  <!-- POSTS -->
-  <section id="postsContainer" class="posts-container"></section>
+    <!-- New Post Form -->
+    <div class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postImage" accept="image/*">
+      <button id="postBtn">Post</button>
+    </div>
 
-  <!-- SCRIPTS -->
+    <!-- Feed Posts -->
+    <div id="feedContainer"></div>
+  </div>
+
   <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth-guard.js"></script>
   <script type="module" src="feed.js"></script>
 </body>
 </html>

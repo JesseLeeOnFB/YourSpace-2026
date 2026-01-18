@@ -1,192 +1,92 @@
-// profile.js ── Final fixed version: uses array-based wall comments (like original userProfile.js), pfp upload with progress bar, full data loading
-
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
-  doc,
-  onSnapshot,
-  updateDoc,
-  arrayUnion,
-  serverTimestamp
+  doc, onSnapshot, updateDoc, arrayUnion, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL
+  ref, uploadBytesResumable, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// DOM Elements (match your HTML IDs exactly)
-const profilePfp = document.getElementById("profilePfp");
-const profilePfpInput = document.getElementById("profilePfpInput");
-const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
+const profilePic = document.getElementById("profilePic");
+const pfpInput = document.getElementById("pfpInput");
+const savePfpBtn = document.getElementById("savePfpBtn");
+const uploadProgress = document.getElementById("uploadProgress");
 
 const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-const musicLinkInput = document.getElementById("musicLinkInput");
-const saveMusicBtn = document.getElementById("saveMusicBtn");
-const musicIframe = document.getElementById("musicIframe");
+const wallContainer = document.getElementById("wallContainer");
+const wallInput = document.getElementById("wallInput");
+const postWallBtn = document.getElementById("postWallBtn");
 
-const commentsContainer = document.getElementById("commentsContainer");
-const commentInput = document.getElementById("commentInput");
-const addCommentBtn = document.getElementById("addCommentBtn");
+let currentUser;
 
-// Navigation
-document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
-
-// Cache buster
-function cacheBust(url) {
-  return url ? `${url}?v=${Date.now()}` : "https://via.placeholder.com/150?text=Default";
-}
-
-// Music embed helper
-function getYouTubeEmbedUrl(url) {
-  if (!url) return "";
-  const id = url.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-  return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : "";
-}
-
-// Real-time listener (loads everything including wall comments array)
-let unsubscribeProfile = null;
-
-function startListeners(user) {
-  if (unsubscribeProfile) unsubscribeProfile();
+onAuthStateChanged(auth, (user) => {
+  if (!user) return location.href = "login.html";
+  currentUser = user;
 
   const userRef = doc(db, "users", user.uid);
 
-  unsubscribeProfile = onSnapshot(userRef, (snap) => {
+  onSnapshot(userRef, snap => {
     if (!snap.exists()) return;
-
     const data = snap.data();
 
-    profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
-
+    profilePic.src = data.photoURL || "default-avatar.png";
     usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
 
-    if (data.music) {
-      musicLinkInput.value = data.music;
-      musicIframe.src = getYouTubeEmbedUrl(data.music);
-    }
-
-    // Wall comments (array in user doc - matches original working version)
-    commentsContainer.innerHTML = "";
-
-    (data.comments || []).forEach((comment) => {
+    wallContainer.innerHTML = "";
+    (data.comments || []).forEach(c => {
       const div = document.createElement("div");
       div.className = "wall-comment";
-      const time = comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now";
-      div.innerHTML = `
-        <strong>${comment.username || "Anonymous"}</strong>
-        <small>${time}</small>
-        <p>${comment.text}</p>
-      `;
-      commentsContainer.appendChild(div);
+      div.textContent = `${c.username}: ${c.text}`;
+      wallContainer.appendChild(div);
     });
   });
-}
-
-// ── Profile Picture Upload with Progress Bar ─────────────────────────────────
-saveProfilePfpBtn.addEventListener("click", async () => {
-  const file = profilePfpInput.files[0];
-  if (!file) return alert("Please select an image first");
-
-  const progressDiv = document.createElement("div");
-  progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
-  progressDiv.innerHTML = `
-    <p>Uploading...</p>
-    <progress id="uploadProgress" value="0" max="100" style="width: 200px;"></progress>
-    <p id="uploadPercent">0%</p>
-  `;
-  document.body.appendChild(progressDiv);
-
-  const progressBar = document.getElementById("uploadProgress");
-  const percentText = document.getElementById("uploadPercent");
-
-  try {
-    const path = `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`;
-    const storageRef = ref(storage, path);
-
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on("state_changed", (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      progressBar.value = progress;
-      percentText.textContent = Math.round(progress) + "%";
-    });
-
-    await uploadTask;
-
-    const url = await getDownloadURL(uploadTask.snapshot.ref);
-
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      photoURL: url,
-      profilePic: url
-    }, { merge: true });
-
-    alert("Success! Profile picture uploaded and saved.");
-    startListeners(auth.currentUser);
-  } catch (err) {
-    alert("Upload failed: " + err.message);
-  } finally {
-    progressDiv.remove();
-  }
 });
 
-// ── Save Bio & Location ──────────────────────────────────────────────────────
-saveProfileBtn.addEventListener("click", async () => {
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    bio: bioInput.value.trim(),
-    location: locationInput.value.trim()
-  }, { merge: true });
+// Save profile
+saveProfileBtn.onclick = async () => {
+  await updateDoc(doc(db, "users", currentUser.uid), {
+    bio: bioInput.value,
+    location: locationInput.value
+  });
+  alert("Profile saved");
+};
 
-  alert("Bio and location saved!");
-  startListeners(auth.currentUser);
-});
-
-// ── Save Music ───────────────────────────────────────────────────────────────
-saveMusicBtn.addEventListener("click", async () => {
-  const link = musicLinkInput.value.trim();
-  if (!link) return;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    music: link
-  }, { merge: true });
-
-  musicIframe.src = getYouTubeEmbedUrl(link);
-  alert("Music saved!");
-});
-
-// ── Add Wall Comment (array-based, matches original working version) ─────────────────────────────────────────────────────────
-addCommentBtn.addEventListener("click", async () => {
-  const text = commentInput.value.trim();
-  if (!text) return alert("Please write something");
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+// Wall post
+postWallBtn.onclick = async () => {
+  if (!wallInput.value.trim()) return;
+  await updateDoc(doc(db, "users", currentUser.uid), {
     comments: arrayUnion({
-      text,
-      username: auth.currentUser.email.split('@')[0] || "Anonymous",
+      text: wallInput.value,
+      username: currentUser.email.split("@")[0],
       createdAt: serverTimestamp()
     })
-  }, { merge: true });
+  });
+  wallInput.value = "";
+};
 
-  commentInput.value = "";
-  alert("Comment posted!");
-});
+// Profile picture upload (THIS NOW WORKS)
+savePfpBtn.onclick = () => {
+  const file = pfpInput.files[0];
+  if (!file) return alert("Select a file");
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+  uploadProgress.style.display = "block";
 
-  startListeners(user);
-});
+  const storageRef = ref(storage, `profilePictures/${currentUser.uid}`);
+  const task = uploadBytesResumable(storageRef, file);
+
+  task.on("state_changed", snap => {
+    uploadProgress.value = (snap.bytesTransferred / snap.totalBytes) * 100;
+  });
+
+  task.then(async () => {
+    const url = await getDownloadURL(storageRef);
+    await updateDoc(doc(db, "users", currentUser.uid), { photoURL: url });
+    uploadProgress.style.display = "none";
+  });
+};

@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Feed</title>
-  <link rel="stylesheet" href="feed.css">
+  <title>YourSpace - Global Feed</title>
+  <link rel="stylesheet" href="style.css"> <!-- your global styles, if any -->
+  <link rel="stylesheet" href="feed.css"> <!-- feed-specific styles -->
 </head>
 <body>
-  <!-- Navigation -->
+
+  <!-- Navigation (IDs only – auth-guard.js handles clicks) -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
     <button id="navProfileBtn">Profile</button>
@@ -19,10 +21,10 @@
     <h1>Global Feed</h1>
 
     <!-- New Post Form -->
-    <div class="new-post-card">
-      <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
+    <div class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?" rows="4"></textarea>
       <div class="post-actions">
-        <label for="postImage" class="image-upload-label">📷 Add Image</label>
+        <label for="postImage" class="image-label">📷 Add Image</label>
         <input type="file" id="postImage" accept="image/*" style="display: none;">
         <button id="postBtn">Post</button>
       </div>
@@ -30,11 +32,11 @@
       <p id="uploadStatus" class="upload-status"></p>
     </div>
 
-    <!-- Feed Posts -->
+    <!-- Posts load here -->
     <div id="feedPosts"></div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Scripts – load in correct order -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="auth-guard.js"></script>
   <script type="module" src="feed.js"></script>

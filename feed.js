@@ -1,4 +1,4 @@
-// feed.js – Fixed: real-time posts, text/image posting, likes/dislikes, comments, delete own, error alerts
+// feed.js – Fixed: waits for auth, real-time posts, text/image posting, likes/dislikes/comments/delete, error alerts
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -23,8 +23,15 @@ const postImage = document.getElementById("postImage");
 const postBtn = document.getElementById("postBtn");
 const feedContainer = document.getElementById("feedContainer");
 
+// Navigation (JS listeners – no onclick in HTML!)
+document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
+document.getElementById("navProfileBtn")?.addEventListener("click", () => window.location.href = "profile.html");
+document.getElementById("navMessagesBtn")?.addEventListener("click", () => window.location.href = "messages.html");
+
 // Load feed real-time
 function loadFeed() {
+  alert("Feed loading started...");
+
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
   onSnapshot(q, async (snap) => {
@@ -32,14 +39,17 @@ function loadFeed() {
 
     if (snap.empty) {
       feedContainer.innerHTML = '<p>No posts yet. Be the first to post!</p>';
+      alert("No posts found in 'posts' collection");
       return;
     }
+
+    alert("Posts loaded: " + snap.size + " posts found");
 
     snap.forEach(async (docSnap) => {
       const post = docSnap.data();
       const postId = docSnap.id;
 
-      // Get poster's username from users collection
+      // Get poster's username
       const userSnap = await getDoc(doc(db, "users", post.userId));
       const username = userSnap.exists() ? userSnap.data().username || "Anonymous" : "Anonymous";
 
@@ -110,7 +120,7 @@ function loadFeed() {
         commentInput.value = "";
       };
 
-      // Load comments for this post
+      // Load comments
       const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
       onSnapshot(commentsQ, (snap) => {
         const commentsDiv = div.querySelector(`#comments-${postId}`);
@@ -126,7 +136,7 @@ function loadFeed() {
       });
     });
   }, (err) => {
-    alert("Feed load error: " + err.message);
+    alert("Feed load error: " + err.message + "\nLikely permissions or collection 'posts' missing.");
   });
 }
 
@@ -166,14 +176,17 @@ postBtn.addEventListener("click", async () => {
     postImage.value = "";
     alert("Post created!");
   } catch (err) {
-    alert("Post failed: " + err.message);
+    alert("Post failed: " + err.message + "\nCheck Firestore rules or login status.");
   }
 });
 
-// Init
+// Init – wait for auth
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
-  else {
-    loadFeed();
+  if (!user) {
+    window.location.href = "login.html";
+    return;
   }
+
+  alert("Authenticated! Loading feed...");
+  loadFeed();
 });

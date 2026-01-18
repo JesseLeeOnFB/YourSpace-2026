@@ -17,33 +17,53 @@
   <div class="container">
     <h1>My Profile</h1>
 
-    <!-- Profile Picture -->
-    <div class="pfp-section">
+    <!-- Profile Header -->
+    <div class="profile-header">
       <img id="profilePfp" src="" alt="Profile Picture">
       <input type="file" id="profilePfpInput" accept="image/*">
       <button id="saveProfilePfpBtn">Upload Picture</button>
+
+      <h2 id="displayName">Username</h2>
+      <p id="location">Location</p>
+      <p id="bio">Bio</p>
     </div>
 
-    <!-- Bio & Location -->
-    <div class="info-section">
-      <textarea id="bioInput" placeholder="Bio"></textarea>
-      <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Bio/Location</button>
-    </div>
-
-    <!-- Music -->
-    <div class="music-section">
-      <input type="text" id="musicLinkInput" placeholder="YouTube music link">
+    <!-- Edit Profile -->
+    <div class="edit-profile">
+      <h3>Edit Profile</h3>
+      <textarea id="bioInput" placeholder="Update your bio"></textarea>
+      <input type="text" id="locationInput" placeholder="Update your location">
+      <input type="text" id="musicInput" placeholder="Add music link (YouTube)">
+      <button id="saveProfileBtn">Save Profile</button>
       <button id="saveMusicBtn">Save Music</button>
-      <iframe id="musicIframe" src="" allow="autoplay"></iframe>
+    </div>
+
+    <!-- Friend Requests -->
+    <div class="friend-requests-section">
+      <h3>Friend Requests</h3>
+      <div id="friendRequestsContainer"></div>
+    </div>
+
+    <!-- Top 10 Friends -->
+    <div class="friends-section">
+      <h3>Top 10 Friends</h3>
+      <div id="topFriendsContainer"></div>
+      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
+      <button id="addTopFriendBtn">Add to Top 10</button>
     </div>
 
     <!-- Wall Comments -->
-    <div class="wall-section">
-      <h2>Wall Comments</h2>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
-      <button id="addWallCommentBtn">Post</button>
+    <div class="comments-section">
+      <h3>Comments Wall</h3>
+      <div id="commentsContainer"></div>
+      <textarea id="commentInput" placeholder="Leave a comment"></textarea>
+      <button id="addCommentBtn">Post Comment</button>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player-section">
+      <h3>Music Player</h3>
+      <div id="musicPlayerContainer"></div>
     </div>
   </div>
 

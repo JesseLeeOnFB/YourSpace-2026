@@ -1,4 +1,4 @@
-/* feed.css ── Full responsive feed styles with fixed image sizing (no huge images) */
+/* feed.css ── Complete fix for huge images + responsive feed styling */
 
 :root {
   --primary: #1a1a1a;
@@ -128,16 +128,16 @@ body {
   white-space: pre-wrap;
 }
 
-/* FIXED: Image Size – No More Huge Images! */
+/* FIXED IMAGE SIZING – No More Huge Images! */
 .post-image {
-  max-width: 100%;           /* Never wider than container */
-  max-height: 500px;         /* Cap height to prevent massive vertical scroll */
-  width: auto;               /* Maintain aspect ratio */
+  max-width: 100%;              /* Never wider than the post card */
+  max-height: 500px;            /* Cap height to prevent massive scroll */
+  width: auto;                  /* Maintain aspect ratio */
   height: auto;
   display: block;
-  margin: 1rem auto;         /* Center image */
+  margin: 1rem auto;            /* Center image */
   border-radius: 8px;
-  object-fit: contain;       /* Fit inside without cropping */
+  object-fit: contain;          /* Fit inside without cropping/distortion */
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
@@ -241,7 +241,7 @@ body {
   padding: 2rem;
 }
 
-/* Responsive Design */
+/* Responsive Design – Mobile-First */
 @media (max-width: 768px) {
   .feed-container {
     padding: 0.5rem;
@@ -269,7 +269,7 @@ body {
   }
 
   .post-image {
-    max-height: 400px;  /* Smaller cap on mobile */
+    max-height: 400px;  /* Smaller cap on tablet/mobile */
   }
 }
 
@@ -279,6 +279,11 @@ body {
   }
 
   .post-image {
-    max-height: 300px;
+    max-height: 300px;  /* Even smaller on phones */
+  }
+
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

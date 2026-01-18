@@ -1,16 +1,16 @@
-// profile.js – Final working version with correct storage bucket (appspot.com) + progress bar
+// profile.js – Updated: no cache busters, storage bucket = yourspace-2026.firebasestorage.app
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// Firebase config – correct storageBucket
+// Firebase config – updated storage bucket
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com",  // ✅ Correct bucket (appspot.com)
+  storageBucket: "yourspace-2026.firebasestorage.app",  // ← Your requested bucket
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
   measurementId: "G-FZ4GFXWGSS"

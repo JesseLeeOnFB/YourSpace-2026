@@ -3,36 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Profile</title>
+  <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
-<body class="theme-dark">
-
-  <!-- Navigation Bar -->
-  <div class="navbar">
-    <button id="navFeed">Feed</button>
-    <button id="navProfile">Profile</button>
-    <button id="navMessages">Messages</button>
+<body>
+  <!-- Navigation -->
+  <nav id="topNav">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="messagesNavBtn">Messages</button>
     <button id="logoutBtn">Logout</button>
-  </div>
+  </nav>
 
-  <div class="container">
-
-    <!-- Profile Header -->
+  <!-- Profile Container -->
+  <div class="profile-container">
     <div class="profile-header">
       <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <h1 id="profileName">YourSpace User</h1>
-      <div id="profileBio" class="profile-bio">This is the bio lol</div>
-    </div>
-
-    <!-- Editable Section -->
-    <div class="edit-section">
-      <input type="text" id="bioInput" placeholder="Update your bio">
+      <h2 id="profileName">YourSpace User</h2>
+      <p id="profileBio">This is the bio lol</p>
+      <input type="text" id="bioInput" placeholder="Edit your bio">
       <button id="saveBioBtn">Save Bio</button>
-
       <input type="file" id="pfpInput" accept="image/*">
-      <button id="savePfpBtn">Save Profile Picture</button>
-
+      <button id="savePfpBtn">Update Picture</button>
       <select id="themeSelect">
         <option value="dark">Dark</option>
         <option value="light">Light</option>
@@ -40,31 +32,36 @@
       </select>
     </div>
 
-    <!-- Wall Posts -->
-    <div class="wall-container" id="wallContainer"></div>
-    <input type="text" id="wallInput" placeholder="Write on the wall">
-    <button id="postWallBtn">Post</button>
+    <!-- Music Player -->
+    <div class="music-player">
+      <h3>Music Playlist</h3>
+      <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify link">
+      <button id="addMusicBtn">Add Song</button>
+      <div id="musicList"></div>
+      <iframe id="musicPlayer" width="300" height="80" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <!-- Wall Comments -->
+    <div class="wall-section">
+      <h3>Wall</h3>
+      <textarea id="wallInput" placeholder="Write on this user's wall"></textarea>
+      <button id="postWallBtn">Post</button>
+      <div id="wallContainer"></div>
+    </div>
 
     <!-- Top 10 Friends -->
-    <h3>Top 10 Friends</h3>
-    <div class="top10-container" id="top10Container"></div>
-
-    <!-- Music Player -->
-    <div class="music-container">
-      <h3>Music Player</h3>
-      <iframe id="musicPlayer" src="" allow="autoplay" allowfullscreen></iframe>
-      <input type="text" id="musicInput" placeholder="Paste YouTube, Spotify, SoundCloud link">
-      <button id="addMusicBtn">Add Song</button>
+    <div class="top10-section">
+      <h3>Top 10 Friends</h3>
+      <ul id="top10List"></ul>
     </div>
 
-    <!-- Custom HTML Injector -->
-    <div class="custom-html-container" id="customHtmlContainer">
-      <h3>Custom HTML</h3>
-      <textarea id="customHtmlInput" placeholder="Paste your HTML/CSS here" rows="5"></textarea>
-      <button id="saveCustomHtmlBtn">Save Custom Layout</button>
-      <div id="customHtmlPreview"></div>
+    <!-- Custom HTML/CSS -->
+    <div class="custom-html-container">
+      <h3>Custom HTML/CSS</h3>
+      <textarea id="customHTMLInput" placeholder="Add your custom code here"></textarea>
+      <button id="applyCustomBtn">Apply Customizations</button>
+      <button id="resetCustomBtn">Reset to Default</button>
     </div>
-
   </div>
 
   <script type="module" src="profile.js"></script>

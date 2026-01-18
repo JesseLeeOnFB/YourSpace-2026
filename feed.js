@@ -1,4 +1,4 @@
-// feed.js – Fixed: waits for auth, real-time posts, text/image posting, likes/dislikes/comments/delete, error alerts
+// feed.js – Clean global feed: text + image posts, likes/dislikes, comments, delete own, real-time
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -18,93 +18,91 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
+// DOM Elements
 const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");
 const postBtn = document.getElementById("postBtn");
-const feedContainer = document.getElementById("feedContainer");
+const feedPosts = document.getElementById("feedPosts");
+const uploadProgress = document.getElementById("uploadProgress");
+const uploadStatus = document.getElementById("uploadStatus");
 
-// Navigation (JS listeners – no onclick in HTML!)
+// Navigation (JS listeners)
 document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
 document.getElementById("navProfileBtn")?.addEventListener("click", () => window.location.href = "profile.html");
 document.getElementById("navMessagesBtn")?.addEventListener("click", () => window.location.href = "messages.html");
 
-// Load feed real-time
+// Real-time feed loading
 function loadFeed() {
-  alert("Feed loading started...");
-
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-  onSnapshot(q, async (snap) => {
-    feedContainer.innerHTML = "";
+  onSnapshot(q, (snap) => {
+    feedPosts.innerHTML = "";
 
     if (snap.empty) {
-      feedContainer.innerHTML = '<p>No posts yet. Be the first to post!</p>';
-      alert("No posts found in 'posts' collection");
+      feedPosts.innerHTML = '<p class="no-posts">No posts yet. Be the first!</p>';
       return;
     }
 
-    alert("Posts loaded: " + snap.size + " posts found");
-
-    snap.forEach(async (docSnap) => {
+    snap.forEach((docSnap) => {
       const post = docSnap.data();
       const postId = docSnap.id;
 
-      // Get poster's username
-      const userSnap = await getDoc(doc(db, "users", post.userId));
-      const username = userSnap.exists() ? userSnap.data().username || "Anonymous" : "Anonymous";
-
       const isOwner = post.userId === auth.currentUser?.uid;
 
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <strong>${username}</strong>
-        <small>${post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now"}</small>
-        <p>${post.text || ""}</p>
-        ${post.imageURL ? `<img src="${post.imageURL}" alt="Post image" style="max-width: 100%; border-radius: 8px;">` : ""}
-        <div class="actions">
-          <button class="likeBtn" data-id="${postId}">
-            Like (${post.likes?.length || 0})
-          </button>
-          <button class="dislikeBtn" data-id="${postId}">
-            Dislike (${post.dislikes?.length || 0})
-          </button>
-          ${isOwner ? `<button class="deleteBtn" data-id="${postId}">Delete</button>` : ""}
+      const postDiv = document.createElement("div");
+      postDiv.className = "post-card";
+      postDiv.innerHTML = `
+        <div class="post-header">
+          <strong>${post.username || "Anonymous"}</strong>
+          <small>${post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now"}</small>
         </div>
-        <div class="comments">
+        <p class="post-text">${post.text || ""}</p>
+        ${post.imageURL ? `<img src="${post.imageURL}" alt="Post image" class="post-image">` : ""}
+        <div class="post-actions">
+          <button class="action-btn like-btn" data-id="${postId}">
+            👍 ${post.likes?.length || 0}
+          </button>
+          <button class="action-btn dislike-btn" data-id="${postId}">
+            👎 ${post.dislikes?.length || 0}
+          </button>
+          ${isOwner ? `<button class="action-btn delete-btn" data-id="${postId}">🗑️ Delete</button>` : ""}
+        </div>
+        <div class="comments-section">
           <h4>Comments</h4>
-          <div id="comments-${postId}"></div>
-          <input type="text" placeholder="Add comment" id="commentInput-${postId}">
-          <button class="commentBtn" data-id="${postId}">Comment</button>
+          <div id="comments-${postId}" class="comments-list"></div>
+          <div class="comment-form">
+            <input type="text" placeholder="Add a comment..." id="commentInput-${postId}">
+            <button class="comment-btn" data-id="${postId}">Send</button>
+          </div>
         </div>
       `;
 
-      feedContainer.appendChild(div);
+      feedPosts.appendChild(postDiv);
 
       // Like
-      div.querySelector(".likeBtn").onclick = async () => {
+      postDiv.querySelector(".like-btn").onclick = async () => {
         await updateDoc(doc(db, "posts", postId), {
           likes: arrayUnion(auth.currentUser.uid)
         });
       };
 
       // Dislike
-      div.querySelector(".dislikeBtn").onclick = async () => {
+      postDiv.querySelector(".dislike-btn").onclick = async () => {
         await updateDoc(doc(db, "posts", postId), {
           dislikes: arrayUnion(auth.currentUser.uid)
         });
       };
 
       // Delete own post
-      div.querySelector(".deleteBtn")?.onclick = async () => {
+      postDiv.querySelector(".delete-btn")?.onclick = async () => {
         if (confirm("Delete this post?")) {
           await deleteDoc(doc(db, "posts", postId));
         }
       };
 
-      // Comment on post
-      const commentInput = div.querySelector(`#commentInput-${postId}`);
-      const commentBtn = div.querySelector(".commentBtn");
+      // Comment
+      const commentInput = postDiv.querySelector(`#commentInput-${postId}`);
+      const commentBtn = postDiv.querySelector(".comment-btn");
 
       commentBtn.onclick = async () => {
         const text = commentInput.value.trim();
@@ -120,43 +118,56 @@ function loadFeed() {
         commentInput.value = "";
       };
 
-      // Load comments
+      // Load comments real-time
       const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
       onSnapshot(commentsQ, (snap) => {
-        const commentsDiv = div.querySelector(`#comments-${postId}`);
-        commentsDiv.innerHTML = "";
+        const commentsList = postDiv.querySelector(`#comments-${postId}`);
+        commentsList.innerHTML = "";
 
         snap.forEach((commentSnap) => {
           const c = commentSnap.data();
           const commentDiv = document.createElement("div");
           commentDiv.className = "comment";
           commentDiv.innerHTML = `<strong>${c.username}</strong>: ${c.text}`;
-          commentsDiv.appendChild(commentDiv);
+          commentsList.appendChild(commentDiv);
         });
       });
     });
   }, (err) => {
-    alert("Feed load error: " + err.message + "\nLikely permissions or collection 'posts' missing.");
+    alert("Feed error: " + err.message);
   });
 }
 
-// Post new text/image
+// Create new post
 postBtn.addEventListener("click", async () => {
   if (!auth.currentUser) return alert("Please login to post");
 
   const text = postText.value.trim();
   const file = postImage.files[0];
 
-  if (!text && !file) return alert("Add text or image");
+  if (!text && !file) return alert("Write something or add an image");
 
   let imageURL = "";
   if (file) {
     try {
+      uploadProgress.style.display = "block";
+      uploadProgress.value = 0;
+
       const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${file.name}-${Date.now()}`);
-      await uploadBytes(storageRef, file);
-      imageURL = await getDownloadURL(storageRef);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        uploadProgress.value = progress;
+      });
+
+      await uploadTask;
+
+      imageURL = await getDownloadURL(uploadTask.snapshot.ref);
+      uploadProgress.style.display = "none";
     } catch (err) {
       alert("Image upload failed: " + err.message);
+      uploadProgress.style.display = "none";
       return;
     }
   }
@@ -176,7 +187,7 @@ postBtn.addEventListener("click", async () => {
     postImage.value = "";
     alert("Post created!");
   } catch (err) {
-    alert("Post failed: " + err.message + "\nCheck Firestore rules or login status.");
+    alert("Failed to post: " + err.message);
   }
 });
 
@@ -187,6 +198,5 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  alert("Authenticated! Loading feed...");
   loadFeed();
 });

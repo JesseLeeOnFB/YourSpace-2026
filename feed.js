@@ -1,9 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import {
+  getFirestore, collection, addDoc, getDocs,
+  doc, updateDoc, getDoc, query, orderBy
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// Firebase Init
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -12,69 +15,119 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// DOM
-const postInput = document.getElementById("postInput");
+// DOM Elements
+const postText = document.getElementById("postText");
 const postFile = document.getElementById("postFile");
 const postBtn = document.getElementById("postBtn");
-const postsContainer = document.getElementById("postsContainer");
+const feedContainer = document.getElementById("feedContainer");
 
-// Navigation
-document.getElementById("navFeed").onclick = ()=>window.location.href="feed.html";
-document.getElementById("navProfile").onclick = ()=>window.location.href="profile.html";
-document.getElementById("navMessages").onclick = ()=>window.location.href="messages.html";
-document.getElementById("navLogout").onclick = ()=>signOut(auth).then(()=>window.location.href="login.html");
+document.getElementById("navFeed").onclick = () => window.location.href = "feed.html";
+document.getElementById("navProfile").onclick = () => window.location.href = "profile.html";
+document.getElementById("navMessages").onclick = () => window.location.href = "messages.html";
+document.getElementById("logoutBtn").onclick = async () => { await signOut(auth); window.location.href = "login.html"; };
+
+let currentUser = null;
 
 // Auth
-let currentUser=null;
-onAuthStateChanged(auth, user=>{
-  if(!user) return window.location.replace("login.html");
-  currentUser=user;
-  loadPosts();
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = "login.html"; return; }
+  currentUser = user;
+  loadFeed();
 });
 
-// Create Post
-postBtn?.addEventListener("click", async()=>{
-  if(!postInput.value.trim() && !postFile.files[0]) return;
+// Load feed
+async function loadFeed() {
+  feedContainer.innerHTML = "";
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
 
-  let fileUrl="";
-  if(postFile.files[0]){
-    const fRef = ref(storage, `posts/${Date.now()}_${postFile.files[0].name}`);
-    await uploadBytes(fRef, postFile.files[0]);
-    fileUrl = await getDownloadURL(fRef);
+  for (const docSnap of snap.docs) {
+    const data = docSnap.data();
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+
+    const userSnap = await getDoc(doc(db, "users", data.userId));
+    const username = userSnap.data()?.username || "User";
+    const profilePic = userSnap.data()?.profilePicture || "default-avatar.png";
+
+    let mediaHTML = "";
+    if (data.file) {
+      if (data.fileType.startsWith("image")) mediaHTML = `<img src="${data.file}" />`;
+      else if (data.fileType.startsWith("video")) mediaHTML = `<video controls src="${data.file}"></video>`;
+    }
+
+    postDiv.innerHTML = `
+      <div><img src="${profilePic}" width="50" /> 
+      <span class="username-link" onclick="window.location.href='profile.html?uid=${data.userId}'">${username}</span></div>
+      <p>${data.text}</p>
+      ${mediaHTML}
+      <div class="actions">
+        <span>Likes: ${data.likes?.length || 0}</span>
+        <button class="likeBtn">Like</button>
+        <span>Dislikes: ${data.dislikes?.length || 0}</span>
+        <button class="dislikeBtn">Dislike</button>
+      </div>
+    `;
+
+    // Like/Dislike
+    const likeBtn = postDiv.querySelector(".likeBtn");
+    const dislikeBtn = postDiv.querySelector(".dislikeBtn");
+
+    likeBtn.onclick = async () => {
+      const likes = data.likes || [];
+      const dislikes = data.dislikes || [];
+      if (!likes.includes(currentUser.uid)) likes.push(currentUser.uid);
+      const idx = dislikes.indexOf(currentUser.uid);
+      if (idx > -1) dislikes.splice(idx, 1);
+      await updateDoc(doc(db, "posts", docSnap.id), { likes, dislikes });
+      loadFeed();
+    };
+
+    dislikeBtn.onclick = async () => {
+      const likes = data.likes || [];
+      const dislikes = data.dislikes || [];
+      if (!dislikes.includes(currentUser.uid)) dislikes.push(currentUser.uid);
+      const idx = likes.indexOf(currentUser.uid);
+      if (idx > -1) likes.splice(idx, 1);
+      await updateDoc(doc(db, "posts", docSnap.id), { likes, dislikes });
+      loadFeed();
+    };
+
+    feedContainer.appendChild(postDiv);
+  }
+}
+
+// Post new content
+postBtn.onclick = async () => {
+  const text = postText.value.trim();
+  let fileURL = "";
+  let fileType = "";
+
+  if (postFile.files[0]) {
+    const file = postFile.files[0];
+    const fileRef = ref(storage, `posts/${Date.now()}-${file.name}`);
+    await uploadBytes(fileRef, file);
+    fileURL = await getDownloadURL(fileRef);
+    fileType = file.type;
   }
 
-  await addDoc(collection(db,"posts"),{
-    text: postInput.value.trim(),
-    fileUrl,
+  await addDoc(collection(db, "posts"), {
+    text,
+    file: fileURL,
+    fileType,
     userId: currentUser.uid,
+    likes: [],
+    dislikes: [],
     createdAt: serverTimestamp()
   });
 
-  postInput.value="";
-  postFile.value="";
-  loadPosts();
-});
-
-// Load Posts
-async function loadPosts(){
-  postsContainer.innerHTML="";
-  const q=query(collection(db,"posts"), orderBy("createdAt","desc"));
-  const snap=await getDocs(q);
-
-  for(const docSnap of snap.docs){
-    const data=docSnap.data();
-    const postDiv=document.createElement("div");
-    postDiv.className="post";
-
-    postDiv.innerHTML=`
-      <strong>${data.userId}</strong>: ${data.text || ""}
-      ${data.fileUrl ? (data.fileUrl.endsWith(".mp4")? `<video src="${data.fileUrl}" controls></video>` : `<img src="${data.fileUrl}">`) : ""}
-    `;
-    postsContainer.appendChild(postDiv);
-  }
-}
+  postText.value = "";
+  postFile.value = "";
+  loadFeed();
+};

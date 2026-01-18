@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Feed Test (Debug)</title>
+</head>
+<body>
+  <h1>Feed Test Page</h1>
+  <p>If you see this, HTML loaded. Now checking JS...</p>
+
+  <nav>
+    <button id="testBtn">Click Me</button>
+  </nav>
+
+  <script type="module">
+    alert("JavaScript is running! (Basic test alert)");
+
+    document.getElementById("testBtn").addEventListener("click", () => {
+      alert("Button works! Feed JS should load now.");
+    });
+
+    console.log("Feed test page loaded");
+  </script>
+</body>
+</html>

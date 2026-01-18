@@ -1,138 +1,192 @@
-// profile.js
+// profile.js ── Final fixed version: uses array-based wall comments (like original userProfile.js), pfp upload with progress bar, full data loading
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth, db, storage } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
-  getFirestore,
   doc,
-  getDoc,
-  setDoc,
+  onSnapshot,
   updateDoc,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
+  arrayUnion,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
-  getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-/* =======================
-   Firebase Init
-======================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
-  measurementId: "G-FZ4GFXWGSS"
-};
+// DOM Elements (match your HTML IDs exactly)
+const profilePfp = document.getElementById("profilePfp");
+const profilePfpInput = document.getElementById("profilePfpInput");
+const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-/* =======================
-   DOM
-======================= */
-const profilePic = document.getElementById("profilePic");
-const profileName = document.getElementById("profileName");
-const profileBio = document.getElementById("profileBio");
+const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
-const saveBioBtn = document.getElementById("saveBioBtn");
-const pfpInput = document.getElementById("pfpInput");
-const savePfpBtn = document.getElementById("savePfpBtn");
-const uploadProgress = document.getElementById("uploadProgress");
+const locationInput = document.getElementById("locationInput");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-/* =======================
-   Auth
-======================= */
-onAuthStateChanged(auth, async (user) => {
+const musicLinkInput = document.getElementById("musicLinkInput");
+const saveMusicBtn = document.getElementById("saveMusicBtn");
+const musicIframe = document.getElementById("musicIframe");
+
+const commentsContainer = document.getElementById("commentsContainer");
+const commentInput = document.getElementById("commentInput");
+const addCommentBtn = document.getElementById("addCommentBtn");
+
+// Navigation
+document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+
+// Cache buster
+function cacheBust(url) {
+  return url ? `${url}?v=${Date.now()}` : "https://via.placeholder.com/150?text=Default";
+}
+
+// Music embed helper
+function getYouTubeEmbedUrl(url) {
+  if (!url) return "";
+  const id = url.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+  return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : "";
+}
+
+// Real-time listener (loads everything including wall comments array)
+let unsubscribeProfile = null;
+
+function startListeners(user) {
+  if (unsubscribeProfile) unsubscribeProfile();
+
+  const userRef = doc(db, "users", user.uid);
+
+  unsubscribeProfile = onSnapshot(userRef, (snap) => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
+
+    usernameInput.value = data.username || "";
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
+
+    if (data.music) {
+      musicLinkInput.value = data.music;
+      musicIframe.src = getYouTubeEmbedUrl(data.music);
+    }
+
+    // Wall comments (array in user doc - matches original working version)
+    commentsContainer.innerHTML = "";
+
+    (data.comments || []).forEach((comment) => {
+      const div = document.createElement("div");
+      div.className = "wall-comment";
+      const time = comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now";
+      div.innerHTML = `
+        <strong>${comment.username || "Anonymous"}</strong>
+        <small>${time}</small>
+        <p>${comment.text}</p>
+      `;
+      commentsContainer.appendChild(div);
+    });
+  });
+}
+
+// ── Profile Picture Upload with Progress Bar ─────────────────────────────────
+saveProfilePfpBtn.addEventListener("click", async () => {
+  const file = profilePfpInput.files[0];
+  if (!file) return alert("Please select an image first");
+
+  const progressDiv = document.createElement("div");
+  progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
+  progressDiv.innerHTML = `
+    <p>Uploading...</p>
+    <progress id="uploadProgress" value="0" max="100" style="width: 200px;"></progress>
+    <p id="uploadPercent">0%</p>
+  `;
+  document.body.appendChild(progressDiv);
+
+  const progressBar = document.getElementById("uploadProgress");
+  const percentText = document.getElementById("uploadPercent");
+
+  try {
+    const path = `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`;
+    const storageRef = ref(storage, path);
+
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed", (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      progressBar.value = progress;
+      percentText.textContent = Math.round(progress) + "%";
+    });
+
+    await uploadTask;
+
+    const url = await getDownloadURL(uploadTask.snapshot.ref);
+
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      photoURL: url,
+      profilePic: url
+    }, { merge: true });
+
+    alert("Success! Profile picture uploaded and saved.");
+    startListeners(auth.currentUser);
+  } catch (err) {
+    alert("Upload failed: " + err.message);
+  } finally {
+    progressDiv.remove();
+  }
+});
+
+// ── Save Bio & Location ──────────────────────────────────────────────────────
+saveProfileBtn.addEventListener("click", async () => {
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    bio: bioInput.value.trim(),
+    location: locationInput.value.trim()
+  }, { merge: true });
+
+  alert("Bio and location saved!");
+  startListeners(auth.currentUser);
+});
+
+// ── Save Music ───────────────────────────────────────────────────────────────
+saveMusicBtn.addEventListener("click", async () => {
+  const link = musicLinkInput.value.trim();
+  if (!link) return;
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    music: link
+  }, { merge: true });
+
+  musicIframe.src = getYouTubeEmbedUrl(link);
+  alert("Music saved!");
+});
+
+// ── Add Wall Comment (array-based, matches original working version) ─────────────────────────────────────────────────────────
+addCommentBtn.addEventListener("click", async () => {
+  const text = commentInput.value.trim();
+  if (!text) return alert("Please write something");
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    comments: arrayUnion({
+      text,
+      username: auth.currentUser.email.split('@')[0] || "Anonymous",
+      createdAt: serverTimestamp()
+    })
+  }, { merge: true });
+
+  commentInput.value = "";
+  alert("Comment posted!");
+});
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
     return;
   }
 
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-
-  if (!snap.exists()) {
-    await setDoc(userRef, {
-      username: user.email,
-      bio: "",
-      profilePic: "",
-      createdAt: serverTimestamp()
-    });
-  }
-
-  const data = (await getDoc(userRef)).data();
-
-  profileName.textContent = data.username || "YourSpace User";
-  profileBio.textContent = data.bio || "";
-  profilePic.src = data.profilePic || "default-avatar.png";
-});
-
-/* =======================
-   Save Bio
-======================= */
-saveBioBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  await updateDoc(doc(db, "users", user.uid), {
-    bio: bioInput.value.trim()
-  });
-
-  profileBio.textContent = bioInput.value.trim();
-  bioInput.value = "";
-});
-
-/* =======================
-   Upload Profile Picture
-======================= */
-savePfpBtn.addEventListener("click", () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const file = pfpInput.files[0];
-  if (!file) {
-    alert("Select an image first");
-    return;
-  }
-
-  const storageRef = ref(storage, `profilePictures/${user.uid}`);
-  const uploadTask = uploadBytesResumable(storageRef, file);
-
-  uploadProgress.style.display = "block";
-  uploadProgress.value = 0;
-
-  uploadTask.on(
-    "state_changed",
-    (snapshot) => {
-      const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      uploadProgress.value = percent;
-    },
-    (error) => {
-      console.error("Upload error:", error);
-      alert("Upload failed");
-    },
-    async () => {
-      const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-      await updateDoc(doc(db, "users", user.uid), {
-        profilePic: downloadURL
-      });
-
-      profilePic.src = downloadURL;
-      uploadProgress.style.display = "none";
-      pfpInput.value = "";
-    }
-  );
+  startListeners(user);
 });

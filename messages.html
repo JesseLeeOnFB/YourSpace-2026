@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - Messages</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <button id="navFeedBtn">Feed</button>
+    <button id="navProfileBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <div class="container">
+    <h1>Private Messages</h1>
+    <input type="text" id="searchUserInput" placeholder="Search username to message">
+    <button id="searchUserBtn">Search</button>
+    <div id="searchResults"></div>
+
+    <div id="chatSection" style="display:none;">
+      <h2>Chat with <span id="chatWith"></span></h2>
+      <div id="chatMessages"></div>
+      <textarea id="messageInput" placeholder="Type a message..."></textarea>
+      <button id="sendMessageBtn">Send</button>
+    </div>
+  </div>
+
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script type="module" src="messages.js"></script>
+</body>
+</html>

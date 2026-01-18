@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Feed</title>
-
-  <link rel="stylesheet" href="style.css?v=2026-01">
-  <link rel="stylesheet" href="feed.css?v=2026-01">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace - Feed</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="feed.css">
 </head>
-
 <body>
-
   <!-- Navigation -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
@@ -19,27 +16,22 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- Feed -->
-  <main class="feed-container">
-
+  <div class="feed-container">
     <h1>Global Feed</h1>
 
-    <!-- New Post -->
-    <section class="new-post">
+    <!-- New Post Form -->
+    <div class="new-post">
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
       <input type="file" id="postImage" accept="image/*">
       <button id="postBtn">Post</button>
-    </section>
+    </div>
 
-    <!-- Posts -->
-    <section id="feedContainer"></section>
+    <!-- Feed Posts -->
+    <div id="feedContainer"></div>
+  </div>
 
-  </main>
-
-  <!-- Scripts -->
-  <script type="module" src="firebase.js?v=2026-01"></script>
-  <script type="module" src="auth-guard.js?v=2026-01"></script>
-  <script type="module" src="feed.js?v=2026-01"></script>
-
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script type="module" src="feed.js"></script>
 </body>
 </html>

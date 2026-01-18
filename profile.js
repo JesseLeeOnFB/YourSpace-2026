@@ -1,4 +1,4 @@
-// profile.js ── Unified with all features, data loading, pfp upload with progress bar
+// profile.js – Unified with userProfile features + fixes (pfp upload with progress bar, data loading, wall comments subcollection)
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -7,7 +7,6 @@ import {
   onSnapshot,
   updateDoc,
   arrayUnion,
-  arrayRemove,
   serverTimestamp,
   collection,
   addDoc,
@@ -26,41 +25,44 @@ const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
-const usernameInput = document.getElementById("usernameInput");
+const displayNameEl = document.getElementById("displayName");
+const locationEl = document.getElementById("location");
+const bioEl = document.getElementById("bio");
+
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
+const musicInput = document.getElementById("musicInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-const themeSelect = document.getElementById("themeSelect");
-const saveThemeBtn = document.getElementById("saveThemeBtn");
-
-const musicLinkInput = document.getElementById("musicLinkInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
-const musicIframe = document.getElementById("musicIframe");
-
-const wallCommentsContainer = document.getElementById("wallCommentsContainer");
-const wallCommentInput = document.getElementById("wallCommentInput");
-const addWallCommentBtn = document.getElementById("addWallCommentBtn");
 
 const friendRequestsContainer = document.getElementById("friendRequestsContainer");
 
-const top10FriendsContainer = document.getElementById("top10FriendsContainer");
-const addFriendInput = document.getElementById("addFriendInput");
+const topFriendsContainer = document.getElementById("topFriendsContainer");
+const addTopFriendInput = document.getElementById("addTopFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
+
+const commentsContainer = document.getElementById("commentsContainer");
+const commentInput = document.getElementById("commentInput");
+const addCommentBtn = document.getElementById("addCommentBtn");
+
+const musicPlayerContainer = document.getElementById("musicPlayerContainer");
 
 // Cache buster
 function cacheBust(url) {
   return url ? `${url}?v=${Date.now()}` : "https://via.placeholder.com/150?text=Default";
 }
 
-// Music embed helper
-function getYouTubeEmbedUrl(url) {
-  if (!url) return "";
-  const id = url.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-  return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : "";
+// Embedded music helper
+function getEmbeddedPlayerHTML(url) {
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    const idMatch = url.match(/(?:v=|youtu\.be\/)([\w-]+)/);
+    if (!idMatch) return "";
+    return `<iframe width="300" height="80" src="https://www.youtube.com/embed/${idMatch[1]}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  }
+  return `<p><a href="${url}" target="_blank">${url}</a></p>`;
 }
 
-// Real-time listeners
+// Real-time profile listener
 let unsubscribeProfile = null;
 let unsubscribeComments = null;
 
@@ -75,23 +77,15 @@ function startListeners(user) {
 
     const data = snap.data();
 
+    // Profile picture
     profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
 
-    usernameInput.value = data.username || "";
-    bioInput.value = data.bio || "";
-    locationInput.value = data.location || "";
+    // Display info
+    displayNameEl.textContent = data.displayName || data.username || "Anonymous";
+    locationEl.textContent = data.location || "";
+    bioEl.textContent = data.bio || "";
 
-    if (data.theme) {
-      document.body.className = data.theme;
-      themeSelect.value = data.theme;
-    }
-
-    if (data.music) {
-      musicLinkInput.value = data.music;
-      musicIframe.src = getYouTubeEmbedUrl(data.music);
-    }
-
-    // Friend Requests (beta stub)
+    // Friend Requests
     friendRequestsContainer.innerHTML = "";
     (data.friendRequests || []).forEach(req => {
       const div = document.createElement("div");
@@ -100,22 +94,27 @@ function startListeners(user) {
     });
 
     // Top 10 Friends
-    top10FriendsContainer.innerHTML = "";
+    topFriendsContainer.innerHTML = "";
     (data.topFriends || []).forEach(friend => {
       const div = document.createElement("div");
-      div.className = "top-friend";
       div.textContent = friend;
-      top10FriendsContainer.appendChild(div);
+      topFriendsContainer.appendChild(div);
     });
+
+    // Music
+    if (data.music) {
+      musicPlayerContainer.innerHTML = getEmbeddedPlayerHTML(data.music);
+    }
   });
 
+  // Wall comments subcollection
   const commentsQ = query(collection(db, "users", user.uid, "wallComments"), orderBy("createdAt", "desc"));
 
   unsubscribeComments = onSnapshot(commentsQ, (snap) => {
-    wallCommentsContainer.innerHTML = "";
+    commentsContainer.innerHTML = "";
 
     if (snap.empty) {
-      wallCommentsContainer.innerHTML = '<p>No comments yet...</p>';
+      commentsContainer.innerHTML = '<p>No comments yet...</p>';
       return;
     }
 
@@ -141,7 +140,7 @@ function startListeners(user) {
         }
       };
 
-      wallCommentsContainer.appendChild(div);
+      commentsContainer.appendChild(div);
     });
   });
 }
@@ -151,6 +150,7 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Please select an image first");
 
+  // Progress bar popup
   const progressDiv = document.createElement("div");
   progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
   progressDiv.innerHTML = `
@@ -191,7 +191,7 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   }
 });
 
-// ── Save Bio & Location ──────────────────────────────────────────────────────
+// ── Save Profile ─────────────────────────────────────────────────────────────
 saveProfileBtn.addEventListener("click", async () => {
   await updateDoc(doc(db, "users", auth.currentUser.uid), {
     bio: bioInput.value.trim(),
@@ -201,47 +201,35 @@ saveProfileBtn.addEventListener("click", async () => {
   alert("Saved!");
 });
 
-// ── Save Theme ───────────────────────────────────────────────────────────────
-saveThemeBtn.addEventListener("click", async () => {
-  const theme = themeSelect.value;
-  document.body.className = theme;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    theme: theme
-  }, { merge: true });
-
-  alert("Theme saved!");
-});
-
 // ── Save Music ───────────────────────────────────────────────────────────────
 saveMusicBtn.addEventListener("click", async () => {
-  const link = musicLinkInput.value.trim();
-  if (!link) return;
+  const musicLink = musicInput.value.trim();
+  if (!musicLink) return;
 
   await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    music: link
+    music: musicLink
   }, { merge: true });
 
-  musicIframe.src = getYouTubeEmbedUrl(link);
+  musicPlayerContainer.innerHTML = getEmbeddedPlayerHTML(musicLink);
   alert("Music saved!");
 });
 
 // ── Add Top Friend ───────────────────────────────────────────────────────────
 addTopFriendBtn.addEventListener("click", async () => {
-  const newFriend = addFriendInput.value.trim();
+  const newFriend = addTopFriendInput.value.trim();
   if (!newFriend) return;
 
   await updateDoc(doc(db, "users", auth.currentUser.uid), {
     topFriends: arrayUnion(newFriend)
   }, { merge: true });
 
-  addFriendInput.value = "";
+  addTopFriendInput.value = "";
   alert("Friend added!");
 });
 
 // ── Add Wall Comment ─────────────────────────────────────────────────────────
-addWallCommentBtn.addEventListener("click", async () => {
-  const text = wallCommentInput.value.trim();
+addCommentBtn.addEventListener("click", async () => {
+  const text = commentInput.value.trim();
   if (!text) return;
 
   await addDoc(collection(db, "users", auth.currentUser.uid, "wallComments"), {
@@ -249,7 +237,7 @@ addWallCommentBtn.addEventListener("click", async () => {
     username: auth.currentUser.email.split('@')[0] || "Anonymous",
     createdAt: serverTimestamp()
   });
-  wallCommentInput.value = "";
+  commentInput.value = "";
 });
 
 // ── Init ─────────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-// profile.js ── Rewritten for modular SDK, progress bar, data loading, wall comments array
+// profile.js – Fixed data loading, button saves, navigation, pfp upload with progress bar
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -6,8 +6,11 @@ import {
   doc,
   onSnapshot,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
+  collection,
+  addDoc,
+  deleteDoc,
+  query,
+  orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
@@ -21,15 +24,9 @@ const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
-const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
-
-const themeSelect = document.getElementById("themeSelect");
-const saveThemeBtn = document.getElementById("saveThemeBtn");
-const customHtmlInput = document.getElementById("customHtmlInput");
-const customHtmlPreview = document.getElementById("customHtmlPreview");
 
 const musicLinkInput = document.getElementById("musicLinkInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
@@ -39,7 +36,15 @@ const wallCommentsContainer = document.getElementById("wallCommentsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const addWallCommentBtn = document.getElementById("addWallCommentBtn");
 
-const top10FriendsContainer = document.getElementById("top10FriendsContainer");
+// Navigation
+document.getElementById("navFeedBtn")?.addEventListener("click", () => {
+  window.location.href = "feed.html";
+});
+
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
 
 // Cache buster
 function cacheBust(url) {
@@ -53,79 +58,74 @@ function getYouTubeEmbedUrl(url) {
   return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : "";
 }
 
-// Real-time listener
-let unsubscribe = null;
+// Real-time listeners
+let unsubscribeProfile = null;
+let unsubscribeComments = null;
 
-function startListener(user) {
-  if (unsubscribe) unsubscribe();
+function startListeners(user) {
+  if (unsubscribeProfile) unsubscribeProfile();
+  if (unsubscribeComments) unsubscribeComments();
 
   const userRef = doc(db, "users", user.uid);
 
-  unsubscribe = onSnapshot(userRef, (snap) => {
-    if (!snap.exists()) {
-      console.log("No profile document");
-      return;
-    }
+  unsubscribeProfile = onSnapshot(userRef, (snap) => {
+    if (!snap.exists()) return;
 
     const data = snap.data();
 
-    // Profile picture
     profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
 
-    // Basic info
-    usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
 
-    // Theme
-    if (data.theme) {
-      document.body.className = data.theme;
-      themeSelect.value = data.theme;
-    }
-
-    // Custom HTML
-    customHtmlInput.value = data.customHtml || "";
-    customHtmlPreview.innerHTML = data.customHtml || "";
-
-    // Music
     if (data.music) {
       musicLinkInput.value = data.music;
       musicIframe.src = getYouTubeEmbedUrl(data.music);
     }
+  });
 
-    // Top 10 Friends
-    top10FriendsContainer.innerHTML = "";
-    (data.topFriends || []).forEach(friend => {
-      const div = document.createElement("div");
-      div.className = "top-friend";
-      div.textContent = typeof friend === "string" ? friend : friend.username || "Unknown";
-      top10FriendsContainer.appendChild(div);
-    });
+  const commentsQ = query(collection(db, "users", user.uid, "wallComments"), orderBy("createdAt", "desc"));
 
-    // Wall comments (array)
+  unsubscribeComments = onSnapshot(commentsQ, (snap) => {
     wallCommentsContainer.innerHTML = "";
-    (data.wallComments || []).forEach(c => {
+
+    if (snap.empty) {
+      wallCommentsContainer.innerHTML = '<p>No comments yet...</p>';
+      return;
+    }
+
+    snap.forEach((docSnap) => {
+      const c = docSnap.data();
+      const commentId = docSnap.id;
+
       const div = document.createElement("div");
       div.className = "wall-comment";
       const time = c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleString() : "just now";
+
       div.innerHTML = `
         <strong>${c.username || "Anonymous"}</strong>
         <small>${time}</small>
         <p>${c.text}</p>
+        <button class="delete-comment" data-id="${commentId}">Delete</button>
       `;
+
+      const deleteBtn = div.querySelector(".delete-comment");
+      deleteBtn.onclick = async () => {
+        if (confirm("Delete this comment?")) {
+          await deleteDoc(doc(db, "users", user.uid, "wallComments", commentId));
+        }
+      };
+
       wallCommentsContainer.appendChild(div);
     });
-  }, (err) => {
-    alert("Data load error: " + err.message);
   });
 }
 
-// ── Profile Picture Upload with Live Progress Bar ─────────────────────────────────
+// ── Profile Picture Upload with Progress Bar ─────────────────────────────────
 saveProfilePfpBtn.addEventListener("click", async () => {
   const file = profilePfpInput.files[0];
-  if (!file) return alert("Select an image");
+  if (!file) return alert("Please select an image first");
 
-  // Progress bar popup
   const progressDiv = document.createElement("div");
   progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
   progressDiv.innerHTML = `
@@ -159,7 +159,7 @@ saveProfilePfpBtn.addEventListener("click", async () => {
       profilePic: url
     }, { merge: true });
 
-    alert("Success! Refresh to see.");
+    alert("Success!");
     startListeners(auth.currentUser);
   } catch (err) {
     alert("Failed: " + err.message);
@@ -176,18 +176,6 @@ saveProfileBtn.addEventListener("click", async () => {
   }, { merge: true });
 
   alert("Saved!");
-});
-
-// ── Save Theme ───────────────────────────────────────────────────────────────
-saveThemeBtn.addEventListener("click", async () => {
-  const theme = themeSelect.value;
-  document.body.className = theme;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    theme: theme
-  }, { merge: true });
-
-  alert("Theme saved!");
 });
 
 // ── Save Music ───────────────────────────────────────────────────────────────
@@ -208,14 +196,11 @@ addWallCommentBtn.addEventListener("click", async () => {
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    wallComments: arrayUnion({
-      text,
-      username: auth.currentUser.email.split('@')[0] || "Anonymous",
-      createdAt: serverTimestamp()
-    })
-  }, { merge: true });
-
+  await addDoc(collection(db, "users", auth.currentUser.uid, "wallComments"), {
+    text,
+    username: auth.currentUser.email.split('@')[0] || "Anonymous",
+    createdAt: serverTimestamp()
+  });
   wallCommentInput.value = "";
 });
 

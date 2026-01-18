@@ -1,282 +1,62 @@
-/* ---------------------------
-   General Body & Layout
---------------------------- */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Century Gothic', sans-serif;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  line-height: 1.4;
+  margin:0;
+  font-family: Arial, sans-serif;
+  background-color:#f0f0f0;
 }
 
-a {
-  text-decoration: none;
-  color: #cd1045;
+header nav {
+  display:flex;
+  gap:10px;
+  padding:10px;
+  background-color:#0077cc;
+  color:white;
+}
+
+header nav button {
+  background:none;
+  border:none;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .container {
-  max-width: 1000px;
-  margin: 20px auto;
-  padding: 15px;
-  background-color: #222;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  background-color:white;
+  padding:15px;
+  margin:15px auto;
+  max-width:800px;
+  border-radius:8px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
-/* ---------------------------
-   Navigation Bar
---------------------------- */
-.navbar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #333;
-  padding: 10px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+#profilePic {
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  display:block;
+  margin:auto;
 }
 
-.navbar button {
-  background-color: #444;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
+#top10Container, #musicList, #wallContainer {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-.navbar button:hover {
-  background-color: #cd1045;
+.wall-post, .top10-friend, .musicItem {
+  padding:10px;
+  background-color:#eaeaea;
+  border-radius:5px;
 }
 
-/* ---------------------------
-   Profile Header
---------------------------- */
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
+.top10-friend img {
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  margin-right:10px;
 }
 
-.profile-header img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 3px solid #cd1045;
-  object-fit: cover;
-  margin-bottom: 10px;
-}
-
-.profile-header h1 {
-  margin: 5px 0;
-  font-size: 28px;
-}
-
-.profile-bio {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 600px;
-}
-
-/* ---------------------------
-   Editable Sections (Own Profile)
---------------------------- */
-.edit-section {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.edit-section input[type="text"],
-.edit-section input[type="file"],
-.edit-section select {
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: 1px solid #555;
-  width: 90%;
-  max-width: 400px;
-  background-color: #333;
-  color: #fff;
-}
-
-.edit-section button {
-  padding: 8px 15px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  background-color: #cd1045;
-  color: #fff;
-}
-
-.edit-section button:hover {
-  background-color: #ff6680;
-}
-
-/* ---------------------------
-   Wall Posts
---------------------------- */
-.wall-container {
-  margin-top: 20px;
-}
-
-.wall-post {
-  background-color: #2a2a2a;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-.wall-post strong {
-  color: #ff6680;
-}
-
-.wall-post button {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background-color: #444;
-  color: #fff;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.wall-post button:hover {
-  background-color: #cd1045;
-}
-
-/* ---------------------------
-   Top 10 Friends
---------------------------- */
-.top10-container {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.top-friend {
-  background-color: #2a2a2a;
-  padding: 5px 10px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.top-friend img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 8px;
-  object-fit: cover;
-}
-
-.top-friend:hover {
-  transform: scale(1.05);
-  background-color: #333;
-}
-
-/* ---------------------------
-   Music Player
---------------------------- */
-.music-container {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.music-container iframe {
-  width: 100%;
-  max-width: 600px;
-  height: 80px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-/* ---------------------------
-   Custom HTML Injector Box
---------------------------- */
-.custom-html-container {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #222;
-  border-radius: 8px;
-}
-
-/* ---------------------------
-   Themes
---------------------------- */
-body.theme-dark {
-  background-color: #1a1a1a;
-  color: #ffffff;
-}
-
-body.theme-light {
-  background-color: #f0f0f0;
-  color: #000000;
-}
-
-body.theme-retro {
-  background-color: #fbe8a6;
-  color: #2a2a2a;
-}
-
-body.theme-dark .container,
-body.theme-light .container,
-body.theme-retro .container {
-  background-color: inherit;
-  color: inherit;
-}
-
-/* ---------------------------
-   Responsive
---------------------------- */
-@media (max-width: 768px) {
-  .profile-header img {
-    width: 90px;
-    height: 90px;
-  }
-
-  .profile-header h1 {
-    font-size: 22px;
-  }
-
-  .edit-section input,
-  .edit-section select,
-  .edit-section button {
-    width: 95%;
-  }
-
-  .top-friend img {
-    width: 30px;
-    height: 30px;
-  }
-
-  .music-container iframe {
-    height: 60px;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-header h1 {
-    font-size: 18px;
-  }
-}
+.theme-dark { background-color:#1a1a1a; color:white; }
+.theme-light { background-color:#f9f9f9; color:#333; }
+.theme-retro { background-color:#222; color:#ffcc00; }
+.theme-default { background-color:#ffffff; color:#000080; }

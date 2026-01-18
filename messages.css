@@ -1,14 +1,60 @@
-body { font-family:'Century Gothic', sans-serif; margin:0; padding:0; background:#f0f0f0; }
-nav { display:flex; gap:10px; padding:10px; background:#333; }
-nav button { padding:5px 10px; color:white; background:#555; border:none; cursor:pointer; }
-nav button:hover { background:#777; }
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  color: #000;
+}
 
-.messages-container { display:flex; flex-wrap:wrap; gap:20px; padding:20px; max-width:1000px; margin:auto; }
-.user-search { flex:1 1 200px; background:white; padding:10px; border-radius:8px; }
-.user-search input { width:100%; padding:5px; margin-bottom:10px; }
-#searchResults div { padding:5px; cursor:pointer; border-bottom:1px solid #ccc; }
-#searchResults div:hover{ background:#eee; }
+nav#topNav {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: #333;
+}
 
-.chat-section { flex:2 1 500px; background:white; padding:10px; border-radius:8px; display:flex; flex-direction:column; gap:5px; }
-#chatMessages { flex:1; overflow-y:auto; border:1px solid #ccc; padding:5px; height:300px; }
-#chatInput { width:100%; padding:5px; }
+nav#topNav button {
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #555;
+  border: none;
+}
+
+main {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 10px;
+}
+
+#searchUserInput {
+  width: 100%;
+  padding: 8px;
+}
+
+#searchResults div {
+  padding: 5px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+}
+
+#chatSection {
+  border: 1px solid #aaa;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#chatMessages {
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.chatMessage {
+  margin-bottom: 5px;
+}
+
+.chatMessage img, .chatMessage video {
+  max-width: 100%;
+  display: block;
+}

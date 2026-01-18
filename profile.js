@@ -1,18 +1,18 @@
-// profile.js – Unified with userProfile features + fixes (pfp upload with progress bar, data loading, wall comments subcollection)
+// profile.js ── Fixed to load data like userProfile.html (initial fetch + real-time), pfp upload with progress bar, wall comments subcollection
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   doc,
+  getDoc,
   onSnapshot,
   updateDoc,
-  arrayUnion,
-  serverTimestamp,
   collection,
   addDoc,
   deleteDoc,
   query,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
   ref,
@@ -20,7 +20,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// DOM Elements
+// DOM Elements (match userProfile.html IDs)
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
@@ -35,11 +35,11 @@ const musicInput = document.getElementById("musicInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
 
-const friendRequestsContainer = document.getElementById("friendRequestsContainer");
-
 const topFriendsContainer = document.getElementById("topFriendsContainer");
 const addTopFriendInput = document.getElementById("addTopFriendInput");
 const addTopFriendBtn = document.getElementById("addTopFriendBtn");
+
+const friendRequestsContainer = document.getElementById("friendRequestsContainer");
 
 const commentsContainer = document.getElementById("commentsContainer");
 const commentInput = document.getElementById("commentInput");
@@ -62,38 +62,33 @@ function getEmbeddedPlayerHTML(url) {
   return `<p><a href="${url}" target="_blank">${url}</a></p>`;
 }
 
-// Real-time profile listener
+// Initial load + real-time
 let unsubscribeProfile = null;
 let unsubscribeComments = null;
 
-function startListeners(user) {
-  if (unsubscribeProfile) unsubscribeProfile();
-  if (unsubscribeComments) unsubscribeComments();
-
+async function loadProfile(user) {
   const userRef = doc(db, "users", user.uid);
 
-  unsubscribeProfile = onSnapshot(userRef, (snap) => {
-    if (!snap.exists()) return;
-
+  // Initial fetch (like userProfile.js)
+  const snap = await getDoc(userRef);
+  if (snap.exists()) {
     const data = snap.data();
 
-    // Profile picture
     profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
 
-    // Display info
     displayNameEl.textContent = data.displayName || data.username || "Anonymous";
     locationEl.textContent = data.location || "";
     bioEl.textContent = data.bio || "";
 
-    // Friend Requests
-    friendRequestsContainer.innerHTML = "";
-    (data.friendRequests || []).forEach(req => {
-      const div = document.createElement("div");
-      div.textContent = req;
-      friendRequestsContainer.appendChild(div);
-    });
+    bioInput.value = data.bio || "";
+    locationInput.value = data.location || "";
 
-    // Top 10 Friends
+    if (data.music) {
+      musicInput.value = data.music;
+      musicPlayerContainer.innerHTML = getEmbeddedPlayerHTML(data.music);
+    }
+
+    // Top friends
     topFriendsContainer.innerHTML = "";
     (data.topFriends || []).forEach(friend => {
       const div = document.createElement("div");
@@ -101,13 +96,33 @@ function startListeners(user) {
       topFriendsContainer.appendChild(div);
     });
 
-    // Music
+    // Friend requests
+    friendRequestsContainer.innerHTML = "";
+    (data.friendRequests || []).forEach(req => {
+      const div = document.createElement("div");
+      div.textContent = req;
+      friendRequestsContainer.appendChild(div);
+    });
+  }
+
+  // Real-time for updates
+  unsubscribeProfile = onSnapshot(userRef, (snap) => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
+
+    displayNameEl.textContent = data.displayName || data.username || "Anonymous";
+    locationEl.textContent = data.location || "";
+    bioEl.textContent = data.bio || "";
+
     if (data.music) {
       musicPlayerContainer.innerHTML = getEmbeddedPlayerHTML(data.music);
     }
   });
 
-  // Wall comments subcollection
+  // Wall comments subcollection real-time
   const commentsQ = query(collection(db, "users", user.uid, "wallComments"), orderBy("createdAt", "desc"));
 
   unsubscribeComments = onSnapshot(commentsQ, (snap) => {
@@ -150,7 +165,6 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Please select an image first");
 
-  // Progress bar popup
   const progressDiv = document.createElement("div");
   progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
   progressDiv.innerHTML = `
@@ -183,7 +197,7 @@ saveProfilePfpBtn.addEventListener("click", async () => {
     }, { merge: true });
 
     alert("Success!");
-    startListeners(auth.currentUser);
+    loadProfile(auth.currentUser);
   } catch (err) {
     alert("Failed: " + err.message);
   } finally {
@@ -199,6 +213,7 @@ saveProfileBtn.addEventListener("click", async () => {
   }, { merge: true });
 
   alert("Saved!");
+  loadProfile(auth.currentUser);
 });
 
 // ── Save Music ───────────────────────────────────────────────────────────────
@@ -225,6 +240,7 @@ addTopFriendBtn.addEventListener("click", async () => {
 
   addTopFriendInput.value = "";
   alert("Friend added!");
+  loadProfile(auth.currentUser);
 });
 
 // ── Add Wall Comment ─────────────────────────────────────────────────────────
@@ -238,6 +254,7 @@ addCommentBtn.addEventListener("click", async () => {
     createdAt: serverTimestamp()
   });
   commentInput.value = "";
+  loadProfile(auth.currentUser);
 });
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -247,5 +264,5 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  startListeners(user);
+  loadProfile(user);
 });

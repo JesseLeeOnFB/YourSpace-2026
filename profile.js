@@ -1,10 +1,7 @@
-// profile.js (Firebase v9 MODULAR — FINAL)
+// profile.js
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -25,14 +22,17 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-/* ------------------ FIREBASE CONFIG ------------------ */
+/* =======================
+   Firebase Init
+======================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
   projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.appspot.com", // ✅ CRITICAL FIX
+  storageBucket: "yourspace-2026.firebasestorage.app",
   messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -40,56 +40,33 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-/* ------------------ DOM ------------------ */
+/* =======================
+   DOM
+======================= */
 const profilePic = document.getElementById("profilePic");
 const profileName = document.getElementById("profileName");
 const profileBio = document.getElementById("profileBio");
-
+const bioInput = document.getElementById("bioInput");
+const saveBioBtn = document.getElementById("saveBioBtn");
 const pfpInput = document.getElementById("pfpInput");
 const savePfpBtn = document.getElementById("savePfpBtn");
 const uploadProgress = document.getElementById("uploadProgress");
 
-const bioInput = document.getElementById("bioInput");
-const saveBioBtn = document.getElementById("saveBioBtn");
-
-const wallInput = document.getElementById("wallInput");
-const postWallBtn = document.getElementById("postWallBtn");
-const wallContainer = document.getElementById("wallContainer");
-
-/* ------------------ STATE ------------------ */
-let currentUser = null;
-let viewedUid = null;
-
-/* ------------------ AUTH ------------------ */
+/* =======================
+   Auth
+======================= */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.replace("login.html");
+    window.location.href = "login.html";
     return;
   }
 
-  currentUser = user;
-
-  const params = new URLSearchParams(window.location.search);
-  viewedUid = params.get("uid") || user.uid;
-
-  await loadProfile(viewedUid);
-  await loadWall(viewedUid);
-
-  const isOwnProfile = viewedUid === user.uid;
-  pfpInput.style.display = isOwnProfile ? "block" : "none";
-  savePfpBtn.style.display = isOwnProfile ? "block" : "none";
-  bioInput.style.display = isOwnProfile ? "block" : "none";
-  saveBioBtn.style.display = isOwnProfile ? "block" : "none";
-});
-
-/* ------------------ LOAD PROFILE ------------------ */
-async function loadProfile(uid) {
-  const userRef = doc(db, "users", uid);
+  const userRef = doc(db, "users", user.uid);
   const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
     await setDoc(userRef, {
-      username: "Anonymous",
+      username: user.email,
       bio: "",
       profilePic: "",
       createdAt: serverTimestamp()
@@ -98,21 +75,19 @@ async function loadProfile(uid) {
 
   const data = (await getDoc(userRef)).data();
 
-  profileName.textContent = data.username || "User";
+  profileName.textContent = data.username || "YourSpace User";
   profileBio.textContent = data.bio || "";
+  profilePic.src = data.profilePic || "default-avatar.png";
+});
 
-  if (data.profilePic) {
-    profilePic.src = data.profilePic;
-  } else {
-    profilePic.src = "default-avatar.png";
-  }
-}
-
-/* ------------------ SAVE BIO ------------------ */
+/* =======================
+   Save Bio
+======================= */
 saveBioBtn.addEventListener("click", async () => {
-  if (!bioInput.value.trim()) return;
+  const user = auth.currentUser;
+  if (!user) return;
 
-  await updateDoc(doc(db, "users", currentUser.uid), {
+  await updateDoc(doc(db, "users", user.uid), {
     bio: bioInput.value.trim()
   });
 
@@ -120,15 +95,20 @@ saveBioBtn.addEventListener("click", async () => {
   bioInput.value = "";
 });
 
-/* ------------------ PROFILE PICTURE UPLOAD (FIXED) ------------------ */
+/* =======================
+   Upload Profile Picture
+======================= */
 savePfpBtn.addEventListener("click", () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
   const file = pfpInput.files[0];
   if (!file) {
     alert("Select an image first");
     return;
   }
 
-  const storageRef = ref(storage, `profilePictures/${currentUser.uid}`);
+  const storageRef = ref(storage, `profilePictures/${user.uid}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
 
   uploadProgress.style.display = "block";
@@ -137,8 +117,7 @@ savePfpBtn.addEventListener("click", () => {
   uploadTask.on(
     "state_changed",
     (snapshot) => {
-      const percent =
-        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       uploadProgress.value = percent;
     },
     (error) => {
@@ -146,51 +125,14 @@ savePfpBtn.addEventListener("click", () => {
       alert("Upload failed");
     },
     async () => {
-      const url = await getDownloadURL(uploadTask.snapshot.ref);
-
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        profilePic: url
+      const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+      await updateDoc(doc(db, "users", user.uid), {
+        profilePic: downloadURL
       });
 
-      profilePic.src = url;
+      profilePic.src = downloadURL;
       uploadProgress.style.display = "none";
       pfpInput.value = "";
     }
   );
-});
-
-/* ------------------ WALL ------------------ */
-async function loadWall(uid) {
-  wallContainer.innerHTML = "";
-
-  const q = query(
-    collection(db, "walls"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snap = await getDocs(q);
-  snap.forEach((docSnap) => {
-    const d = docSnap.data();
-    if (d.profileUid !== uid) return;
-
-    const div = document.createElement("div");
-    div.className = "wall-post";
-    div.innerHTML = `<strong>${d.username}</strong>: ${d.text}`;
-    wallContainer.appendChild(div);
-  });
-}
-
-postWallBtn.addEventListener("click", async () => {
-  if (!wallInput.value.trim()) return;
-
-  await addDoc(collection(db, "walls"), {
-    profileUid: viewedUid,
-    userId: currentUser.uid,
-    username: currentUser.email,
-    text: wallInput.value.trim(),
-    createdAt: serverTimestamp()
-  });
-
-  wallInput.value = "";
-  loadWall(viewedUid);
 });

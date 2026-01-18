@@ -1,6 +1,6 @@
-// feed.js – Global feed: text/image posts, likes/dislikes, comments, delete own, real-time
+// feed.js – Fixed: real-time posts, text/image posting, likes/dislikes, comments, delete own, error alerts
 
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   collection,
@@ -27,8 +27,13 @@ const feedContainer = document.getElementById("feedContainer");
 function loadFeed() {
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-  onSnapshot(q, (snap) => {
+  onSnapshot(q, async (snap) => {
     feedContainer.innerHTML = "";
+
+    if (snap.empty) {
+      feedContainer.innerHTML = '<p>No posts yet. Be the first to post!</p>';
+      return;
+    }
 
     snap.forEach(async (docSnap) => {
       const post = docSnap.data();
@@ -120,6 +125,8 @@ function loadFeed() {
         });
       });
     });
+  }, (err) => {
+    alert("Feed load error: " + err.message);
   });
 }
 

@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace - Global Feed</title>
-  <link rel="stylesheet" href="style.css?v=force20260119">
-  <link rel="stylesheet" href="feed.css?v=force20260119">
+  <title>YourSpace - Global Feed (Debug 2026-01-20)</title>
+  <link rel="stylesheet" href="style.css?v=debug20260120">
+  <link rel="stylesheet" href="feed.css?v=debug20260120">
 </head>
 <body>
+
   <!-- Navigation (IDs only – auth-guard.js handles clicks) -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
@@ -27,18 +28,19 @@
         <input type="file" id="postImage" accept="image/*" style="display: none;">
         <button id="postBtn">Post</button>
       </div>
-      <progress id="uploadProgress" value="0" max="100" class="hidden"></progress>
-      <p id="uploadStatus"></p>
+      <progress id="uploadProgress" value="0" max="100" class="hidden-progress"></progress>
+      <p id="uploadStatus" class="upload-status"></p>
     </div>
 
-    <!-- Posts will load here -->
+    <!-- Posts load here -->
     <div id="feedPosts">
-      <p>Loading feed... (if this stays, check console)</p>
+      <p>Loading feed... (if this stays, check console or alerts)</p>
     </div>
   </div>
 
-  <script type="module" src="firebase.js?v=force20260119"></script>
-  <script type="module" src="auth-guard.js?v=force20260119"></script>
-  <script type="module" src="feed.js?v=force20260119"></script>
+  <!-- Scripts – load in correct order with versioning -->
+  <script type="module" src="firebase.js?v=debug20260120"></script>
+  <script type="module" src="auth-guard.js?v=debug20260120"></script>
+  <script type="module" src="feed.js?v=debug20260120"></script>
 </body>
 </html>

@@ -1,106 +1,83 @@
-/* Reset & Body */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f0f4f8;
-  color: #000;
 }
 
-/* Themes */
-.theme-light { background-color: #f0f4f8; color: #000; }
-.theme-dark { background-color: #1e1e1e; color: #fff; }
-.theme-retro { background-color: #333; color: #ffcc00; }
-
-/* Navigation */
-#navBar {
-  background-color: #4a90e2;
+nav#topNav {
+  background-color: #0b3d91;
   padding: 10px;
 }
-#navBar ul {
-  list-style: none;
+nav#topNav ul {
   display: flex;
-  gap: 10px;
-  padding: 0;
+  list-style: none;
   margin: 0;
+  padding: 0;
 }
-#navBar ul li button {
+nav#topNav ul li {
+  margin-right: 15px;
+}
+nav#topNav ul li button {
   background: none;
+  color: #ffffff;
   border: none;
-  color: #fff;
-  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
 }
 
-/* Profile Container */
 .profile-container {
   max-width: 900px;
   margin: 20px auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  padding: 10px;
 }
 
-/* Profile Header */
 .profile-header {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0b3d91;
   text-align: center;
+  padding: 20px;
+  border-radius: 10px;
 }
+
 .profile-header img {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
+  margin-bottom: 10px;
 }
 
-/* Top 10 */
-.top10-container, .wall-container, .music-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
+.top10-container,
+.wall-container,
+.music-container {
+  background-color: #f5f5f5;
+  color: #1a1a1a;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
 }
-.top10-container ul, #playlistContainer {
-  list-style: none;
-  padding: 0;
-}
-.top10-container li, #playlistContainer li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+
+textarea, input[type="text"], select {
+  width: 80%;
+  padding: 5px;
   margin: 5px 0;
 }
 
-/* Wall */
-.wall-container textarea {
-  width: 100%;
-  height: 60px;
-  margin-top: 10px;
-}
-.wall-post {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
+button {
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
 }
 
-/* Music */
-.music-container input {
-  width: 80%;
-  margin-right: 10px;
+/* Theme presets */
+body.theme-light {
+  background-color: #e6f0fa;
+  color: #0b3d91;
 }
-#playerContainer iframe {
-  width: 100%;
-  height: 300px;
-  margin-top: 10px;
+body.theme-dark {
+  background-color: #1e1e1e;
+  color: #f5f5f5;
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .profile-container {
-    padding: 10px;
-  }
-  .profile-header img {
-    width: 120px;
-    height: 120px;
-  }
+body.theme-retro {
+  background-color: #333;
+  color: #ffcc00;
 }

@@ -7,26 +7,27 @@
   <link rel="stylesheet" href="messages.css">
 </head>
 <body>
-  <nav>
+  <nav id="topNav">
     <button id="navFeed">Feed</button>
     <button id="navProfile">Profile</button>
     <button id="navMessages">Messages</button>
-    <button id="navLogout">Logout</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="messages-container">
-    <div class="user-search">
-      <input type="text" id="searchUserInput" placeholder="Search users">
+  <main>
+    <section id="searchUserSection">
+      <input type="text" id="searchUserInput" placeholder="Search user by username">
       <div id="searchResults"></div>
-    </div>
+    </section>
 
-    <div class="chat-section">
-      <h3 id="chatHeader">Select a user to chat</h3>
+    <section id="chatSection" style="display:none;">
+      <div id="chatHeader"></div>
       <div id="chatMessages"></div>
       <input type="text" id="chatInput" placeholder="Type a message">
+      <input type="file" id="chatFile" accept="image/*,video/*">
       <button id="sendBtn">Send</button>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script type="module" src="messages.js"></script>
 </body>

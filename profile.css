@@ -1,4 +1,4 @@
-/* profile.css ── Fully adaptive/responsive rewrite (mobile-first) with preset themes */
+/* profile.css ── FULLY FIXED & RESPONSIVE (profile picture no longer huge) */
 
 :root {
   --primary: #1a1a1a;
@@ -32,16 +32,10 @@ body.dark-theme .top-friend {
   border: 1px solid #333;
 }
 
-/* Neon Theme (animated glow) */
+/* Neon Theme */
 body.neon-theme {
   background: #000;
   color: #0ff;
-  animation: neonGlow 5s infinite alternate;
-}
-
-@keyframes neonGlow {
-  from { box-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
-  to { box-shadow: 0 0 20px #f0f, 0 0 30px #f0f; }
 }
 
 body.neon-theme .card,
@@ -102,17 +96,18 @@ body {
   align-items: flex-start;
 }
 
-/* Profile Picture – FIXED SIZE & RESPONSIVE */
+/* Profile Picture – FIXED & RESPONSIVE SIZE */
 .pfp-container {
   flex: 0 0 180px;
   text-align: center;
 }
 
-#profilePfp {
+#profilePfp,
+.profile-picture {  /* Covers both IDs if you have variations */
   width: 160px;
   height: 160px;
-  max-width: 100%;              /* Prevents overflow on mobile */
-  object-fit: cover;            /* Crops nicely without stretching */
+  max-width: 100%;               /* Prevents overflow on mobile */
+  object-fit: cover;             /* Crops nicely without stretching */
   border-radius: 50%;
   border: 4px solid var(--primary);
   box-shadow: var(--shadow);
@@ -266,7 +261,8 @@ button:hover {
     gap: 0.8rem;
   }
 
-  #profilePfp {
+  #profilePfp,
+  .profile-picture {
     width: 120px;
     height: 120px;
   }
@@ -282,7 +278,8 @@ button:hover {
     margin-bottom: 0.5rem;
   }
 
-  #profilePfp {
+  #profilePfp,
+  .profile-picture {
     width: 100px;
     height: 100px;
   }

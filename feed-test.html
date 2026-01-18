@@ -3,24 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed Test (Debug)</title>
+  <title>Feed Test (Super Simple – No Firebase)</title>
 </head>
 <body>
   <h1>Feed Test Page</h1>
-  <p>If you see this, HTML loaded. Now checking JS...</p>
+  <p>If you see this + alerts, basic JS works on GitHub Pages.</p>
 
-  <nav>
-    <button id="testBtn">Click Me</button>
-  </nav>
+  <button id="testBtn">Click Me</button>
 
-  <script type="module">
-    alert("JavaScript is running! (Basic test alert)");
+  <script>
+    alert("Inline JavaScript is WORKING! (No imports, no modules)");
 
     document.getElementById("testBtn").addEventListener("click", () => {
-      alert("Button works! Feed JS should load now.");
+      alert("Button click WORKS! Now we know JS is alive on iPhone Safari.");
     });
 
-    console.log("Feed test page loaded");
+    console.log("Feed test loaded");
   </script>
 </body>
 </html>

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="feed.css">
+  <link rel="stylesheet" href="feed.css" />
 </head>
 <body>
-  <nav>
+  <nav id="topNav">
     <button id="navFeed">Feed</button>
     <button id="navProfile">Profile</button>
     <button id="navMessages">Messages</button>
-    <button id="navLogout">Logout</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="feed-container">
-    <div class="new-post">
-      <textarea id="postInput" placeholder="What's on your mind?"></textarea>
-      <input type="file" id="postFile">
+  <main>
+    <section id="newPost">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFile" accept="image/*,video/*"/>
       <button id="postBtn">Post</button>
-    </div>
+    </section>
 
-    <div id="postsContainer"></div>
-  </div>
+    <section id="feedContainer"></section>
+  </main>
 
   <script type="module" src="feed.js"></script>
 </body>

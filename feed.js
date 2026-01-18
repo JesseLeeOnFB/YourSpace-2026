@@ -1,4 +1,4 @@
-// feed.js – Clean global feed: text + image posts, likes/dislikes, comments, delete own, real-time
+// feed.js – Global feed using same Firebase config as profile.js
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -12,7 +12,6 @@ import {
   deleteDoc,
   doc,
   arrayUnion,
-  arrayRemove,
   serverTimestamp,
   getDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -23,57 +22,50 @@ const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");
 const postBtn = document.getElementById("postBtn");
 const feedPosts = document.getElementById("feedPosts");
-const uploadProgress = document.getElementById("uploadProgress");
-const uploadStatus = document.getElementById("uploadStatus");
 
-// Navigation (JS listeners)
+// Navigation (using same auth-guard pattern)
 document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
 document.getElementById("navProfileBtn")?.addEventListener("click", () => window.location.href = "profile.html");
-document.getElementById("navMessagesBtn")?.addEventListener("click", () => window.location.href = "messages.html");
 
-// Real-time feed loading
+// Load feed real-time
 function loadFeed() {
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-  onSnapshot(q, (snap) => {
+  onSnapshot(q, async (snap) => {
     feedPosts.innerHTML = "";
 
     if (snap.empty) {
-      feedPosts.innerHTML = '<p class="no-posts">No posts yet. Be the first!</p>';
+      feedPosts.innerHTML = '<p>No posts yet. Be the first to post!</p>';
       return;
     }
 
-    snap.forEach((docSnap) => {
+    snap.forEach(async (docSnap) => {
       const post = docSnap.data();
       const postId = docSnap.id;
+
+      // Get username from users collection
+      const userSnap = await getDoc(doc(db, "users", post.userId));
+      const username = userSnap.exists() ? userSnap.data().username || "Anonymous" : "Anonymous";
 
       const isOwner = post.userId === auth.currentUser?.uid;
 
       const postDiv = document.createElement("div");
-      postDiv.className = "post-card";
+      postDiv.className = "post";
       postDiv.innerHTML = `
-        <div class="post-header">
-          <strong>${post.username || "Anonymous"}</strong>
-          <small>${post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now"}</small>
+        <strong>${username}</strong>
+        <small>${post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now"}</small>
+        <p>${post.text || ""}</p>
+        ${post.imageURL ? `<img src="${post.imageURL}" alt="Post image" style="max-width:100%;">` : ""}
+        <div class="actions">
+          <button class="like-btn" data-id="${postId}">Like (${post.likes?.length || 0})</button>
+          <button class="dislike-btn" data-id="${postId}">Dislike (${post.dislikes?.length || 0})</button>
+          ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
         </div>
-        <p class="post-text">${post.text || ""}</p>
-        ${post.imageURL ? `<img src="${post.imageURL}" alt="Post image" class="post-image">` : ""}
-        <div class="post-actions">
-          <button class="action-btn like-btn" data-id="${postId}">
-            👍 ${post.likes?.length || 0}
-          </button>
-          <button class="action-btn dislike-btn" data-id="${postId}">
-            👎 ${post.dislikes?.length || 0}
-          </button>
-          ${isOwner ? `<button class="action-btn delete-btn" data-id="${postId}">🗑️ Delete</button>` : ""}
-        </div>
-        <div class="comments-section">
+        <div class="comments">
           <h4>Comments</h4>
-          <div id="comments-${postId}" class="comments-list"></div>
-          <div class="comment-form">
-            <input type="text" placeholder="Add a comment..." id="commentInput-${postId}">
-            <button class="comment-btn" data-id="${postId}">Send</button>
-          </div>
+          <div id="comments-${postId}"></div>
+          <input type="text" placeholder="Add comment..." id="commentInput-${postId}">
+          <button class="comment-btn" data-id="${postId}">Comment</button>
         </div>
       `;
 
@@ -121,24 +113,21 @@ function loadFeed() {
       // Load comments real-time
       const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
       onSnapshot(commentsQ, (snap) => {
-        const commentsList = postDiv.querySelector(`#comments-${postId}`);
-        commentsList.innerHTML = "";
+        const commentsDiv = postDiv.querySelector(`#comments-${postId}`);
+        commentsDiv.innerHTML = "";
 
-        snap.forEach((commentSnap) => {
-          const c = commentSnap.data();
-          const commentDiv = document.createElement("div");
-          commentDiv.className = "comment";
-          commentDiv.innerHTML = `<strong>${c.username}</strong>: ${c.text}`;
-          commentsList.appendChild(commentDiv);
+        snap.forEach((cSnap) => {
+          const c = cSnap.data();
+          const cDiv = document.createElement("div");
+          cDiv.textContent = `${c.username}: ${c.text}`;
+          commentsDiv.appendChild(cDiv);
         });
       });
     });
-  }, (err) => {
-    alert("Feed error: " + err.message);
   });
 }
 
-// Create new post
+// Post new content
 postBtn.addEventListener("click", async () => {
   if (!auth.currentUser) return alert("Please login to post");
 
@@ -150,24 +139,11 @@ postBtn.addEventListener("click", async () => {
   let imageURL = "";
   if (file) {
     try {
-      uploadProgress.style.display = "block";
-      uploadProgress.value = 0;
-
       const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${file.name}-${Date.now()}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on("state_changed", (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        uploadProgress.value = progress;
-      });
-
-      await uploadTask;
-
-      imageURL = await getDownloadURL(uploadTask.snapshot.ref);
-      uploadProgress.style.display = "none";
+      await uploadBytes(storageRef, file);
+      imageURL = await getDownloadURL(storageRef);
     } catch (err) {
       alert("Image upload failed: " + err.message);
-      uploadProgress.style.display = "none";
       return;
     }
   }
@@ -187,11 +163,11 @@ postBtn.addEventListener("click", async () => {
     postImage.value = "";
     alert("Post created!");
   } catch (err) {
-    alert("Failed to post: " + err.message);
+    alert("Post failed: " + err.message);
   }
 });
 
-// Init – wait for auth
+// Start loading feed when auth is ready
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";

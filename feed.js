@@ -1,8 +1,9 @@
-// feed.js
+// feed.js – Updated with post delete button, working likes/dislikes/shares, comment button with containers, poster/commenter delete comment, fixed image sizes
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
-  updateDoc, query, orderBy, getDoc
+  updateDoc, query, orderBy, getDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -32,83 +33,104 @@ const postFileInput = document.getElementById("postFileInput");
 document.getElementById("feedNavBtn")?.addEventListener("click", () => {
   window.location.href = "feed.html";
 });
-
 document.getElementById("profileNavBtn")?.addEventListener("click", () => {
   window.location.href = "profile.html";
 });
 
-// LOGOUT BUTTON (FIXED)
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
 });
 
-// GET DISPLAY USERNAME
-async function getUsername(userId) {
-  try {
-    const snap = await getDoc(doc(db, "users", userId));
-    return snap.exists() && snap.data().username
-      ? snap.data().username
-      : "Anonymous";
-  } catch {
-    return "Anonymous";
-  }
-}
-
 // RENDER POST
-async function renderPost(postData, postId) {
+async function renderPost(post, postId) {
+  const isOwner = post.userId === auth.currentUser.uid;
+
   const postEl = document.createElement("div");
-  postEl.className = "post-container";
+  postEl.className = "post";
 
-  const username = await getUsername(postData.userId);
-
-  let mediaHTML = "";
-  if (postData.mediaType === "image") {
-    mediaHTML = `<img src="${postData.mediaURL}" class="post-media">`;
-  } else if (postData.mediaType === "video") {
-    mediaHTML = `<video controls class="post-media"><source src="${postData.mediaURL}"></video>`;
-  }
+  const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
   postEl.innerHTML = `
-    <div class="post-header">
-      <span class="post-username">${username}</span>
-      ${postData.userId === auth.currentUser.uid ? `<button class="delete-post">Delete</button>` : ""}
+    <strong>${post.username}</strong> <small>${time}</small>
+    <p>${post.text}</p>
+    ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
+    <div class="actions">
+      <button class="like-btn" data-id="${postId}">Like (${post.likes || 0})</button>
+      <button class="dislike-btn" data-id="${postId}">Dislike (${post.dislikes || 0})</button>
+      <button class="share-btn" data-id="${postId}">Share</button>
+      ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
     </div>
-    <div class="post-body">
-      <p>${postData.text || ""}</p>
-      ${mediaHTML}
-    </div>
-    <div class="post-footer">
-      <button class="like-btn">👍 ${postData.likes || 0}</button>
-      <button class="dislike-btn">🖕 ${postData.dislikes || 0}</button>
-      <button class="share-btn">Share</button>
-    </div>
+    <div class="comments-container" id="comments-${postId}"></div>
+    <input type="text" class="comment-input" id="commentInput-${postId}" placeholder="Add a comment...">
+    <button class="comment-btn" data-id="${postId}">Comment</button>
   `;
-
-  // DELETE POST
-  postEl.querySelector(".delete-post")?.addEventListener("click", async () => {
-    await deleteDoc(doc(db, "posts", postId));
-    postEl.remove();
-  });
 
   // LIKE
   postEl.querySelector(".like-btn").addEventListener("click", async () => {
-    const newLikes = (postData.likes || 0) + 1;
-    await updateDoc(doc(db, "posts", postId), { likes: newLikes });
-    postEl.querySelector(".like-btn").textContent = `👍 ${newLikes}`;
+    await updateDoc(doc(db, "posts", postId), { likes: (post.likes || 0) + 1 });
   });
 
   // DISLIKE
   postEl.querySelector(".dislike-btn").addEventListener("click", async () => {
-    const newDislikes = (postData.dislikes || 0) + 1;
-    await updateDoc(doc(db, "posts", postId), { dislikes: newDislikes });
-    postEl.querySelector(".dislike-btn").textContent = `🖕 ${newDislikes}`;
+    await updateDoc(doc(db, "posts", postId), { dislikes: (post.dislikes || 0) + 1 });
   });
 
   // SHARE
   postEl.querySelector(".share-btn").addEventListener("click", () => {
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
     alert("Post link copied");
+  });
+
+  // DELETE POST
+  postEl.querySelector(".delete-btn")?.addEventListener("click", async () => {
+    if (confirm("Delete this post?")) {
+      await deleteDoc(doc(db, "posts", postId));
+      loadPosts();
+    }
+  });
+
+  // LOAD COMMENTS
+  const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
+  onSnapshot(commentsQ, (snap) => {
+    const commentsContainer = postEl.querySelector(".comments-container");
+    commentsContainer.innerHTML = "";
+
+    snap.forEach((docSnap) => {
+      const comment = docSnap.data();
+      const commentId = docSnap.id;
+
+      const commentEl = document.createElement("div");
+      commentEl.className = "comment";
+      commentEl.innerHTML = `
+        <strong>${comment.username || "Anonymous"}</strong> <small>${comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now"}</small>
+        <p>${comment.text}</p>
+        <button class="delete-comment" data-id="${commentId}">Delete</button>
+      `;
+
+      // DELETE COMMENT (poster or commenter)
+      commentEl.querySelector(".delete-comment").addEventListener("click", async () => {
+        if (confirm("Delete this comment?")) {
+          await deleteDoc(doc(db, "posts", postId, "comments", commentId));
+        }
+      });
+
+      commentsContainer.appendChild(commentEl);
+    });
+  });
+
+  // COMMENT BUTTON
+  postEl.querySelector(".comment-btn").addEventListener("click", async () => {
+    const text = postEl.querySelector(".comment-input").value.trim();
+    if (!text) return;
+
+    await addDoc(collection(db, "posts", postId, "comments"), {
+      text,
+      username: auth.currentUser.email.split("@")[0] || "Anonymous",
+      createdAt: serverTimestamp()
+    });
+
+    postEl.querySelector(".comment-input").value = "";
   });
 
   postsContainer.prepend(postEl);

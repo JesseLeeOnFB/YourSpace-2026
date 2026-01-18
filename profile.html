@@ -4,104 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace – Profile</title>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="profile.css?v=2026-01" />
 </head>
 
-<body class="theme-light">
+<body class="default-theme">
 
-  <!-- Navigation -->
-  <nav class="nav-bar">
-    <a href="feed.html?v=2026-01">Feed</a>
-    <a href="profile.html?v=2026-01">Profile</a>
-    <a href="messages.html?v=2026-01">Messages</a>
-    <a href="logout.html?v=2026-01">Logout</a>
+  <nav class="navbar">
+    <button onclick="location.href='feed.html?v=2026-01'">Feed</button>
+    <button onclick="location.href='profile.html?v=2026-01'">Profile</button>
+    <button onclick="location.href='messages.html?v=2026-01'">Messages</button>
+    <button onclick="location.href='logout.html?v=2026-01'">Logout</button>
   </nav>
 
-  <!-- Profile Header -->
-  <main class="profile-page">
+  <main class="profile-main">
 
-    <section class="profile-header">
+    <section class="profile-top">
 
-      <img
-        id="profilePic"
-        src="default-avatar.png"
-        alt="Profile Picture"
-        class="profile-pic"
-      />
+      <div class="pfp-container">
+        <img id="profilePic" src="default-avatar.png" alt="Profile Picture" />
+        <input type="file" id="pfpInput" accept="image/*" />
+        <button id="savePfpBtn">Save Profile Picture</button>
 
-      <h1 id="profileName">User</h1>
-      <p id="profileBio">This is the bio lol</p>
-
-      <!-- Edit Bio -->
-      <input
-        type="text"
-        id="bioInput"
-        placeholder="Edit your bio"
-      />
-      <button id="saveBioBtn">Save Bio</button>
-
-      <!-- Profile Picture Upload -->
-      <input
-        type="file"
-        id="pfpInput"
-        accept="image/*"
-      />
-      <button id="savePfpBtn">Save Profile Picture</button>
-
-      <!-- Upload Progress -->
-      <progress
-        id="uploadProgress"
-        value="0"
-        max="100"
-        style="display:none; width: 100%; margin-top: 10px;"
-      ></progress>
-
-    </section>
-
-    <!-- Top 10 Friends -->
-    <section class="top10-section">
-      <h2>Top 10 Friends</h2>
-      <div id="top10Container" class="top10-container">
-        <!-- JS renders friends here -->
+        <progress id="uploadProgress" value="0" max="100" style="display:none;"></progress>
       </div>
+
+      <div class="profile-info-box">
+        <input id="usernameInput" placeholder="Username" disabled />
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input id="locationInput" placeholder="Location" />
+        <button id="saveProfileBtn">Save Profile</button>
+      </div>
+
     </section>
 
-    <!-- Wall -->
-    <section class="wall-section">
+    <section class="wall-container">
       <h2>Wall</h2>
-
-      <div id="wallContainer" class="wall-container">
-        <!-- Wall posts load here -->
-      </div>
-
-      <input
-        type="text"
-        id="wallInput"
-        placeholder="Write on this wall..."
-      />
+      <div id="wallContainer"></div>
+      <input id="wallInput" placeholder="Write something..." />
       <button id="postWallBtn">Post</button>
-    </section>
-
-    <!-- Music -->
-    <section class="music-section">
-      <h2>Music</h2>
-
-      <ul id="musicList"></ul>
-
-      <input
-        type="text"
-        id="musicInput"
-        placeholder="Paste YouTube / Spotify link"
-      />
-      <button id="addMusicBtn">Add Song</button>
     </section>
 
   </main>
 
-  <!-- Scripts -->
   <script type="module" src="profile.js?v=2026-01"></script>
-
 </body>
 </html>

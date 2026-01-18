@@ -1,123 +1,114 @@
-/* Basic layout */
 body {
   font-family: 'Century Gothic', sans-serif;
   margin: 0;
-  padding: 0;
   background-color: #121212;
-  color: #ffffff;
-}
-
-nav#navBar {
-  background-color: #1f1f1f;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-nav#navBar button {
-  background: none;
   color: #fff;
-  border: 1px solid #fff;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background-color: #222;
+}
+
+nav button {
   padding: 5px 10px;
   cursor: pointer;
 }
 
-nav#navBar button:hover {
-  background-color: #fff;
-  color: #000;
-}
-
 .profile-container {
   max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .profile-header {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
   text-align: center;
-  margin-bottom: 20px;
 }
 
 .profile-header img {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  object-fit: cover;
 }
 
-.profile-header input, .profile-header button {
-  display: block;
-  margin: 10px auto;
+.profile-header textarea, #bioInput {
+  width: 80%;
+  margin: 5px 0;
 }
 
-.profile-bio, .top10-container, .music-container, .wall-container, .custom-html-container, .theme-container {
-  background-color: #1f1f1f;
-  padding: 15px;
-  margin-bottom: 20px;
+.top10-container {
+  background: #1e1e1e;
+  padding: 20px;
   border-radius: 10px;
 }
 
-textarea {
-  width: 100%;
-  min-height: 60px;
-  padding: 5px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 1px solid #555;
-  background-color: #121212;
-  color: #fff;
-}
-
-button {
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.wall-post {
-  border-bottom: 1px solid #555;
-  padding: 5px 0;
-}
-
-.wall-post button {
-  margin-left: 10px;
-  padding: 2px 5px;
-}
-
-/* Top 10 friends */
-#top10FriendsContainer {
+.top10-container ul {
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-#top10FriendsContainer div.top-friend {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-
-/* Music player playlist */
-#musicPlaylist div.song-item {
+.top10-container li {
+  background: #333;
   padding: 5px;
+  width: 120px;
+  text-align: center;
+  cursor: grab;
+  border-radius: 5px;
+}
+
+.top10-container img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 5px;
+}
+
+.wall-container {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.wall-container textarea {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.wall-post {
+  padding: 5px;
+  border-bottom: 1px solid #444;
+}
+
+.wall-post button {
+  margin-left: 10px;
+}
+
+.music-container {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+#musicPlaylist {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.music-item {
   cursor: pointer;
-  border-bottom: 1px solid #555;
-}
-
-#musicPlaylist div.song-item:hover {
-  background-color: #333;
-}
-
-/* Themes */
-body.theme-dark { background-color: #121212; color: #ffffff; }
-body.theme-light { background-color: #f4f4f4; color: #000; }
-body.theme-retro { background-color: #fdf0d5; color: #000; }
-
-/* Mobile responsiveness */
-@media screen and (max-width: 768px) {
-  .profile-container { padding: 10px; }
-  .profile-header img { width: 120px; height: 120px; }
+  text-decoration: underline;
+  color: #fbb148;
 }

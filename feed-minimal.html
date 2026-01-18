@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed Minimal Test</title>
+</head>
+<body>
+  <h1>Feed Minimal Debug</h1>
+  <p>Testing if feed.js loads and runs...</p>
+
+  <button id="testPostBtn">Test Post Button</button>
+
+  <div id="feedPosts">Loading...</div>
+
+  <script type="module" src="firebase.js?v=min20260120"></script>
+  <script type="module" src="auth-guard.js?v=min20260120"></script>
+  <script type="module" src="feed.js?v=min20260120"></script>
+
+  <script>
+    // Extra safety alert after all scripts load
+    setTimeout(() => {
+      alert("All scripts loaded – checking if feed.js ran");
+    }, 3000); // 3 second delay
+  </script>
+</body>
+</html>

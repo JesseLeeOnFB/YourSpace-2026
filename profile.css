@@ -1,44 +1,177 @@
-/* Body Themes */
-body.default-theme { background: #f0f0f0; color: #222; font-family: Arial, sans-serif; }
-body.red-theme { background: linear-gradient(red, darkred); color: white; }
-body.blue-theme { background: linear-gradient(blue, darkblue); color: white; }
-body.green-theme { background: linear-gradient(green, darkgreen); color: white; }
-body.neon-theme { animation: neonBg 5s infinite; }
-@keyframes neonBg { 0%{background-color:#ff00ff;} 25%{background-color:#00ffff;} 50%{background-color:#ffff00;} 75%{background-color:#00ff00;} 100%{background-color:#ff00ff;} }
+/* profile.css ── Full rewrite with preset themes, responsive, MySpace vibe */
 
-/* Navigation */
-.navbar { display: flex; gap: 15px; padding: 10px; background: #333; color: #fff; }
-.navbar button { color: white; background: #444; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-.navbar button:hover { background: #555; }
+:root {
+  --card-bg: #ffffff;
+  --text: #333;
+  --text-light: #666;
+  --border: #ddd;
+  --shadow: 0 2px 10px rgba(0,0,0,0.08);
+  --accent: #007bff;
+}
 
-/* Main layout */
-.profile-main { padding: 20px; max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+/* Default Theme */
+body.default-theme {
+  background: linear-gradient(to bottom, #f0f4f8, #e0e8f0);
+  color: var(--text);
+}
 
-/* Top section: pfp + info */
-.profile-top { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
-.pfp-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-#profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
+/* Red Theme */
+body.red-theme {
+  background: linear-gradient(to bottom, #ff416c, #ff4b2b);
+  color: white;
+}
 
-/* Profile info box */
-.profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
+body.red-theme .card,
+body.red-theme .navbar,
+body.red-theme .wall-comment,
+body.red-theme .top-friend {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+}
 
-/* Containers */
-.wall-container, .top10-container, .theme-container, .music-player { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
-.wall-container h3, .top10-container h3, .theme-container h3, .music-player h3 { margin-top: 0; }
+/* Blue Theme */
+body.blue-theme {
+  background: linear-gradient(to bottom, #00c3ff, #0099cc);
+  color: white;
+}
+
+body.blue-theme .card,
+body.blue-theme .navbar,
+body.blue-theme .wall-comment,
+body.blue-theme .top-friend {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Green Theme */
+body.green-theme {
+  background: linear-gradient(to bottom, #56ab2f, #3a7d1a);
+  color: white;
+}
+
+body.green-theme .card,
+body.green-theme .navbar,
+body.green-theme .wall-comment,
+body.green-theme .top-friend {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Neon Theme (animated) */
+body.neon-theme {
+  background: #000;
+  color: #0ff;
+  animation: neonGlow 5s infinite alternate;
+}
+
+@keyframes neonGlow {
+  from { box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; }
+  to { box-shadow: 0 0 20px #f0f, 0 0 30px #f0f, 0 0 40px #f0f; }
+}
+
+body.neon-theme .card,
+body.neon-theme .navbar,
+body.neon-theme .wall-comment,
+body.neon-theme .top-friend {
+  background: rgba(0,255,255,0.1);
+  border: 1px solid #0ff;
+  box-shadow: 0 0 10px #0ff;
+}
+
+/* Common Elements */
+.navbar {
+  background: var(--primary, #333);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.navbar button {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+/* Profile Picture */
+#profilePfp {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--primary, #333);
+}
+
+/* Inputs & Buttons */
+input, textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
 
 /* Wall Comments */
-.wall-comment { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-.wall-comment button { background: #e33; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; }
-#wallCommentInput { width: 100%; min-height: 50px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
+.wall-comment {
+  background: var(--card-bg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
 
-/* Top 10 friends */
-#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
-.top-friend { display: flex; gap: 10px; align-items: center; }
+/* Top Friends */
+.top-friend {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
 
-/* Music player */
-.music-player input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #aaa; }
-#musicIframe { width: 100%; height: 80px; border: none; }
+.top-friend:hover {
+  background: rgba(0,123,255,0.1);
+}
 
-/* Custom HTML preview */
-#customHtmlPreview { border: 1px solid #aaa; padding: 10px; min-height: 100px; margin-top: 10px; background: #f9f9f9; }
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-top {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+}

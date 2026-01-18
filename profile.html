@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
+</head>
+<body class="default-theme">
+
+<!-- Navigation -->
+<div class="navbar">
+  <button id="navFeedBtn">Feed</button>
+  <button id="navProfileBtn">Profile</button>
+  <button id="navSettingsBtn">Settings</button>
+</div>
+
+<div class="profile-main">
+
+  <!-- Profile top section -->
+  <div class="profile-top">
+
+    <!-- Profile Picture -->
+    <div class="pfp-container">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="profile-info-box">
+      <input id="usernameInput" placeholder="Username">
+      <textarea id="bioInput" placeholder="Bio"></textarea>
+      <input id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
+    </div>
+  </div>
+
+  <!-- Themes and Custom HTML -->
+  <div class="theme-container">
+    <select id="themeSelect">
+      <option value="default-theme">Default</option>
+      <option value="red-theme">Red Gradient</option>
+      <option value="blue-theme">Blue Gradient</option>
+      <option value="green-theme">Green Gradient</option>
+      <option value="neon-theme">Neon Animated</option>
+    </select>
+    <button id="saveThemeBtn">Save Theme</button>
+    <textarea id="customHtmlInput" placeholder="Custom HTML, themes, animations"></textarea>
+    <div id="customHtmlPreview"></div>
+  </div>
+
+  <!-- Music Player -->
+  <div class="music-player">
+    <input type="text" id="musicLinkInput" placeholder="Paste YouTube, Spotify, SoundCloud, Pandora link">
+    <button id="loadMusicBtn">Load Music</button>
+    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
+  </div>
+
+  <!-- Wall Comments -->
+  <div class="wall-container">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
+
+  <!-- Top 10 Friends -->
+  <div class="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="editTop10Btn">Edit Top 10 Friends</button>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="profile.js?cb=<?php echo time(); ?>"></script>
+</body>
+</html>

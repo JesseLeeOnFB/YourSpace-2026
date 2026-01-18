@@ -1,0 +1,44 @@
+/* Body Themes */
+body.default-theme { background: #f0f0f0; color: #222; font-family: Arial, sans-serif; }
+body.red-theme { background: linear-gradient(red, darkred); color: white; }
+body.blue-theme { background: linear-gradient(blue, darkblue); color: white; }
+body.green-theme { background: linear-gradient(green, darkgreen); color: white; }
+body.neon-theme { animation: neonBg 5s infinite; }
+@keyframes neonBg { 0%{background-color:#ff00ff;} 25%{background-color:#00ffff;} 50%{background-color:#ffff00;} 75%{background-color:#00ff00;} 100%{background-color:#ff00ff;} }
+
+/* Navigation */
+.navbar { display: flex; gap: 15px; padding: 10px; background: #333; color: #fff; }
+.navbar button { color: white; background: #444; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+.navbar button:hover { background: #555; }
+
+/* Main layout */
+.profile-main { padding: 20px; max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+
+/* Top section: pfp + info */
+.profile-top { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+.pfp-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#profilePfp { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #444; background: #222; }
+
+/* Profile info box */
+.profile-info-box { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.profile-info-box input, .profile-info-box textarea, .profile-info-box select { padding: 8px; border-radius: 4px; border: 1px solid #aaa; width: 100%; }
+
+/* Containers */
+.wall-container, .top10-container, .theme-container, .music-player { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
+.wall-container h3, .top10-container h3, .theme-container h3, .music-player h3 { margin-top: 0; }
+
+/* Wall Comments */
+.wall-comment { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+.wall-comment button { background: #e33; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; }
+#wallCommentInput { width: 100%; min-height: 50px; margin-top: 5px; padding: 5px; border-radius: 4px; border: 1px solid #aaa; }
+
+/* Top 10 friends */
+#top10FriendsContainer { display: flex; flex-direction: column; gap: 5px; }
+.top-friend { display: flex; gap: 10px; align-items: center; }
+
+/* Music player */
+.music-player input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #aaa; }
+#musicIframe { width: 100%; height: 80px; border: none; }
+
+/* Custom HTML preview */
+#customHtmlPreview { border: 1px solid #aaa; padding: 10px; min-height: 100px; margin-top: 10px; background: #f9f9f9; }

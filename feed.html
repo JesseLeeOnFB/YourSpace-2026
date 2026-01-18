@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Feed</title>
+  <link rel="stylesheet" href="feed.css">
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <nav class="nav-bar">
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <!-- CREATE POST -->
+  <section class="create-post">
+    <textarea id="postText" placeholder="What's on your mind?"></textarea>
+    <input type="file" id="postFileInput" accept="image/*,video/*">
+    <button id="postBtn">Post</button>
+  </section>
+
+  <!-- POSTS -->
+  <section id="postsContainer" class="posts-container"></section>
+
+  <!-- SCRIPTS -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="feed.js"></script>
+</body>
+</html>

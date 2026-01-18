@@ -1,4 +1,4 @@
-// feed.js – Global feed: text/image posts, likes/dislikes, comments, delete own, real-time loading
+// feed.js – Global feed: text/image posts, likes/dislikes, comments, delete own, real-time
 
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   getDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
 const postText = document.getElementById("postText");
 const postImage = document.getElementById("postImage");

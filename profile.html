@@ -6,54 +6,51 @@
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
 </head>
-<body class="theme-light">
-
-  <nav id="topNav">
-    <ul>
-      <li><button id="navFeed">Feed</button></li>
-      <li><button id="navProfile">Profile</button></li>
-      <li><button id="navMessages">Messages</button></li>
-      <li><button id="logoutBtn">Logout</button></li>
-    </ul>
+<body>
+  <nav>
+    <button id="navFeed">Feed</button>
+    <button id="navProfile">Profile</button>
+    <button id="navMessages">Messages</button>
+    <button id="navLogout">Logout</button>
   </nav>
 
   <div class="profile-container">
-    <div class="profile-header">
+    <div class="profile-left">
       <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-      <h2 id="profileName">YourSpace User</h2>
-      <p id="profileBio">This is the bio lol</p>
-
       <input type="file" id="pfpInput">
       <button id="savePfpBtn">Save Profile Picture</button>
 
-      <textarea id="bioInput" placeholder="Edit your bio..."></textarea>
+      <h2 id="profileName">YourSpace User</h2>
+      <textarea id="bioInput" placeholder="Write your bio..."></textarea>
       <button id="saveBioBtn">Save Bio</button>
 
       <select id="themeSelect">
-        <option value="theme-light">Light</option>
-        <option value="theme-dark">Dark</option>
-        <option value="theme-retro">Retro</option>
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="retro">Retro</option>
       </select>
     </div>
 
-    <div class="top10-container">
-      <h3>Top 10 Friends</h3>
-      <ul id="top10List"></ul>
-    </div>
+    <div class="profile-right">
+      <div class="wall-section">
+        <h3>Wall Comments</h3>
+        <textarea id="wallInput" placeholder="Write a comment..."></textarea>
+        <button id="postWallBtn">Post</button>
+        <div id="wallContainer"></div>
+      </div>
 
-    <div class="wall-container">
-      <h3>Wall</h3>
-      <textarea id="wallInput" placeholder="Write on the wall..."></textarea>
-      <button id="postWallBtn">Post</button>
-      <div id="wallContainer"></div>
-    </div>
+      <div class="top10-section">
+        <h3>Top 10 Friends</h3>
+        <div id="top10Container"></div>
+      </div>
 
-    <div class="music-container">
-      <h3>Music Player</h3>
-      <input type="text" id="musicInput" placeholder="Paste song URL here">
-      <button id="addSongBtn">Add Song</button>
-      <ul id="musicList"></ul>
-      <iframe id="musicPlayer" width="100%" height="80" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+      <div class="music-section">
+        <h3>Music Player</h3>
+        <input type="text" id="musicInput" placeholder="Paste YouTube/Spotify link">
+        <button id="addMusicBtn">Add Song</button>
+        <div id="musicPlayer"></div>
+        <div id="musicPlaylist"></div>
+      </div>
     </div>
   </div>
 

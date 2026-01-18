@@ -56,27 +56,27 @@ body {
 }
 
 /* New Post Form */
-.new-post-card {
+.new-post {
   background: var(--card-bg);
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow);
   margin-bottom: 2rem;
 }
 
-.new-post-card textarea {
+.new-post textarea {
   width: 100%;
   min-height: 100px;
   padding: 0.8rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 1rem;
   resize: vertical;
   box-sizing: border-box;
 }
 
-.new-post-card input[type="file"] {
+.new-post input[type="file"] {
   margin-bottom: 1rem;
   width: 100%;
 }
@@ -86,7 +86,7 @@ body {
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.2s;
@@ -125,6 +125,7 @@ body {
 
 .post-text {
   margin-bottom: 1rem;
+  white-space: pre-wrap;
 }
 
 .post-image {
@@ -240,7 +241,7 @@ body {
     padding: 0.5rem;
   }
 
-  .new-post-card {
+  .new-post {
     padding: 1rem;
   }
 

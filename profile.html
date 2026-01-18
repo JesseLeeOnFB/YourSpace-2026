@@ -12,35 +12,40 @@
   <!-- Navigation -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
-    <button id="navMessagesBtn">Messages</button>
+    <button id="navProfileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <div class="profile-main">
-    <h1>My Profile</h1>
 
-    <!-- Profile Picture -->
-    <div class="pfp-section">
-      <img id="profilePfp" src="" alt="Profile Picture">
-      <input type="file" id="profilePfpInput" accept="image/*">
-      <button id="saveProfilePfpBtn">Upload & Save Picture</button>
+    <!-- Profile Top Section -->
+    <div class="profile-top">
+
+      <!-- Profile Picture -->
+      <div class="pfp-container">
+        <img id="profilePfp" src="" alt="Profile Picture">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="saveProfilePfpBtn">Upload & Save Picture</button>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="profile-info-box">
+        <input id="usernameInput" placeholder="Username" disabled>
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input id="locationInput" placeholder="Location">
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
     </div>
 
-    <!-- Basic Info -->
-    <div class="info-section">
-      <textarea id="bioInput" placeholder="Bio"></textarea>
-      <input type="text" id="locationInput" placeholder="Location">
-      <button id="saveProfileBtn">Save Bio/Location</button>
-    </div>
-
-    <!-- Preset Themes -->
-    <div class="theme-section">
-      <h3>Preset Themes</h3>
+    <!-- Theme Selector -->
+    <div class="theme-container">
+      <h3>Theme</h3>
       <select id="themeSelect">
         <option value="default-theme">Default</option>
-        <option value="dark-theme">Dark</option>
+        <option value="red-theme">Red Gradient</option>
+        <option value="blue-theme">Blue Gradient</option>
+        <option value="green-theme">Green Gradient</option>
         <option value="neon-theme">Neon</option>
-        <option value="retro-theme">Retro</option>
       </select>
       <button id="saveThemeBtn">Apply Theme</button>
       <button id="resetThemeBtn">Reset to Default</button>
@@ -55,7 +60,7 @@
     </div>
 
     <!-- Music Player -->
-    <div class="music-section">
+    <div class="music-player">
       <h3>Music Playlist (Up to 4 songs)</h3>
       <div id="musicPlaylist"></div>
       <input type="text" id="musicTitleInput" placeholder="Song title">
@@ -65,20 +70,21 @@
     </div>
 
     <!-- Top 10 Friends -->
-    <div class="top10-section">
+    <div class="top10-container">
       <h3>Top 10 Friends (Drag to reorder)</h3>
       <ul id="top10FriendsList"></ul>
       <input type="text" id="addFriendInput" placeholder="Add friend username">
-      <button id="addTopFriendBtn">Add Friend</button>
+      <button id="addTopFriendBtn">Add to Top 10</button>
     </div>
 
     <!-- Wall Comments -->
-    <div class="wall-section">
+    <div class="wall-container">
       <h3>Wall Comments</h3>
       <div id="wallCommentsContainer"></div>
       <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
       <button id="addWallCommentBtn">Post Comment</button>
     </div>
+
   </div>
 
   <script type="module" src="firebase.js"></script>

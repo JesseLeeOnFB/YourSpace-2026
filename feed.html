@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace - Global Feed</title>
-  <link rel="stylesheet" href="style.css?v=2026-01-18">
-  <link rel="stylesheet" href="feed.css?v=2026-01-18">
+  <link rel="stylesheet" href="style.css?v=2026-01">
+  <link rel="stylesheet" href="feed.css?v=2026-01">
 </head>
 <body>
-
+  <!-- Navigation (IDs only – auth-guard.js handles clicks) -->
   <nav class="navbar">
     <button id="navFeedBtn">Feed</button>
     <button id="navProfileBtn">Profile</button>
@@ -19,6 +19,7 @@
   <div class="feed-container">
     <h1>Global Feed</h1>
 
+    <!-- New Post Form -->
     <div class="new-post">
       <textarea id="postText" placeholder="What's on your mind?" rows="4"></textarea>
       <div class="post-actions">
@@ -30,12 +31,13 @@
       <p id="uploadStatus" class="upload-status"></p>
     </div>
 
+    <!-- Posts will load here -->
     <div id="feedPosts"></div>
   </div>
 
-  <!-- Scripts with versioning -->
-  <script type="module" src="firebase.js?v=2026-01-18"></script>
-  <script type="module" src="auth-guard.js?v=2026-01-18"></script>
-  <script type="module" src="feed.js?v=2026-01-18"></script>
+  <!-- Scripts – load in correct order -->
+  <script type="module" src="firebase.js?v=2026-01"></script>
+  <script type="module" src="auth-guard.js?v=2026-01"></script>
+  <script type="module" src="feed.js?v=2026-01"></script>
 </body>
 </html>

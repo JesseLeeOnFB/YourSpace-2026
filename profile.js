@@ -1,52 +1,38 @@
-// profile.js – Full with all features: pfp upload with progress bar, bio/location save, preset themes (instant apply), custom HTML, music playlist (4 songs), top 10 friends (drag-drop, clickable), wall comments subcollection
+// profile.js ── Debug version: waits for auth, alerts on every step, loads bio/location/pfp/music, pfp upload with progress, wall comments subcollection
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   doc,
+  getDoc,
   onSnapshot,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
-  serverTimestamp,
   collection,
   addDoc,
   deleteDoc,
   query,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
   ref,
-  uploadBytesResumable,
+  uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// DOM Elements
+// DOM Elements (match your HTML IDs)
 const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
+const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-const themeSelect = document.getElementById("themeSelect");
-const saveThemeBtn = document.getElementById("saveThemeBtn");
-const resetThemeBtn = document.getElementById("resetThemeBtn");
-
-const customHtmlInput = document.getElementById("customHtmlInput");
-const saveCustomHtmlBtn = document.getElementById("saveCustomHtmlBtn");
-const customHtmlPreview = document.getElementById("customHtmlPreview");
-
-const musicTitleInput = document.getElementById("musicTitleInput");
 const musicLinkInput = document.getElementById("musicLinkInput");
-const addMusicBtn = document.getElementById("addMusicBtn");
-const musicPlaylist = document.getElementById("musicPlaylist");
+const saveMusicBtn = document.getElementById("saveMusicBtn");
 const musicIframe = document.getElementById("musicIframe");
-
-const top10FriendsList = document.getElementById("top10FriendsList");
-const addFriendInput = document.getElementById("addFriendInput");
-const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 
 const wallCommentsContainer = document.getElementById("wallCommentsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
@@ -54,123 +40,76 @@ const addWallCommentBtn = document.getElementById("addWallCommentBtn");
 
 // Navigation
 document.getElementById("navFeedBtn")?.addEventListener("click", () => window.location.href = "feed.html");
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
 
 // Cache buster
 function cacheBust(url) {
   return url ? `${url}?v=${Date.now()}` : "https://via.placeholder.com/150?text=Default";
 }
 
-// Music embed helper (supports YouTube, Spotify, SoundCloud, Pandora)
-function getEmbeddedPlayerHTML(url) {
+// Music embed helper
+function getYouTubeEmbedUrl(url) {
   if (!url) return "";
-
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    const id = url.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-    return id ? `<iframe width="100%" height="80" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>` : "";
-  }
-
-  if (url.includes("spotify.com")) {
-    const trackId = url.split("/track/")[1]?.split("?")[0];
-    return trackId ? `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="100%" height="80" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>` : "";
-  }
-
-  if (url.includes("soundcloud.com")) {
-    return `<iframe width="100%" height="80" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true"></iframe>`;
-  }
-
-  if (url.includes("pandora.com")) {
-    return `<iframe src="${url}" width="100%" height="80" frameborder="0" allow="autoplay"></iframe>`;
-  }
-
-  return `<p><a href="${url}" target="_blank">Play on external player</a></p>`;
+  const id = url.match(/(?:v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+  return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : "";
 }
 
-// Real-time listeners
+// Real-time listeners with alerts
 let unsubscribeProfile = null;
 let unsubscribeComments = null;
 
 function startListeners(user) {
+  alert("Starting Firebase listeners for UID: " + user.uid);
+
   if (unsubscribeProfile) unsubscribeProfile();
   if (unsubscribeComments) unsubscribeComments();
 
   const userRef = doc(db, "users", user.uid);
 
   unsubscribeProfile = onSnapshot(userRef, (snap) => {
-    if (!snap.exists()) return;
+    if (!snap.exists()) {
+      alert("No profile document found for UID " + user.uid + " – creating default.");
+      updateDoc(userRef, {
+        username: user.email.split("@")[0],
+        bio: "",
+        location: "",
+        photoURL: "",
+        music: "",
+        theme: "default-theme"
+      }, { merge: true });
+      return;
+    }
 
     const data = snap.data();
 
+    alert("Profile data loaded! Bio: " + (data.bio || "none") + ", Location: " + (data.location || "none") + ", photoURL: " + (data.photoURL || "none"));
+
     profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
 
+    usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
 
-    themeSelect.value = data.theme || "default-theme";
-    document.body.className = data.theme || "default-theme";
-
-    customHtmlInput.value = data.customHtml || "";
-    customHtmlPreview.innerHTML = data.customHtml || "";
-
-    // Music playlist
-    musicPlaylist.innerHTML = "";
-    (data.musicPlaylist || []).forEach((song, index) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${song.title}</strong>
-        <button data-url="${song.url}" class="play-song">Play</button>
-        <button data-index="${index}" class="remove-song">Remove</button>
-      `;
-      musicPlaylist.appendChild(li);
-    });
-
-    // Top 10 Friends (drag-drop list)
-    top10FriendsList.innerHTML = "";
-    (data.topFriends || []).forEach(friend => {
-      const li = document.createElement("li");
-      li.draggable = true;
-      li.textContent = friend;
-      li.addEventListener("click", () => {
-        // Clickable to view profile (stub – would need uid mapping)
-        alert("View profile of " + friend + " (feature stub)");
-      });
-      top10FriendsList.appendChild(li);
-    });
-
-    // Drag-drop reorder for top friends
-    top10FriendsList.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", e.target.textContent);
-      e.target.classList.add("dragging");
-    });
-
-    top10FriendsList.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-
-    top10FriendsList.addEventListener("drop", async (e) => {
-      e.preventDefault();
-      const draggedText = e.dataTransfer.getData("text/plain");
-      const target = e.target.closest("li");
-      if (!target || target.textContent === draggedText) return;
-
-      const newOrder = Array.from(top10FriendsList.children).map(li => li.textContent);
-      await updateDoc(doc(db, "users", user.uid), {
-        topFriends: newOrder
-      }, { merge: true });
-    });
-
-    top10FriendsList.addEventListener("dragend", (e) => {
-      e.target.classList.remove("dragging");
-    });
+    if (data.music) {
+      musicLinkInput.value = data.music;
+      musicIframe.src = getYouTubeEmbedUrl(data.music);
+    }
+  }, (err) => {
+    alert("Profile listener error: " + err.message + "\nLikely permissions or document not found.");
   });
 
-  // Wall comments subcollection
   const commentsQ = query(collection(db, "users", user.uid, "wallComments"), orderBy("createdAt", "desc"));
 
   unsubscribeComments = onSnapshot(commentsQ, (snap) => {
+    alert("Wall comments loaded – " + snap.size + " comments");
+
     wallCommentsContainer.innerHTML = "";
 
     if (snap.empty) {
-      wallCommentsContainer.innerHTML = '<p>No comments yet...</p>';
+      wallCommentsContainer.innerHTML = '<p style="color:#888; font-style:italic;">No comments yet...</p>';
       return;
     }
 
@@ -198,6 +137,8 @@ function startListeners(user) {
 
       wallCommentsContainer.appendChild(div);
     });
+  }, (err) => {
+    alert("Wall comments listener error: " + err.message);
   });
 }
 
@@ -206,12 +147,22 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   const file = profilePfpInput.files[0];
   if (!file) return alert("Please select an image first");
 
+  alert("File selected: " + file.name + " (" + (file.size / 1024 / 1024).toFixed(2) + " MB)");
+
+  if (!auth.currentUser) {
+    alert("Not authenticated yet – wait a moment and try again.");
+    return;
+  }
+
+  alert("Authenticated as UID: " + auth.currentUser.uid);
+
+  // Progress bar popup
   const progressDiv = document.createElement("div");
-  progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center;";
+  progressDiv.style = "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); z-index: 1000; text-align: center; min-width: 250px;";
   progressDiv.innerHTML = `
     <p>Uploading...</p>
-    <progress id="uploadProgress" value="0" max="100" style="width: 200px;"></progress>
-    <p id="uploadPercent">0%</p>
+    <progress id="uploadProgress" value="0" max="100" style="width: 100%; height: 20px; border-radius: 10px;"></progress>
+    <p id="uploadPercent" style="margin-top: 10px; font-size: 1.2rem; color: #007bff;">0%</p>
   `;
   document.body.appendChild(progressDiv);
 
@@ -219,28 +170,38 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   const percentText = document.getElementById("uploadPercent");
 
   try {
-    const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    alert("Creating storage reference...");
 
-    uploadTask.on("state_changed", (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      progressBar.value = progress;
-      percentText.textContent = Math.round(progress) + "%";
-    });
+    const path = `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`;
+    const storageRef = ref(storage, path);
 
-    await uploadTask;
+    alert("Storage ref created: " + path);
 
-    const url = await getDownloadURL(uploadTask.snapshot.ref);
+    alert("Starting upload...");
+
+    await uploadBytes(storageRef, file);
+
+    alert("Upload complete – getting URL...");
+
+    const url = await getDownloadURL(storageRef);
+
+    alert("URL received: " + url.substring(0, 100) + "...");
+
+    alert("Saving to Firestore (photoURL)...");
 
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
       photoURL: url,
       profilePic: url
     }, { merge: true });
 
-    alert("Success!");
-    startListeners(auth.currentUser);
+    alert("Firestore save complete!");
+
+    profilePfp.src = url + "?cb=" + Date.now();
+
+    alert("Success! Profile picture uploaded and saved.\nRefresh to confirm it stays.");
+
   } catch (err) {
-    alert("Failed: " + err.message);
+    alert("UPLOAD FAILED:\nMessage: " + (err.message || "unknown") + "\nCode: " + (err.code || "none"));
   } finally {
     progressDiv.remove();
   }
@@ -248,111 +209,57 @@ saveProfilePfpBtn.addEventListener("click", async () => {
 
 // ── Save Bio & Location ──────────────────────────────────────────────────────
 saveProfileBtn.addEventListener("click", async () => {
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    bio: bioInput.value.trim(),
-    location: locationInput.value.trim()
-  }, { merge: true });
+  if (!auth.currentUser) return alert("Not logged in");
 
-  alert("Saved!");
+  try {
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      bio: bioInput.value.trim(),
+      location: locationInput.value.trim()
+    }, { merge: true });
+
+    alert("Bio and location saved!");
+  } catch (err) {
+    alert("Save failed: " + err.message);
+  }
 });
 
-// ── Save Theme (instant apply) ───────────────────────────────────────────────
-saveThemeBtn.addEventListener("click", async () => {
-  const theme = themeSelect.value;
-  document.body.className = theme;
+// ── Save Music ───────────────────────────────────────────────────────────────
+saveMusicBtn.addEventListener("click", async () => {
+  if (!auth.currentUser) return alert("Not logged in");
 
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    theme: theme
-  }, { merge: true });
-
-  alert("Theme applied!");
-});
-
-// ── Reset Theme ──────────────────────────────────────────────────────────────
-resetThemeBtn.addEventListener("click", async () => {
-  document.body.className = "default-theme";
-  themeSelect.value = "default-theme";
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    theme: "default-theme"
-  }, { merge: true });
-
-  alert("Theme reset to default!");
-});
-
-// ── Save Custom HTML ─────────────────────────────────────────────────────────
-saveCustomHtmlBtn.addEventListener("click", async () => {
-  const customHtml = customHtmlInput.value;
-  customHtmlPreview.innerHTML = customHtml;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    customHtml: customHtml
-  }, { merge: true });
-
-  alert("Custom HTML saved!");
-});
-
-// ── Music Playlist (up to 4 songs) ───────────────────────────────────────────
-addMusicBtn.addEventListener("click", async () => {
-  const title = musicTitleInput.value.trim();
   const link = musicLinkInput.value.trim();
-  if (!title || !link) return alert("Enter title and link");
+  if (!link) return;
 
-  const current = (await getDoc(doc(db, "users", auth.currentUser.uid))).data();
-  const playlist = current.musicPlaylist || [];
+  try {
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      music: link
+    }, { merge: true });
 
-  if (playlist.length >= 4) return alert("Max 4 songs");
-
-  playlist.push({ title, url: link });
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    musicPlaylist: playlist
-  }, { merge: true });
-
-  musicTitleInput.value = "";
-  musicLinkInput.value = "";
-  alert("Song added!");
-  startListeners(auth.currentUser);
-});
-
-// Play song from playlist
-musicPlaylist.addEventListener("click", (e) => {
-  if (e.target.classList.contains("play-song")) {
-    const url = e.target.dataset.url;
-    musicIframe.src = getYouTubeEmbedUrl(url);
+    musicIframe.src = getYouTubeEmbedUrl(link);
+    alert("Music saved!");
+  } catch (err) {
+    alert("Music save failed: " + err.message);
   }
-
-  if (e.target.classList.contains("remove-song")) {
-    const index = e.target.dataset.index;
-    // Remove logic (future)
-  }
-});
-
-// ── Add Top Friend ───────────────────────────────────────────────────────────
-addTopFriendBtn.addEventListener("click", async () => {
-  const newFriend = addFriendInput.value.trim();
-  if (!newFriend) return;
-
-  await updateDoc(doc(db, "users", auth.currentUser.uid), {
-    topFriends: arrayUnion(newFriend)
-  }, { merge: true });
-
-  addFriendInput.value = "";
-  alert("Friend added!");
-  startListeners(auth.currentUser);
 });
 
 // ── Add Wall Comment ─────────────────────────────────────────────────────────
 addWallCommentBtn.addEventListener("click", async () => {
+  if (!auth.currentUser) return alert("Not logged in");
+
   const text = wallCommentInput.value.trim();
   if (!text) return;
 
-  await addDoc(collection(db, "users", auth.currentUser.uid, "wallComments"), {
-    text,
-    username: auth.currentUser.email.split('@')[0] || "Anonymous",
-    createdAt: serverTimestamp()
-  });
-  wallCommentInput.value = "";
+  try {
+    await addDoc(collection(db, "users", auth.currentUser.uid, "wallComments"), {
+      text,
+      username: auth.currentUser.email.split('@')[0] || "Anonymous",
+      createdAt: serverTimestamp()
+    });
+    wallCommentInput.value = "";
+    alert("Comment posted!");
+  } catch (err) {
+    alert("Comment failed: " + err.message);
+  }
 });
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -362,5 +269,6 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
+  alert("Authenticated as: " + user.email + " – starting profile load...");
   startListeners(user);
 });

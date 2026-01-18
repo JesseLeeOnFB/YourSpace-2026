@@ -1,114 +1,282 @@
+/* ---------------------------
+   General Body & Layout
+--------------------------- */
 body {
-  font-family: 'Century Gothic', sans-serif;
   margin: 0;
-  background-color: #121212;
-  color: #fff;
+  padding: 0;
+  font-family: 'Century Gothic', sans-serif;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  line-height: 1.4;
 }
 
-nav {
-  display: flex;
-  gap: 10px;
-  padding: 10px;
+a {
+  text-decoration: none;
+  color: #cd1045;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 15px;
   background-color: #222;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
-nav button {
-  padding: 5px 10px;
+/* ---------------------------
+   Navigation Bar
+--------------------------- */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.profile-container {
-  max-width: 900px;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.navbar button:hover {
+  background-color: #cd1045;
 }
 
+/* ---------------------------
+   Profile Header
+--------------------------- */
 .profile-header {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  padding: 20px;
 }
 
 .profile-header img {
   width: 120px;
   height: 120px;
   border-radius: 50%;
+  border: 3px solid #cd1045;
+  object-fit: cover;
+  margin-bottom: 10px;
 }
 
-.profile-header textarea, #bioInput {
-  width: 80%;
+.profile-header h1 {
   margin: 5px 0;
+  font-size: 28px;
 }
 
-.top10-container {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.top10-container ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.top10-container li {
-  background: #333;
-  padding: 5px;
-  width: 120px;
-  text-align: center;
-  cursor: grab;
-  border-radius: 5px;
-}
-
-.top10-container img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 5px;
-}
-
-.wall-container {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.wall-container textarea {
-  width: 100%;
+.profile-bio {
   margin-top: 10px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* ---------------------------
+   Editable Sections (Own Profile)
+--------------------------- */
+.edit-section {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-section input[type="text"],
+.edit-section input[type="file"],
+.edit-section select {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #555;
+  width: 90%;
+  max-width: 400px;
+  background-color: #333;
+  color: #fff;
+}
+
+.edit-section button {
+  padding: 8px 15px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #cd1045;
+  color: #fff;
+}
+
+.edit-section button:hover {
+  background-color: #ff6680;
+}
+
+/* ---------------------------
+   Wall Posts
+--------------------------- */
+.wall-container {
+  margin-top: 20px;
 }
 
 .wall-post {
-  padding: 5px;
-  border-bottom: 1px solid #444;
+  background-color: #2a2a2a;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.wall-post strong {
+  color: #ff6680;
 }
 
 .wall-post button {
-  margin-left: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.music-container {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
+.wall-post button:hover {
+  background-color: #cd1045;
 }
 
-#musicPlaylist {
+/* ---------------------------
+   Top 10 Friends
+--------------------------- */
+.top10-container {
+  margin-top: 20px;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.top-friend {
+  background-color: #2a2a2a;
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.top-friend img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 8px;
+  object-fit: cover;
+}
+
+.top-friend:hover {
+  transform: scale(1.05);
+  background-color: #333;
+}
+
+/* ---------------------------
+   Music Player
+--------------------------- */
+.music-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.music-container iframe {
+  width: 100%;
+  max-width: 600px;
+  height: 80px;
+  border: none;
+  border-radius: 5px;
   margin-top: 10px;
 }
 
-.music-item {
-  cursor: pointer;
-  text-decoration: underline;
-  color: #fbb148;
+/* ---------------------------
+   Custom HTML Injector Box
+--------------------------- */
+.custom-html-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #222;
+  border-radius: 8px;
+}
+
+/* ---------------------------
+   Themes
+--------------------------- */
+body.theme-dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body.theme-light {
+  background-color: #f0f0f0;
+  color: #000000;
+}
+
+body.theme-retro {
+  background-color: #fbe8a6;
+  color: #2a2a2a;
+}
+
+body.theme-dark .container,
+body.theme-light .container,
+body.theme-retro .container {
+  background-color: inherit;
+  color: inherit;
+}
+
+/* ---------------------------
+   Responsive
+--------------------------- */
+@media (max-width: 768px) {
+  .profile-header img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-header h1 {
+    font-size: 22px;
+  }
+
+  .edit-section input,
+  .edit-section select,
+  .edit-section button {
+    width: 95%;
+  }
+
+  .top-friend img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .music-container iframe {
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header h1 {
+    font-size: 18px;
+  }
 }

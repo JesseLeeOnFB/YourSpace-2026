@@ -3,29 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="feed.css">
+  <title>YourSpace - Profile</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="profile.css">
 </head>
-<body>
-  <!-- NAVIGATION -->
-  <nav class="nav-bar">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
+<body class="default-theme">
+  <!-- Navigation -->
+  <nav class="navbar">
+    <button id="navFeedBtn">Feed</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- CREATE POST -->
-  <section class="create-post">
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
-    <input type="file" id="postFileInput" accept="image/*,video/*">
-    <button id="postBtn">Post</button>
-  </section>
+  <div class="profile-main">
+    <!-- Profile Top -->
+    <div class="profile-top">
+      <div class="pfp-container">
+        <img id="profilePfp" src="" alt="Profile Picture">
+        <input type="file" id="profilePfpInput" accept="image/*">
+        <button id="saveProfilePfpBtn">Upload Picture</button>
+      </div>
 
-  <!-- POSTS -->
-  <section id="postsContainer" class="posts-container"></section>
+      <div class="profile-info-box">
+        <input id="usernameInput" placeholder="Username" disabled>
+        <textarea id="bioInput" placeholder="Bio"></textarea>
+        <input id="locationInput" placeholder="Location">
+        <button id="saveProfileBtn">Save Profile Info</button>
+      </div>
+    </div>
 
-  <!-- SCRIPTS -->
+    <!-- Theme -->
+    <div class="theme-container">
+      <select id="themeSelect">
+        <option value="default-theme">Default</option>
+        <option value="dark-theme">Dark</option>
+        <option value="neon-theme">Neon</option>
+      </select>
+      <button id="saveThemeBtn">Apply Theme</button>
+    </div>
+
+    <!-- Music -->
+    <div class="music-player">
+      <input type="text" id="musicLinkInput" placeholder="YouTube link">
+      <button id="saveMusicBtn">Save Music</button>
+      <iframe id="musicIframe" src="" allow="autoplay"></iframe>
+    </div>
+
+    <!-- Friend Requests (Beta Stub) -->
+    <div class="friend-requests-section">
+      <h3>Friend Requests</h3>
+      <div id="friendRequestsContainer"></div>
+    </div>
+
+    <!-- Top 10 Friends -->
+    <div class="top10-container">
+      <h3>Top 10 Friends</h3>
+      <div id="top10FriendsContainer"></div>
+      <input type="text" id="addFriendInput" placeholder="Add friend username">
+      <button id="addTopFriendBtn">Add to Top 10</button>
+    </div>
+
+    <!-- Wall Comments -->
+    <div class="wall-container">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="addWallCommentBtn">Post Comment</button>
+    </div>
+  </div>
+
   <script type="module" src="firebase.js"></script>
-  <script type="module" src="feed.js"></script>
+  <script type="module" src="auth-guard.js"></script>
+  <script type="module" src="profile.js"></script>
 </body>
 </html>

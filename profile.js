@@ -1,14 +1,7 @@
-// profile.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
 // --------------------
 // Firebase Config
@@ -33,37 +26,19 @@ const storage = getStorage(app);
 const profileName = document.getElementById("profileName");
 const profileBio = document.getElementById("profileBio");
 const profilePic = document.getElementById("profilePic");
-
 const bioInput = document.getElementById("bioInput");
 const saveBioBtn = document.getElementById("saveBioBtn");
-
 const pfpInput = document.getElementById("pfpInput");
 const savePfpBtn = document.getElementById("savePfpBtn");
-
 const wallInput = document.getElementById("wallInput");
 const postWallBtn = document.getElementById("postWallBtn");
 const wallContainer = document.getElementById("wallContainer");
-
 const themeSelect = document.getElementById("themeSelect");
-
 const top10Container = document.getElementById("top10Container");
-
 const musicInput = document.getElementById("musicInput");
 const addMusicBtn = document.getElementById("addMusicBtn");
-const musicPlayer = document.getElementById("musicPlayer");
-
-const customHtmlInput = document.getElementById("customHtmlInput");
-const saveCustomHtmlBtn = document.getElementById("saveCustomHtmlBtn");
-const customHtmlPreview = document.getElementById("customHtmlPreview");
-
-// Navigation
-document.getElementById("navFeed").onclick = () => window.location.href = "feed.html";
-document.getElementById("navProfile").onclick = () => window.location.href = "profile.html";
-document.getElementById("navMessages").onclick = () => window.location.href = "messages.html";
-document.getElementById("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-};
+const musicList = document.getElementById("musicList");
+const audioPlayer = document.getElementById("audioPlayer");
 
 // --------------------
 // State
@@ -76,28 +51,25 @@ let viewedUserId = null;
 // --------------------
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return;
   }
 
   currentUser = user;
-
   const params = new URLSearchParams(window.location.search);
-  viewedUserId = params.get("uid") || currentUser.uid;
+  viewedUserId = params.get("uid") || user.uid;
 
   await loadProfile(viewedUserId);
   await loadWall(viewedUserId);
   await loadTop10(viewedUserId);
+  await loadMusic(viewedUserId);
 
-  const isOwnProfile = viewedUserId === currentUser.uid;
-
+  const isOwnProfile = viewedUserId === user.uid;
   bioInput.style.display = isOwnProfile ? "block" : "none";
   saveBioBtn.style.display = isOwnProfile ? "block" : "none";
   pfpInput.style.display = isOwnProfile ? "block" : "none";
   savePfpBtn.style.display = isOwnProfile ? "block" : "none";
   themeSelect.style.display = isOwnProfile ? "block" : "none";
-  customHtmlInput.style.display = isOwnProfile ? "block" : "none";
-  saveCustomHtmlBtn.style.display = isOwnProfile ? "block" : "none";
 });
 
 // --------------------
@@ -105,41 +77,33 @@ onAuthStateChanged(auth, async (user) => {
 // --------------------
 async function loadProfile(uid) {
   const userRef = doc(db, "users", uid);
-  let snap = await getDoc(userRef);
+  const snap = await getDoc(userRef);
 
   if (!snap.exists()) {
     await setDoc(userRef, {
       bio: "",
       profilePicture: "",
-      theme: "dark",
+      theme: "default",
       username: "YourSpace User",
-      musicPlaylist: [],
       createdAt: serverTimestamp()
     });
-    snap = await getDoc(userRef);
   }
 
-  const data = snap.data();
+  const data = (await getDoc(userRef)).data();
+
   profileName.textContent = data.username || "YourSpace User";
   profileBio.textContent = data.bio || "This is the bio lol";
-
   profilePic.src = data.profilePicture || "default-avatar.png";
-  applyTheme(data.theme || "dark");
-
-  // Load music playlist if available
-  if (data.musicPlaylist?.length) {
-    musicPlayer.src = data.musicPlaylist[0]; // autoplay first song
-  }
+  applyTheme(data.theme || "default");
 }
 
 // --------------------
 // Save Bio
 // --------------------
 saveBioBtn?.addEventListener("click", async () => {
-  const text = bioInput.value.trim();
-  if (!text) return;
-  await updateDoc(doc(db, "users", currentUser.uid), { bio: text });
-  profileBio.textContent = text;
+  if (!bioInput.value.trim()) return;
+  await updateDoc(doc(db, "users", currentUser.uid), { bio: bioInput.value.trim() });
+  profileBio.textContent = bioInput.value.trim();
   bioInput.value = "";
 });
 
@@ -148,7 +112,7 @@ saveBioBtn?.addEventListener("click", async () => {
 // --------------------
 savePfpBtn?.addEventListener("click", async () => {
   const file = pfpInput.files[0];
-  if (!file) return alert("Select an image first");
+  if (!file) { alert("Select an image first"); return; }
 
   const pfpRef = ref(storage, `profilePictures/${currentUser.uid}`);
   await uploadBytes(pfpRef, file);
@@ -160,7 +124,7 @@ savePfpBtn?.addEventListener("click", async () => {
 });
 
 // --------------------
-// Wall Posts
+// Wall Comments
 // --------------------
 async function loadWall(uid) {
   wallContainer.innerHTML = "";
@@ -171,15 +135,11 @@ async function loadWall(uid) {
     const data = docSnap.data();
     const div = document.createElement("div");
     div.className = "wall-post";
-    div.innerHTML = `<strong>${data.username}</strong>: ${data.text}`;
-
+    div.innerHTML = `<strong><a href="profile.html?uid=${data.userId}">${data.username}</a></strong>: ${data.text}`;
     if (currentUser.uid === data.userId || currentUser.uid === uid) {
       const del = document.createElement("button");
       del.textContent = "Delete";
-      del.onclick = async () => {
-        await deleteDoc(doc(db, "users", uid, "wallComments", docSnap.id));
-        loadWall(uid);
-      };
+      del.onclick = async () => { await deleteDoc(doc(db, "users", uid, "wallComments", docSnap.id)); loadWall(uid); };
       div.appendChild(del);
     }
     wallContainer.appendChild(div);
@@ -187,19 +147,10 @@ async function loadWall(uid) {
 }
 
 postWallBtn?.addEventListener("click", async () => {
-  const text = wallInput.value.trim();
-  if (!text) return;
-
+  if (!wallInput.value.trim()) return;
   const userSnap = await getDoc(doc(db, "users", currentUser.uid));
   const username = userSnap.data()?.username || "User";
-
-  await addDoc(collection(db, "users", viewedUserId, "wallComments"), {
-    text,
-    userId: currentUser.uid,
-    username,
-    createdAt: serverTimestamp()
-  });
-
+  await addDoc(collection(db, "users", viewedUserId, "wallComments"), { text: wallInput.value.trim(), userId: currentUser.uid, username, createdAt: serverTimestamp() });
   wallInput.value = "";
   loadWall(viewedUserId);
 });
@@ -224,50 +175,40 @@ function applyTheme(theme) {
 async function loadTop10(uid) {
   top10Container.innerHTML = "";
   const userSnap = await getDoc(doc(db, "users", uid));
-  const friends = userSnap.data()?.top10Friends || [];
-
-  friends.forEach(f => {
+  const top10 = userSnap.data()?.top10Friends || [];
+  for (let friendUid of top10) {
+    const friendSnap = await getDoc(doc(db, "users", friendUid));
+    const fData = friendSnap.data();
     const div = document.createElement("div");
-    div.className = "top-friend";
-    div.innerHTML = `
-      <img src="${f.pfpURL || 'default-avatar.png'}" width="30" height="30" style="border-radius:50%;">
-      <a href="profile.html?uid=${f.uid}">${f.username || 'Unknown'}</a>
-    `;
+    div.className = "top10-friend";
+    div.innerHTML = `<a href="profile.html?uid=${friendUid}"><img src="${fData.profilePicture || 'default-avatar.png'}">${fData.username || 'User'}</a>`;
     top10Container.appendChild(div);
+  }
+}
+
+// --------------------
+// Music Playlist
+// --------------------
+async function loadMusic(uid) {
+  musicList.innerHTML = "";
+  const userSnap = await getDoc(doc(db, "users", uid));
+  const playlist = userSnap.data()?.musicPlaylist || [];
+  playlist.forEach((link, idx) => {
+    const li = document.createElement("li");
+    li.className = "musicItem";
+    li.innerHTML = `<a href="#" data-link="${link}">Song ${idx+1}</a>`;
+    li.onclick = () => { audioPlayer.src = link; audioPlayer.play(); };
+    musicList.appendChild(li);
   });
 }
 
-// --------------------
-// Music Player
-// --------------------
 addMusicBtn?.addEventListener("click", async () => {
-  const url = musicInput.value.trim();
-  if (!url) return;
-
+  if (!musicInput.value.trim()) return;
   const userRef = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
-  const playlist = snap.data()?.musicPlaylist || [];
-
-  playlist.push(url);
+  const userSnap = await getDoc(userRef);
+  const playlist = userSnap.data()?.musicPlaylist || [];
+  playlist.push(musicInput.value.trim());
   await updateDoc(userRef, { musicPlaylist: playlist });
-  musicPlayer.src = url;
+  loadMusic(currentUser.uid);
   musicInput.value = "";
 });
-
-// --------------------
-// Custom HTML
-// --------------------
-saveCustomHtmlBtn?.addEventListener("click", async () => {
-  const html = customHtmlInput.value.trim();
-  if (!html) return;
-
-  customHtmlPreview.innerHTML = html;
-  await updateDoc(doc(db, "users", currentUser.uid), { customHtml: html });
-});
-
-// Load custom HTML if exists
-async function loadCustomHtml(uid) {
-  const snap = await getDoc(doc(db, "users", uid));
-  const html = snap.data()?.customHtml || "";
-  if (html) customHtmlPreview.innerHTML = html;
-}

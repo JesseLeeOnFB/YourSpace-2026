@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Messages</title>
+<title>YourSpace - Messages</title>
 <link rel="stylesheet" href="messages.css">
 </head>
 <body>
@@ -13,19 +13,24 @@
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <div class="messages-container">
-    <div class="conversation-list">
-      <h3>Conversations</h3>
-      <ul id="conversationList"></ul>
+  <main>
+    <div id="conversationsList" class="sidebar">
+      <h2>Conversations</h2>
+      <div id="convItems"></div>
+      <input type="text" id="newConvInput" placeholder="Start a conversation by username">
+      <button id="newConvBtn">New</button>
     </div>
-    <div class="chat-box">
-      <h3 id="chatHeader">Select a conversation</h3>
-      <div id="messagesContainer" class="messages-container-inner"></div>
-      <input type="text" id="messageInput" placeholder="Type a message...">
-      <input type="file" id="attachmentInput">
-      <button id="sendMessageBtn">Send</button>
+
+    <div id="chatArea">
+      <h2 id="chatWith">Select a conversation</h2>
+      <div id="messagesContainer"></div>
+      <div id="messageInputArea">
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <input type="file" id="messageFileInput">
+        <button id="sendMessageBtn">Send</button>
+      </div>
     </div>
-  </div>
+  </main>
 
 <script type="module" src="messages.js"></script>
 </body>

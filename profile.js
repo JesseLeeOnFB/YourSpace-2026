@@ -1,4 +1,4 @@
-// profile.js – Fixed data loading, button saves, navigation, pfp upload with progress bar
+// profile.js ── Unified with all features, data loading, pfp upload with progress bar
 
 import { auth, db, storage } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -6,12 +6,14 @@ import {
   doc,
   onSnapshot,
   updateDoc,
+  arrayUnion,
+  arrayRemove,
+  serverTimestamp,
   collection,
   addDoc,
   deleteDoc,
   query,
-  orderBy,
-  serverTimestamp
+  orderBy
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import {
   ref,
@@ -24,9 +26,13 @@ const profilePfp = document.getElementById("profilePfp");
 const profilePfpInput = document.getElementById("profilePfpInput");
 const saveProfilePfpBtn = document.getElementById("saveProfilePfpBtn");
 
+const usernameInput = document.getElementById("usernameInput");
 const bioInput = document.getElementById("bioInput");
 const locationInput = document.getElementById("locationInput");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+const themeSelect = document.getElementById("themeSelect");
+const saveThemeBtn = document.getElementById("saveThemeBtn");
 
 const musicLinkInput = document.getElementById("musicLinkInput");
 const saveMusicBtn = document.getElementById("saveMusicBtn");
@@ -36,15 +42,11 @@ const wallCommentsContainer = document.getElementById("wallCommentsContainer");
 const wallCommentInput = document.getElementById("wallCommentInput");
 const addWallCommentBtn = document.getElementById("addWallCommentBtn");
 
-// Navigation
-document.getElementById("navFeedBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
-});
+const friendRequestsContainer = document.getElementById("friendRequestsContainer");
 
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
+const top10FriendsContainer = document.getElementById("top10FriendsContainer");
+const addFriendInput = document.getElementById("addFriendInput");
+const addTopFriendBtn = document.getElementById("addTopFriendBtn");
 
 // Cache buster
 function cacheBust(url) {
@@ -75,13 +77,36 @@ function startListeners(user) {
 
     profilePfp.src = cacheBust(data.photoURL || data.profilePic || '');
 
+    usernameInput.value = data.username || "";
     bioInput.value = data.bio || "";
     locationInput.value = data.location || "";
+
+    if (data.theme) {
+      document.body.className = data.theme;
+      themeSelect.value = data.theme;
+    }
 
     if (data.music) {
       musicLinkInput.value = data.music;
       musicIframe.src = getYouTubeEmbedUrl(data.music);
     }
+
+    // Friend Requests (beta stub)
+    friendRequestsContainer.innerHTML = "";
+    (data.friendRequests || []).forEach(req => {
+      const div = document.createElement("div");
+      div.textContent = req;
+      friendRequestsContainer.appendChild(div);
+    });
+
+    // Top 10 Friends
+    top10FriendsContainer.innerHTML = "";
+    (data.topFriends || []).forEach(friend => {
+      const div = document.createElement("div");
+      div.className = "top-friend";
+      div.textContent = friend;
+      top10FriendsContainer.appendChild(div);
+    });
   });
 
   const commentsQ = query(collection(db, "users", user.uid, "wallComments"), orderBy("createdAt", "desc"));
@@ -139,9 +164,7 @@ saveProfilePfpBtn.addEventListener("click", async () => {
   const percentText = document.getElementById("uploadPercent");
 
   try {
-    const path = `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`;
-    const storageRef = ref(storage, path);
-
+    const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}/${file.name}-${Date.now()}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on("state_changed", (snapshot) => {
@@ -178,6 +201,18 @@ saveProfileBtn.addEventListener("click", async () => {
   alert("Saved!");
 });
 
+// ── Save Theme ───────────────────────────────────────────────────────────────
+saveThemeBtn.addEventListener("click", async () => {
+  const theme = themeSelect.value;
+  document.body.className = theme;
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    theme: theme
+  }, { merge: true });
+
+  alert("Theme saved!");
+});
+
 // ── Save Music ───────────────────────────────────────────────────────────────
 saveMusicBtn.addEventListener("click", async () => {
   const link = musicLinkInput.value.trim();
@@ -189,6 +224,19 @@ saveMusicBtn.addEventListener("click", async () => {
 
   musicIframe.src = getYouTubeEmbedUrl(link);
   alert("Music saved!");
+});
+
+// ── Add Top Friend ───────────────────────────────────────────────────────────
+addTopFriendBtn.addEventListener("click", async () => {
+  const newFriend = addFriendInput.value.trim();
+  if (!newFriend) return;
+
+  await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    topFriends: arrayUnion(newFriend)
+  }, { merge: true });
+
+  addFriendInput.value = "";
+  alert("Friend added!");
 });
 
 // ── Add Wall Comment ─────────────────────────────────────────────────────────

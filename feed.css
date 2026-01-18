@@ -1,4 +1,4 @@
-/* feed.css ── Full, modern, responsive global feed styles (YourSpace 2026) */
+/* feed.css ── Full responsive feed styles */
 
 :root {
   --primary: #1a1a1a;
@@ -6,12 +6,8 @@
   --bg: #f0f4f8;
   --card-bg: #ffffff;
   --text: #333;
-  --text-light: #666;
   --border: #ddd;
   --shadow: 0 2px 10px rgba(0,0,0,0.08);
-  --like: #28a745;
-  --dislike: #dc3545;
-  --delete: #6c757d;
 }
 
 body {
@@ -20,10 +16,8 @@ body {
   color: var(--text);
   margin: 0;
   padding: 0;
-  line-height: 1.6;
 }
 
-/* Navigation (shared) */
 .navbar {
   background: var(--primary);
   color: white;
@@ -41,21 +35,14 @@ body {
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.navbar button:hover {
-  background: rgba(255,255,255,0.25);
-}
-
-/* Feed Container */
 .feed-container {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
 }
 
-/* New Post Form */
 .new-post {
   background: var(--card-bg);
   padding: 1.5rem;
@@ -64,38 +51,15 @@ body {
   margin-bottom: 2rem;
 }
 
-.new-post textarea {
+#postText {
   width: 100%;
   min-height: 100px;
   padding: 0.8rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   margin-bottom: 1rem;
-  font-size: 1rem;
-  resize: vertical;
 }
 
-.new-post input[type="file"] {
-  margin-bottom: 1rem;
-  width: 100%;
-}
-
-#postBtn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  width: 100%;
-}
-
-#postBtn:hover {
-  background: #0056b3;
-}
-
-/* Individual Post */
 .post {
   background: var(--card-bg);
   padding: 1.5rem;
@@ -104,152 +68,30 @@ body {
   margin-bottom: 1.5rem;
 }
 
-.post strong {
-  font-size: 1.2rem;
-  color: var(--primary);
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.post small {
-  color: var(--text-light);
-  font-size: 0.85rem;
-  display: block;
-  margin-bottom: 0.8rem;
-}
-
-.post img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 1rem 0;
-  display: block;
-}
-
 .actions {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  flex-wrap: wrap;
 }
 
 .actions button {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
-  border: none;
-  font-size: 0.9rem;
-  transition: background 0.2s;
 }
 
-.likeBtn {
-  background: var(--like);
-  color: white;
-}
-
-.likeBtn:hover {
-  background: #218838;
-}
-
-.dislikeBtn {
-  background: var(--dislike);
-  color: white;
-}
-
-.dislikeBtn:hover {
-  background: #c82333;
-}
-
-.deleteBtn {
-  background: var(--delete);
-  color: white;
-}
-
-.deleteBtn:hover {
-  background: #5a6268;
-}
-
-.commentBtn {
-  background: var(--accent);
-  color: white;
-}
-
-.commentBtn:hover {
-  background: #0056b3;
-}
-
-/* Comments Section */
 .comments {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
 }
 
-.comments h4 {
-  margin-bottom: 0.5rem;
-  color: var(--primary);
-}
-
-.comment {
-  background: #f9f9f9;
-  padding: 0.8rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-}
-
-.comment strong {
-  color: var(--primary);
-}
-
-/* Comment Input */
-.comment-input {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.comment-input input {
-  flex: 1;
-  padding: 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  min-width: 200px;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-  .feed-container {
-    padding: 0.5rem;
-  }
-
   .new-post {
     padding: 1rem;
   }
 
   .actions {
     flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .actions button {
-    width: 100%;
-  }
-
-  .comment-input {
-    flex-direction: column;
-  }
-
-  .comment-input input {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .post {
-    padding: 1rem;
-  }
-
-  .post img {
-    margin: 0.5rem 0;
   }
 }

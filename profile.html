@@ -3,64 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
+  <title>YourSpace - Profile</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="profile.css">
 </head>
-<body class="default">
+<body class="default-theme">
 
-  <!-- NAVIGATION -->
+  <!-- Navigation -->
   <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
+    <button id="navFeedBtn">Feed</button>
+    <button id="navMessagesBtn">Messages</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- PROFILE SECTION -->
-  <section class="profile-section">
-    <div class="profile-header">
-      <img id="profilePic" src="" alt="Profile Picture" class="profile-picture">
-      <input type="file" id="profilePicInput" accept="image/*">
-      <h2 id="displayName">Username</h2>
-      <p id="location">Location</p>
-      <p id="bio">Bio</p>
+  <div class="profile-main">
+    <h1>My Profile</h1>
+
+    <!-- Profile Picture -->
+    <div class="pfp-section">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput" accept="image/*">
+      <button id="saveProfilePfpBtn">Upload & Save Picture</button>
     </div>
 
-    <div class="edit-profile">
-      <h3>Edit Profile</h3>
-      <input type="text" id="bioInput" placeholder="Update your bio">
-      <input type="text" id="locationInput" placeholder="Update your location">
-      <input type="text" id="musicInput" placeholder="Add music link (YouTube/SoundCloud/Spotify)">
-      <button id="saveProfileBtn">Save Profile</button>
-      <button id="saveMusicBtn">Save Music</button>
+    <!-- Basic Info -->
+    <div class="info-section">
+      <textarea id="bioInput" placeholder="Bio"></textarea>
+      <input type="text" id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Bio/Location</button>
     </div>
 
-    <!-- FRIENDS -->
-    <div class="friends-section">
-      <h3>Top 10 Friends</h3>
-      <div id="topFriendsContainer"></div>
-      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
-      <button id="addTopFriendBtn">Add to Top 10</button>
+    <!-- Preset Themes -->
+    <div class="theme-section">
+      <h3>Preset Themes</h3>
+      <select id="themeSelect">
+        <option value="default-theme">Default</option>
+        <option value="dark-theme">Dark</option>
+        <option value="neon-theme">Neon</option>
+        <option value="retro-theme">Retro</option>
+      </select>
+      <button id="saveThemeBtn">Apply Theme</button>
+      <button id="resetThemeBtn">Reset to Default</button>
     </div>
 
-    <div class="friend-requests-section">
-      <h3>Friend Requests</h3>
-      <div id="friendRequestsContainer"></div>
+    <!-- Custom HTML -->
+    <div class="custom-html-section">
+      <h3>Custom Profile HTML/CSS</h3>
+      <textarea id="customHtmlInput" placeholder="Add custom HTML/CSS for MySpace-style customization"></textarea>
+      <button id="saveCustomHtmlBtn">Save Custom HTML</button>
+      <div id="customHtmlPreview"></div>
     </div>
 
-    <!-- COMMENTS WALL -->
-    <div class="comments-section">
-      <h3>Comments Wall</h3>
-      <div id="commentsContainer"></div>
-      <textarea id="commentInput" placeholder="Leave a comment"></textarea>
-      <button id="addCommentBtn">Post Comment</button>
+    <!-- Music Player -->
+    <div class="music-section">
+      <h3>Music Playlist (Up to 4 songs)</h3>
+      <div id="musicPlaylist"></div>
+      <input type="text" id="musicTitleInput" placeholder="Song title">
+      <input type="text" id="musicLinkInput" placeholder="YouTube/Spotify/SoundCloud/Pandora link">
+      <button id="addMusicBtn">Add Song</button>
+      <iframe id="musicIframe" src="" allow="autoplay"></iframe>
     </div>
 
-    <!-- MUSIC PLAYER -->
-    <div class="music-player-section">
-      <h3>Music Player</h3>
-      <div id="musicPlayerContainer"></div>
+    <!-- Top 10 Friends -->
+    <div class="top10-section">
+      <h3>Top 10 Friends (Drag to reorder)</h3>
+      <ul id="top10FriendsList"></ul>
+      <input type="text" id="addFriendInput" placeholder="Add friend username">
+      <button id="addTopFriendBtn">Add Friend</button>
     </div>
-  </section>
+
+    <!-- Wall Comments -->
+    <div class="wall-section">
+      <h3>Wall Comments</h3>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+      <button id="addWallCommentBtn">Post Comment</button>
+    </div>
+  </div>
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="auth-guard.js"></script>

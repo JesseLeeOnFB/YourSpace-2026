@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body class="default">
 
-  <!-- NAVIGATION -->
+  <!-- Navigation -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
     <button id="profileBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- PROFILE SECTION -->
+  <!-- Profile Section -->
   <section class="profile-section">
     <div class="profile-header">
-      <img id="profilePic" src="" alt="Profile Picture" class="profile-picture">
+      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-picture">
       <input type="file" id="profilePicInput" accept="image/*">
-      <button id="savePfpBtn">Save Profile Picture</button> <!-- Save button -->
-      <progress id="uploadProgress" value="0" max="100" style="display: none; width: 100%; margin-top: 10px;"></progress> <!-- Progress bar -->
+      <button id="savePfpBtn">Save Profile Picture</button>
+      <progress id="uploadProgress" value="0" max="100" style="display:none; width: 100%; margin-top: 10px;"></progress>
 
       <h2 id="displayName">Username</h2>
       <p id="location">Location</p>
@@ -37,7 +37,7 @@
       <button id="saveMusicBtn">Save Music</button>
     </div>
 
-    <!-- FRIENDS -->
+    <!-- Friends -->
     <div class="friends-section">
       <h3>Top 10 Friends</h3>
       <div id="topFriendsContainer"></div>
@@ -50,7 +50,7 @@
       <div id="friendRequestsContainer"></div>
     </div>
 
-    <!-- COMMENTS WALL -->
+    <!-- Comments Wall -->
     <div class="comments-section">
       <h3>Comments Wall</h3>
       <div id="commentsContainer"></div>
@@ -58,7 +58,7 @@
       <button id="addCommentBtn">Post Comment</button>
     </div>
 
-    <!-- MUSIC PLAYER -->
+    <!-- Music Player -->
     <div class="music-player-section">
       <h3>Music Player</h3>
       <div id="musicPlayerContainer"></div>

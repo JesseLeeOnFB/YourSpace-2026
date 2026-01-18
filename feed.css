@@ -1,4 +1,4 @@
-/* feed.css ── Complete fix for huge images + responsive feed styling */
+/* feed.css – FINAL version with aggressive image size fix (no more huge images on mobile/desktop) */
 
 :root {
   --primary: #1a1a1a;
@@ -128,16 +128,16 @@ body {
   white-space: pre-wrap;
 }
 
-/* FIXED IMAGE SIZING – No More Huge Images! */
+/* IMAGE FIX – Aggressive Size Control (No More Huge Images!) */
 .post-image {
-  max-width: 100%;              /* Never wider than the post card */
-  max-height: 500px;            /* Cap height to prevent massive scroll */
-  width: auto;                  /* Maintain aspect ratio */
-  height: auto;
   display: block;
-  margin: 1rem auto;            /* Center image */
+  margin: 1rem auto;               /* Center image */
+  max-width: 100%;                 /* Never wider than parent */
+  max-height: 500px;               /* Max height on desktop */
+  width: auto;
+  height: auto;
+  object-fit: contain;             /* Fit inside without cropping/distortion */
   border-radius: 8px;
-  object-fit: contain;          /* Fit inside without cropping/distortion */
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
@@ -279,7 +279,7 @@ body {
   }
 
   .post-image {
-    max-height: 300px;  /* Even smaller on phones */
+    max-height: 300px;  /* Even smaller on small phones */
   }
 
   .post-header {

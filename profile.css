@@ -1,62 +1,165 @@
+/* General Styles */
 body {
-  margin:0;
+  margin: 0;
   font-family: Arial, sans-serif;
-  background-color:#f0f0f0;
+  background-color: #f0f0f0;
+  color: #222;
 }
 
-header nav {
-  display:flex;
-  gap:10px;
-  padding:10px;
-  background-color:#0077cc;
-  color:white;
+nav#topNav {
+  background-color: #444;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-header nav button {
-  background:none;
-  border:none;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
+nav#topNav button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #666;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-.container {
-  background-color:white;
-  padding:15px;
-  margin:15px auto;
-  max-width:800px;
-  border-radius:8px;
-  box-shadow:0 0 10px rgba(0,0,0,0.1);
+nav#topNav button:hover {
+  background-color: #888;
 }
 
-#profilePic {
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  display:block;
-  margin:auto;
+/* Profile Container */
+.profile-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-#top10Container, #musicList, #wallContainer {
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+/* Header */
+.profile-header {
+  text-align: center;
+  padding: 10px;
 }
 
-.wall-post, .top10-friend, .musicItem {
-  padding:10px;
-  background-color:#eaeaea;
-  border-radius:5px;
+.profile-header img#profilePic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
 }
 
-.top10-friend img {
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  margin-right:10px;
+.profile-header input, .profile-header select, .profile-header button {
+  margin-top: 5px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.theme-dark { background-color:#1a1a1a; color:white; }
-.theme-light { background-color:#f9f9f9; color:#333; }
-.theme-retro { background-color:#222; color:#ffcc00; }
-.theme-default { background-color:#ffffff; color:#000080; }
+/* Music Player */
+.music-player {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 8px;
+}
+
+.music-player input {
+  width: calc(100% - 120px);
+  margin-right: 5px;
+}
+
+.music-player button {
+  padding: 6px 10px;
+}
+
+/* Wall Section */
+.wall-section {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fdfdfd;
+  border-radius: 8px;
+}
+
+.wall-section textarea {
+  width: 100%;
+  height: 60px;
+  margin-bottom: 5px;
+  padding: 6px;
+}
+
+.wall-post {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 3px;
+}
+
+/* Top 10 Section */
+.top10-section {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fdfdfd;
+  border-radius: 8px;
+}
+
+.top10-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.top10-section li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Custom HTML Container */
+.custom-html-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 8px;
+}
+
+.custom-html-container textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 5px;
+}
+
+.custom-html-container button {
+  padding: 6px 12px;
+  margin-right: 5px;
+}
+
+/* Themes */
+body.theme-dark {
+  background-color: #222;
+  color: #eee;
+}
+
+body.theme-light {
+  background-color: #fff;
+  color: #222;
+}
+
+body.theme-retro {
+  background-color: #fffae6;
+  color: #000;
+}
+
+/* Mobile adjustments */
+@media(max-width: 600px) {
+  .profile-container {
+    margin: 5px;
+    padding: 10px;
+  }
+
+  .profile-header img#profilePic {
+    width: 120px;
+    height: 120px;
+  }
+}

@@ -1,153 +1,201 @@
+/* feed.css – FINAL polished mobile-first feed */
+
 :root {
-  --primary: #1a1a1a;
+  --primary: #111;
   --accent: #007bff;
   --bg: #f0f4f8;
-  --card: #ffffff;
+  --card-bg: #ffffff;
+  --text: #222;
+  --text-light: #666;
   --border: #ddd;
-  --shadow: 0 2px 10px rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-* {
-  box-sizing: border-box;
-}
-
+/* BASE */
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   background: var(--bg);
+  color: var(--text);
 }
 
 /* NAV */
 .navbar {
   background: var(--primary);
-  padding: 1rem;
+  padding: 0.8rem;
   display: flex;
-  gap: 1rem;
   justify-content: center;
+  gap: 0.6rem;
 }
 
 .navbar button {
   background: rgba(255,255,255,0.15);
   border: none;
   color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
 }
 
-/* FEED */
+/* FEED WRAPPER */
 .feed-container {
-  max-width: 800px;
-  margin: 1.5rem auto;
+  max-width: 720px;
+  margin: auto;
   padding: 1rem;
 }
 
 /* NEW POST */
 .new-post {
-  background: var(--card);
+  background: var(--card-bg);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: var(--shadow);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .new-post textarea {
   width: 100%;
-  min-height: 100px;
+  min-height: 90px;
+  resize: vertical;
   padding: 0.8rem;
-  margin-bottom: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.6rem;
 }
 
-.new-post input {
-  margin-bottom: 0.8rem;
+.new-post input[type="file"] {
+  width: 100%;
+  margin-bottom: 0.6rem;
 }
 
 #postBtn {
   width: 100%;
   padding: 0.8rem;
-  background: var(--accent);
+  border-radius: 999px;
   border: none;
+  background: var(--accent);
   color: white;
-  border-radius: 6px;
+  font-size: 1rem;
 }
 
-/* POST */
-.post {
-  background: var(--card);
+/* POST CARD */
+.post-card {
+  background: var(--card-bg);
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 14px;
   box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
-.post strong {
-  font-size: 1.1rem;
+/* HEADER */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
-.post p {
+.post-header strong {
+  font-size: 1rem;
+}
+
+.post-header small {
+  color: var(--text-light);
+}
+
+/* TEXT */
+.post-text {
   white-space: pre-wrap;
+  margin-bottom: 0.6rem;
 }
 
-/* 🔥 IMAGE & VIDEO FIX (THIS IS THE KEY) */
+/* MEDIA FIX (IMAGES + VIDEO) */
 .post-media {
   display: block;
-  margin: 1rem auto;
-  max-width: 100% !important;
-  max-height: 500px;
+  margin: 0.6rem auto;
+  max-width: 100%;
+  max-height: 420px;
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 /* ACTIONS */
 .actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 0.6rem;
 }
 
 .actions button {
-  flex: 1;
-  padding: 0.5rem;
-  border-radius: 6px;
   border: none;
-  cursor: pointer;
+  background: none;
+  font-size: 1.4rem;
+  padding: 0.4rem;
 }
 
 /* COMMENTS */
-.comments-container {
-  margin-top: 1rem;
+.comments-section {
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
 }
 
-.comment {
-  background: #f9f9f9;
-  padding: 0.6rem;
-  border-radius: 6px;
+.comments-section h4 {
+  font-size: 0.9rem;
+  color: var(--text-light);
   margin-bottom: 0.4rem;
 }
 
-/* COMMENT INPUT */
-.comment-input {
-  width: 100%;
-  padding: 0.6rem;
+.comment {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.comment small {
+  color: var(--text-light);
+}
+
+/* COMMENT FORM */
+.comment-form {
+  display: flex;
+  gap: 0.4rem;
   margin-top: 0.5rem;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
 }
 
 .comment-btn {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.6rem;
+  border: none;
   background: var(--accent);
   color: white;
-  border: none;
-  border-radius: 6px;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  font-size: 1.1rem;
 }
 
-/* MOBILE */
-@media (max-width: 600px) {
+/* DELETE */
+.delete-btn,
+.delete-comment {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+}
+
+/* MOBILE TWEAKS */
+@media (max-width: 480px) {
   .post-media {
     max-height: 300px;
+  }
+
+  .actions {
+    font-size: 1.2rem;
   }
 }

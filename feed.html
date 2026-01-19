@@ -2,35 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>YourSpace Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourSpace – Feed</title>
 
-  <link rel="stylesheet" href="feed.css?v=2026-01">
+  <link rel="stylesheet" href="style.css?v=2026-01" />
+  <link rel="stylesheet" href="feed.css?v=2026-01" />
 </head>
 <body>
 
   <!-- NAV -->
-  <div class="navbar">
+  <nav class="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-  </div>
+  </nav>
 
-  <!-- FEED -->
-  <div class="feed-container">
+  <main class="feed-container">
 
-    <!-- NEW POST -->
-    <div class="new-post">
-      <textarea id="postText" placeholder="What's on your mind?"></textarea>
-      <input type="file" id="postFileInput" accept="image/*,video/*">
+    <h1>Global Feed</h1>
+
+    <!-- CREATE POST -->
+    <section class="new-post">
+      <textarea
+        id="postText"
+        placeholder="What's on your mind?"
+      ></textarea>
+
+      <input
+        type="file"
+        id="postFileInput"
+        accept="image/*,video/*"
+      />
+
       <button id="postBtn">Post</button>
-    </div>
+    </section>
 
     <!-- POSTS -->
-    <div id="postsContainer"></div>
+    <section id="postsContainer"></section>
 
-  </div>
+  </main>
 
+  <!-- SCRIPTS -->
   <script type="module" src="feed.js?v=2026-01"></script>
+
 </body>
 </html>

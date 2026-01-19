@@ -22,6 +22,32 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
+// Admin accounts
+const ADMIN_EMAILS = [
+  "skeeterjeeter8@gmail.com",
+  "daniellehunt01@gmail.com"
+];
+
+// Keyword filter - blocks offensive content
+const BLOCKED_KEYWORDS = [
+  // Racist slurs (partial list - add more as needed)
+  "n***er", "n***a", "f****t", "d**e", "ch**k", "sp*c", "k**e", "r****d",
+  // Threats
+  "kill yourself", "kys", "kill you", "murder", "bomb threat",
+  // Self-harm
+  "suicide", "cut myself", "end it all", "kill myself",
+  // Add more keywords as needed
+];
+
+function containsBlockedKeyword(text) {
+  const lowerText = text.toLowerCase();
+  return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
+
+function isAdmin(email) {
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 function haptic(type = "light") {
   if (!navigator.vibrate) return;
   if (type === "light") navigator.vibrate(10);
@@ -42,6 +68,10 @@ document.getElementById("profileNavBtn")?.addEventListener("click", () => {
   window.location.href = "profile.html";
 });
 
+document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
+  window.location.href = "messages.html";
+});
+
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
@@ -50,18 +80,22 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
   const currentUserId = auth.currentUser.uid;
+  const currentUserEmail = auth.currentUser.email;
 
   const likedBy = post.likedBy || [];
   const dislikedBy = post.dislikedBy || [];
   const userLiked = likedBy.includes(currentUserId);
   const userDisliked = dislikedBy.includes(currentUserId);
+  const isPinned = post.pinned || false;
 
   const postEl = document.createElement("div");
   postEl.className = "post-card";
+  if (isPinned) postEl.classList.add("pinned-post");
 
   const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
   postEl.innerHTML = `
+    ${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''}
     <div class="post-header">
       <strong>${post.username || "Anonymous"}</strong>
       <small>${time}</small>
@@ -74,6 +108,8 @@ async function renderPost(post, postId) {
       <button class="comment-toggle" data-id="${postId}">💬</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
+      ${isAdmin(currentUserEmail) && !isPinned ? `<button class="pin-btn" data-id="${postId}">📌 Pin</button>` : ""}
+      ${isAdmin(currentUserEmail) && isPinned ? `<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>` : ""}
     </div>
     <div class="comments-section" id="comments-${postId}"></div>
     <div class="comment-form">
@@ -149,6 +185,34 @@ async function renderPost(post, postId) {
     });
   }
 
+  // PIN/UNPIN BUTTON (Admin only)
+  const pinBtn = postEl.querySelector(".pin-btn");
+  if (pinBtn) {
+    pinBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        await updateDoc(doc(db, "posts", postId), { pinned: true });
+        alert("Post pinned to top of feed!");
+      } catch (err) {
+        alert("Error pinning post: " + err.message);
+      }
+    });
+  }
+
+  const unpinBtn = postEl.querySelector(".unpin-btn");
+  if (unpinBtn) {
+    unpinBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        await updateDoc(doc(db, "posts", postId), { pinned: false });
+      } catch (err) {
+        alert("Error unpinning post: " + err.message);
+      }
+    });
+  }
+
   const commentsSection = postEl.querySelector(".comments-section");
   const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
 
@@ -197,6 +261,12 @@ async function renderPost(post, postId) {
     const text = input.value.trim();
     if (!text) return;
 
+    // KEYWORD FILTER - Block offensive comments
+    if (containsBlockedKeyword(text)) {
+      alert("Your comment contains blocked content and cannot be posted. Please remove offensive language.");
+      return;
+    }
+
     haptic("medium");
 
     const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
@@ -225,7 +295,25 @@ function loadPosts() {
 
   onSnapshot(q, (snap) => {
     postsContainer.innerHTML = "";
-    snap.forEach((docSnap) => renderPost(docSnap.data(), docSnap.id));
+    
+    // Separate pinned and regular posts
+    const pinnedPosts = [];
+    const regularPosts = [];
+    
+    snap.forEach((docSnap) => {
+      const post = docSnap.data();
+      if (post.pinned) {
+        pinnedPosts.push({ data: post, id: docSnap.id });
+      } else {
+        regularPosts.push({ data: post, id: docSnap.id });
+      }
+    });
+    
+    // Render pinned posts first
+    pinnedPosts.forEach(({ data, id }) => renderPost(data, id));
+    
+    // Then render regular posts
+    regularPosts.forEach(({ data, id }) => renderPost(data, id));
   });
 }
 
@@ -234,6 +322,12 @@ postBtn.addEventListener("click", async () => {
   const file = postFileInput.files[0];
 
   if (!text && !file) return alert("Post cannot be empty");
+
+  // KEYWORD FILTER - Block offensive posts
+  if (containsBlockedKeyword(text)) {
+    alert("Your post contains blocked content and cannot be published. Please remove offensive language.");
+    return;
+  }
 
   let mediaURL = "";
   let mediaType = "";
@@ -258,6 +352,7 @@ postBtn.addEventListener("click", async () => {
       mediaType,
       likedBy: [],
       dislikedBy: [],
+      pinned: false,
       createdAt: serverTimestamp()
     });
 

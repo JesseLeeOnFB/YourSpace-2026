@@ -1,4 +1,4 @@
-// profile.js – FIXED wall comments posting and deletion
+// profile.js – FIXED wall comments posting and deletion, removed custom HTML
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -60,12 +60,10 @@ async function initProfile() {
   setupCommentsWall();
   setupProfilePictureUpload();
   setupEditProfile();
-  setupCustomHtml();
   
   if (!isOwnProfile) {
     document.getElementById("editProfileBtn").style.display = "none";
     document.getElementById("sendMessageBtn").style.display = "inline-block";
-    document.getElementById("customHtmlSection").style.display = "none";
     document.getElementById("searchFriendBtn").style.display = "none";
     document.getElementById("searchFriendInput").style.display = "none";
     document.getElementById("themeSelect").disabled = true;
@@ -87,8 +85,7 @@ async function loadProfile() {
       theme: "default-theme",
       music: ["", "", "", ""],
       autoplay: true,
-      topFriends: [],
-      customHtml: ""
+      topFriends: []
     });
     return loadProfile();
   }
@@ -103,19 +100,6 @@ async function loadProfile() {
 
   if (data.theme) {
     document.body.className = data.theme;
-  }
-
-  if (data.customHtml) {
-    const previewDiv = document.getElementById("customHtmlPreview");
-    previewDiv.innerHTML = data.customHtml;
-    
-    const scripts = previewDiv.getElementsByTagName("script");
-    for (let script of scripts) {
-      const newScript = document.createElement("script");
-      newScript.textContent = script.textContent;
-      previewDiv.appendChild(newScript);
-      script.remove();
-    }
   }
 
   if (data.music) {
@@ -213,33 +197,6 @@ function setupThemeControls() {
     document.body.className = "default-theme";
     document.getElementById("themeSelect").value = "default-theme";
     await updateDoc(doc(db, "users", currentUser.uid), { theme: "default-theme" });
-  };
-}
-
-function setupCustomHtml() {
-  if (!isOwnProfile) return;
-
-  document.getElementById("saveCustomHtmlBtn").onclick = async () => {
-    const customHtml = document.getElementById("customHtmlInput").value;
-    const previewDiv = document.getElementById("customHtmlPreview");
-    previewDiv.innerHTML = customHtml;
-    
-    const scripts = previewDiv.getElementsByTagName("script");
-    for (let script of scripts) {
-      const newScript = document.createElement("script");
-      newScript.textContent = script.textContent;
-      previewDiv.appendChild(newScript);
-      script.remove();
-    }
-    
-    await updateDoc(doc(db, "users", currentUser.uid), { customHtml });
-    alert("Custom HTML saved and applied!");
-  };
-
-  document.getElementById("clearCustomHtmlBtn").onclick = async () => {
-    document.getElementById("customHtmlInput").value = "";
-    document.getElementById("customHtmlPreview").innerHTML = "";
-    await updateDoc(doc(db, "users", currentUser.uid), { customHtml: "" });
   };
 }
 

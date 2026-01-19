@@ -1,4 +1,4 @@
-// feed.js — UPDATED - Clickable usernames + Virtual Rewards System
+// feed.js — UPDATED with clickable usernames and rewards system
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
@@ -36,7 +36,6 @@ const BLOCKED_KEYWORDS = [
   "kill yourself", "kys", "kill you", "murder", "bomb threat",
   // Self-harm
   "suicide", "cut myself", "end it all", "kill myself",
-  // Add more keywords as needed
 ];
 
 function containsBlockedKeyword(text) {
@@ -72,6 +71,10 @@ document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
   window.location.href = "messages.html";
 });
 
+document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
+  window.location.href = "creator-dashboard.html";
+});
+
 document.getElementById("contactNavBtn")?.addEventListener("click", () => {
   window.location.href = "contact.html";
 });
@@ -81,173 +84,42 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
-// UTILITY: Navigate to user's profile
-function goToUserProfile(userId) {
-  window.location.href = `profile.html?userId=${userId}`;
+// ========== REWARD MODAL FUNCTIONS ==========
+function openRewardModal(postId, creatorUserId, creatorUsername) {
+  const modal = document.getElementById("rewardModal");
+  if (!modal) return;
+  
+  modal.dataset.postId = postId;
+  modal.dataset.creatorUserId = creatorUserId;
+  modal.dataset.creatorUsername = creatorUsername;
+  
+  modal.style.display = "flex";
 }
 
-// REWARDS MODAL
-function showRewardsModal(postId, postOwnerId, postOwnerUsername) {
-  const modal = document.createElement("div");
-  modal.className = "rewards-modal";
-  modal.innerHTML = `
-    <div class="rewards-modal-content">
-      <span class="close-rewards-modal">&times;</span>
-      <h2>🎁 Send a Reward to ${postOwnerUsername}</h2>
-      <p class="rewards-subtitle">Support creators with virtual rewards!</p>
-      
-      <div class="rewards-grid">
-        <div class="reward-item" data-reward="house" data-price="9.99" data-quantity="20">
-          <div class="reward-icon">🏠</div>
-          <h3>20 Houses</h3>
-          <p class="reward-price">$9.99</p>
-          <p class="reward-value">Creator earns $2.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="car" data-price="14.99" data-quantity="30">
-          <div class="reward-icon">🚗</div>
-          <h3>30 Cars</h3>
-          <p class="reward-price">$14.99</p>
-          <p class="reward-value">Creator earns $3.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="truck" data-price="14.99" data-quantity="30">
-          <div class="reward-icon">🚚</div>
-          <h3>30 Trucks</h3>
-          <p class="reward-price">$14.99</p>
-          <p class="reward-value">Creator earns $3.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="minivan" data-price="14.99" data-quantity="30">
-          <div class="reward-icon">🚐</div>
-          <h3>30 Mini Vans</h3>
-          <p class="reward-price">$14.99</p>
-          <p class="reward-value">Creator earns $3.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="puppy" data-price="19.99" data-quantity="50">
-          <div class="reward-icon">🐶</div>
-          <h3>50 Puppies</h3>
-          <p class="reward-price">$19.99</p>
-          <p class="reward-value">Creator earns $5.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="cat" data-price="19.99" data-quantity="50">
-          <div class="reward-icon">🐱</div>
-          <h3>50 Cats</h3>
-          <p class="reward-price">$19.99</p>
-          <p class="reward-value">Creator earns $5.00</p>
-        </div>
-        
-        <div class="reward-item" data-reward="grass" data-price="9.99" data-quantity="20">
-          <div class="reward-icon">🌱</div>
-          <h3>20 Grass</h3>
-          <p class="reward-price">$9.99</p>
-          <p class="reward-value">Creator earns $2.00</p>
-        </div>
-        
-        <div class="reward-item reward-item-ultimate" data-reward="jet" data-price="99.99" data-quantity="1">
-          <div class="reward-icon">✈️</div>
-          <h3>1 Private Jet</h3>
-          <p class="reward-price">$99.99</p>
-          <p class="reward-value">Creator earns $50.00</p>
-          <span class="ultimate-badge">🏆 ULTIMATE</span>
-        </div>
-      </div>
-      
-      <p class="rewards-disclaimer">
-        ⚠️ All purchases are non-refundable and non-transferable. Rewards support creators!
-      </p>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  
-  modal.querySelector(".close-rewards-modal").onclick = () => {
-    modal.remove();
-  };
-  
-  modal.onclick = (e) => {
-    if (e.target === modal) {
-      modal.remove();
-    }
-  };
-  
-  modal.querySelectorAll(".reward-item").forEach(item => {
-    item.onclick = async () => {
-      const rewardType = item.dataset.reward;
-      const price = parseFloat(item.dataset.price);
-      const quantity = parseInt(item.dataset.quantity);
-      
-      if (confirm(`Purchase ${quantity} ${rewardType}(s) for $${price}? This will support ${postOwnerUsername}!`)) {
-        await processRewardPurchase(postId, postOwnerId, rewardType, quantity, price);
-        modal.remove();
-      }
-    };
-  });
-}
-
-// PROCESS REWARD PURCHASE
-async function processRewardPurchase(postId, recipientUserId, rewardType, quantity, price) {
-  try {
-    // In production, this would integrate with Stripe Checkout
-    // For now, we'll simulate the purchase and update Firestore
-    
-    const currentUserId = auth.currentUser.uid;
-    const currentUserDoc = await getDoc(doc(db, "users", currentUserId));
-    const currentUsername = currentUserDoc.data()?.username || "Anonymous";
-    
-    // Calculate creator payout (basic: $0.10 per reward, Jet: $50)
-    const creatorPayout = rewardType === "jet" ? 50.00 : (quantity * 0.10);
-    
-    // Record reward transaction
-    await addDoc(collection(db, "rewardTransactions"), {
-      fromUserId: currentUserId,
-      fromUsername: currentUsername,
-      toUserId: recipientUserId,
-      postId: postId,
-      rewardType: rewardType,
-      quantity: quantity,
-      purchaseAmount: price,
-      creatorPayout: creatorPayout,
-      createdAt: serverTimestamp(),
-      status: "pending" // pending → processed after 7-14 days
-    });
-    
-    // Update recipient's rewards count
-    const recipientRef = doc(db, "users", recipientUserId);
-    const recipientDoc = await getDoc(recipientRef);
-    
-    if (!recipientDoc.exists()) {
-      await setDoc(recipientRef, {
-        rewards: {
-          [rewardType]: quantity
-        },
-        totalEarned: creatorPayout,
-        pendingPayout: creatorPayout
-      });
-    } else {
-      await updateDoc(recipientRef, {
-        [`rewards.${rewardType}`]: increment(quantity),
-        totalEarned: increment(creatorPayout),
-        pendingPayout: increment(creatorPayout)
-      });
-    }
-    
-    // Update post reward count (for trending calculation)
-    const postRef = doc(db, "posts", postId);
-    await updateDoc(postRef, {
-      [`rewardsReceived.${rewardType}`]: increment(quantity)
-    });
-    
-    haptic("heavy");
-    alert(`✅ ${quantity} ${rewardType}(s) sent successfully! The creator will receive $${creatorPayout.toFixed(2)}`);
-    
-  } catch (error) {
-    console.error("Error processing reward:", error);
-    alert("Error processing reward. Please try again.");
+function closeRewardModal() {
+  const modal = document.getElementById("rewardModal");
+  if (modal) {
+    modal.style.display = "none";
   }
 }
+
+// Initialize reward modal close button
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("closeRewardModal");
+  if (closeBtn) {
+    closeBtn.onclick = closeRewardModal;
+  }
+  
+  // Close modal when clicking outside
+  const modal = document.getElementById("rewardModal");
+  if (modal) {
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        closeRewardModal();
+      }
+    };
+  }
+});
 
 async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
@@ -261,6 +133,10 @@ async function renderPost(post, postId) {
   const isPinned = post.pinned || false;
   const isTrending = post.trending || false;
 
+  // Get rewards count
+  const rewards = post.rewards || {};
+  const totalRewards = Object.values(rewards).reduce((sum, count) => sum + count, 0);
+
   const postEl = document.createElement("div");
   postEl.className = "post-card";
   if (isPinned) postEl.classList.add("pinned-post");
@@ -268,21 +144,21 @@ async function renderPost(post, postId) {
 
   const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
-  // CLICKABLE USERNAME - Now links to user profile
   postEl.innerHTML = `
     ${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''}
     ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''}
     <div class="post-header">
-      <strong class="clickable-username" data-user-id="${post.userId}">${post.username || "Anonymous"}</strong>
+      <strong class="username-link" data-user-id="${post.userId}">${post.username || "Anonymous"}</strong>
       <small>${time}</small>
     </div>
     <p>${post.text || ""}</p>
     ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
+    ${totalRewards > 0 ? `<div class="rewards-display">🎁 ${totalRewards} reward${totalRewards !== 1 ? 's' : ''} received</div>` : ''}
     <div class="actions">
       <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
-      <button class="reward-btn" data-id="${postId}" data-owner-id="${post.userId}" data-owner-name="${post.username}">🎁</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
+      <button class="reward-btn" data-id="${postId}" data-creator-id="${post.userId}" data-creator-name="${post.username}">🎁 Send Reward</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
       ${isAdmin(currentUserEmail) && !isPinned ? `<button class="pin-btn" data-id="${postId}">📌 Pin</button>` : ""}
@@ -295,18 +171,20 @@ async function renderPost(post, postId) {
     </div>
   `;
 
-  // CLICKABLE USERNAME EVENT LISTENER
-  postEl.querySelector(".clickable-username").onclick = () => {
-    goToUserProfile(post.userId);
+  // Make username clickable
+  const usernameLink = postEl.querySelector(".username-link");
+  usernameLink.style.cursor = "pointer";
+  usernameLink.style.color = "#007bff";
+  usernameLink.onclick = () => {
+    window.location.href = `profile.html?uid=${post.userId}`;
   };
 
-  // REWARD BUTTON
-  postEl.querySelector(".reward-btn").onclick = (e) => {
+  // Reward button
+  const rewardBtn = postEl.querySelector(".reward-btn");
+  rewardBtn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const ownerId = e.target.dataset.ownerId;
-    const ownerName = e.target.dataset.ownerName;
-    showRewardsModal(postId, ownerId, ownerName);
+    openRewardModal(postId, post.userId, post.username);
   };
 
   postEl.querySelector(".like-btn").onclick = async (e) => {
@@ -410,7 +288,7 @@ async function renderPost(post, postId) {
   onSnapshot(commentsQ, (snap) => {
     commentsSection.innerHTML = "";
 
-    snap.forEach(async (cDoc) => {
+    snap.forEach((cDoc) => {
       const c = cDoc.data();
       const cEl = document.createElement("div");
       cEl.className = "comment";
@@ -418,9 +296,8 @@ async function renderPost(post, postId) {
       const isCommentOwner = c.userId === auth.currentUser.uid;
       const replies = c.replies || [];
 
-      // CLICKABLE USERNAMES IN COMMENTS
       cEl.innerHTML = `
-        <strong class="clickable-username" data-user-id="${c.userId}">${c.username || "Anonymous"}</strong>
+        <strong class="username-link" data-user-id="${c.userId}">${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
         <div class="comment-actions">
           <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
@@ -429,7 +306,7 @@ async function renderPost(post, postId) {
         <div class="replies-container" id="replies-${cDoc.id}">
           ${replies.map(reply => `
             <div class="reply">
-              <strong class="clickable-username-reply" data-user-id="${reply.userId}">${reply.username}</strong>
+              <strong class="username-link" data-user-id="${reply.userId}">${reply.username}</strong>
               <p>${reply.text}</p>
               ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
             </div>
@@ -442,15 +319,13 @@ async function renderPost(post, postId) {
         </div>
       `;
 
-      // CLICKABLE USERNAME IN COMMENT
-      cEl.querySelector(".clickable-username").onclick = () => {
-        goToUserProfile(c.userId);
-      };
-
-      // CLICKABLE USERNAMES IN REPLIES
-      cEl.querySelectorAll(".clickable-username-reply").forEach(usernameEl => {
-        usernameEl.onclick = () => {
-          goToUserProfile(usernameEl.dataset.userId);
+      // Make comment username clickable
+      cEl.querySelectorAll(".username-link").forEach(link => {
+        link.style.cursor = "pointer";
+        link.style.color = "#007bff";
+        link.onclick = () => {
+          const userId = link.dataset.userId;
+          window.location.href = `profile.html?uid=${userId}`;
         };
       });
 
@@ -648,8 +523,8 @@ postBtn.addEventListener("click", async () => {
       mediaType,
       likedBy: [],
       dislikedBy: [],
-      rewardsReceived: {},
       pinned: false,
+      rewards: {},
       createdAt: serverTimestamp()
     });
 

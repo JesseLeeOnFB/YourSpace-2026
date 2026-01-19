@@ -44,6 +44,7 @@ const notificationSound = document.getElementById("notificationSound");
 document.getElementById("navFeedBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("navProfileBtn").onclick = () => window.location.href = "profile.html";
 document.getElementById("navMessagesBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("navDashboardBtn").onclick = () => window.location.href = "creator-dashboard.html";
 document.getElementById("logoutBtn").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";

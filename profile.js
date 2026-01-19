@@ -32,6 +32,7 @@ viewingUserId = urlParams.get('userId');
 document.getElementById("homeBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("profileBtn").onclick = () => window.location.href = "profile.html";
 document.getElementById("messagesBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("dashboardBtn").onclick = () => window.location.href = "creator-dashboard.html";
 document.getElementById("logoutBtn").onclick = async () => {
   await auth.signOut();
   window.location.href = "login.html";

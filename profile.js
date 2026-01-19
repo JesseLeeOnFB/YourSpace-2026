@@ -43,6 +43,20 @@ const musicLinkInput = document.getElementById('musicLinkInput');
 const loadMusicBtn = document.getElementById('loadMusicBtn');
 const musicIframe = document.getElementById('musicIframe');
 
+const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+const closeThemeBtn = document.getElementById('closeThemeBtn');
+const themePanel = document.getElementById('themePanel');
+
+// =========================
+// Toggle Theme Panel
+// =========================
+toggleThemeBtn.addEventListener('click', () => {
+  themePanel.classList.toggle('open');
+});
+closeThemeBtn.addEventListener('click', () => {
+  themePanel.classList.remove('open');
+});
+
 // =========================
 // CACHE-BUSTER HELPER
 // =========================

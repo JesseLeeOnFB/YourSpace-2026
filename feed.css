@@ -1,4 +1,4 @@
-/* feed.css – Restored original design */
+/* feed.css — UPDATED with Clickable Usernames + Rewards Modal */
 
 :root {
   --primary: #111;
@@ -180,6 +180,22 @@ body {
   color: var(--text-light);
 }
 
+/* CLICKABLE USERNAMES */
+.clickable-username,
+.clickable-username-reply {
+  color: #007bff;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.clickable-username:hover,
+.clickable-username-reply:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
 .post-card > p {
   white-space: pre-wrap;
   margin-bottom: 0.6rem;
@@ -226,6 +242,20 @@ body {
 .dislike-btn.active {
   background: rgba(255, 0, 0, 0.15);
   color: #ff4444;
+}
+
+.reward-btn {
+  position: relative;
+  animation: rewardPulse 2s ease-in-out infinite;
+}
+
+@keyframes rewardPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .comments-section {
@@ -393,6 +423,179 @@ body {
   cursor: pointer;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   REWARDS MODAL
+   ═══════════════════════════════════════════════════════════ */
+
+.rewards-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.rewards-modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-rewards-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-rewards-modal:hover {
+  color: #333;
+}
+
+.rewards-modal-content h2 {
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+}
+
+.rewards-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reward-item {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.reward-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border-color: #007bff;
+}
+
+.reward-item-ultimate {
+  background: linear-gradient(135deg, #ffd700 0%, #ff6347 100%);
+  border: 3px solid #ff4500;
+  animation: ultimateGlow 2s ease-in-out infinite;
+}
+
+@keyframes ultimateGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255,69,0,0.8);
+  }
+}
+
+.ultimate-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4500;
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.reward-icon {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.reward-item h3 {
+  margin: 0.5rem 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.reward-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+  margin: 0.5rem 0;
+}
+
+.reward-value {
+  font-size: 0.9rem;
+  color: #28a745;
+  font-weight: 500;
+}
+
+.rewards-disclaimer {
+  text-align: center;
+  color: #d63031;
+  font-size: 0.9rem;
+  padding: 1rem;
+  background: #ffe6e6;
+  border-radius: 8px;
+  border: 2px solid #d63031;
+}
+
 @media (max-width: 768px) {
   .post-media {
     max-height: 350px;
@@ -400,6 +603,19 @@ body {
   
   .actions {
     font-size: 1.2rem;
+  }
+
+  .rewards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .reward-item {
+    padding: 1rem;
+  }
+
+  .reward-icon {
+    font-size: 3rem;
   }
 }
 
@@ -443,5 +659,13 @@ body {
   .comment-input {
     font-size: 0.9rem;
     padding: 0.6rem 0.9rem;
+  }
+
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rewards-modal-content {
+    padding: 1.5rem;
   }
 }

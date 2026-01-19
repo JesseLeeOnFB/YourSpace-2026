@@ -1,9 +1,9 @@
-// feed.js — FIXED - All buttons working, username display
+// feed.js — UPDATED - Clickable usernames + Virtual Rewards System
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
-  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, increment
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -81,6 +81,174 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
+// UTILITY: Navigate to user's profile
+function goToUserProfile(userId) {
+  window.location.href = `profile.html?userId=${userId}`;
+}
+
+// REWARDS MODAL
+function showRewardsModal(postId, postOwnerId, postOwnerUsername) {
+  const modal = document.createElement("div");
+  modal.className = "rewards-modal";
+  modal.innerHTML = `
+    <div class="rewards-modal-content">
+      <span class="close-rewards-modal">&times;</span>
+      <h2>🎁 Send a Reward to ${postOwnerUsername}</h2>
+      <p class="rewards-subtitle">Support creators with virtual rewards!</p>
+      
+      <div class="rewards-grid">
+        <div class="reward-item" data-reward="house" data-price="9.99" data-quantity="20">
+          <div class="reward-icon">🏠</div>
+          <h3>20 Houses</h3>
+          <p class="reward-price">$9.99</p>
+          <p class="reward-value">Creator earns $2.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="car" data-price="14.99" data-quantity="30">
+          <div class="reward-icon">🚗</div>
+          <h3>30 Cars</h3>
+          <p class="reward-price">$14.99</p>
+          <p class="reward-value">Creator earns $3.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="truck" data-price="14.99" data-quantity="30">
+          <div class="reward-icon">🚚</div>
+          <h3>30 Trucks</h3>
+          <p class="reward-price">$14.99</p>
+          <p class="reward-value">Creator earns $3.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="minivan" data-price="14.99" data-quantity="30">
+          <div class="reward-icon">🚐</div>
+          <h3>30 Mini Vans</h3>
+          <p class="reward-price">$14.99</p>
+          <p class="reward-value">Creator earns $3.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="puppy" data-price="19.99" data-quantity="50">
+          <div class="reward-icon">🐶</div>
+          <h3>50 Puppies</h3>
+          <p class="reward-price">$19.99</p>
+          <p class="reward-value">Creator earns $5.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="cat" data-price="19.99" data-quantity="50">
+          <div class="reward-icon">🐱</div>
+          <h3>50 Cats</h3>
+          <p class="reward-price">$19.99</p>
+          <p class="reward-value">Creator earns $5.00</p>
+        </div>
+        
+        <div class="reward-item" data-reward="grass" data-price="9.99" data-quantity="20">
+          <div class="reward-icon">🌱</div>
+          <h3>20 Grass</h3>
+          <p class="reward-price">$9.99</p>
+          <p class="reward-value">Creator earns $2.00</p>
+        </div>
+        
+        <div class="reward-item reward-item-ultimate" data-reward="jet" data-price="99.99" data-quantity="1">
+          <div class="reward-icon">✈️</div>
+          <h3>1 Private Jet</h3>
+          <p class="reward-price">$99.99</p>
+          <p class="reward-value">Creator earns $50.00</p>
+          <span class="ultimate-badge">🏆 ULTIMATE</span>
+        </div>
+      </div>
+      
+      <p class="rewards-disclaimer">
+        ⚠️ All purchases are non-refundable and non-transferable. Rewards support creators!
+      </p>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  modal.querySelector(".close-rewards-modal").onclick = () => {
+    modal.remove();
+  };
+  
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  };
+  
+  modal.querySelectorAll(".reward-item").forEach(item => {
+    item.onclick = async () => {
+      const rewardType = item.dataset.reward;
+      const price = parseFloat(item.dataset.price);
+      const quantity = parseInt(item.dataset.quantity);
+      
+      if (confirm(`Purchase ${quantity} ${rewardType}(s) for $${price}? This will support ${postOwnerUsername}!`)) {
+        await processRewardPurchase(postId, postOwnerId, rewardType, quantity, price);
+        modal.remove();
+      }
+    };
+  });
+}
+
+// PROCESS REWARD PURCHASE
+async function processRewardPurchase(postId, recipientUserId, rewardType, quantity, price) {
+  try {
+    // In production, this would integrate with Stripe Checkout
+    // For now, we'll simulate the purchase and update Firestore
+    
+    const currentUserId = auth.currentUser.uid;
+    const currentUserDoc = await getDoc(doc(db, "users", currentUserId));
+    const currentUsername = currentUserDoc.data()?.username || "Anonymous";
+    
+    // Calculate creator payout (basic: $0.10 per reward, Jet: $50)
+    const creatorPayout = rewardType === "jet" ? 50.00 : (quantity * 0.10);
+    
+    // Record reward transaction
+    await addDoc(collection(db, "rewardTransactions"), {
+      fromUserId: currentUserId,
+      fromUsername: currentUsername,
+      toUserId: recipientUserId,
+      postId: postId,
+      rewardType: rewardType,
+      quantity: quantity,
+      purchaseAmount: price,
+      creatorPayout: creatorPayout,
+      createdAt: serverTimestamp(),
+      status: "pending" // pending → processed after 7-14 days
+    });
+    
+    // Update recipient's rewards count
+    const recipientRef = doc(db, "users", recipientUserId);
+    const recipientDoc = await getDoc(recipientRef);
+    
+    if (!recipientDoc.exists()) {
+      await setDoc(recipientRef, {
+        rewards: {
+          [rewardType]: quantity
+        },
+        totalEarned: creatorPayout,
+        pendingPayout: creatorPayout
+      });
+    } else {
+      await updateDoc(recipientRef, {
+        [`rewards.${rewardType}`]: increment(quantity),
+        totalEarned: increment(creatorPayout),
+        pendingPayout: increment(creatorPayout)
+      });
+    }
+    
+    // Update post reward count (for trending calculation)
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      [`rewardsReceived.${rewardType}`]: increment(quantity)
+    });
+    
+    haptic("heavy");
+    alert(`✅ ${quantity} ${rewardType}(s) sent successfully! The creator will receive $${creatorPayout.toFixed(2)}`);
+    
+  } catch (error) {
+    console.error("Error processing reward:", error);
+    alert("Error processing reward. Please try again.");
+  }
+}
+
 async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
   const currentUserId = auth.currentUser.uid;
@@ -100,11 +268,12 @@ async function renderPost(post, postId) {
 
   const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
+  // CLICKABLE USERNAME - Now links to user profile
   postEl.innerHTML = `
     ${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''}
     ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''}
     <div class="post-header">
-      <strong>${post.username || "Anonymous"}</strong>
+      <strong class="clickable-username" data-user-id="${post.userId}">${post.username || "Anonymous"}</strong>
       <small>${time}</small>
     </div>
     <p>${post.text || ""}</p>
@@ -112,6 +281,7 @@ async function renderPost(post, postId) {
     <div class="actions">
       <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
+      <button class="reward-btn" data-id="${postId}" data-owner-id="${post.userId}" data-owner-name="${post.username}">🎁</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
@@ -124,6 +294,20 @@ async function renderPost(post, postId) {
       <button class="comment-btn" data-id="${postId}">💬</button>
     </div>
   `;
+
+  // CLICKABLE USERNAME EVENT LISTENER
+  postEl.querySelector(".clickable-username").onclick = () => {
+    goToUserProfile(post.userId);
+  };
+
+  // REWARD BUTTON
+  postEl.querySelector(".reward-btn").onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const ownerId = e.target.dataset.ownerId;
+    const ownerName = e.target.dataset.ownerName;
+    showRewardsModal(postId, ownerId, ownerName);
+  };
 
   postEl.querySelector(".like-btn").onclick = async (e) => {
     e.preventDefault();
@@ -226,7 +410,7 @@ async function renderPost(post, postId) {
   onSnapshot(commentsQ, (snap) => {
     commentsSection.innerHTML = "";
 
-    snap.forEach((cDoc) => {
+    snap.forEach(async (cDoc) => {
       const c = cDoc.data();
       const cEl = document.createElement("div");
       cEl.className = "comment";
@@ -234,8 +418,9 @@ async function renderPost(post, postId) {
       const isCommentOwner = c.userId === auth.currentUser.uid;
       const replies = c.replies || [];
 
+      // CLICKABLE USERNAMES IN COMMENTS
       cEl.innerHTML = `
-        <strong>${c.username || "Anonymous"}</strong>
+        <strong class="clickable-username" data-user-id="${c.userId}">${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
         <div class="comment-actions">
           <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
@@ -244,7 +429,7 @@ async function renderPost(post, postId) {
         <div class="replies-container" id="replies-${cDoc.id}">
           ${replies.map(reply => `
             <div class="reply">
-              <strong>${reply.username}</strong>
+              <strong class="clickable-username-reply" data-user-id="${reply.userId}">${reply.username}</strong>
               <p>${reply.text}</p>
               ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
             </div>
@@ -256,6 +441,18 @@ async function renderPost(post, postId) {
           <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
         </div>
       `;
+
+      // CLICKABLE USERNAME IN COMMENT
+      cEl.querySelector(".clickable-username").onclick = () => {
+        goToUserProfile(c.userId);
+      };
+
+      // CLICKABLE USERNAMES IN REPLIES
+      cEl.querySelectorAll(".clickable-username-reply").forEach(usernameEl => {
+        usernameEl.onclick = () => {
+          goToUserProfile(usernameEl.dataset.userId);
+        };
+      });
 
       // Reply button
       cEl.querySelector(".reply-btn").onclick = () => {
@@ -451,6 +648,7 @@ postBtn.addEventListener("click", async () => {
       mediaType,
       likedBy: [],
       dislikedBy: [],
+      rewardsReceived: {},
       pinned: false,
       createdAt: serverTimestamp()
     });

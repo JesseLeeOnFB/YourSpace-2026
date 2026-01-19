@@ -27,6 +27,64 @@
     <section id="postsContainer"></section>
   </main>
 
+  <!-- REWARD MODAL -->
+  <div id="rewardModal" class="reward-modal" style="display:none;">
+    <div class="reward-modal-content">
+      <span class="close-modal" id="closeRewardModal">&times;</span>
+      <h2>🎁 Send a Reward</h2>
+      <p class="reward-subtitle">Support your favorite creators!</p>
+      
+      <div class="reward-packages">
+        <div class="reward-package" data-package="basic-20">
+          <div class="package-icon">🏠</div>
+          <div class="package-name">Basic Pack</div>
+          <div class="package-description">20 Houses</div>
+          <div class="package-price">$9.99</div>
+          <button class="select-reward-btn" data-package="basic-20" data-price="999">Select</button>
+        </div>
+
+        <div class="reward-package popular" data-package="standard-50">
+          <div class="popular-badge">⭐ POPULAR</div>
+          <div class="package-icon">🏠🚗</div>
+          <div class="package-name">Standard Pack</div>
+          <div class="package-description">50 Houses + 5 Cars</div>
+          <div class="package-price">$24.99</div>
+          <button class="select-reward-btn" data-package="standard-50" data-price="2499">Select</button>
+        </div>
+
+        <div class="reward-package" data-package="premium-100">
+          <div class="package-icon">🏠🚗🚚</div>
+          <div class="package-name">Premium Pack</div>
+          <div class="package-description">100 Houses + 10 Cars + 5 Trucks</div>
+          <div class="package-price">$49.99</div>
+          <button class="select-reward-btn" data-package="premium-100" data-price="4999">Select</button>
+        </div>
+
+        <div class="reward-package ultimate" data-package="ultimate-jet">
+          <div class="package-icon">✈️</div>
+          <div class="package-name">Ultimate Jet</div>
+          <div class="package-description">Send the ultimate reward!</div>
+          <div class="package-price">$99.99</div>
+          <button class="select-reward-btn" data-package="ultimate-jet" data-price="9999">Select</button>
+        </div>
+      </div>
+
+      <div class="reward-info">
+        <p><strong>💡 How it works:</strong></p>
+        <ul>
+          <li>Select a reward package above</li>
+          <li>Complete secure payment via Stripe</li>
+          <li>Creator receives their payout ($0.10 per basic reward)</li>
+          <li>Rewards are non-refundable and non-transferable</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
   <script type="module" src="feed.js"></script>
+  <script type="module" src="rewards.js"></script>
+  <script type="module" src="trending.js"></script>
+  <script type="module" src="notifications.js"></script>
 </body>
 </html>

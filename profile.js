@@ -106,16 +106,7 @@ async function loadProfile() {
   }
 
   if (data.customHtml) {
-    const previewDiv = document.getElementById("customHtmlPreview");
-    previewDiv.innerHTML = data.customHtml;
-    
-    const scripts = previewDiv.getElementsByTagName("script");
-    for (let script of scripts) {
-      const newScript = document.createElement("script");
-      newScript.textContent = script.textContent;
-      previewDiv.appendChild(newScript);
-      script.remove();
-    }
+    applyCustomHtml(data.customHtml);
   }
 
   if (data.music) {
@@ -304,7 +295,7 @@ function loadMusicPlayer(musicArray, autoplay) {
 
 function getEmbedCode(url, autoplay) {
   if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    const idMatch = url.match(/(?:v=|\.be\/)([\w-]+)/);
+    const idMatch = url.match/(?:v=|\.be\/)([\w-]+)/);
     if (!idMatch) return "";
     return `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${idMatch[1]}?autoplay=${autoplay ? 1 : 0}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   }

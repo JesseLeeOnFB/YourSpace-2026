@@ -1,14 +1,15 @@
-// feed.js – Updated with post delete button, working likes/dislikes/shares, comment button with containers, poster/commenter delete comment, fixed image sizes
+// feed.js — FINAL polished version (YourSpace 2026)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
-  updateDoc, query, orderBy, getDoc, onSnapshot
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-// Firebase config
+/* ───────────────── Firebase ───────────────── */
+
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -23,16 +24,28 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
-// DOM
+/* ───────────────── HAPTICS ───────────────── */
+
+function haptic(type = "light") {
+  if (!navigator.vibrate) return;
+  if (type === "light") navigator.vibrate(10);
+  if (type === "medium") navigator.vibrate(20);
+  if (type === "heavy") navigator.vibrate([30, 20, 30]);
+}
+
+/* ───────────────── DOM ───────────────── */
+
 const postsContainer = document.getElementById("postsContainer");
 const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
 
-// NAV BUTTONS
+/* ───────────────── NAV ───────────────── */
+
 document.getElementById("feedNavBtn")?.addEventListener("click", () => {
   window.location.href = "feed.html";
 });
+
 document.getElementById("profileNavBtn")?.addEventListener("click", () => {
   window.location.href = "profile.html";
 });
@@ -42,108 +55,149 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
-// RENDER POST
-async function renderPost(post, postId) {
+/* ───────────────── RENDER POST ───────────────── */
+
+function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
 
   const postEl = document.createElement("div");
-  postEl.className = "post";
+  postEl.className = "post-card";
 
-  const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
+  const time = post.createdAt?.toMillis
+    ? new Date(post.createdAt.toMillis()).toLocaleString()
+    : "just now";
 
   postEl.innerHTML = `
-    <strong>${post.username}</strong> <small>${time}</small>
-    <p>${post.text}</p>
-    ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
-    <div class="actions">
-      <button class="like-btn" data-id="${postId}">Like (${post.likes || 0})</button>
-      <button class="dislike-btn" data-id="${postId}">Dislike (${post.dislikes || 0})</button>
-      <button class="share-btn" data-id="${postId}">Share</button>
-      ${isOwner ? `<button class="delete-btn" data-id="${postId}">Delete</button>` : ""}
+    <div class="post-header">
+      <strong>${post.username || "Anonymous"}</strong>
+      <small>${time}</small>
     </div>
-    <div class="comments-container" id="comments-${postId}"></div>
-    <input type="text" class="comment-input" id="commentInput-${postId}" placeholder="Add a comment...">
-    <button class="comment-btn" data-id="${postId}">Comment</button>
+
+    <div class="post-text">${post.text || ""}</div>
+
+    ${
+      post.mediaURL
+        ? post.mediaType === "video"
+          ? `<video class="post-image" controls src="${post.mediaURL}"></video>`
+          : `<img class="post-image" src="${post.mediaURL}" />`
+        : ""
+    }
+
+    <div class="actions">
+      <button class="like-btn">👍 ${post.likes || 0}</button>
+      <button class="dislike-btn">🖕 ${post.dislikes || 0}</button>
+      <button class="comment-toggle">💬</button>
+      <button class="share-btn">🔗</button>
+      ${isOwner ? `<button class="delete-btn">🗑️</button>` : ""}
+    </div>
+
+    <div class="comments-section">
+      <div class="comments-container"></div>
+
+      <div class="comment-form">
+        <input type="text" class="comment-input" placeholder="Write a comment..." />
+        <button class="comment-btn">💬</button>
+      </div>
+    </div>
   `;
 
-  // LIKE
-  postEl.querySelector(".like-btn").addEventListener("click", async () => {
-    await updateDoc(doc(db, "posts", postId), { likes: (post.likes || 0) + 1 });
-  });
+  /* ───── Likes ───── */
+  postEl.querySelector(".like-btn").onclick = async () => {
+    haptic("light");
+    await updateDoc(doc(db, "posts", postId), {
+      likes: (post.likes || 0) + 1
+    });
+  };
 
-  // DISLIKE
-  postEl.querySelector(".dislike-btn").addEventListener("click", async () => {
-    await updateDoc(doc(db, "posts", postId), { dislikes: (post.dislikes || 0) + 1 });
-  });
+  /* ───── Dislikes ───── */
+  postEl.querySelector(".dislike-btn").onclick = async () => {
+    haptic("light");
+    await updateDoc(doc(db, "posts", postId), {
+      dislikes: (post.dislikes || 0) + 1
+    });
+  };
 
-  // SHARE
-  postEl.querySelector(".share-btn").addEventListener("click", () => {
+  /* ───── Share ───── */
+  postEl.querySelector(".share-btn").onclick = () => {
+    haptic("medium");
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
-    alert("Post link copied");
-  });
+    alert("Post link copied!");
+  };
 
-  // DELETE POST
+  /* ───── Delete Post ───── */
   postEl.querySelector(".delete-btn")?.addEventListener("click", async () => {
+    haptic("heavy");
     if (confirm("Delete this post?")) {
       await deleteDoc(doc(db, "posts", postId));
-      loadPosts();
     }
   });
 
-  // LOAD COMMENTS
-  const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
+  /* ───── COMMENTS REALTIME ───── */
+  const commentsContainer = postEl.querySelector(".comments-container");
+  const commentsQ = query(
+    collection(db, "posts", postId, "comments"),
+    orderBy("createdAt", "desc")
+  );
+
   onSnapshot(commentsQ, (snap) => {
-    const commentsContainer = postEl.querySelector(".comments-container");
     commentsContainer.innerHTML = "";
 
-    snap.forEach((docSnap) => {
-      const comment = docSnap.data();
-      const commentId = docSnap.id;
+    snap.forEach((cDoc) => {
+      const c = cDoc.data();
+      const cEl = document.createElement("div");
+      cEl.className = "comment";
 
-      const commentEl = document.createElement("div");
-      commentEl.className = "comment";
-      commentEl.innerHTML = `
-        <strong>${comment.username || "Anonymous"}</strong> <small>${comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now"}</small>
-        <p>${comment.text}</p>
-        <button class="delete-comment" data-id="${commentId}">Delete</button>
+      const isCommentOwner = c.userId === auth.currentUser.uid;
+
+      cEl.innerHTML = `
+        <strong>${c.username || "Anonymous"}</strong>
+        <p>${c.text}</p>
+        ${isCommentOwner ? `<button class="delete-comment">🗑️</button>` : ""}
       `;
 
-      // DELETE COMMENT (poster or commenter)
-      commentEl.querySelector(".delete-comment").addEventListener("click", async () => {
-        if (confirm("Delete this comment?")) {
-          await deleteDoc(doc(db, "posts", postId, "comments", commentId));
-        }
+      cEl.querySelector(".delete-comment")?.addEventListener("click", async () => {
+        haptic("heavy");
+        await deleteDoc(doc(db, "posts", postId, "comments", cDoc.id));
       });
 
-      commentsContainer.appendChild(commentEl);
+      commentsContainer.appendChild(cEl);
     });
   });
 
-  // COMMENT BUTTON
-  postEl.querySelector(".comment-btn").addEventListener("click", async () => {
-    const text = postEl.querySelector(".comment-input").value.trim();
+  /* ───── Add Comment ───── */
+  postEl.querySelector(".comment-btn").onclick = async () => {
+    const input = postEl.querySelector(".comment-input");
+    const text = input.value.trim();
     if (!text) return;
+
+    haptic("medium");
 
     await addDoc(collection(db, "posts", postId, "comments"), {
       text,
-      username: auth.currentUser.email.split("@")[0] || "Anonymous",
+      userId: auth.currentUser.uid,
+      username: auth.currentUser.email.split("@")[0],
       createdAt: serverTimestamp()
     });
 
-    postEl.querySelector(".comment-input").value = "";
+    input.value = "";
+  };
+
+  postsContainer.appendChild(postEl);
+}
+
+/* ───────────────── LOAD POSTS (NEWEST FIRST) ───────────────── */
+
+function loadPosts() {
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
+  onSnapshot(q, (snap) => {
+    postsContainer.innerHTML = "";
+    snap.forEach((docSnap) => renderPost(docSnap.data(), docSnap.id));
   });
-
-  postsContainer.prepend(postEl);
 }
 
-// LOAD POSTS
-async function loadPosts() {
-  postsContainer.innerHTML = "";
-  const snap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
-  snap.forEach(docSnap => renderPost(docSnap.data(), docSnap.id));
-}
+/* ───────────────── CREATE POST ───────────────── */
 
-// CREATE POST
 postBtn.addEventListener("click", async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
@@ -154,7 +208,7 @@ postBtn.addEventListener("click", async () => {
   let mediaType = "";
 
   if (file) {
-    mediaType = file.type.startsWith("image") ? "image" : "video";
+    mediaType = file.type.startsWith("video") ? "video" : "image";
     const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
     mediaURL = await getDownloadURL(storageRef);
@@ -162,24 +216,24 @@ postBtn.addEventListener("click", async () => {
 
   await addDoc(collection(db, "posts"), {
     userId: auth.currentUser.uid,
+    username: auth.currentUser.email.split("@")[0],
     text,
     mediaURL,
     mediaType,
     likes: 0,
     dislikes: 0,
-    createdAt: new Date()
+    createdAt: serverTimestamp()
   });
+
+  haptic("medium");
 
   postText.value = "";
   postFileInput.value = "";
-  loadPosts();
 });
 
-// AUTH CHECK
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    loadPosts();
-  }
+/* ───────────────── AUTH ───────────────── */
+
+auth.onAuthStateChanged((user) => {
+  if (!user) window.location.href = "login.html";
+  else loadPosts();
 });

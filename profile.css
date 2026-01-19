@@ -764,6 +764,13 @@ textarea {
   border: 2px dashed var(--border);
   border-radius: 8px;
   min-height: 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Allow custom HTML to affect body and global styles */
+body[class*="theme"] #customHtmlPreview * {
+  all: revert;
 }
 
 .info-text {

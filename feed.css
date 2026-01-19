@@ -199,3 +199,15 @@ body {
     font-size: 1.2rem;
   }
 }
+
+.post-media {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+  max-height: 500px;  // Cap on desktop
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}

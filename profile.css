@@ -1,989 +1,227 @@
-/* profile.css – COMPLETE with FIXED theme visibility */
+/* Body Themes */
+body.default-theme { background: #f0f0f0; color: #222; font-family: Arial, sans-serif; }
+body.red-theme { background: linear-gradient(red, darkred); color: white; }
+body.blue-theme { background: linear-gradient(blue, darkblue); color: white; }
+body.green-theme { background: linear-gradient(green, darkgreen); color: white; }
+body.neon-theme { animation: neonBg 5s infinite; }
+@keyframes neonBg { 0%{background-color:#ff00ff;} 25%{background-color:#00ffff;} 50%{background-color:#ffff00;} 75%{background-color:#00ff00;} 100%{background-color:#ff00ff;} }
 
-:root {
-  --primary: #1a1a1a;
-  --accent: #007bff;
-  --light-bg: #f0f4f8;
-  --card-bg: #ffffff;
-  --text: #333;
-  --text-light: #666;
-  --border: #ddd;
-  --shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  line-height: 1.6;
-  transition: all 0.3s ease;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME STYLES - FIXED VISIBILITY
-   ═══════════════════════════════════════════════════════════ */
-
-/* Default Theme */
-body.default-theme {
-  background: linear-gradient(to bottom, #f0f4f8, #e0e8f0);
-  color: #333;
-}
-
-body.default-theme .card {
-  background: white;
-  color: #333;
-}
-
-/* Dark Theme */
-body.dark-theme {
-  background: #0a0a0a;
-  color: #e8e8e8;
-}
-
-body.dark-theme .card {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  color: #e8e8e8;
-}
-
-body.dark-theme input,
-body.dark-theme textarea,
-body.dark-theme select {
-  background: #2a2a2a;
-  color: #e8e8e8;
-  border-color: #444;
-}
-
-body.dark-theme .wall-comment,
-body.dark-theme .top-friend,
-body.dark-theme .search-result,
-body.dark-theme .conversation-item {
-  background: #252525;
-  color: #e8e8e8;
-}
-
-body.dark-theme .friend-name,
-body.dark-theme .wall-comment strong a {
-  color: #60a5fa;
-}
-
-body.dark-theme .empty-friends,
-body.dark-theme .empty-comments {
-  color: #888;
-}
-
-/* Neon Theme */
-body.neon-theme {
-  background: #000;
-  color: #0ff;
-}
-
-body.neon-theme .card {
-  background: rgba(0, 20, 20, 0.9);
-  border: 2px solid #0ff;
-  box-shadow: 0 0 15px #0ff, inset 0 0 10px rgba(0,255,255,0.2);
-  color: #0ff;
-}
-
-body.neon-theme input,
-body.neon-theme textarea,
-body.neon-theme select {
-  background: rgba(0, 40, 40, 0.8);
-  color: #0ff;
-  border: 2px solid #0ff;
-}
-
-body.neon-theme button {
-  border: 2px solid #0ff;
-  color: #0ff;
-  background: rgba(0,255,255,0.1);
-}
-
-body.neon-theme button:hover {
-  background: rgba(0,255,255,0.3);
-  box-shadow: 0 0 10px #0ff;
-}
-
-body.neon-theme .wall-comment,
-body.neon-theme .top-friend {
-  background: rgba(0, 40, 40, 0.6);
-  border: 1px solid #0ff;
-  color: #0ff;
-}
-
-body.neon-theme .friend-name,
-body.neon-theme .wall-comment strong a {
-  color: #0ff;
-}
-
-/* Blue Gradient Theme */
-body.blue-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-body.blue-gradient .card {
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-}
-
-body.blue-gradient input,
-body.blue-gradient textarea,
-body.blue-gradient select {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-body.blue-gradient input::placeholder,
-body.blue-gradient textarea::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-body.blue-gradient .wall-comment,
-body.blue-gradient .top-friend {
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
-
-body.blue-gradient .friend-name,
-body.blue-gradient .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* Red Gradient Theme */
-body.red-gradient {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-}
-
-body.red-gradient .card {
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-}
-
-body.red-gradient input,
-body.red-gradient textarea,
-body.red-gradient select {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-body.red-gradient input::placeholder,
-body.red-gradient textarea::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-body.red-gradient .wall-comment,
-body.red-gradient .top-friend {
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
-
-body.red-gradient .friend-name,
-body.red-gradient .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* Green Gradient Theme */
-body.green-gradient {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  color: #333;
-}
-
-body.green-gradient .card {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.5);
-  color: #333;
-}
-
-/* Animated Rainbow Theme */
-body.animated-rainbow {
-  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db);
-  background-size: 800% 800%;
-  animation: rainbow 10s ease infinite;
-  color: white;
-}
-
-@keyframes rainbow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-body.animated-rainbow .card {
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255,255,255,0.4);
-  color: white;
-}
-
-body.animated-rainbow input,
-body.animated-rainbow textarea,
-body.animated-rainbow select {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-body.animated-rainbow input::placeholder,
-body.animated-rainbow textarea::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-body.animated-rainbow .wall-comment,
-body.animated-rainbow .top-friend {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-
-body.animated-rainbow .friend-name,
-body.animated-rainbow .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   NAVIGATION
-   ═══════════════════════════════════════════════════════════ */
-
-.navbar {
-  background: var(--primary);
-  color: white;
-  padding: 1rem;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+/* Navigation */
+.navbar { 
+  display: flex; 
+  gap: 15px; 
+  padding: 10px; 
+  background: #333; 
+  color: #fff; 
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1001; /* Above custom content */
+  justify-content: center;
+}
+.navbar button { 
+  color: white; 
+  background: #444; 
+  border: none; 
+  padding: 8px 12px; 
+  cursor: pointer; 
+  border-radius: 4px; 
+  transition: background 0.3s ease;
+}
+.navbar button:hover { background: #555; }
+
+/* Main layout */
+.profile-main { 
+  padding: 20px; 
+  max-width: 1200px; 
+  margin: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 30px; 
 }
 
-.navbar button {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 500;
+/* Top section: pfp + info */
+.profile-top { 
+  display: flex; 
+  gap: 20px; 
+  align-items: flex-start; 
+  flex-wrap: wrap; 
 }
-
-.navbar button:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translateY(-2px);
+.pfp-container { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 10px; 
 }
-
-/* ═══════════════════════════════════════════════════════════
-   MAIN LAYOUT
-   ═══════════════════════════════════════════════════════════ */
-
-.profile-main {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.card {
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.card h3 {
-  margin-top: 0;
-  color: inherit;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   PROFILE TOP
-   ═══════════════════════════════════════════════════════════ */
-
-.profile-top {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.pfp-container {
-  flex: 0 0 180px;
-  text-align: center;
-}
-
-#profilePic {
-  width: 160px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 4px solid var(--accent);
-  box-shadow: var(--shadow);
-  margin-bottom: 1rem;
+#profilePfp { 
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  border: 2px solid #444; 
+  background: #222; 
   transition: transform 0.3s ease;
 }
-
-#profilePic:hover {
+#profilePfp:hover {
   transform: scale(1.05);
 }
 
-#changePfpBtn {
-  width: 100%;
+/* Profile info box */
+.profile-info-box { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  flex: 1; 
+}
+.profile-info-box input, .profile-info-box textarea, .profile-info-box select { 
+  padding: 8px; 
+  border-radius: 4px; 
+  border: 1px solid #aaa; 
+  width: 100%; 
+  transition: border-color 0.3s ease;
+}
+.profile-info-box input:focus, .profile-info-box textarea:focus {
+  border-color: #007bff; /* Modern blue accent */
 }
 
-.profile-info-box {
-  flex: 1;
-  min-width: 300px;
+/* Containers */
+.wall-container, .top10-container, .theme-container, .music-player { 
+  background: #fff; 
+  padding: 15px; 
+  border-radius: 8px; /* Smoother corners */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Softer shadow */
+  margin-bottom: 20px; 
+  transition: box-shadow 0.3s ease;
+}
+.wall-container:hover, .top10-container:hover, .theme-container:hover, .music-player:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.wall-container h3, .top10-container h3, .theme-container h3, .music-player h3 { 
+  margin-top: 0; 
+  font-size: 1.2em;
+  color: #333;
 }
 
-.profile-info-box h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+/* Wall Comments */
+.wall-comment { 
+  margin-bottom: 10px; 
+  padding: 10px; 
+  border-bottom: 1px solid #eee; 
+  display: flex; 
+  justify-content: space-between; 
+  background: #f9f9f9; 
+  border-radius: 4px;
+}
+.wall-comment button { 
+  background: #e33; 
+  color: white; 
+  border: none; 
+  border-radius: 3px; 
+  cursor: pointer; 
+  padding: 4px 8px; 
+  transition: background 0.3s ease;
+}
+.wall-comment button:hover {
+  background: #c00;
+}
+#wallCommentInput { 
+  width: 100%; 
+  min-height: 50px; 
+  margin-top: 5px; 
+  padding: 8px; 
+  border-radius: 4px; 
+  border: 1px solid #aaa; 
 }
 
-.location-text,
-.bio-text {
-  margin: 0.5rem 0;
+/* Top 10 friends */
+#top10FriendsContainer { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid */
+  gap: 10px; 
+}
+.top-friend { 
+  display: flex; 
+  gap: 10px; 
+  align-items: center; 
+  background: #f9f9f9; 
+  padding: 8px; 
+  border-radius: 4px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BUTTONS
-   ═══════════════════════════════════════════════════════════ */
-
-button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
-  font-size: 1rem;
-  font-weight: 500;
+/* Music player */
+.music-player input { 
+  width: 100%; 
+  padding: 8px; 
+  border-radius: 4px; 
+  border: 1px solid #aaa; 
+}
+#musicIframe { 
+  width: 100%; 
+  height: 80px; 
+  border: none; 
 }
 
-button:hover {
-  background: #0056b3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+/* Fixed theme container to stay on top and scroll with screen */
+.fixed-theme-container {
+  position: fixed;
+  top: 60px; /* Below navbar */
+  right: 20px;
+  width: 280px; /* Slimmer for modern look */
+  z-index: 1000; /* On top of custom content */
+  background: rgba(255, 255, 255, 0.95) !important; /* Semi-transparent */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 15px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
 }
-
-button:active {
-  transform: translateY(0);
+.fixed-theme-container:hover {
+  transform: translateY(-5px);
 }
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   INPUTS
-   ═══════════════════════════════════════════════════════════ */
-
-input[type="text"],
-input[type="email"],
-textarea,
-select {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-textarea {
-  min-height: 100px;
+.fixed-theme-container textarea {
+  height: 120px;
   resize: vertical;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MODALS
-   ═══════════════════════════════════════════════════════════ */
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-content {
-  background: white;
-  margin: 5% auto;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  position: relative;
-  animation: slideDown 0.3s ease;
-  color: #333;
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.messages-modal-content {
-  max-width: 800px;
-  height: 600px;
-  overflow: hidden;
-}
-
-.close-modal {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  font-size: 2rem;
-  cursor: pointer;
-  color: var(--text-light);
-  transition: color 0.2s;
-}
-
-.close-modal:hover {
-  color: var(--primary);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MUSIC PLAYER
-   ═══════════════════════════════════════════════════════════ */
-
-.music-controls {
-  margin-bottom: 1rem;
-}
-
-.music-slot {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
-  align-items: center;
-}
-
-.music-slot input {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-.music-slot button {
-  padding: 0.6rem 1rem;
-}
-
-.music-embed {
-  margin-bottom: 1rem;
-}
-
-.music-embed iframe {
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TOP 10 FRIENDS
-   ═══════════════════════════════════════════════════════════ */
-
-.top-friends-list {
-  min-height: 200px;
-  margin-top: 1rem;
-}
-
-.top-friend {
-  background: rgba(0,123,255,0.08);
-  padding: 1rem;
-  margin-bottom: 0.8rem;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  cursor: move;
-  transition: all 0.2s;
-  border: 2px solid transparent;
-}
-
-.top-friend:hover {
-  background: rgba(0,123,255,0.15);
-  border-color: var(--accent);
-  transform: translateX(5px);
-}
-
-.top-friend .rank {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--accent);
-  width: 40px;
-  text-align: center;
-}
-
-.friend-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--accent);
-}
-
-.friend-name {
-  flex: 1;
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 1.1rem;
-}
-
-.friend-name:hover {
-  text-decoration: underline;
-}
-
-.remove-friend-btn {
-  background: rgba(255,68,68,0.1);
-  color: #ff4444;
-  padding: 0.4rem 0.8rem;
-  font-size: 1.2rem;
-}
-
-.remove-friend-btn:hover {
-  background: rgba(255,68,68,0.2);
-}
-
-.empty-friends {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-/* Search Results */
-#searchResults,
-#userSearchResults {
-  margin: 1rem 0;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.search-result {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  transition: background 0.2s;
-  background: rgba(255,255,255,0.5);
-}
-
-.search-result:hover {
-  background: rgba(0,123,255,0.1);
-}
-
-.search-result img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.search-result span {
-  flex: 1;
-  font-weight: 500;
-}
-
-.add-friend-btn,
-.message-user-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENTS WALL
-   ═══════════════════════════════════════════════════════════ */
-
-#wallCommentsContainer {
-  max-height: 500px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background: rgba(0,0,0,0.02);
-  border-radius: 8px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar {
-  width: 8px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar-track {
-  background: var(--light-bg);
-  border-radius: 10px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-}
-
-.wall-comment {
-  background: rgba(255,255,255,0.9);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  position: relative;
-  transition: all 0.2s;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.wall-comment:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.comment-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.comment-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--accent);
-}
-
-.wall-comment strong a {
-  text-decoration: none;
-}
-
-.wall-comment strong a:hover {
-  text-decoration: underline;
-}
-
-.wall-comment small {
-  font-size: 0.85rem;
-  display: block;
-  margin-top: 0.2rem;
-  opacity: 0.7;
-}
-
-.wall-comment p {
-  margin: 0.5rem 0 0 0;
-}
-
-.delete-wall-comment {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: transparent;
-  color: #ff4444;
-  padding: 0.3rem 0.5rem;
-  font-size: 1.2rem;
-  opacity: 0.6;
-}
-
-.delete-wall-comment:hover {
-  opacity: 1;
-  background: rgba(255,68,68,0.1);
-}
-
-.empty-comments {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CUSTOM HTML PREVIEW
-   ═══════════════════════════════════════════════════════════ */
-
-#customHtmlPreview {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 2px dashed var(--border);
-  border-radius: 8px;
-  min-height: 100px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Allow custom HTML to affect body and global styles */
-body[class*="theme"] #customHtmlPreview * {
-  all: revert;
-}
-
-.info-text {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.8;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MESSAGES
-   ═══════════════════════════════════════════════════════════ */
-
-.message-search {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border);
-}
-
-.messages-layout {
-  display: flex;
-  height: 400px;
-  gap: 1rem;
-}
-
-.conversations-list {
-  flex: 0 0 250px;
-  border-right: 2px solid var(--border);
-  overflow-y: auto;
-  padding-right: 1rem;
-}
-
-.conversation-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 0.5rem;
-}
-
-.conversation-item:hover {
-  background: rgba(0,123,255,0.1);
-}
-
-.conversation-item img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.message-thread {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-#messagesContainer {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  background: rgba(0,0,0,0.02);
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.message {
-  padding: 0.8rem;
-  border-radius: 12px;
-  margin-bottom: 0.8rem;
-  max-width: 70%;
-  animation: messageSlide 0.2s ease;
-  word-wrap: break-word;
-}
-
-@keyframes messageSlide {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.message.sent {
-  background: var(--accent);
-  color: white;
-  margin-left: auto;
-}
-
-.message.received {
-  background: white;
-  border: 1px solid var(--border);
-  margin-right: auto;
-  color: #333;
-}
-
-.message-input-container {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.message-input-container input {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   UPLOAD PROGRESS
-   ═══════════════════════════════════════════════════════════ */
-
-.upload-progress {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.3);
-  z-index: 2000;
-  text-align: center;
-  min-width: 300px;
-}
-
-.upload-progress progress {
-  width: 100%;
-  height: 20px;
-  margin: 1rem 0;
-}
-
-.upload-progress .percent {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--accent);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════ */
-
+/* Responsive media queries for mobile/desktop */
 @media (max-width: 768px) {
+  .profile-main {
+    padding: 10px;
+  }
   .profile-top {
     flex-direction: column;
     align-items: center;
-    text-align: center;
   }
-
-  .pfp-container {
-    margin-bottom: 1.5rem;
+  #profilePfp {
+    width: 80px;
+    height: 80px;
   }
-
-  #profilePic {
-    width: 120px;
-    height: 120px;
+  .fixed-theme-container {
+    width: 90%;
+    left: 5%;
+    right: auto;
+    top: auto;
+    bottom: 0;
+    max-height: 50vh;
   }
-
-  .profile-info-box {
-    width: 100%;
-  }
-
-  .messages-layout {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .conversations-list {
-    flex: 0 0 auto;
-    border-right: none;
-    border-bottom: 2px solid var(--border);
-    padding-right: 0;
-    padding-bottom: 1rem;
-    max-height: 200px;
-  }
-
   .navbar {
-    flex-direction: column;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: space-around;
   }
-
-  .navbar button {
-    width: 100%;
+  #top10FriendsContainer {
+    grid-template-columns: 1fr; /* Stack on mobile */
   }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 769px) {
+  /* Desktop tweaks */
   .profile-main {
-    padding: 0 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
-
-  .card {
-    padding: 1rem;
-  }
-
-  button {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .music-slot {
-    flex-direction: column;
-  }
-
-  .music-slot button {
-    width: 100%;
-  }
-
-  #profilePic {
-    width: 100px;
-    height: 100px;
+  .profile-top, .music-player {
+    grid-column: span 2;
   }
 }
+```50vh

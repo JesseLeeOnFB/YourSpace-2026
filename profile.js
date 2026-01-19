@@ -1,4 +1,4 @@
-// profile.js – FIXED username as display, working top 10 friends, custom HTML working
+// profile.js – FIXED wall comments posting and deletion
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -31,7 +31,7 @@ viewingUserId = urlParams.get('userId');
 
 document.getElementById("homeBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("profileBtn").onclick = () => window.location.href = "profile.html";
-document.getElementById("messagesBtn").onclick = () => openMessagesModal();
+document.getElementById("messagesBtn").onclick = () => window.location.href = "messages.html";
 document.getElementById("logoutBtn").onclick = async () => {
   await auth.signOut();
   window.location.href = "login.html";
@@ -448,20 +448,28 @@ async function removeFromTopFriends(uid) {
 function setupCommentsWall() {
   document.getElementById("addCommentBtn").onclick = async () => {
     const text = document.getElementById("commentInput").value.trim();
-    if (!text) return;
+    if (!text) {
+      alert("Please enter a comment");
+      return;
+    }
 
-    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-    const userData = userDoc.data();
+    try {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      const userData = userDoc.data();
 
-    await addDoc(collection(db, "users", viewingUserId, "wallComments"), {
-      text,
-      authorId: currentUser.uid,
-      authorName: userData.username,
-      authorPhoto: userData.photoURL || "default-avatar.png",
-      createdAt: serverTimestamp()
-    });
+      await addDoc(collection(db, "users", viewingUserId, "wallComments"), {
+        text,
+        authorId: currentUser.uid,
+        authorName: userData?.username || currentUser.email.split("@")[0],
+        authorPhoto: userData?.photoURL || "default-avatar.png",
+        createdAt: serverTimestamp()
+      });
 
-    document.getElementById("commentInput").value = "";
+      document.getElementById("commentInput").value = "";
+    } catch (err) {
+      console.error("Error posting comment:", err);
+      alert("Error posting comment: " + err.message);
+    }
   };
 }
 
@@ -501,18 +509,21 @@ function loadComments() {
       if (canDelete) {
         div.querySelector(".delete-wall-comment").onclick = async () => {
           if (confirm("Delete this comment?")) {
-            await deleteDoc(doc(db, "users", viewingUserId, "wallComments", docSnap.id));
+            try {
+              await deleteDoc(doc(db, "users", viewingUserId, "wallComments", docSnap.id));
+            } catch (err) {
+              console.error("Error deleting comment:", err);
+              alert("Error deleting comment: " + err.message);
+            }
           }
         };
       }
 
       container.appendChild(div);
     });
+  }, (err) => {
+    console.error("Error loading comments:", err);
   });
-}
-
-function openMessagesModal() {
-  window.location.href = "messages.html";
 }
 
 document.querySelectorAll(".close-modal").forEach(btn => {

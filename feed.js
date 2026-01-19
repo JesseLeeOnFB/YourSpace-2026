@@ -8,7 +8,7 @@ import {
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-/* ───────────────── Firebase ───────────────── */
+// ───────────────── Firebase ─────────────────
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -24,7 +24,7 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
-/* ───────────────── HAPTICS ───────────────── */
+// ───────────────── HAPTICS ─────────────────
 
 function haptic(type = "light") {
   if (!navigator.vibrate) return;
@@ -33,14 +33,14 @@ function haptic(type = "light") {
   if (type === "heavy") navigator.vibrate([30, 20, 30]);
 }
 
-/* ───────────────── DOM ───────────────── */
+// ───────────────── DOM ─────────────────
 
 const postsContainer = document.getElementById("postsContainer");
 const postBtn = document.getElementById("postBtn");
 const postText = document.getElementById("postText");
 const postFileInput = document.getElementById("postFileInput");
 
-/* ───────────────── NAV ───────────────── */
+// ───────────────── NAV ─────────────────
 
 document.getElementById("feedNavBtn")?.addEventListener("click", () => {
   window.location.href = "feed.html";
@@ -55,34 +55,23 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
-/* ───────────────── RENDER POST ───────────────── */
+// ───────────────── RENDER POST ─────────────────
 
-function renderPost(post, postId) {
+async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
 
   const postEl = document.createElement("div");
   postEl.className = "post-card";
 
-  const time = post.createdAt?.toMillis
-    ? new Date(post.createdAt.toMillis()).toLocaleString()
-    : "just now";
+  const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
   postEl.innerHTML = `
     <div class="post-header">
       <strong>${post.username || "Anonymous"}</strong>
       <small>${time}</small>
     </div>
-
-    <div class="post-text">${post.text || ""}</div>
-
-    ${
-      post.mediaURL
-        ? post.mediaType === "video"
-          ? `<video class="post-image" controls src="${post.mediaURL}"></video>`
-          : `<img class="post-image" src="${post.mediaURL}" />`
-        : ""
-    }
-
+    <p>${post.text || ""}</p>
+    ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
     <div class="actions">
       <button class="like-btn">👍 ${post.likes || 0}</button>
       <button class="dislike-btn">🖕 ${post.dislikes || 0}</button>
@@ -90,7 +79,6 @@ function renderPost(post, postId) {
       <button class="share-btn">🔗</button>
       ${isOwner ? `<button class="delete-btn">🗑️</button>` : ""}
     </div>
-
     <div class="comments-section">
       <div class="comments-container"></div>
 
@@ -101,7 +89,7 @@ function renderPost(post, postId) {
     </div>
   `;
 
-  /* ───── Likes ───── */
+  // LIKE
   postEl.querySelector(".like-btn").onclick = async () => {
     haptic("light");
     await updateDoc(doc(db, "posts", postId), {
@@ -109,7 +97,7 @@ function renderPost(post, postId) {
     });
   };
 
-  /* ───── Dislikes ───── */
+  // DISLIKE
   postEl.querySelector(".dislike-btn").onclick = async () => {
     haptic("light");
     await updateDoc(doc(db, "posts", postId), {
@@ -117,14 +105,14 @@ function renderPost(post, postId) {
     });
   };
 
-  /* ───── Share ───── */
+  // SHARE
   postEl.querySelector(".share-btn").onclick = () => {
     haptic("medium");
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
     alert("Post link copied!");
   };
 
-  /* ───── Delete Post ───── */
+  // DELETE POST
   postEl.querySelector(".delete-btn")?.addEventListener("click", async () => {
     haptic("heavy");
     if (confirm("Delete this post?")) {
@@ -132,12 +120,9 @@ function renderPost(post, postId) {
     }
   });
 
-  /* ───── COMMENTS REALTIME ───── */
+  // COMMENTS REALTIME
   const commentsContainer = postEl.querySelector(".comments-container");
-  const commentsQ = query(
-    collection(db, "posts", postId, "comments"),
-    orderBy("createdAt", "desc")
-  );
+  const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
 
   onSnapshot(commentsQ, (snap) => {
     commentsContainer.innerHTML = "";
@@ -152,19 +137,22 @@ function renderPost(post, postId) {
       cEl.innerHTML = `
         <strong>${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
-        ${isCommentOwner ? `<button class="delete-comment">🗑️</button>` : ""}
+        ${isCommentOwner ? `<button class="delete-comment" data-id="${cDoc.id}">🗑️</button>` : ""}
       `;
 
+      // DELETE COMMENT
       cEl.querySelector(".delete-comment")?.addEventListener("click", async () => {
         haptic("heavy");
-        await deleteDoc(doc(db, "posts", postId, "comments", cDoc.id));
+        if (confirm("Delete this comment?")) {
+          await deleteDoc(doc(db, "posts", postId, "comments", cDoc.id));
+        }
       });
 
       commentsContainer.appendChild(cEl);
     });
   });
 
-  /* ───── Add Comment ───── */
+  // ADD COMMENT
   postEl.querySelector(".comment-btn").onclick = async () => {
     const input = postEl.querySelector(".comment-input");
     const text = input.value.trim();
@@ -185,7 +173,7 @@ function renderPost(post, postId) {
   postsContainer.appendChild(postEl);
 }
 
-/* ───────────────── LOAD POSTS (NEWEST FIRST) ───────────────── */
+/* ───────────────── LOAD POSTS ───────────────── */
 
 function loadPosts() {
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -231,8 +219,7 @@ postBtn.addEventListener("click", async () => {
   postFileInput.value = "";
 });
 
-/* ───────────────── AUTH ───────────────── */
-
+// AUTH CHECK
 auth.onAuthStateChanged((user) => {
   if (!user) window.location.href = "login.html";
   else loadPosts();

@@ -1,4 +1,4 @@
-// profile.js – FIXED wall comments posting and deletion, removed custom HTML
+// profile.js – FIXED wall comments posting and deletion
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -60,10 +60,12 @@ async function initProfile() {
   setupCommentsWall();
   setupProfilePictureUpload();
   setupEditProfile();
+  setupCustomHtml();
   
   if (!isOwnProfile) {
     document.getElementById("editProfileBtn").style.display = "none";
     document.getElementById("sendMessageBtn").style.display = "inline-block";
+    document.getElementById("customHtmlSection").style.display = "none";
     document.getElementById("searchFriendBtn").style.display = "none";
     document.getElementById("searchFriendInput").style.display = "none";
     document.getElementById("themeSelect").disabled = true;
@@ -85,7 +87,8 @@ async function loadProfile() {
       theme: "default-theme",
       music: ["", "", "", ""],
       autoplay: true,
-      topFriends: []
+      topFriends: [],
+      customHtml: ""
     });
     return loadProfile();
   }
@@ -100,6 +103,30 @@ async function loadProfile() {
 
   if (data.theme) {
     document.body.className = data.theme;
+  }
+
+  if (data.customHtml) {
+    // MYSPACE STYLE INJECTION - Inject directly into page
+    let customStyleElement = document.getElementById('customProfileStyles');
+    if (!customStyleElement) {
+      customStyleElement = document.createElement('div');
+      customStyleElement.id = 'customProfileStyles';
+      document.body.appendChild(customStyleElement);
+    }
+    customStyleElement.innerHTML = data.customHtml;
+    
+    // Execute any scripts in the custom HTML
+    const scripts = customStyleElement.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+      const script = scripts[i];
+      const newScript = document.createElement('script');
+      if (script.src) {
+        newScript.src = script.src;
+      } else {
+        newScript.textContent = script.textContent;
+      }
+      document.body.appendChild(newScript);
+    }
   }
 
   if (data.music) {
@@ -197,6 +224,56 @@ function setupThemeControls() {
     document.body.className = "default-theme";
     document.getElementById("themeSelect").value = "default-theme";
     await updateDoc(doc(db, "users", currentUser.uid), { theme: "default-theme" });
+  };
+}
+
+function setupCustomHtml() {
+  if (!isOwnProfile) return;
+
+  document.getElementById("saveCustomHtmlBtn").onclick = async () => {
+    const customHtml = document.getElementById("customHtmlInput").value;
+    
+    // MYSPACE STYLE - Inject into page immediately
+    let customStyleElement = document.getElementById('customProfileStyles');
+    if (!customStyleElement) {
+      customStyleElement = document.createElement('div');
+      customStyleElement.id = 'customProfileStyles';
+      document.body.appendChild(customStyleElement);
+    }
+    customStyleElement.innerHTML = customHtml;
+    
+    // Execute scripts
+    const scripts = customStyleElement.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+      const script = scripts[i];
+      const newScript = document.createElement('script');
+      if (script.src) {
+        newScript.src = script.src;
+      } else {
+        newScript.textContent = script.textContent;
+      }
+      document.body.appendChild(newScript);
+    }
+    
+    // Show preview
+    document.getElementById("customHtmlPreview").innerHTML = `<p style="color: #28a745; font-weight: bold;">✓ Custom HTML Applied to Page!</p>`;
+    
+    await updateDoc(doc(db, "users", currentUser.uid), { customHtml });
+    alert("Custom HTML saved and applied to your profile!");
+  };
+
+  document.getElementById("clearCustomHtmlBtn").onclick = async () => {
+    document.getElementById("customHtmlInput").value = "";
+    document.getElementById("customHtmlPreview").innerHTML = "";
+    
+    // Remove custom HTML from page
+    const customStyleElement = document.getElementById('customProfileStyles');
+    if (customStyleElement) {
+      customStyleElement.remove();
+    }
+    
+    await updateDoc(doc(db, "users", currentUser.uid), { customHtml: "" });
+    window.location.reload(); // Reload to remove injected styles
   };
 }
 

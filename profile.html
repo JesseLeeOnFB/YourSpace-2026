@@ -32,20 +32,20 @@
       </div>
     </div>
 
-    <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal" style="display:none;">
       <div class="modal-content">
         <span class="close-modal">&times;</span>
         <h3>Edit Profile</h3>
+        <label>Username:</label>
         <input type="text" id="usernameInput" placeholder="Username">
-        <input type="text" id="displayNameInput" placeholder="Display Name">
+        <label>Location:</label>
         <input type="text" id="locationInput" placeholder="Location">
+        <label>Bio:</label>
         <textarea id="bioInput" placeholder="Bio" rows="4"></textarea>
         <button id="saveProfileBtn">Save Changes</button>
       </div>
     </div>
 
-    <!-- Theme Customization -->
     <div class="theme-container card">
       <h3>🎨 Customize Theme</h3>
       <select id="themeSelect">
@@ -61,17 +61,15 @@
       <button id="resetThemeBtn">Reset to Default</button>
     </div>
 
-    <!-- Custom HTML Editor -->
     <div class="custom-html-container card" id="customHtmlSection">
       <h3>💻 Custom HTML/CSS</h3>
-      <p class="info-text">Customize your profile with HTML & CSS - make it uniquely yours!</p>
-      <textarea id="customHtmlInput" placeholder="Enter your custom HTML/CSS here..." rows="6"></textarea>
-      <button id="saveCustomHtmlBtn">Save Custom Code</button>
+      <p class="info-text">Customize your profile with HTML & CSS - add animations, backgrounds, and more! Just like customizing profiles back in the day, but better!</p>
+      <textarea id="customHtmlInput" placeholder="Paste your HTML/CSS code here (including <style> tags)..." rows="8"></textarea>
+      <button id="saveCustomHtmlBtn">Save & Apply</button>
       <button id="clearCustomHtmlBtn">Clear Custom Code</button>
       <div id="customHtmlPreview"></div>
     </div>
 
-    <!-- Music Player -->
     <div class="music-player card">
       <h3>🎵 Music Player</h3>
       <div class="music-controls">
@@ -104,57 +102,21 @@
       <div id="musicPlayerContainer"></div>
     </div>
 
-    <!-- Top 10 Friends -->
     <div class="top10-container card">
       <h3>👥 Top 10 Friends</h3>
       <input type="text" id="searchFriendInput" placeholder="Search username to add...">
       <button id="searchFriendBtn">Search</button>
       <div id="searchResults"></div>
-      <div id="topFriendsContainer" class="top-friends-list">
-        <!-- Drag and drop friends here -->
-      </div>
+      <div id="topFriendsContainer" class="top-friends-list"></div>
     </div>
 
-    <!-- Comments Wall -->
     <div class="wall-container card">
       <h3>💬 Comments Wall</h3>
-      <div id="wallCommentsContainer">
-        <!-- Comments will be rendered here -->
-      </div>
+      <div id="wallCommentsContainer"></div>
       <textarea id="commentInput" placeholder="Leave a comment..." rows="3"></textarea>
       <button id="addCommentBtn">Post Comment</button>
     </div>
   </section>
-
-  <!-- Messages Modal -->
-  <div id="messagesModal" class="modal" style="display:none;">
-    <div class="modal-content messages-modal-content">
-      <span class="close-modal">&times;</span>
-      <h3>💬 Private Messages</h3>
-      
-      <!-- Search for users to message -->
-      <div class="message-search">
-        <input type="text" id="searchUserToMessage" placeholder="Search username to message...">
-        <button id="searchUserToMessageBtn">Search</button>
-        <div id="userSearchResults"></div>
-      </div>
-
-      <div class="messages-layout">
-        <div class="conversations-list">
-          <h4>Conversations</h4>
-          <div id="conversationsList"></div>
-        </div>
-        <div class="message-thread">
-          <h4 id="currentChatUser">Select a conversation</h4>
-          <div id="messagesContainer"></div>
-          <div class="message-input-container">
-            <input type="text" id="messageInput" placeholder="Type a message...">
-            <button id="sendMessageBtnInChat">Send</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script type="module" src="profile.js"></script>
 </body>

@@ -340,7 +340,7 @@ deleteSelectedBtn.addEventListener("click", async () => {
     deleteSelectedBtn.style.display = "none";
   } catch (err) {
     console.error("Error deleting messages:", err);
-    alert("Error deleting messages");
+    alert("Error deleting messages: " + err.message);  // Show exact error
   }
 });
 

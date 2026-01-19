@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="feed.css">
+
+  <link rel="stylesheet" href="feed.css?v=2026-01">
 </head>
 <body>
-  <!-- NAVIGATION -->
-  <nav class="nav-bar">
+
+  <!-- NAV -->
+  <div class="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="logoutBtn">Logout</button>
-  </nav>
+  </div>
 
-  <!-- CREATE POST -->
-  <section class="create-post">
-    <textarea id="postText" placeholder="What's on your mind?"></textarea>
-    <input type="file" id="postFileInput" accept="image/*,video/*">
-    <button id="postBtn">Post</button>
-  </section>
+  <!-- FEED -->
+  <div class="feed-container">
 
-  <!-- POSTS -->
-  <section id="postsContainer" class="posts-container"></section>
+    <!-- NEW POST -->
+    <div class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFileInput" accept="image/*,video/*">
+      <button id="postBtn">Post</button>
+    </div>
 
-  <!-- SCRIPTS -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="feed.js"></script>
+    <!-- POSTS -->
+    <div id="postsContainer"></div>
+
+  </div>
+
+  <script type="module" src="feed.js?v=2026-01"></script>
 </body>
 </html>

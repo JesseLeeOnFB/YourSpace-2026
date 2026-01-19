@@ -1,33 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourSpace - Sign Up</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - YourSpace</title>
+  <link rel="stylesheet" href="auth.css">
 </head>
 <body>
-    <main class="login-container">
-        <h1>Sign Up for YourSpace</h1>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Join YourSpace</h1>
+      <p class="subtitle">Create your profile and connect with friends</p>
 
-        <div class="input-group">
-            <label for="emailInput">Email</label>
-            <input type="email" id="emailInput" placeholder="Enter your email">
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="your.email@example.com" required>
         </div>
 
-        <div class="input-group">
-            <label for="passwordInput">Password</label>
-            <input type="password" id="passwordInput" placeholder="Enter a password">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Min. 6 characters" required>
         </div>
 
-        <div class="buttons">
-            <button id="signupBtn">Sign Up</button>
-            <button id="loginRedirectBtn">Back to Login</button>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
         </div>
 
-        <p id="signupError" class="error-message"></p>
-    </main>
+        <div class="terms-checkbox">
+          <input type="checkbox" id="acceptTerms" required>
+          <label for="acceptTerms">
+            I agree to the <a href="terms.html" target="_blank">Terms & Conditions</a> and understand that:
+            <ul>
+              <li>My data will be collected and stored</li>
+              <li>Virtual reward purchases are non-refundable</li>
+              <li>I will follow community guidelines</li>
+              <li>YourSpace may terminate my account for violations</li>
+            </ul>
+          </label>
+        </div>
 
-    <script type="module" src="signup.js"></script>
+        <button type="submit" class="auth-btn">Create Account</button>
+        <div id="errorMessage" class="error-message"></div>
+      </form>
+
+      <p class="switch-auth">
+        Already have an account? <a href="login.html">Log In</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module" src="signup.js"></script>
 </body>
 </html>

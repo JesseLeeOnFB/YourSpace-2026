@@ -1,4 +1,4 @@
-/* profile.css – COMPLETE with FIXED theme visibility, added 40+ preset themes */
+/* profile.css – ENHANCED with unique backgrounds, colors, and effects for all themes to make them distinct and match their names */
 
 :root {
   --primary: #1a1a1a;
@@ -24,10 +24,10 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   THEME STYLES - FIXED VISIBILITY
+   THEME STYLES - ENHANCED FOR UNIQUENESS
    ═══════════════════════════════════════════════════════════ */
 
-/* Default Theme */
+/* Default Theme - Light professional gradient */
 body.default-theme {
   background: linear-gradient(to bottom, #f0f4f8, #e0e8f0);
   color: #333;
@@ -36,11 +36,12 @@ body.default-theme {
 body.default-theme .card {
   background: white;
   color: #333;
+  border: 1px solid #e0e0e0;
 }
 
-/* Dark Theme */
+/* Dark Theme - Deep space-like with subtle stars */
 body.dark-theme {
-  background: #0a0a0a;
+  background: #0a0a0a url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Ccircle cx="10" cy="10" r="1" fill="%23fff" /%3E%3Ccircle cx="50" cy="50" r="1" fill="%23fff" /%3E%3Ccircle cx="90" cy="90" r="1" fill="%23fff" /%3E%3C/svg%3E') repeat;
   color: #e8e8e8;
 }
 
@@ -48,6 +49,7 @@ body.dark-theme .card {
   background: #1a1a1a;
   border: 1px solid #333;
   color: #e8e8e8;
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
 
 body.dark-theme input,
@@ -76,10 +78,16 @@ body.dark-theme .empty-comments {
   color: #888;
 }
 
-/* Neon Theme */
+/* Neon Theme - Glowing cyber neon with pulse animation */
 body.neon-theme {
   background: #000;
   color: #0ff;
+  animation: neon-pulse 2s infinite alternate;
+}
+
+@keyframes neon-pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.2); }
 }
 
 body.neon-theme .card {
@@ -120,9 +128,9 @@ body.neon-theme .wall-comment strong a {
   color: #0ff;
 }
 
-/* Blue Gradient Theme */
+/* Blue Gradient Theme - Ocean wave-like with blue tones */
 body.blue-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   color: white;
 }
 
@@ -155,12 +163,12 @@ body.blue-gradient .top-friend {
 body.blue-gradient .friend-name,
 body.blue-gradient .wall-comment strong a {
   color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  text-shadow: 0 0 10px rgba(0,123,255,0.5);
 }
 
-/* Red Gradient Theme */
+/* Red Gradient Theme - Fiery lava with red/orange */
 body.red-gradient {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
   color: white;
 }
 
@@ -193,27 +201,27 @@ body.red-gradient .top-friend {
 body.red-gradient .friend-name,
 body.red-gradient .wall-comment strong a {
   color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  text-shadow: 0 0 10px rgba(255,0,0,0.5);
 }
 
-/* Green Gradient Theme */
+/* Green Gradient Theme - Lush forest with green shades */
 body.green-gradient {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
   color: #333;
 }
 
 body.green-gradient .card {
   background: rgba(255,255,255,0.85);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,255,0,0.3);
   color: #333;
 }
 
-/* Animated Rainbow Theme */
+/* Animated Rainbow Theme - Vibrant shifting rainbow with faster animation */
 body.animated-rainbow {
-  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db);
-  background-size: 800% 800%;
-  animation: rainbow 10s ease infinite;
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+  background-size: 1400% 1400%;
+  animation: rainbow 15s ease infinite;
   color: white;
 }
 
@@ -255,22 +263,34 @@ body.animated-rainbow .wall-comment strong a {
   text-shadow: 0 0 10px rgba(255,255,255,0.5);
 }
 
-/* Additional Preset Themes */
-
-/* Color Selections */
+/* Light Blue - Soft sky with cloud pattern */
 body.light-blue {
-  background: linear-gradient(to bottom, #add8e6, #87ceeb);
+  background: linear-gradient(to bottom, #87cefa, #add8e6) url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Cpath d="M100 50c20 0 30 10 30 30s-10 40-30 40-30-20-30-40 10-30 30-30z" fill="%23fff" opacity="0.3"/%3E%3C/svg%3E') repeat;
   color: #333;
 }
 
 body.light-blue .card {
   background: rgba(255,255,255,0.8);
   color: #333;
+  border: 1px solid #87cefa;
 }
 
+/* Purple Haze - Misty purple with fog effect */
 body.purple-haze {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
   color: white;
+  position: relative;
+}
+
+body.purple-haze::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 body.purple-haze .card {
@@ -278,18 +298,21 @@ body.purple-haze .card {
   color: white;
 }
 
+/* Sunset Orange - Warm sunset with ray effects */
 body.sunset-orange {
-  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
   color: white;
 }
 
 body.sunset-orange .card {
   background: rgba(0,0,0,0.4);
   color: white;
+  box-shadow: 0 0 20px rgba(255,165,0,0.5);
 }
 
+/* Forest Green - Deep green with leaf pattern */
 body.forest-green {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  background: linear-gradient(135deg, #093028 0%, #237a57 100%);
   color: white;
 }
 
@@ -298,8 +321,9 @@ body.forest-green .card {
   color: white;
 }
 
+/* Midnight Blue - Starry night with twinkling */
 body.midnight-blue {
-  background: linear-gradient(135deg, #2c3e50 0%, #bdc3c7 100%);
+  background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
   color: white;
 }
 
@@ -308,8 +332,9 @@ body.midnight-blue .card {
   color: white;
 }
 
+/* Pink Blush - Soft pink with heart patterns */
 body.pink-blush {
-  background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
   color: #333;
 }
 
@@ -318,18 +343,21 @@ body.pink-blush .card {
   color: #333;
 }
 
+/* Golden Hour - Warm gold with shine */
 body.golden-hour {
-  background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
   color: #333;
 }
 
 body.golden-hour .card {
   background: rgba(255,255,255,0.8);
   color: #333;
+  box-shadow: 0 0 15px rgba(255,215,0,0.5);
 }
 
+/* Ocean Depths - Deep blue with bubble effect */
 body.ocean-depths {
-  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  background: linear-gradient(135deg, #021b79 0%, #0575e6 100%);
   color: white;
 }
 
@@ -338,19 +366,27 @@ body.ocean-depths .card {
   color: white;
 }
 
+/* Lavender Fields - Purple lavender gradients with flower hint */
 body.lavender-fields {
-  background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
-  color: white;
+  background: linear-gradient(135deg, #e6e6fa 0%, #967bb6 100%);
+  color: #333;
 }
 
 body.lavender-fields .card {
-  background: rgba(0,0,0,0.4);
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Fiery Red - Intense red with flame animation */
+body.fiery-red {
+  background: linear-gradient(135deg, #ff0000 0%, #ff7f00 100%);
+  animation: fire-glow 3s infinite alternate;
   color: white;
 }
 
-body.fiery-red {
-  background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);
-  color: white;
+@keyframes fire-glow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.1); }
 }
 
 body.fiery-red .card {
@@ -358,7 +394,7 @@ body.fiery-red .card {
   color: white;
 }
 
-/* Cats Theme (using a pattern or image) */
+/* Cats Theme - Cat images with playful borders */
 body.cats-theme {
   background: url('https://source.unsplash.com/featured/?cats') no-repeat center center/cover;
   color: #333;
@@ -367,9 +403,10 @@ body.cats-theme {
 body.cats-theme .card {
   background: rgba(255,255,255,0.7);
   color: #333;
+  border: 2px dashed #ff69b4;
 }
 
-/* Dogs Theme */
+/* Dogs Theme - Dog images with paw prints */
 body.dogs-theme {
   background: url('https://source.unsplash.com/featured/?dogs') no-repeat center center/cover;
   color: #333;
@@ -380,7 +417,7 @@ body.dogs-theme .card {
   color: #333;
 }
 
-/* Cars Theme */
+/* Cars Theme - High-speed car backgrounds */
 body.cars-theme {
   background: url('https://source.unsplash.com/featured/?cars') no-repeat center center/cover;
   color: white;
@@ -391,10 +428,17 @@ body.cars-theme .card {
   color: white;
 }
 
-/* Storms Theme */
+/* Storms Theme - Dramatic storm with lightning flash */
 body.storms-theme {
   background: url('https://source.unsplash.com/featured/?storm') no-repeat center center/cover;
   color: white;
+  animation: lightning-flash 5s infinite;
+}
+
+@keyframes lightning-flash {
+  0%, 90% { filter: brightness(1); }
+  95% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
 }
 
 body.storms-theme .card {
@@ -402,7 +446,7 @@ body.storms-theme .card {
   color: white;
 }
 
-/* Flowers Theme */
+/* Flowers Theme - Vibrant flowers with bloom effect */
 body.flowers-theme {
   background: url('https://source.unsplash.com/featured/?flowers') no-repeat center center/cover;
   color: #333;
@@ -413,19 +457,21 @@ body.flowers-theme .card {
   color: #333;
 }
 
-/* Gothic Theme */
+/* Gothic Theme - Dark castle-like with ornate borders */
 body.gothic-theme {
-  background: linear-gradient(135deg, #434343 0%, #000000 100%);
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
   color: #ccc;
 }
 
 body.gothic-theme .card {
   background: rgba(0,0,0,0.8);
-  border: 1px solid #666;
+  border: 2px solid #666;
   color: #ccc;
+  border-radius: 0;
+  box-shadow: 0 0 10px #000;
 }
 
-/* Emo Theme */
+/* Emo Theme - Black with hot pink accents */
 body.emo-theme {
   background: linear-gradient(135deg, #000000 0%, #434343 100%);
   color: #ff69b4;
@@ -434,20 +480,22 @@ body.emo-theme {
 body.emo-theme .card {
   background: rgba(0,0,0,0.8);
   color: #ff69b4;
+  border: 1px solid #ff69b4;
 }
 
-/* Retro Theme */
+/* Retro Theme - 80s synthwave with grid */
 body.retro-theme {
-  background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
-  color: white;
+  background: linear-gradient(135deg, #f7797d 0%, #fbd786 33%, #c6ffdd 66%);
+  color: #000;
 }
 
 body.retro-theme .card {
   background: rgba(255,255,255,0.2);
-  color: white;
+  color: #000;
+  border: 2px dotted #000;
 }
 
-/* Space Theme */
+/* Space Theme - Galaxy with stars */
 body.space-theme {
   background: url('https://source.unsplash.com/featured/?space') no-repeat center center/cover;
   color: white;
@@ -458,7 +506,7 @@ body.space-theme .card {
   color: white;
 }
 
-/* Beach Theme */
+/* Beach Theme - Sandy beach with waves */
 body.beach-theme {
   background: url('https://source.unsplash.com/featured/?beach') no-repeat center center/cover;
   color: #333;
@@ -469,7 +517,7 @@ body.beach-theme .card {
   color: #333;
 }
 
-/* Mountain Theme */
+/* Mountain Theme - Majestic mountains */
 body.mountain-theme {
   background: url('https://source.unsplash.com/featured/?mountain') no-repeat center center/cover;
   color: white;
@@ -480,7 +528,7 @@ body.mountain-theme .card {
   color: white;
 }
 
-/* Forest Theme */
+/* Forest Theme - Dense forest */
 body.forest-theme {
   background: url('https://source.unsplash.com/featured/?forest') no-repeat center center/cover;
   color: white;
@@ -491,7 +539,7 @@ body.forest-theme .card {
   color: white;
 }
 
-/* Cityscape Theme */
+/* Cityscape Theme - Urban lights */
 body.cityscape-theme {
   background: url('https://source.unsplash.com/featured/?city') no-repeat center center/cover;
   color: white;
@@ -502,18 +550,18 @@ body.cityscape-theme .card {
   color: white;
 }
 
-/* Abstract Art Theme */
+/* Abstract Art Theme - Dynamic abstract animation */
 body.abstract-theme {
   background: linear-gradient(135deg, #ee7752 0%, #e73c7e 33%, #23a6d5 66%, #23d5ab 100%);
   background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+  animation: abstract-shift 20s ease infinite;
   color: white;
 }
 
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes abstract-shift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
 }
 
 body.abstract-theme .card {
@@ -521,18 +569,19 @@ body.abstract-theme .card {
   color: white;
 }
 
-/* Vintage Theme */
+/* Vintage Theme - Sepia toned paper */
 body.vintage-theme {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  color: #333;
+  background: linear-gradient(135deg, #e6dace 0%, #d2b48c 100%);
+  color: #5c3c0d;
 }
 
 body.vintage-theme .card {
   background: rgba(255,255,255,0.8);
-  color: #333;
+  color: #5c3c0d;
+  border: 1px dashed #8b4513;
 }
 
-/* Cyberpunk Theme */
+/* Cyberpunk Theme - Neon gridlines */
 body.cyberpunk-theme {
   background: linear-gradient(135deg, #f64f59 0%, #c471ed 50%, #12c2e9 100%);
   color: #fff;
@@ -541,11 +590,13 @@ body.cyberpunk-theme {
 body.cyberpunk-theme .card {
   background: rgba(0,0,0,0.6);
   color: #fff;
+  border: 1px solid #0ff;
+  box-shadow: 0 0 10px #f0f;
 }
 
-/* Pastel Theme */
+/* Pastel Theme - Soft pastels */
 body.pastel-theme {
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
   color: #333;
 }
 
@@ -554,9 +605,9 @@ body.pastel-theme .card {
   color: #333;
 }
 
-/* Monochrome Theme */
+/* Monochrome Theme - Grayscale */
 body.monochrome-theme {
-  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  background: linear-gradient(135deg, #000 0%, #808080 100%);
   color: #fff;
 }
 
@@ -565,7 +616,7 @@ body.monochrome-theme .card {
   color: #fff;
 }
 
-/* Tropical Theme */
+/* Tropical Theme - Vibrant tropical */
 body.tropical-theme {
   background: url('https://source.unsplash.com/featured/?tropical') no-repeat center center/cover;
   color: #333;
@@ -576,7 +627,7 @@ body.tropical-theme .card {
   color: #333;
 }
 
-/* Desert Theme */
+/* Desert Theme - Sandy desert */
 body.desert-theme {
   background: url('https://source.unsplash.com/featured/?desert') no-repeat center center/cover;
   color: #333;
@@ -587,7 +638,7 @@ body.desert-theme .card {
   color: #333;
 }
 
-/* Underwater Theme */
+/* Underwater Theme - Blue underwater */
 body.underwater-theme {
   background: url('https://source.unsplash.com/featured/?underwater') no-repeat center center/cover;
   color: white;
@@ -598,9 +649,9 @@ body.underwater-theme .card {
   color: white;
 }
 
-/* Autumn Theme */
+/* Autumn Theme - Fall leaves colors */
 body.autumn-theme {
-  background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+  background: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%);
   color: white;
 }
 
@@ -609,20 +660,21 @@ body.autumn-theme .card {
   color: white;
 }
 
-/* Winter Theme */
+/* Winter Theme - Snowy blue-white */
 body.winter-theme {
-  background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
-  color: white;
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  color: #333;
 }
 
 body.winter-theme .card {
-  background: rgba(255,255,255,0.2);
-  color: white;
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  box-shadow: 0 0 10px rgba(0,0,255,0.2);
 }
 
-/* Spring Theme */
+/* Spring Theme - Fresh green bloom */
 body.spring-theme {
-  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  background: linear-gradient(135deg, #76b852 0%, #8dc26f 100%);
   color: #333;
 }
 
@@ -631,9 +683,9 @@ body.spring-theme .card {
   color: #333;
 }
 
-/* Summer Theme */
+/* Summer Theme - Bright sunny yellow */
 body.summer-theme {
-  background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+  background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
   color: #333;
 }
 
@@ -642,20 +694,21 @@ body.summer-theme .card {
   color: #333;
 }
 
-/* Halloween Theme */
+/* Halloween Theme - Spooky orange-black */
 body.halloween-theme {
-  background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+  background: linear-gradient(135deg, #fc4a1a 0%, #000 100%);
   color: white;
 }
 
 body.halloween-theme .card {
   background: rgba(0,0,0,0.6);
   color: white;
+  border: 1px solid #ff7518;
 }
 
-/* Christmas Theme */
+/* Christmas Theme - Festive red-green */
 body.christmas-theme {
-  background: linear-gradient(135deg, #c31432 0%, #240b36 100%);
+  background: linear-gradient(135deg, #c31432 0%, #228b22 100%);
   color: white;
 }
 
@@ -664,20 +717,20 @@ body.christmas-theme .card {
   color: white;
 }
 
-/* Valentine Theme */
+/* Valentine Theme - Romantic pink-red */
 body.valentine-theme {
-  background: linear-gradient(135deg, #e94057 0%, #8a2387 50%, #f27121 100%);
-  color: white;
+  background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
+  color: #333;
 }
 
 body.valentine-theme .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
+  background: rgba(255,255,255,0.8);
+  color: #333;
 }
 
-/* Easter Theme */
+/* Easter Theme - Pastel eggs colors */
 body.easter-theme {
-  background: linear-gradient(135deg, #ffd194 0%, #d1913c 100%);
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
   color: #333;
 }
 
@@ -686,7 +739,7 @@ body.easter-theme .card {
   color: #333;
 }
 
-/* For all themes, add common overrides if needed */
+/* Common overrides for all themes */
 body[class*="-theme"] input,
 body[class*="-theme"] textarea,
 body[class*="-theme"] select {
@@ -702,6 +755,10 @@ body[class*="-theme"] .top-friend {
 body[class*="-theme"] .friend-name,
 body[class*="-theme"] .wall-comment strong a {
   color: inherit;
+}
+
+body[class*="-theme"] button {
+  background: var(--accent, #007bff);
 }
 
 /* ═══════════════════════════════════════════════════════════

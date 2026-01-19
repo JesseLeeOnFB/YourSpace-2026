@@ -1,4 +1,4 @@
-// messages.js – Complete Private Messaging System
+// messages.js – FIXED - All functions working
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -25,7 +25,6 @@ let currentChatUsername = null;
 let unsubscribeChat = null;
 let selectedMessages = new Set();
 
-// DOM Elements
 const searchUserInput = document.getElementById("searchUserInput");
 const searchUserBtn = document.getElementById("searchUserBtn");
 const searchResults = document.getElementById("searchResults");
@@ -42,10 +41,6 @@ const selectAllBtn = document.getElementById("selectAllBtn");
 const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
 const notificationSound = document.getElementById("notificationSound");
 
-// ═══════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════
-
 document.getElementById("navFeedBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("navProfileBtn").onclick = () => window.location.href = "profile.html";
 document.getElementById("navMessagesBtn").onclick = () => window.location.href = "messages.html";
@@ -53,10 +48,6 @@ document.getElementById("logoutBtn").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";
 };
-
-// ═══════════════════════════════════════════════════════════
-// AUTH CHECK
-// ═══════════════════════════════════════════════════════════
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -66,10 +57,6 @@ onAuthStateChanged(auth, (user) => {
     requestNotificationPermission();
   }
 });
-
-// ═══════════════════════════════════════════════════════════
-// NOTIFICATIONS
-// ═══════════════════════════════════════════════════════════
 
 function requestNotificationPermission() {
   if ("Notification" in window && Notification.permission === "default") {
@@ -84,67 +71,63 @@ function showNotification(title, body) {
   notificationSound.play().catch(() => {});
 }
 
-// ═══════════════════════════════════════════════════════════
-// CONVERSATION ID
-// ═══════════════════════════════════════════════════════════
-
 function getConversationId(uid1, uid2) {
   return [uid1, uid2].sort().join("_");
 }
 
-// ═══════════════════════════════════════════════════════════
-// SEARCH USERS
-// ═══════════════════════════════════════════════════════════
-
 searchUserBtn.addEventListener("click", async () => {
   const searchTerm = searchUserInput.value.trim().toLowerCase();
-  if (!searchTerm) return;
+  if (!searchTerm) {
+    alert("Please enter a username to search");
+    return;
+  }
 
-  searchResults.innerHTML = "<p>Searching...</p>";
+  searchResults.innerHTML = "<p style='padding: 1rem; text-align: center;'>Searching...</p>";
 
-  const usersRef = collection(db, "users");
-  const snapshot = await getDocs(usersRef);
+  try {
+    const usersRef = collection(db, "users");
+    const snapshot = await getDocs(usersRef);
 
-  searchResults.innerHTML = "";
-  let found = false;
+    searchResults.innerHTML = "";
+    let found = false;
 
-  snapshot.forEach((docSnap) => {
-    const user = docSnap.data();
-    const username = (user.username || user.displayName || "").toLowerCase();
-    
-    if (docSnap.id === auth.currentUser.uid) return;
-    
-    if (username.includes(searchTerm)) {
-      found = true;
-      const resultDiv = document.createElement("div");
-      resultDiv.className = "search-result";
-      resultDiv.innerHTML = `
-        <img src="${user.photoURL || 'default-avatar.png'}" alt="${user.displayName}">
-        <div class="result-info">
-          <strong>${user.displayName || user.username}</strong>
-          <small>@${user.username}</small>
-        </div>
-        <button class="message-btn">Message</button>
-      `;
+    snapshot.forEach((docSnap) => {
+      const user = docSnap.data();
+      const username = (user.username || "").toLowerCase();
       
-      resultDiv.querySelector(".message-btn").onclick = () => {
-        startChat(docSnap.id, user.displayName || user.username, user.photoURL);
-        searchResults.innerHTML = "";
-        searchUserInput.value = "";
-      };
+      if (docSnap.id === auth.currentUser.uid) return;
       
-      searchResults.appendChild(resultDiv);
+      if (username.includes(searchTerm)) {
+        found = true;
+        const resultDiv = document.createElement("div");
+        resultDiv.className = "search-result";
+        resultDiv.innerHTML = `
+          <img src="${user.photoURL || 'default-avatar.png'}" alt="${user.username}">
+          <div class="result-info">
+            <strong>${user.username}</strong>
+            <small>@${user.username}</small>
+          </div>
+          <button class="message-btn">Message</button>
+        `;
+        
+        resultDiv.querySelector(".message-btn").onclick = () => {
+          startChat(docSnap.id, user.username, user.photoURL);
+          searchResults.innerHTML = "";
+          searchUserInput.value = "";
+        };
+        
+        searchResults.appendChild(resultDiv);
+      }
+    });
+
+    if (!found) {
+      searchResults.innerHTML = "<p class='no-results' style='padding: 1rem; text-align: center;'>No users found</p>";
     }
-  });
-
-  if (!found) {
-    searchResults.innerHTML = "<p class='no-results'>No users found</p>";
+  } catch (err) {
+    console.error("Search error:", err);
+    searchResults.innerHTML = "<p style='padding: 1rem; color: red;'>Error searching users</p>";
   }
 });
-
-// ═══════════════════════════════════════════════════════════
-// LOAD CONVERSATIONS
-// ═══════════════════════════════════════════════════════════
 
 function loadConversations() {
   const convRef = collection(db, "conversations");
@@ -154,7 +137,7 @@ function loadConversations() {
     conversationsList.innerHTML = "";
 
     if (snapshot.empty) {
-      conversationsList.innerHTML = "<p class='no-conversations'>No conversations yet</p>";
+      conversationsList.innerHTML = "<p class='no-conversations' style='padding: 1rem; text-align: center; color: #666;'>No conversations yet</p>";
       return;
     }
 
@@ -162,35 +145,35 @@ function loadConversations() {
       const conv = docSnap.data();
       const otherUserId = conv.participants.find(id => id !== auth.currentUser.uid);
 
-      const userDoc = await getDoc(doc(db, "users", otherUserId));
-      const userData = userDoc.data();
+      try {
+        const userDoc = await getDoc(doc(db, "users", otherUserId));
+        const userData = userDoc.data();
 
-      const convDiv = document.createElement("div");
-      convDiv.className = "conversation-item";
-      if (currentChatUid === otherUserId) {
-        convDiv.classList.add("active");
+        const convDiv = document.createElement("div");
+        convDiv.className = "conversation-item";
+        if (currentChatUid === otherUserId) {
+          convDiv.classList.add("active");
+        }
+
+        convDiv.innerHTML = `
+          <img src="${userData.photoURL || 'default-avatar.png'}" alt="${userData.username}">
+          <div class="conv-info">
+            <strong>${userData.username}</strong>
+            <small>${conv.lastMessage || "Start a conversation"}</small>
+          </div>
+        `;
+
+        convDiv.onclick = () => {
+          startChat(otherUserId, userData.username, userData.photoURL);
+        };
+
+        conversationsList.appendChild(convDiv);
+      } catch (err) {
+        console.error("Error loading conversation:", err);
       }
-
-      convDiv.innerHTML = `
-        <img src="${userData.photoURL || 'default-avatar.png'}" alt="${userData.displayName}">
-        <div class="conv-info">
-          <strong>${userData.displayName || userData.username}</strong>
-          <small>${conv.lastMessage || "Start a conversation"}</small>
-        </div>
-      `;
-
-      convDiv.onclick = () => {
-        startChat(otherUserId, userData.displayName || userData.username, userData.photoURL);
-      };
-
-      conversationsList.appendChild(convDiv);
     });
   });
 }
-
-// ═══════════════════════════════════════════════════════════
-// START CHAT
-// ═══════════════════════════════════════════════════════════
 
 async function startChat(otherUid, otherUsername, otherPhoto) {
   currentChatUid = otherUid;
@@ -219,10 +202,6 @@ async function startChat(otherUid, otherUsername, otherPhoto) {
 
   loadMessages(convoId);
 }
-
-// ═══════════════════════════════════════════════════════════
-// LOAD MESSAGES
-// ═══════════════════════════════════════════════════════════
 
 function loadMessages(convoId) {
   if (unsubscribeChat) unsubscribeChat();
@@ -263,7 +242,6 @@ function loadMessages(convoId) {
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Notification for new messages
     if (!isFirstLoad && snapshot.size > lastMessageCount) {
       const lastMsg = snapshot.docs[snapshot.docs.length - 1].data();
       if (lastMsg.senderId !== auth.currentUser.uid) {
@@ -275,10 +253,6 @@ function loadMessages(convoId) {
     lastMessageCount = snapshot.size;
   });
 }
-
-// ═══════════════════════════════════════════════════════════
-// SEND MESSAGE
-// ═══════════════════════════════════════════════════════════
 
 sendMessageBtn.addEventListener("click", async () => {
   await sendMessage();
@@ -297,23 +271,24 @@ async function sendMessage() {
 
   const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
 
-  await addDoc(collection(db, "conversations", convoId, "messages"), {
-    text,
-    senderId: auth.currentUser.uid,
-    createdAt: serverTimestamp()
-  });
+  try {
+    await addDoc(collection(db, "conversations", convoId, "messages"), {
+      text,
+      senderId: auth.currentUser.uid,
+      createdAt: serverTimestamp()
+    });
 
-  await updateDoc(doc(db, "conversations", convoId), {
-    lastMessage: text.substring(0, 50),
-    lastMessageTime: serverTimestamp()
-  });
+    await updateDoc(doc(db, "conversations", convoId), {
+      lastMessage: text.substring(0, 50),
+      lastMessageTime: serverTimestamp()
+    });
 
-  messageInput.value = "";
+    messageInput.value = "";
+  } catch (err) {
+    console.error("Error sending message:", err);
+    alert("Error sending message");
+  }
 }
-
-// ═══════════════════════════════════════════════════════════
-// MESSAGE SELECTION & DELETION
-// ═══════════════════════════════════════════════════════════
 
 function toggleMessageSelection(msgId) {
   if (selectedMessages.has(msgId)) {
@@ -356,17 +331,18 @@ deleteSelectedBtn.addEventListener("click", async () => {
 
   const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
 
-  for (const msgId of selectedMessages) {
-    await deleteDoc(doc(db, "conversations", convoId, "messages", msgId));
+  try {
+    for (const msgId of selectedMessages) {
+      await deleteDoc(doc(db, "conversations", convoId, "messages", msgId));
+    }
+
+    selectedMessages.clear();
+    deleteSelectedBtn.style.display = "none";
+  } catch (err) {
+    console.error("Error deleting messages:", err);
+    alert("Error deleting messages");
   }
-
-  selectedMessages.clear();
-  deleteSelectedBtn.style.display = "none";
 });
-
-// ═══════════════════════════════════════════════════════════
-// CLOSE CHAT
-// ═══════════════════════════════════════════════════════════
 
 closeChatBtn.addEventListener("click", () => {
   chatSection.style.display = "none";

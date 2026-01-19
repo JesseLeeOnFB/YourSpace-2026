@@ -1,0 +1,139 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the file
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Helper function to check file size (in MB)
+    function isValidSize(maxSizeMB) {
+      return request.resource.size < maxSizeMB * 1024 * 1024;
+    }
+    
+    // Helper function to check if file is an image
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // Helper function to check if file is a video
+    function isVideo() {
+      return request.resource.contentType.matches('video/.*');
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // PROFILE IMAGES
+    // ═══════════════════════════════════════════════════════════
+    match /profileImages/{userId}/{fileName} {
+      // Anyone can read profile images
+      allow read: if true;
+      
+      // Users can upload their own profile images
+      allow create, update: if isSignedIn() && 
+                              isOwner(userId) && 
+                              isImage() && 
+                              isValidSize(5); // 5MB max for profile images
+      
+      // Users can delete their own profile images
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // POST MEDIA (Images and Videos)
+    // ═══════════════════════════════════════════════════════════
+    match /posts/{userId}/{fileName} {
+      // Anyone can read post media
+      allow read: if true;
+      
+      // Users can upload their own post media
+      allow create: if isSignedIn() && 
+                      isOwner(userId) && 
+                      (isImage() || isVideo()) &&
+                      isValidSize(100); // 100MB max for posts (videos can be large)
+      
+      // Users can update their own post media
+      allow update: if isSignedIn() && isOwner(userId);
+      
+      // Users can delete their own post media
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // MESSAGE ATTACHMENTS (Future use)
+    // ═══════════════════════════════════════════════════════════
+    match /messages/{userId}/{fileName} {
+      // Only conversation participants can read
+      allow read: if isSignedIn();
+      
+      // Users can upload their own message attachments
+      allow create: if isSignedIn() && 
+                      isOwner(userId) && 
+                      (isImage() || isVideo()) &&
+                      isValidSize(25); // 25MB max for message attachments
+      
+      // Users can delete their own attachments
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // BACKGROUND IMAGES (for profile customization)
+    // ═══════════════════════════════════════════════════════════
+    match /backgrounds/{userId}/{fileName} {
+      // Anyone can read background images
+      allow read: if true;
+      
+      // Users can upload their own backgrounds
+      allow create, update: if isSignedIn() && 
+                              isOwner(userId) && 
+                              isImage() && 
+                              isValidSize(10); // 10MB max for backgrounds
+      
+      // Users can delete their own backgrounds
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // CUSTOM PROFILE ASSETS (GIFs, custom content)
+    // ═══════════════════════════════════════════════════════════
+    match /customAssets/{userId}/{fileName} {
+      // Anyone can read custom assets
+      allow read: if true;
+      
+      // Users can upload their own custom assets
+      allow create, update: if isSignedIn() && 
+                              isOwner(userId) && 
+                              isValidSize(15); // 15MB max for custom assets
+      
+      // Users can delete their own custom assets
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // ADMIN UPLOADS (Platform assets, promotional content)
+    // ═══════════════════════════════════════════════════════════
+    match /admin/{fileName} {
+      // Anyone can read admin uploads
+      allow read: if true;
+      
+      // Only admins can upload
+      allow create, update, delete: if isSignedIn() && (
+        request.auth.token.email == 'skeeterjeeter8@gmail.com' ||
+        request.auth.token.email == 'daniellehunt01@gmail.com'
+      );
+    }
+    
+    // ═══════════════════════════════════════════════════════════
+    // DEFAULT DENY ALL OTHER PATHS
+    // ═══════════════════════════════════════════════════════════
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

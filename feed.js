@@ -73,23 +73,20 @@ async function renderPost(post, postId) {
     <p>${post.text || ""}</p>
     ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
     <div class="actions">
-      <button class="like-btn">👍 ${post.likes || 0}</button>
-      <button class="dislike-btn">🖕 ${post.dislikes || 0}</button>
-      <button class="comment-toggle">💬</button>
-      <button class="share-btn">🔗</button>
-      ${isOwner ? `<button class="delete-btn">🗑️</button>` : ""}
+      <button class="like-btn" data-id="${postId}">👍 ${post.likes || 0}</button>
+      <button class="dislike-btn" data-id="${postId}">🖕 ${post.dislikes || 0}</button>
+      <button class="comment-toggle" data-id="${postId}">💬</button>
+      <button class="share-btn" data-id="${postId}">🔗</button>
+      ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
     </div>
-    <div class="comments-section">
-      <div class="comments-container"></div>
-
-      <div class="comment-form">
-        <input type="text" class="comment-input" placeholder="Write a comment..." />
-        <button class="comment-btn">💬</button>
-      </div>
+    <div class="comments-section" id="comments-${postId}"></div>
+    <div class="comment-form">
+      <input type="text" class="comment-input" placeholder="Write a comment..." />
+      <button class="comment-btn" data-id="${postId}">💬</button>
     </div>
   `;
 
-  // LIKE
+  // LIKE (fixed – updates in Firestore)
   postEl.querySelector(".like-btn").onclick = async () => {
     haptic("light");
     await updateDoc(doc(db, "posts", postId), {
@@ -97,7 +94,7 @@ async function renderPost(post, postId) {
     });
   };
 
-  // DISLIKE
+  // DISLIKE (fixed – updates in Firestore)
   postEl.querySelector(".dislike-btn").onclick = async () => {
     haptic("light");
     await updateDoc(doc(db, "posts", postId), {
@@ -120,12 +117,12 @@ async function renderPost(post, postId) {
     }
   });
 
-  // COMMENTS REALTIME
-  const commentsContainer = postEl.querySelector(".comments-container");
+  // COMMENTS REALTIME (load comments with delete button)
+  const commentsSection = postEl.querySelector(".comments-section");
   const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
 
   onSnapshot(commentsQ, (snap) => {
-    commentsContainer.innerHTML = "";
+    commentsSection.innerHTML = "";
 
     snap.forEach((cDoc) => {
       const c = cDoc.data();
@@ -140,7 +137,7 @@ async function renderPost(post, postId) {
         ${isCommentOwner ? `<button class="delete-comment" data-id="${cDoc.id}">🗑️</button>` : ""}
       `;
 
-      // DELETE COMMENT
+      // DELETE COMMENT (fixed – permanently removes and doesn't come back)
       cEl.querySelector(".delete-comment")?.addEventListener("click", async () => {
         haptic("heavy");
         if (confirm("Delete this comment?")) {
@@ -148,7 +145,7 @@ async function renderPost(post, postId) {
         }
       });
 
-      commentsContainer.appendChild(cEl);
+      commentsSection.appendChild(cEl);
     });
   });
 
@@ -217,6 +214,7 @@ postBtn.addEventListener("click", async () => {
 
   postText.value = "";
   postFileInput.value = "";
+  loadPosts();
 });
 
 // AUTH CHECK

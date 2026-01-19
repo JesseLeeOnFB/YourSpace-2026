@@ -4,46 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace – Feed</title>
-
-  <link rel="stylesheet" href="style.css?v=2026-01" />
-  <link rel="stylesheet" href="feed.css?v=2026-01" />
+  <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-
-  <!-- NAV -->
   <nav class="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
+    <button id="messagesNavBtn">Messages</button>
+    <button id="contactNavBtn">Contact</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <main class="feed-container">
-
     <h1>Global Feed</h1>
 
-    <!-- CREATE POST -->
     <section class="new-post">
-      <textarea
-        id="postText"
-        placeholder="What's on your mind?"
-      ></textarea>
-
-      <input
-        type="file"
-        id="postFileInput"
-        accept="image/*,video/*"
-      />
-
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFileInput" accept="image/*,video/*" />
       <button id="postBtn">Post</button>
     </section>
 
-    <!-- POSTS -->
     <section id="postsContainer"></section>
-
   </main>
 
-  <!-- SCRIPTS -->
-  <script type="module" src="feed.js?v=2026-01"></script>
-
+  <script type="module" src="feed.js"></script>
 </body>
 </html>

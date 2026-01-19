@@ -137,6 +137,35 @@ body {
   background: #ffed4e;
 }
 
+.trending-post {
+  border: 3px solid #ff4500;
+  background: linear-gradient(135deg, #fff5ee 0%, #ffffff 100%);
+  box-shadow: 0 4px 20px rgba(255,69,0,0.3);
+}
+
+.trending-badge {
+  background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 2px 8px rgba(255,69,0,0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(255,69,0,0.3);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(255,69,0,0.5);
+  }
+}
+
 .post-header {
   display: flex;
   justify-content: space-between;
@@ -219,6 +248,100 @@ body {
 
 .comment p {
   margin: 0.3rem 0 0 0;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.reply-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+
+.reply-btn:hover {
+  text-decoration: underline;
+}
+
+.replies-container {
+  margin-left: 2rem;
+  margin-top: 0.5rem;
+  border-left: 2px solid #e0e0e0;
+  padding-left: 0.8rem;
+}
+
+.reply {
+  background: #fff;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.reply strong {
+  font-size: 0.85rem;
+  color: #007bff;
+}
+
+.reply p {
+  margin: 0.2rem 0 0 0;
+  color: #333;
+}
+
+.delete-reply {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.delete-reply:hover {
+  opacity: 1;
+}
+
+.reply-form {
+  display: none;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  margin-left: 2rem;
+}
+
+.reply-input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.reply-submit-btn,
+.reply-cancel-btn {
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.reply-submit-btn {
+  background: #007bff;
+  color: white;
+}
+
+.reply-cancel-btn {
+  background: #6c757d;
+  color: white;
 }
 
 .delete-comment {

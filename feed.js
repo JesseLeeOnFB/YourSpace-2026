@@ -91,15 +91,18 @@ async function renderPost(post, postId) {
   const userLiked = likedBy.includes(currentUserId);
   const userDisliked = dislikedBy.includes(currentUserId);
   const isPinned = post.pinned || false;
+  const isTrending = post.trending || false;
 
   const postEl = document.createElement("div");
   postEl.className = "post-card";
   if (isPinned) postEl.classList.add("pinned-post");
+  if (isTrending) postEl.classList.add("trending-post");
 
   const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : "just now";
 
   postEl.innerHTML = `
     ${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''}
+    ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''}
     <div class="post-header">
       <strong>${post.username || "Anonymous"}</strong>
       <small>${time}</small>
@@ -229,13 +232,83 @@ async function renderPost(post, postId) {
       cEl.className = "comment";
 
       const isCommentOwner = c.userId === auth.currentUser.uid;
+      const replies = c.replies || [];
 
       cEl.innerHTML = `
         <strong>${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
-        ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
+        <div class="comment-actions">
+          <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
+          ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
+        </div>
+        <div class="replies-container" id="replies-${cDoc.id}">
+          ${replies.map(reply => `
+            <div class="reply">
+              <strong>${reply.username}</strong>
+              <p>${reply.text}</p>
+              ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        <div class="reply-form" id="reply-form-${cDoc.id}" style="display:none;">
+          <input type="text" class="reply-input" placeholder="Write a reply..." />
+          <button class="reply-submit-btn" data-comment-id="${cDoc.id}">Send</button>
+          <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
+        </div>
       `;
 
+      // Reply button
+      cEl.querySelector(".reply-btn").onclick = () => {
+        const replyForm = document.getElementById(`reply-form-${cDoc.id}`);
+        replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
+      };
+
+      // Submit reply
+      const replySubmitBtn = cEl.querySelector(".reply-submit-btn");
+      if (replySubmitBtn) {
+        replySubmitBtn.onclick = async () => {
+          const replyInput = cEl.querySelector(".reply-input");
+          const replyText = replyInput.value.trim();
+          if (!replyText) return;
+
+          if (containsBlockedKeyword(replyText)) {
+            alert("Your reply contains blocked content and cannot be posted.");
+            return;
+          }
+
+          const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+          const userData = userDoc.data();
+
+          const newReply = {
+            id: Date.now().toString(),
+            userId: auth.currentUser.uid,
+            username: userData?.username || auth.currentUser.email.split("@")[0],
+            text: replyText,
+            createdAt: new Date().toISOString()
+          };
+
+          const commentRef = doc(db, "posts", postId, "comments", cDoc.id);
+          const commentDoc = await getDoc(commentRef);
+          const existingReplies = commentDoc.data().replies || [];
+
+          await updateDoc(commentRef, {
+            replies: [...existingReplies, newReply]
+          });
+
+          replyInput.value = "";
+          document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
+        };
+      }
+
+      // Cancel reply
+      const replyCancelBtn = cEl.querySelector(".reply-cancel-btn");
+      if (replyCancelBtn) {
+        replyCancelBtn.onclick = () => {
+          document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
+        };
+      }
+
+      // Delete comment
       const deleteCommentBtn = cEl.querySelector(".delete-comment");
       if (deleteCommentBtn) {
         deleteCommentBtn.addEventListener("click", async (e) => {
@@ -253,6 +326,26 @@ async function renderPost(post, postId) {
           }
         });
       }
+
+      // Delete reply buttons
+      cEl.querySelectorAll(".delete-reply").forEach(btn => {
+        btn.onclick = async (e) => {
+          if (confirm("Delete this reply?")) {
+            const commentId = e.target.getAttribute("data-comment-id");
+            const replyId = e.target.getAttribute("data-reply-id");
+            const postIdForReply = e.target.getAttribute("data-post-id");
+
+            const commentRef = doc(db, "posts", postIdForReply, "comments", commentId);
+            const commentDoc = await getDoc(commentRef);
+            const existingReplies = commentDoc.data().replies || [];
+            const updatedReplies = existingReplies.filter(r => r.id !== replyId);
+
+            await updateDoc(commentRef, {
+              replies: updatedReplies
+            });
+          }
+        };
+      });
 
       commentsSection.appendChild(cEl);
     });
@@ -300,23 +393,25 @@ function loadPosts() {
   onSnapshot(q, (snap) => {
     postsContainer.innerHTML = "";
     
-    // Separate pinned and regular posts
+    // Separate pinned, trending, and regular posts
     const pinnedPosts = [];
+    const trendingPosts = [];
     const regularPosts = [];
     
     snap.forEach((docSnap) => {
       const post = docSnap.data();
       if (post.pinned) {
         pinnedPosts.push({ data: post, id: docSnap.id });
+      } else if (post.trending) {
+        trendingPosts.push({ data: post, id: docSnap.id });
       } else {
         regularPosts.push({ data: post, id: docSnap.id });
       }
     });
     
-    // Render pinned posts first
+    // Render in order: Pinned → Trending → Regular
     pinnedPosts.forEach(({ data, id }) => renderPost(data, id));
-    
-    // Then render regular posts
+    trendingPosts.forEach(({ data, id }) => renderPost(data, id));
     regularPosts.forEach(({ data, id }) => renderPost(data, id));
   });
 }

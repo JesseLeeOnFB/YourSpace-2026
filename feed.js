@@ -72,6 +72,10 @@ document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
   window.location.href = "messages.html";
 });
 
+document.getElementById("contactNavBtn")?.addEventListener("click", () => {
+  window.location.href = "contact.html";
+});
+
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";

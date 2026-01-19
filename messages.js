@@ -1,103 +1,378 @@
-// messages.js – Private 1-on-1 messaging
+// messages.js – Complete Private Messaging System
 
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc,
-  onSnapshot,
-  orderBy,
-  serverTimestamp
+  getFirestore, collection, query, where, getDocs, addDoc, deleteDoc,
+  onSnapshot, orderBy, serverTimestamp, doc, setDoc, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentChatUid = null;
+let currentChatUsername = null;
+let unsubscribeChat = null;
+let selectedMessages = new Set();
+
+// DOM Elements
 const searchUserInput = document.getElementById("searchUserInput");
 const searchUserBtn = document.getElementById("searchUserBtn");
 const searchResults = document.getElementById("searchResults");
-
+const conversationsList = document.getElementById("conversationsList");
+const emptyState = document.getElementById("emptyState");
 const chatSection = document.getElementById("chatSection");
 const chatWith = document.getElementById("chatWith");
+const chatUserAvatar = document.getElementById("chatUserAvatar");
 const chatMessages = document.getElementById("chatMessages");
 const messageInput = document.getElementById("messageInput");
 const sendMessageBtn = document.getElementById("sendMessageBtn");
+const closeChatBtn = document.getElementById("closeChatBtn");
+const selectAllBtn = document.getElementById("selectAllBtn");
+const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
+const notificationSound = document.getElementById("notificationSound");
 
-let currentChatUid = null;
-let unsubscribeChat = null;
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById("navFeedBtn").onclick = () => window.location.href = "feed.html";
+document.getElementById("navProfileBtn").onclick = () => window.location.href = "profile.html";
+document.getElementById("navMessagesBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
+
+// ═══════════════════════════════════════════════════════════
+// AUTH CHECK
+// ═══════════════════════════════════════════════════════════
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadConversations();
+    requestNotificationPermission();
+  }
 });
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════
+
+function requestNotificationPermission() {
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+}
+
+function showNotification(title, body) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification(title, { body, icon: "favicon.ico" });
+  }
+  notificationSound.play().catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONVERSATION ID
+// ═══════════════════════════════════════════════════════════
 
 function getConversationId(uid1, uid2) {
   return [uid1, uid2].sort().join("_");
 }
 
+// ═══════════════════════════════════════════════════════════
+// SEARCH USERS
+// ═══════════════════════════════════════════════════════════
+
 searchUserBtn.addEventListener("click", async () => {
-  const term = searchUserInput.value.trim();
-  if (!term) return;
+  const searchTerm = searchUserInput.value.trim().toLowerCase();
+  if (!searchTerm) return;
 
-  searchResults.innerHTML = "Searching...";
+  searchResults.innerHTML = "<p>Searching...</p>";
 
-  const q = query(collection(db, "users"), where("username", "==", term));
-  const snap = await getDocs(q);
+  const usersRef = collection(db, "users");
+  const snapshot = await getDocs(usersRef);
 
   searchResults.innerHTML = "";
+  let found = false;
 
-  if (snap.empty) {
-    searchResults.innerHTML = "No user found";
-    return;
-  }
-
-  snap.forEach((docSnap) => {
-    const data = docSnap.data();
+  snapshot.forEach((docSnap) => {
+    const user = docSnap.data();
+    const username = (user.username || user.displayName || "").toLowerCase();
+    
     if (docSnap.id === auth.currentUser.uid) return;
-
-    const btn = document.createElement("button");
-    btn.textContent = data.username;
-    btn.onclick = () => startChat(docSnap.id, data.username);
-    searchResults.appendChild(btn);
+    
+    if (username.includes(searchTerm)) {
+      found = true;
+      const resultDiv = document.createElement("div");
+      resultDiv.className = "search-result";
+      resultDiv.innerHTML = `
+        <img src="${user.photoURL || 'default-avatar.png'}" alt="${user.displayName}">
+        <div class="result-info">
+          <strong>${user.displayName || user.username}</strong>
+          <small>@${user.username}</small>
+        </div>
+        <button class="message-btn">Message</button>
+      `;
+      
+      resultDiv.querySelector(".message-btn").onclick = () => {
+        startChat(docSnap.id, user.displayName || user.username, user.photoURL);
+        searchResults.innerHTML = "";
+        searchUserInput.value = "";
+      };
+      
+      searchResults.appendChild(resultDiv);
+    }
   });
+
+  if (!found) {
+    searchResults.innerHTML = "<p class='no-results'>No users found</p>";
+  }
 });
 
-function startChat(otherUid, otherUsername) {
-  currentChatUid = otherUid;
-  chatWith.textContent = otherUsername;
-  chatSection.style.display = "block";
-  chatMessages.innerHTML = "";
+// ═══════════════════════════════════════════════════════════
+// LOAD CONVERSATIONS
+// ═══════════════════════════════════════════════════════════
 
-  const convoId = getConversationId(auth.currentUser.uid, otherUid);
-  const messagesQ = query(collection(db, "messages", convoId, "messages"), orderBy("createdAt"));
+function loadConversations() {
+  const convRef = collection(db, "conversations");
+  const q = query(convRef, where("participants", "array-contains", auth.currentUser.uid));
 
-  if (unsubscribeChat) unsubscribeChat();
+  onSnapshot(q, (snapshot) => {
+    conversationsList.innerHTML = "";
 
-  unsubscribeChat = onSnapshot(messagesQ, (snap) => {
-    chatMessages.innerHTML = "";
+    if (snapshot.empty) {
+      conversationsList.innerHTML = "<p class='no-conversations'>No conversations yet</p>";
+      return;
+    }
 
-    snap.forEach((docSnap) => {
-      const m = docSnap.data();
-      const div = document.createElement("div");
-      div.className = m.sender === auth.currentUser.uid ? "sent" : "received";
-      div.textContent = m.text;
-      chatMessages.appendChild(div);
+    snapshot.forEach(async (docSnap) => {
+      const conv = docSnap.data();
+      const otherUserId = conv.participants.find(id => id !== auth.currentUser.uid);
+
+      const userDoc = await getDoc(doc(db, "users", otherUserId));
+      const userData = userDoc.data();
+
+      const convDiv = document.createElement("div");
+      convDiv.className = "conversation-item";
+      if (currentChatUid === otherUserId) {
+        convDiv.classList.add("active");
+      }
+
+      convDiv.innerHTML = `
+        <img src="${userData.photoURL || 'default-avatar.png'}" alt="${userData.displayName}">
+        <div class="conv-info">
+          <strong>${userData.displayName || userData.username}</strong>
+          <small>${conv.lastMessage || "Start a conversation"}</small>
+        </div>
+      `;
+
+      convDiv.onclick = () => {
+        startChat(otherUserId, userData.displayName || userData.username, userData.photoURL);
+      };
+
+      conversationsList.appendChild(convDiv);
     });
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// START CHAT
+// ═══════════════════════════════════════════════════════════
+
+async function startChat(otherUid, otherUsername, otherPhoto) {
+  currentChatUid = otherUid;
+  currentChatUsername = otherUsername;
+
+  emptyState.style.display = "none";
+  chatSection.style.display = "flex";
+
+  chatWith.textContent = otherUsername;
+  chatUserAvatar.src = otherPhoto || "default-avatar.png";
+
+  selectedMessages.clear();
+  deleteSelectedBtn.style.display = "none";
+
+  const convoId = getConversationId(auth.currentUser.uid, otherUid);
+  const convRef = doc(db, "conversations", convoId);
+  const convDoc = await getDoc(convRef);
+
+  if (!convDoc.exists()) {
+    await setDoc(convRef, {
+      participants: [auth.currentUser.uid, otherUid],
+      createdAt: serverTimestamp(),
+      lastMessage: ""
+    });
+  }
+
+  loadMessages(convoId);
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD MESSAGES
+// ═══════════════════════════════════════════════════════════
+
+function loadMessages(convoId) {
+  if (unsubscribeChat) unsubscribeChat();
+
+  const messagesRef = collection(db, "conversations", convoId, "messages");
+  const q = query(messagesRef, orderBy("createdAt", "asc"));
+
+  let isFirstLoad = true;
+  let lastMessageCount = 0;
+
+  unsubscribeChat = onSnapshot(q, (snapshot) => {
+    chatMessages.innerHTML = "";
+
+    snapshot.forEach((docSnap) => {
+      const msg = docSnap.data();
+      const msgDiv = document.createElement("div");
+      msgDiv.className = msg.senderId === auth.currentUser.uid ? "message sent" : "message received";
+      msgDiv.dataset.id = docSnap.id;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "message-checkbox";
+      checkbox.onchange = () => toggleMessageSelection(docSnap.id);
+
+      const textSpan = document.createElement("span");
+      textSpan.textContent = msg.text;
+
+      const timeSpan = document.createElement("small");
+      timeSpan.className = "message-time";
+      timeSpan.textContent = msg.createdAt ? new Date(msg.createdAt.toMillis()).toLocaleTimeString() : "Sending...";
+
+      msgDiv.appendChild(checkbox);
+      msgDiv.appendChild(textSpan);
+      msgDiv.appendChild(timeSpan);
+
+      chatMessages.appendChild(msgDiv);
+    });
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Notification for new messages
+    if (!isFirstLoad && snapshot.size > lastMessageCount) {
+      const lastMsg = snapshot.docs[snapshot.docs.length - 1].data();
+      if (lastMsg.senderId !== auth.currentUser.uid) {
+        showNotification(`New message from ${currentChatUsername}`, lastMsg.text);
+      }
+    }
+
+    isFirstLoad = false;
+    lastMessageCount = snapshot.size;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// SEND MESSAGE
+// ═══════════════════════════════════════════════════════════
+
 sendMessageBtn.addEventListener("click", async () => {
+  await sendMessage();
+});
+
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+async function sendMessage() {
   const text = messageInput.value.trim();
   if (!text || !currentChatUid) return;
 
   const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
 
-  await addDoc(collection(db, "messages", convoId, "messages"), {
+  await addDoc(collection(db, "conversations", convoId, "messages"), {
     text,
-    sender: auth.currentUser.uid,
+    senderId: auth.currentUser.uid,
     createdAt: serverTimestamp()
   });
 
+  await updateDoc(doc(db, "conversations", convoId), {
+    lastMessage: text.substring(0, 50),
+    lastMessageTime: serverTimestamp()
+  });
+
   messageInput.value = "";
+}
+
+// ═══════════════════════════════════════════════════════════
+// MESSAGE SELECTION & DELETION
+// ═══════════════════════════════════════════════════════════
+
+function toggleMessageSelection(msgId) {
+  if (selectedMessages.has(msgId)) {
+    selectedMessages.delete(msgId);
+  } else {
+    selectedMessages.add(msgId);
+  }
+
+  deleteSelectedBtn.style.display = selectedMessages.size > 0 ? "inline-block" : "none";
+  deleteSelectedBtn.textContent = `🗑️ Delete (${selectedMessages.size})`;
+}
+
+selectAllBtn.addEventListener("click", () => {
+  const checkboxes = chatMessages.querySelectorAll(".message-checkbox");
+  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+  checkboxes.forEach((checkbox) => {
+    const msgDiv = checkbox.closest(".message");
+    const msgId = msgDiv.dataset.id;
+
+    if (allChecked) {
+      checkbox.checked = false;
+      selectedMessages.delete(msgId);
+    } else {
+      checkbox.checked = true;
+      selectedMessages.add(msgId);
+    }
+  });
+
+  deleteSelectedBtn.style.display = selectedMessages.size > 0 ? "inline-block" : "none";
+  deleteSelectedBtn.textContent = `🗑️ Delete (${selectedMessages.size})`;
+});
+
+deleteSelectedBtn.addEventListener("click", async () => {
+  if (selectedMessages.size === 0) return;
+
+  if (!confirm(`Delete ${selectedMessages.size} message(s)? This only deletes them from your view.`)) {
+    return;
+  }
+
+  const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
+
+  for (const msgId of selectedMessages) {
+    await deleteDoc(doc(db, "conversations", convoId, "messages", msgId));
+  }
+
+  selectedMessages.clear();
+  deleteSelectedBtn.style.display = "none";
+});
+
+// ═══════════════════════════════════════════════════════════
+// CLOSE CHAT
+// ═══════════════════════════════════════════════════════════
+
+closeChatBtn.addEventListener("click", () => {
+  chatSection.style.display = "none";
+  emptyState.style.display = "flex";
+  currentChatUid = null;
+  if (unsubscribeChat) unsubscribeChat();
+  selectedMessages.clear();
+  loadConversations();
 });

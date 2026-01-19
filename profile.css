@@ -161,9 +161,9 @@ body.neon-theme { animation: neonBg 5s infinite; }
   z-index: 1000;
   background: rgba(255, 255, 255, 0.95) !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  max-height: 80vh;
+  max-height: calc(100vh - 70px);
   overflow-y: auto;
-  padding: 15px;
+  padding: 10px;
   border-radius: 8px 0 0 8px; /* Rounded left side */
   transition: right 0.3s ease;
 }
@@ -171,8 +171,9 @@ body.neon-theme { animation: neonBg 5s infinite; }
   right: 0; /* Slide in when open */
 }
 .fixed-theme-container textarea {
-  height: 120px;
+  height: 100px; /* Reduced height for better fit */
   resize: vertical;
+  min-height: 80px;
 }
 
 /* Responsive media queries for mobile/desktop */
@@ -189,9 +190,12 @@ body.neon-theme { animation: neonBg 5s infinite; }
     height: 80px;
   }
   .fixed-theme-container {
-    width: 100%;
+    width: calc(100% - 20px);
     right: -100%; /* Full width tuck on mobile */
     border-radius: 0;
+    padding: 10px;
+    top: 50px;
+    max-height: calc(100vh - 60px);
   }
   .fixed-theme-container.open {
     right: 0;
@@ -202,6 +206,9 @@ body.neon-theme { animation: neonBg 5s infinite; }
   }
   #top10FriendsContainer {
     grid-template-columns: 1fr; /* Stack on mobile */
+  }
+  .fixed-theme-container select, .fixed-theme-container button, .fixed-theme-container textarea {
+    font-size: 14px; /* Smaller text for mobile */
   }
 }
 

@@ -1,25 +1,15 @@
-/* feed.css – COMPLETE polished mobile-first feed with all features */
+/* profile.css – ENHANCED with unique backgrounds, colors, and effects for all themes to make them distinct and match their names. Added Unsplash background images to themes that lacked them. */
 
 :root {
-  --primary: #111;
+  --primary: #1a1a1a;
   --accent: #007bff;
-  --accent-hover: #0056b3;
-  --bg: #f0f4f8;
+  --light-bg: #f0f4f8;
   --card-bg: #ffffff;
-  --text: #222;
+  --text: #333;
   --text-light: #666;
   --border: #ddd;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
-  --danger: #ff4444;
-  --danger-hover: #cc0000;
-  --success: #28a745;
-  --comment-bg: #f8f8f8;
+  --shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
-
-/* ═══════════════════════════════════════════════════════════
-   BASE STYLES
-   ═══════════════════════════════════════════════════════════ */
 
 * {
   box-sizing: border-box;
@@ -28,168 +18,1318 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  transition: all 0.3s ease;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   NAVIGATION BAR
+   THEME STYLES - ENHANCED FOR UNIQUENESS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Default Theme - Light professional gradient */
+body.default-theme {
+  background: linear-gradient(to bottom, #f0f4f8, #e0e8f0);
+  color: #333;
+}
+
+body.default-theme .card {
+  background: white;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+/* Dark Theme - Deep space-like with subtle stars */
+body.dark-theme {
+  background: #0a0a0a url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Ccircle cx="10" cy="10" r="1" fill="%23fff" /%3E%3Ccircle cx="50" cy="50" r="1" fill="%23fff" /%3E%3Ccircle cx="90" cy="90" r="1" fill="%23fff" /%3E%3C/svg%3E') repeat;
+  color: #e8e8e8;
+}
+
+body.dark-theme .card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #e8e8e8;
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select {
+  background: #2a2a2a;
+  color: #e8e8e8;
+  border-color: #444;
+}
+
+body.dark-theme .wall-comment,
+body.dark-theme .top-friend,
+body.dark-theme .search-result,
+body.dark-theme .conversation-item {
+  background: #252525;
+  color: #e8e8e8;
+}
+
+body.dark-theme .friend-name,
+body.dark-theme .wall-comment strong a {
+  color: #60a5fa;
+}
+
+body.dark-theme .empty-friends,
+body.dark-theme .empty-comments {
+  color: #888;
+}
+
+/* Neon Theme - Glowing cyber neon with pulse animation */
+body.neon-theme {
+  background: #000;
+  color: #0ff;
+  animation: neon-pulse 2s infinite alternate;
+}
+
+@keyframes neon-pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.2); }
+}
+
+body.neon-theme .card {
+  background: rgba(0, 20, 20, 0.9);
+  border: 2px solid #0ff;
+  box-shadow: 0 0 15px #0ff, inset 0 0 10px rgba(0,255,255,0.2);
+  color: #0ff;
+}
+
+body.neon-theme input,
+body.neon-theme textarea,
+body.neon-theme select {
+  background: rgba(0, 40, 40, 0.8);
+  color: #0ff;
+  border: 2px solid #0ff;
+}
+
+body.neon-theme button {
+  border: 2px solid #0ff;
+  color: #0ff;
+  background: rgba(0,255,255,0.1);
+}
+
+body.neon-theme button:hover {
+  background: rgba(0,255,255,0.3);
+  box-shadow: 0 0 10px #0ff;
+}
+
+body.neon-theme .wall-comment,
+body.neon-theme .top-friend {
+  background: rgba(0, 40, 40, 0.6);
+  border: 1px solid #0ff;
+  color: #0ff;
+}
+
+body.neon-theme .friend-name,
+body.neon-theme .wall-comment strong a {
+  color: #0ff;
+}
+
+/* Blue Gradient Theme - Ocean wave-like with blue tones */
+body.blue-gradient {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+}
+
+body.blue-gradient .card {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+body.blue-gradient input,
+body.blue-gradient textarea,
+body.blue-gradient select {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+body.blue-gradient input::placeholder,
+body.blue-gradient textarea::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+body.blue-gradient .wall-comment,
+body.blue-gradient .top-friend {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+body.blue-gradient .friend-name,
+body.blue-gradient .wall-comment strong a {
+  color: white;
+  text-shadow: 0 0 10px rgba(0,123,255,0.5);
+}
+
+/* Red Gradient Theme - Fiery lava with red/orange */
+body.red-gradient {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  color: white;
+}
+
+body.red-gradient .card {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+body.red-gradient input,
+body.red-gradient textarea,
+body.red-gradient select {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+body.red-gradient input::placeholder,
+body.red-gradient textarea::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+body.red-gradient .wall-comment,
+body.red-gradient .top-friend {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+body.red-gradient .friend-name,
+body.red-gradient .wall-comment strong a {
+  color: white;
+  text-shadow: 0 0 10px rgba(255,0,0,0.5);
+}
+
+/* Green Gradient Theme - Lush forest with green shades */
+body.green-gradient {
+  background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+  color: #333;
+}
+
+body.green-gradient .card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0,255,0,0.3);
+  color: #333;
+}
+
+/* Animated Rainbow Theme - Vibrant shifting rainbow with faster animation */
+body.animated-rainbow {
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+  background-size: 1400% 1400%;
+  animation: rainbow 15s ease infinite;
+  color: white;
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body.animated-rainbow .card {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.4);
+  color: white;
+}
+
+body.animated-rainbow input,
+body.animated-rainbow textarea,
+body.animated-rainbow select {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+body.animated-rainbow input::placeholder,
+body.animated-rainbow textarea::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+body.animated-rainbow .wall-comment,
+body.animated-rainbow .top-friend {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+body.animated-rainbow .friend-name,
+body.animated-rainbow .wall-comment strong a {
+  color: white;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* Light Blue - Soft sky with cloud pattern */
+body.light-blue {
+  background: linear-gradient(to bottom, #87cefa, #add8e6) url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Cpath d="M100 50c20 0 30 10 30 30s-10 40-30 40-30-20-30-40 10-30 30-30z" fill="%23fff" opacity="0.3"/%3E%3C/svg%3E') repeat;
+  color: #333;
+}
+
+body.light-blue .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  border: 1px solid #87cefa;
+}
+
+/* Purple Haze - Misty purple with fog effect */
+body.purple-haze {
+  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+  color: white;
+  position: relative;
+}
+
+body.purple-haze::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+body.purple-haze .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Sunset Orange - Warm sunset with ray effects */
+body.sunset-orange {
+  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+  color: white;
+}
+
+body.sunset-orange .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+  box-shadow: 0 0 20px rgba(255,165,0,0.5);
+}
+
+/* Forest Green - Deep green with leaf pattern */
+body.forest-green {
+  background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+  color: white;
+}
+
+body.forest-green .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Midnight Blue - Starry night with twinkling */
+body.midnight-blue {
+  background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+  color: white;
+}
+
+body.midnight-blue .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Pink Blush - Soft pink with heart patterns */
+body.pink-blush {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  color: #333;
+}
+
+body.pink-blush .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Golden Hour - Warm gold with shine */
+body.golden-hour {
+  background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+  color: #333;
+}
+
+body.golden-hour .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  box-shadow: 0 0 15px rgba(255,215,0,0.5);
+}
+
+/* Ocean Depths - Deep blue with bubble effect */
+body.ocean-depths {
+  background: linear-gradient(135deg, #021b79 0%, #0575e6 100%);
+  color: white;
+}
+
+body.ocean-depths .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Lavender Fields - Purple lavender gradients with flower hint */
+body.lavender-fields {
+  background: url('https://source.unsplash.com/featured/?lavender') no-repeat center center/cover;
+  color: #333;
+}
+
+body.lavender-fields .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Fiery Red - Intense red with flame animation */
+body.fiery-red {
+  background: url('https://source.unsplash.com/featured/?fire') no-repeat center center/cover;
+  animation: fire-glow 3s infinite alternate;
+  color: white;
+}
+
+@keyframes fire-glow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.1); }
+}
+
+body.fiery-red .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Cats Theme - Cat images with playful borders */
+body.cats-theme {
+  background: url('https://source.unsplash.com/featured/?cats') no-repeat center center/cover;
+  color: #333;
+}
+
+body.cats-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+  border: 2px dashed #ff69b4;
+}
+
+/* Dogs Theme - Dog images with paw prints */
+body.dogs-theme {
+  background: url('https://source.unsplash.com/featured/?dogs') no-repeat center center/cover;
+  color: #333;
+}
+
+body.dogs-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Cars Theme - High-speed car backgrounds */
+body.cars-theme {
+  background: url('https://source.unsplash.com/featured/?cars') no-repeat center center/cover;
+  color: white;
+}
+
+body.cars-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Storms Theme - Dramatic storm with lightning flash */
+body.storms-theme {
+  background: url('https://source.unsplash.com/featured/?storm') no-repeat center center/cover;
+  color: white;
+  animation: lightning-flash 5s infinite;
+}
+
+@keyframes lightning-flash {
+  0%, 90% { filter: brightness(1); }
+  95% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+body.storms-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Flowers Theme - Vibrant flowers with bloom effect */
+body.flowers-theme {
+  background: url('https://source.unsplash.com/featured/?flowers') no-repeat center center/cover;
+  color: #333;
+}
+
+body.flowers-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Gothic Theme - Dark gothic architecture background */
+body.gothic-theme {
+  background: url('https://source.unsplash.com/featured/?gothic,castle') no-repeat center center/cover;
+  color: #ccc;
+}
+
+body.gothic-theme .card {
+  background: rgba(0,0,0,0.8);
+  border: 2px solid #666;
+  color: #ccc;
+  border-radius: 0;
+  box-shadow: 0 0 10px #000;
+}
+
+/* Emo Theme - Emo/punk style background */
+body.emo-theme {
+  background: url('https://source.unsplash.com/featured/?punk,dark') no-repeat center center/cover;
+  color: #ff69b4;
+}
+
+body.emo-theme .card {
+  background: rgba(0,0,0,0.8);
+  color: #ff69b4;
+  border: 1px solid #ff69b4;
+}
+
+/* Retro Theme - 80s retro background */
+body.retro-theme {
+  background: url('https://source.unsplash.com/featured/?retro,80s') no-repeat center center/cover;
+  color: #000;
+}
+
+body.retro-theme .card {
+  background: rgba(255,255,255,0.2);
+  color: #000;
+  border: 2px dotted #000;
+}
+
+/* Space Theme - Galaxy with stars */
+body.space-theme {
+  background: url('https://source.unsplash.com/featured/?space,galaxy') no-repeat center center/cover;
+  color: white;
+}
+
+body.space-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Beach Theme - Sandy beach with waves */
+body.beach-theme {
+  background: url('https://source.unsplash.com/featured/?beach,ocean') no-repeat center center/cover;
+  color: #333;
+}
+
+body.beach-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Mountain Theme - Majestic mountains */
+body.mountain-theme {
+  background: url('https://source.unsplash.com/featured/?mountain,peak') no-repeat center center/cover;
+  color: white;
+}
+
+body.mountain-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Forest Theme - Dense forest */
+body.forest-theme {
+  background: url('https://source.unsplash.com/featured/?forest,trees') no-repeat center center/cover;
+  color: white;
+}
+
+body.forest-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Cityscape Theme - Urban lights */
+body.cityscape-theme {
+  background: url('https://source.unsplash.com/featured/?city,night') no-repeat center center/cover;
+  color: white;
+}
+
+body.cityscape-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Abstract Art Theme - Dynamic abstract animation */
+body.abstract-theme {
+  background: url('https://source.unsplash.com/featured/?abstract,art') no-repeat center center/cover;
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  color: white;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body.abstract-theme .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Vintage Theme - Vintage photo background */
+body.vintage-theme {
+  background: url('https://source.unsplash.com/featured/?vintage,old') no-repeat center center/cover;
+  color: #5c3c0d;
+}
+
+body.vintage-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #5c3c0d;
+  border: 1px dashed #8b4513;
+}
+
+/* Cyberpunk Theme - Neon cyberpunk city */
+body.cyberpunk-theme {
+  background: url('https://source.unsplash.com/featured/?cyberpunk,neon') no-repeat center center/cover;
+  color: #fff;
+}
+
+body.cyberpunk-theme .card {
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: 1px solid #0ff;
+  box-shadow: 0 0 10px #f0f;
+}
+
+/* Pastel Theme - Soft pastel art */
+body.pastel-theme {
+  background: url('https://source.unsplash.com/featured/?pastel,soft') no-repeat center center/cover;
+  color: #333;
+}
+
+body.pastel-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Monochrome Theme - Black and white photo */
+body.monochrome-theme {
+  background: url('https://source.unsplash.com/featured/?monochrome,blackandwhite') no-repeat center center/cover;
+  color: #fff;
+}
+
+body.monochrome-theme .card {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+}
+
+/* Tropical Theme - Vibrant tropical */
+body.tropical-theme {
+  background: url('https://source.unsplash.com/featured/?tropical,palm') no-repeat center center/cover;
+  color: #333;
+}
+
+body.tropical-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Desert Theme - Sandy desert */
+body.desert-theme {
+  background: url('https://source.unsplash.com/featured/?desert,sand') no-repeat center center/cover;
+  color: #333;
+}
+
+body.desert-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Underwater Theme - Blue underwater */
+body.underwater-theme {
+  background: url('https://source.unsplash.com/featured/?underwater,ocean') no-repeat center center/cover;
+  color: white;
+}
+
+body.underwater-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Autumn Theme - Fall leaves background */
+body.autumn-theme {
+  background: url('https://source.unsplash.com/featured/?autumn,leaves') no-repeat center center/cover;
+  color: white;
+}
+
+body.autumn-theme .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Winter Theme - Snowy landscape */
+body.winter-theme {
+  background: url('https://source.unsplash.com/featured/?winter,snow') no-repeat center center/cover;
+  color: #333;
+}
+
+body.winter-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+  box-shadow: 0 0 10px rgba(0,0,255,0.2);
+}
+
+/* Spring Theme - Blooming spring flowers */
+body.spring-theme {
+  background: url('https://source.unsplash.com/featured/?spring,bloom') no-repeat center center/cover;
+  color: #333;
+}
+
+body.spring-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Summer Theme - Sunny summer day */
+body.summer-theme {
+  background: url('https://source.unsplash.com/featured/?summer,sun') no-repeat center center/cover;
+  color: #333;
+}
+
+body.summer-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Halloween Theme - Spooky Halloween scene */
+body.halloween-theme {
+  background: url('https://source.unsplash.com/featured/?halloween,pumpkin') no-repeat center center/cover;
+  color: white;
+}
+
+body.halloween-theme .card {
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: 1px solid #ff7518;
+}
+
+/* Christmas Theme - Festive Christmas lights */
+body.christmas-theme {
+  background: url('https://source.unsplash.com/featured/?christmas,tree') no-repeat center center/cover;
+  color: white;
+}
+
+body.christmas-theme .card {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Valentine Theme - Romantic valentine hearts */
+body.valentine-theme {
+  background: url('https://source.unsplash.com/featured/?valentine,heart') no-repeat center center/cover;
+  color: #333;
+}
+
+body.valentine-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Easter Theme - Colorful easter eggs */
+body.easter-theme {
+  background: url('https://source.unsplash.com/featured/?easter,eggs') no-repeat center center/cover;
+  color: #333;
+}
+
+body.easter-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Common overrides for all themes */
+body[class*="-theme"] input,
+body[class*="-theme"] textarea,
+body[class*="-theme"] select {
+  border-color: inherit;
+}
+
+body[class*="-theme"] .wall-comment,
+body[class*="-theme"] .top-friend {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+}
+
+body[class*="-theme"] .friend-name,
+body[class*="-theme"] .wall-comment strong a {
+  color: inherit;
+}
+
+body[class*="-theme"] button {
+  background: var(--accent, #007bff);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
    ═══════════════════════════════════════════════════════════ */
 
 .navbar {
   background: var(--primary);
-  padding: 0.8rem 1rem;
+  color: white;
+  padding: 1rem;
   display: flex;
+  gap: 1rem;
   justify-content: center;
-  align-items: center;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .navbar button {
   background: rgba(255,255,255,0.15);
-  border: none;
   color: white;
+  border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
 .navbar button:hover {
   background: rgba(255,255,255,0.25);
-  transform: translateY(-1px);
-}
-
-.navbar button:active {
-  transform: translateY(0);
-}
-
-#logoutBtn {
-  background: rgba(255,59,48,0.9);
-}
-
-#logoutBtn:hover {
-  background: rgba(255,59,48,1);
+  transform: translateY(-2px);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   FEED CONTAINER
+   MAIN LAYOUT
    ═══════════════════════════════════════════════════════════ */
 
-.feed-container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
+.profile-main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-.feed-container h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  color: var(--primary);
-  font-weight: 700;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   NEW POST FORM
-   ═══════════════════════════════════════════════════════════ */
-
-.new-post {
+.card {
   background: var(--card-bg);
-  padding: 1.2rem;
-  border-radius: 14px;
+  padding: 1.5rem;
+  border-radius: 12px;
   box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
-  transition: box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
 }
 
-.new-post:hover {
-  box-shadow: var(--shadow-hover);
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
-.new-post textarea {
+.card h3 {
+  margin-top: 0;
+  color: inherit;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE TOP
+   ═══════════════════════════════════════════════════════════ */
+
+.profile-top {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.pfp-container {
+  flex: 0 0 180px;
+  text-align: center;
+}
+
+#profilePic {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--accent);
+  box-shadow: var(--shadow);
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+#profilePic:hover {
+  transform: scale(1.05);
+}
+
+#changePfpBtn {
   width: 100%;
-  min-height: 100px;
-  resize: vertical;
-  padding: 0.9rem;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  margin-bottom: 0.8rem;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
 }
 
-.new-post textarea:focus {
-  outline: none;
-  border-color: var(--accent);
+.profile-info-box {
+  flex: 1;
+  min-width: 300px;
 }
 
-.new-post input[type="file"] {
-  width: 100%;
-  margin-bottom: 0.8rem;
-  padding: 0.5rem;
-  border: 2px dashed var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
+.profile-info-box h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
 }
 
-.new-post input[type="file"]:hover {
-  border-color: var(--accent);
+.location-text,
+.bio-text {
+  margin: 0.5rem 0;
 }
 
-#postBtn {
-  width: 100%;
-  padding: 0.9rem;
-  border-radius: 999px;
-  border: none;
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════ */
+
+button {
   background: var(--accent);
   color: white;
-  font-size: 1rem;
-  font-weight: 600;
+  border: none;
+  padding: 0.8rem 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
-#postBtn:hover {
-  background: var(--accent-hover);
+button:hover {
+  background: #0056b3;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,123,255,0.3);
 }
 
-#postBtn:active {
+button:active {
   transform: translateY(0);
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ═══════════════════════════════════════════════════════════
-   POST CARD
+   INPUTS
    ═══════════════════════════════════════════════════════════ */
 
-.post-card {
-  background: var(--card-bg);
-  padding: 1.2rem;
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  margin-bottom: 1.2rem;
-  transition: box-shadow 0.3s ease;
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════════════════════ */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
   animation: fadeIn 0.3s ease;
 }
 
-.post-card:hover {
-  box-shadow: var(--shadow-hover);
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes fadeIn {
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  animation: slideDown 0.3s ease;
+  color: #333;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.messages-modal-content {
+  max-width: 800px;
+  height: 600px;
+  overflow: hidden;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: var(--primary);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MUSIC PLAYER
+   ═══════════════════════════════════════════════════════════ */
+
+.music-controls {
+  margin-bottom: 1rem;
+}
+
+.music-slot {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  align-items: center;
+}
+
+.music-slot input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.music-slot button {
+  padding: 0.6rem 1rem;
+}
+
+.music-embed {
+  margin-bottom: 1rem;
+}
+
+.music-embed iframe {
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP 10 FRIENDS
+   ═══════════════════════════════════════════════════════════ */
+
+.top-friends-list {
+  min-height: 200px;
+  margin-top: 1rem;
+}
+
+.top-friend {
+  background: rgba(0,123,255,0.08);
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: move;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.top-friend:hover {
+  background: rgba(0,123,255,0.15);
+  border-color: var(--accent);
+  transform: translateX(5px);
+}
+
+.top-friend .rank {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--accent);
+  width: 40px;
+  text-align: center;
+}
+
+.friend-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
+.friend-name {
+  flex: 1;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.friend-name:hover {
+  text-decoration: underline;
+}
+
+.remove-friend-btn {
+  background: rgba(255,68,68,0.1);
+  color: #ff4444;
+  padding: 0.4rem 0.8rem;
+  font-size: 1.2rem;
+}
+
+.remove-friend-btn:hover {
+  background: rgba(255,68,68,0.2);
+}
+
+.empty-friends {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Search Results */
+#searchResults,
+#userSearchResults {
+  margin: 1rem 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+  background: rgba(255,255,255,0.5);
+}
+
+.search-result:hover {
+  background: rgba(0,123,255,0.1);
+}
+
+.search-result img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.search-result span {
+  flex: 1;
+  font-weight: 500;
+}
+
+.add-friend-btn,
+.message-user-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMENTS WALL
+   ═══════════════════════════════════════════════════════════ */
+
+#wallCommentsContainer {
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: 8px;
+}
+
+#wallCommentsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+#wallCommentsContainer::-webkit-scrollbar-track {
+  background: var(--light-bg);
+  border-radius: 10px;
+}
+
+#wallCommentsContainer::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.wall-comment {
+  background: rgba(255,255,255,0.9);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  position: relative;
+  transition: all 0.2s;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.wall-comment:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.comment-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+
+.wall-comment strong a {
+  text-decoration: none;
+}
+
+.wall-comment strong a:hover {
+  text-decoration: underline;
+}
+
+.wall-comment small {
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 0.2rem;
+  opacity: 0.7;
+}
+
+.wall-comment p {
+  margin: 0.5rem 0 0 0;
+}
+
+.delete-wall-comment {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  color: #ff4444;
+  padding: 0.3rem 0.5rem;
+  font-size: 1.2rem;
+  opacity: 0.6;
+}
+
+.delete-wall-comment:hover {
+  opacity: 1;
+  background: rgba(255,68,68,0.1);
+}
+
+.empty-comments {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MESSAGES
+   ═══════════════════════════════════════════════════════════ */
+
+.message-search {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.messages-layout {
+  display: flex;
+  height: 400px;
+  gap: 1rem;
+}
+
+.conversations-list {
+  flex: 0 0 250px;
+  border-right: 2px solid var(--border);
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.conversation-item:hover {
+  background: rgba(0,123,255,0.1);
+}
+
+.conversation-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.message-thread {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.message {
+  padding: 0.8rem;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  max-width: 70%;
+  animation: messageSlide 0.2s ease;
+  word-wrap: break-word;
+}
+
+@keyframes messageSlide {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -200,428 +1340,131 @@ body {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   POST HEADER
-   ═══════════════════════════════════════════════════════════ */
+.message.sent {
+  background: var(--accent);
+  color: white;
+  margin-left: auto;
+}
 
-.post-header {
+.message.received {
+  background: white;
+  border: 1px solid var(--border);
+  margin-right: auto;
+  color: #333;
+}
+
+.message-input-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.post-header strong {
-  font-size: 1.05rem;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.post-header small {
-  color: var(--text-light);
-  font-size: 0.85rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   POST CONTENT
-   ═══════════════════════════════════════════════════════════ */
-
-.post-card > p {
-  white-space: pre-wrap;
-  margin-bottom: 0.8rem;
-  line-height: 1.6;
-  color: var(--text);
-  font-size: 1rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   POST MEDIA (IMAGES & VIDEOS)
-   ═══════════════════════════════════════════════════════════ */
-
-.post-media {
-  display: block;
-  margin: 1rem auto;
-  max-width: 100%;
-  max-height: 500px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-}
-
-.post-media:hover {
-  transform: scale(1.02);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   POST ACTIONS (LIKE, DISLIKE, COMMENT, SHARE, DELETE)
-   ═══════════════════════════════════════════════════════════ */
-
-.actions {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--border);
   gap: 0.5rem;
 }
 
-.actions button {
-  border: none;
-  background: transparent;
-  font-size: 1.3rem;
-  padding: 0.5rem 0.8rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: var(--text);
-}
-
-.actions button:hover {
-  background: rgba(0,0,0,0.05);
-  transform: scale(1.05);
-}
-
-.actions button:active {
-  transform: scale(0.95);
-}
-
-/* Like Button States */
-.like-btn.active {
-  background: rgba(0, 123, 255, 0.15);
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.like-btn:hover {
-  background: rgba(0, 123, 255, 0.1);
-}
-
-/* Dislike Button States */
-.dislike-btn.active {
-  background: rgba(255, 68, 68, 0.15);
-  color: var(--danger);
-  font-weight: 600;
-}
-
-.dislike-btn:hover {
-  background: rgba(255, 68, 68, 0.1);
-}
-
-/* Comment Toggle Button */
-.comment-toggle:hover {
-  background: rgba(128, 128, 128, 0.1);
-}
-
-/* Share Button */
-.share-btn:hover {
-  background: rgba(40, 167, 69, 0.1);
-  color: var(--success);
-}
-
-/* Delete Post Button */
-.delete-btn {
-  color: var(--danger);
-}
-
-.delete-btn:hover {
-  background: rgba(255, 68, 68, 0.15);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENTS SECTION
-   ═══════════════════════════════════════════════════════════ */
-
-.comments-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.comments-section:empty {
-  display: none;
-}
-
-.comments-section::-webkit-scrollbar {
-  width: 6px;
-}
-
-.comments-section::-webkit-scrollbar-track {
-  background: var(--bg);
-  border-radius: 10px;
-}
-
-.comments-section::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-}
-
-.comments-section::-webkit-scrollbar-thumb:hover {
-  background: var(--text-light);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   INDIVIDUAL COMMENT
-   ═══════════════════════════════════════════════════════════ */
-
-.comment {
-  background: var(--comment-bg);
-  border-radius: 10px;
-  padding: 0.7rem 2.5rem 0.7rem 0.9rem;
-  margin-bottom: 0.6rem;
-  position: relative;
-  transition: background 0.2s ease;
-  animation: slideIn 0.2s ease;
-}
-
-.comment:hover {
-  background: #f0f0f0;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.comment strong {
-  color: var(--primary);
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.comment p {
-  margin: 0;
-  color: var(--text);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  word-wrap: break-word;
-}
-
-/* Delete Comment Button */
-.delete-comment {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: transparent;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0.3rem;
-  border-radius: 6px;
-  opacity: 0.6;
-  transition: all 0.2s ease;
-}
-
-.delete-comment:hover {
-  opacity: 1;
-  background: rgba(255, 68, 68, 0.1);
-  transform: scale(1.1);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENT FORM
-   ═══════════════════════════════════════════════════════════ */
-
-.comment-form {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
-  align-items: center;
-}
-
-.comment-input {
+.message-input-container input {
   flex: 1;
-  padding: 0.7rem 1rem;
-  border-radius: 999px;
-  border: 2px solid var(--border);
-  font-family: inherit;
-  font-size: 0.95rem;
-  transition: border-color 0.2s ease;
-}
-
-.comment-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.comment-btn {
-  border: none;
-  background: var(--accent);
-  color: white;
-  border-radius: 50%;
-  padding: 0.7rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-}
-
-.comment-btn:hover {
-  background: var(--accent-hover);
-  transform: scale(1.08);
-}
-
-.comment-btn:active {
-  transform: scale(0.95);
+  margin-bottom: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN - MOBILE
+   UPLOAD PROGRESS
+   ═══════════════════════════════════════════════════════════ */
+
+.upload-progress {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+  z-index: 2000;
+  text-align: center;
+  min-width: 300px;
+}
+
+.upload-progress progress {
+  width: 100%;
+  height: 20px;
+  margin: 1rem 0;
+}
+
+.upload-progress .percent {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
    ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  .feed-container {
-    padding: 1rem 0.8rem;
+  .profile-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  .feed-container h1 {
-    font-size: 1.5rem;
+  .pfp-container {
+    margin-bottom: 1.5rem;
   }
 
-  .post-media {
-    max-height: 350px;
+  #profilePic {
+    width: 120px;
+    height: 120px;
   }
 
-  .actions {
-    font-size: 1.2rem;
+  .profile-info-box {
+    width: 100%;
+  }
+
+  .messages-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .conversations-list {
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 2px solid var(--border);
+    padding-right: 0;
+    padding-bottom: 1rem;
+    max-height: 200px;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .navbar button {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .feed-container {
-    padding: 0.8rem 0.5rem;
+  .profile-main {
+    padding: 0 0.5rem;
   }
 
-  .post-card {
-    padding: 1rem;
-    border-radius: 12px;
-  }
-
-  .post-media {
-    max-height: 280px;
-  }
-
-  .actions {
-    font-size: 1.1rem;
-    gap: 0.3rem;
-  }
-
-  .actions button {
-    padding: 0.4rem 0.6rem;
-    font-size: 1.1rem;
-  }
-
-  .new-post {
+  .card {
     padding: 1rem;
   }
 
-  .new-post textarea {
-    min-height: 80px;
-    font-size: 0.95rem;
+  button {
+    width: 100%;
+    margin-bottom: 0.5rem;
   }
 
-  .comment {
-    padding: 0.6rem 2rem 0.6rem 0.7rem;
+  .music-slot {
+    flex-direction: column;
   }
 
-  .comment-input {
-    font-size: 0.9rem;
-    padding: 0.6rem 0.9rem;
+  .music-slot button {
+    width: 100%;
   }
-}
 
-/* ═══════════════════════════════════════════════════════════
-   UTILITY CLASSES
-   ═══════════════════════════════════════════════════════════ */
-
-.hidden {
-  display: none !important;
-}
-
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* Loading Spinner */
-.spinner {
-  border: 3px solid var(--border);
-  border-top: 3px solid var(--accent);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 2rem auto;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--text-light);
-}
-
-.empty-state h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--text);
-}
-
-.empty-state p {
-  font-size: 1rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   ACCESSIBILITY
-   ═══════════════════════════════════════════════════════════ */
-
-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  :root {
-    --border: #999;
-    --text-light: #555;
+  #profilePic {
+    width: 100px;
+    height: 100px;
   }
 }

@@ -13,6 +13,7 @@
   <button id="navFeedBtn">Feed</button>
   <button id="navProfileBtn">Profile</button>
   <button id="navSettingsBtn">Settings</button>
+  <button id="toggleThemeBtn">Customize</button> <!-- Toggle button for theme panel -->
 </div>
 
 <div class="profile-main">
@@ -60,8 +61,9 @@
 
 </div>
 
-<!-- Themes and Custom HTML - Moved outside to make it fixed/always accessible -->
-<div class="theme-container fixed-theme-container">
+<!-- Themes and Custom HTML - Tuckable panel -->
+<div class="theme-container fixed-theme-container" id="themePanel">
+  <button id="closeThemeBtn" style="float: right; background: none; border: none; cursor: pointer; font-size: 20px;">&times;</button>
   <select id="themeSelect">
     <option value="default-theme">Default</option>
     <option value="red-theme">Red Gradient</option>

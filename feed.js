@@ -1,9 +1,9 @@
-// feed.js — FINAL polished version (YourSpace 2026)
+// feed.js — FIXED VERSION (YourSpace 2026)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc,
-  updateDoc, query, orderBy, onSnapshot, serverTimestamp
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -59,6 +59,13 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 
 async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
+  const currentUserId = auth.currentUser.uid;
+
+  // Check if user has liked/disliked
+  const likedBy = post.likedBy || [];
+  const dislikedBy = post.dislikedBy || [];
+  const userLiked = likedBy.includes(currentUserId);
+  const userDisliked = dislikedBy.includes(currentUserId);
 
   const postEl = document.createElement("div");
   postEl.className = "post-card";
@@ -73,8 +80,8 @@ async function renderPost(post, postId) {
     <p>${post.text || ""}</p>
     ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
     <div class="actions">
-      <button class="like-btn" data-id="${postId}">👍 ${post.likes || 0}</button>
-      <button class="dislike-btn" data-id="${postId}">🖕 ${post.dislikes || 0}</button>
+      <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
+      <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">👎 ${dislikedBy.length}</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
@@ -86,20 +93,48 @@ async function renderPost(post, postId) {
     </div>
   `;
 
-  // LIKE (fixed – updates in Firestore)
+  // LIKE (FIXED – prevents multiple likes)
   postEl.querySelector(".like-btn").onclick = async () => {
     haptic("light");
-    await updateDoc(doc(db, "posts", postId), {
-      likes: (post.likes || 0) + 1
-    });
+    const postRef = doc(db, "posts", postId);
+    
+    if (userLiked) {
+      // Remove like
+      await updateDoc(postRef, {
+        likedBy: arrayRemove(currentUserId)
+      });
+    } else {
+      // Add like and remove dislike if exists
+      const updates = {
+        likedBy: arrayUnion(currentUserId)
+      };
+      if (userDisliked) {
+        updates.dislikedBy = arrayRemove(currentUserId);
+      }
+      await updateDoc(postRef, updates);
+    }
   };
 
-  // DISLIKE (fixed – updates in Firestore)
+  // DISLIKE (FIXED – prevents multiple dislikes)
   postEl.querySelector(".dislike-btn").onclick = async () => {
     haptic("light");
-    await updateDoc(doc(db, "posts", postId), {
-      dislikes: (post.dislikes || 0) + 1
-    });
+    const postRef = doc(db, "posts", postId);
+    
+    if (userDisliked) {
+      // Remove dislike
+      await updateDoc(postRef, {
+        dislikedBy: arrayRemove(currentUserId)
+      });
+    } else {
+      // Add dislike and remove like if exists
+      const updates = {
+        dislikedBy: arrayUnion(currentUserId)
+      };
+      if (userLiked) {
+        updates.likedBy = arrayRemove(currentUserId);
+      }
+      await updateDoc(postRef, updates);
+    }
   };
 
   // SHARE
@@ -117,7 +152,7 @@ async function renderPost(post, postId) {
     }
   });
 
-  // COMMENTS REALTIME (load comments with delete button)
+  // COMMENTS REALTIME (FIXED – delete button now works)
   const commentsSection = postEl.querySelector(".comments-section");
   const commentsQ = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "desc"));
 
@@ -134,16 +169,21 @@ async function renderPost(post, postId) {
       cEl.innerHTML = `
         <strong>${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
-        ${isCommentOwner ? `<button class="delete-comment" data-id="${cDoc.id}">🗑️</button>` : ""}
+        ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
       `;
 
-      // DELETE COMMENT (fixed – permanently removes and doesn't come back)
-      cEl.querySelector(".delete-comment")?.addEventListener("click", async () => {
-        haptic("heavy");
-        if (confirm("Delete this comment?")) {
-          await deleteDoc(doc(db, "posts", postId, "comments", cDoc.id));
-        }
-      });
+      // DELETE COMMENT (FIXED – properly deletes from Firestore)
+      const deleteBtn = cEl.querySelector(".delete-comment");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", async (e) => {
+          haptic("heavy");
+          if (confirm("Delete this comment?")) {
+            const commentId = e.target.getAttribute("data-comment-id");
+            const postIdForComment = e.target.getAttribute("data-post-id");
+            await deleteDoc(doc(db, "posts", postIdForComment, "comments", commentId));
+          }
+        });
+      }
 
       commentsSection.appendChild(cEl);
     });
@@ -205,8 +245,8 @@ postBtn.addEventListener("click", async () => {
     text,
     mediaURL,
     mediaType,
-    likes: 0,
-    dislikes: 0,
+    likedBy: [],
+    dislikedBy: [],
     createdAt: serverTimestamp()
   });
 

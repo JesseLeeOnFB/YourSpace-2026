@@ -1,123 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Profile</title>
-  <link rel="stylesheet" href="profile.css">
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Profile</title>
+<link rel="stylesheet" href="profile.css">
 </head>
 <body class="default-theme">
-  <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">My Profile</button>
-    <button id="messagesBtn">Messages</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
 
-  <section class="profile-main">
-    <div class="profile-top">
-      <div class="pfp-container">
-        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
-        <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
-        <button id="changePfpBtn">Change Picture</button>
-      </div>
+<!-- Navigation -->
+<div class="navbar">
+  <button id="navFeedBtn">Feed</button>
+  <button id="navProfileBtn">Profile</button>
+  <button id="navSettingsBtn">Settings</button>
+</div>
 
-      <div class="profile-info-box">
-        <h2 id="displayName">Loading...</h2>
-        <p id="location" class="location-text">📍 Location</p>
-        <p id="bio" class="bio-text">Bio goes here...</p>
-        <button id="editProfileBtn">Edit Profile</button>
-        <button id="sendMessageBtn" style="display:none;">Send Message</button>
-      </div>
+<div class="profile-main">
+
+  <!-- Profile top section -->
+  <div class="profile-top">
+
+    <!-- Profile Picture -->
+    <div class="pfp-container">
+      <img id="profilePfp" src="" alt="Profile Picture">
+      <input type="file" id="profilePfpInput">
+      <button id="saveProfilePfpBtn">Save Profile Picture</button>
     </div>
 
-    <div id="editProfileModal" class="modal" style="display:none;">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3>Edit Profile</h3>
-        <label>Username:</label>
-        <input type="text" id="usernameInput" placeholder="Username">
-        <label>Location:</label>
-        <input type="text" id="locationInput" placeholder="Location">
-        <label>Bio:</label>
-        <textarea id="bioInput" placeholder="Bio" rows="4"></textarea>
-        <button id="saveProfileBtn">Save Changes</button>
-      </div>
+    <!-- Profile Info -->
+    <div class="profile-info-box">
+      <input id="usernameInput" placeholder="Username">
+      <textarea id="bioInput" placeholder="Bio"></textarea>
+      <input id="locationInput" placeholder="Location">
+      <button id="saveProfileBtn">Save Profile Info</button>
     </div>
+  </div>
 
-    <div class="theme-container card">
-      <h3>🎨 Customize Theme</h3>
-      <select id="themeSelect">
-        <option value="default-theme">Default</option>
-        <option value="dark-theme">Dark Mode</option>
-        <option value="neon-theme">Neon</option>
-        <option value="blue-gradient">Blue Gradient</option>
-        <option value="red-gradient">Red Gradient</option>
-        <option value="green-gradient">Green Gradient</option>
-        <option value="animated-rainbow">Animated Rainbow</option>
-      </select>
-      <button id="applyThemeBtn">Apply Theme</button>
-      <button id="resetThemeBtn">Reset to Default</button>
-    </div>
+  <!-- Music Player -->
+  <div class="music-player">
+    <input type="text" id="musicLinkInput" placeholder="Paste YouTube, Spotify, SoundCloud, Pandora link">
+    <button id="loadMusicBtn">Load Music</button>
+    <iframe id="musicIframe" src="" allow="autoplay"></iframe>
+  </div>
 
-    <div class="custom-html-container card" id="customHtmlSection">
-      <h3>💻 Custom HTML/CSS</h3>
-      <p class="info-text">Customize your profile with HTML & CSS - add animations, backgrounds, and more! Just like customizing profiles back in the day, but better!</p>
-      <textarea id="customHtmlInput" placeholder="Paste your HTML/CSS code here (including <style> tags)..." rows="8"></textarea>
-      <button id="saveCustomHtmlBtn">Save & Apply</button>
-      <button id="clearCustomHtmlBtn">Clear Custom Code</button>
-      <div id="customHtmlPreview"></div>
-    </div>
+  <!-- Wall Comments -->
+  <div class="wall-container">
+    <h3>Wall Comments</h3>
+    <div id="wallCommentsContainer"></div>
+    <textarea id="wallCommentInput" placeholder="Write a comment..."></textarea>
+    <button id="addWallCommentBtn">Post Comment</button>
+  </div>
 
-    <div class="music-player card">
-      <h3>🎵 Music Player</h3>
-      <div class="music-controls">
-        <label>
-          <input type="checkbox" id="autoplayToggle" checked> Autoplay
-        </label>
-      </div>
-      <div id="musicSlotsContainer">
-        <div class="music-slot">
-          <input type="text" class="music-input" placeholder="YouTube/Spotify/SoundCloud link" data-slot="0">
-          <button class="add-music-btn" data-slot="0">Add</button>
-          <button class="remove-music-btn" data-slot="0" style="display:none;">Remove</button>
-        </div>
-        <div class="music-slot">
-          <input type="text" class="music-input" placeholder="Song 2" data-slot="1">
-          <button class="add-music-btn" data-slot="1">Add</button>
-          <button class="remove-music-btn" data-slot="1" style="display:none;">Remove</button>
-        </div>
-        <div class="music-slot">
-          <input type="text" class="music-input" placeholder="Song 3" data-slot="2">
-          <button class="add-music-btn" data-slot="2">Add</button>
-          <button class="remove-music-btn" data-slot="2" style="display:none;">Remove</button>
-        </div>
-        <div class="music-slot">
-          <input type="text" class="music-input" placeholder="Song 4" data-slot="3">
-          <button class="add-music-btn" data-slot="3">Add</button>
-          <button class="remove-music-btn" data-slot="3" style="display:none;">Remove</button>
-        </div>
-      </div>
-      <div id="musicPlayerContainer"></div>
-    </div>
+  <!-- Top 10 Friends -->
+  <div class="top10-container">
+    <h3>Top 10 Friends</h3>
+    <div id="top10FriendsContainer"></div>
+    <button id="editTop10Btn">Edit Top 10 Friends</button>
+  </div>
 
-    <div class="top10-container card">
-      <h3>👥 Top 10 Friends</h3>
-      <input type="text" id="searchFriendInput" placeholder="Search username to add...">
-      <button id="searchFriendBtn">Search</button>
-      <div id="searchResults"></div>
-      <div id="topFriendsContainer" class="top-friends-list"></div>
-    </div>
+</div>
 
-    <div class="wall-container card">
-      <h3>💬 Comments Wall</h3>
-      <div id="wallCommentsContainer"></div>
-      <textarea id="commentInput" placeholder="Leave a comment..." rows="3"></textarea>
-      <button id="addCommentBtn">Post Comment</button>
-    </div>
-  </section>
+<!-- Themes and Custom HTML - Moved outside to make it fixed/always accessible -->
+<div class="theme-container fixed-theme-container">
+  <select id="themeSelect">
+    <option value="default-theme">Default</option>
+    <option value="red-theme">Red Gradient</option>
+    <option value="blue-theme">Blue Gradient</option>
+    <option value="green-theme">Green Gradient</option>
+    <option value="neon-theme">Neon Animated</option>
+  </select>
+  <button id="saveThemeBtn">Save Theme</button>
+  <button id="resetThemeBtn">Reset to Default</button>
+  <textarea id="customHtmlInput" placeholder="Custom HTML, themes, animations"></textarea>
+</div>
 
-  <script type="module" src="profile.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="profile.js?cb=<?php echo time(); ?>"></script>
 </body>
 </html>

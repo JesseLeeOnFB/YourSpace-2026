@@ -5,68 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Profile</title>
   <link rel="stylesheet" href="profile.css">
+  <!-- Sortable.js for drag-and-drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
-<body class="default">
-
+<body class="default-theme">
   <!-- Navigation -->
   <nav class="navbar">
     <button id="homeBtn">Home</button>
-    <button id="profileBtn">Profile</button>
+    <button id="profileBtn">My Profile</button>
+    <button id="messagesBtn">Messages</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- Profile Section -->
-  <section class="profile-section">
-    <div class="profile-header">
-      <img id="profilePic" src="default-avatar.png" alt="Profile Picture" class="profile-picture">
-      <input type="file" id="profilePicInput" accept="image/*">
-      <button id="savePfpBtn">Save Profile Picture</button>
-      <progress id="uploadProgress" value="0" max="100" style="display:none; width: 100%; margin-top: 10px;"></progress>
+  <section class="profile-main">
+    <!-- Profile Top: Picture + Info -->
+    <div class="profile-top">
+      <div class="pfp-container">
+        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+        <button id="changePfpBtn">Change Picture</button>
+      </div>
 
-      <h2 id="displayName">Username</h2>
-      <p id="location">Location</p>
-      <p id="bio">Bio</p>
+      <div class="profile-info-box">
+        <h2 id="displayName">Loading...</h2>
+        <p id="location" class="location-text">📍 Location</p>
+        <p id="bio" class="bio-text">Bio goes here...</p>
+        <button id="editProfileBtn">Edit Profile</button>
+        <button id="sendMessageBtn" style="display:none;">Send Message</button>
+      </div>
     </div>
 
-    <div class="edit-profile">
-      <h3>Edit Profile</h3>
-      <input type="text" id="bioInput" placeholder="Update your bio">
-      <input type="text" id="locationInput" placeholder="Update your location">
-      <input type="text" id="musicInput" placeholder="Add music link (YouTube/SoundCloud/Spotify)">
-      <button id="saveProfileBtn">Save Profile</button>
-      <button id="saveMusicBtn">Save Music</button>
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Edit Profile</h3>
+        <input type="text" id="displayNameInput" placeholder="Display Name">
+        <input type="text" id="locationInput" placeholder="Location">
+        <textarea id="bioInput" placeholder="Bio" rows="4"></textarea>
+        <button id="saveProfileBtn">Save Changes</button>
+      </div>
     </div>
 
-    <!-- Friends -->
-    <div class="friends-section">
-      <h3>Top 10 Friends</h3>
-      <div id="topFriendsContainer"></div>
-      <input type="text" id="addTopFriendInput" placeholder="Add friend by username">
-      <button id="addTopFriendBtn">Add to Top 10</button>
+    <!-- Theme Customization -->
+    <div class="theme-container card">
+      <h3>🎨 Customize Theme</h3>
+      <select id="themeSelect">
+        <option value="default-theme">Default</option>
+        <option value="dark-theme">Dark Mode</option>
+        <option value="neon-theme">Neon</option>
+        <option value="blue-gradient">Blue Gradient</option>
+        <option value="red-gradient">Red Gradient</option>
+        <option value="green-gradient">Green Gradient</option>
+        <option value="animated-rainbow">Animated Rainbow</option>
+      </select>
+      <button id="applyThemeBtn">Apply Theme</button>
+      <button id="resetThemeBtn">Reset to Default</button>
     </div>
 
-    <div class="friend-requests-section">
-      <h3>Friend Requests</h3>
-      <div id="friendRequestsContainer"></div>
-    </div>
-
-    <!-- Comments Wall -->
-    <div class="comments-section">
-      <h3>Comments Wall</h3>
-      <div id="commentsContainer"></div>
-      <textarea id="commentInput" placeholder="Leave a comment"></textarea>
-      <button id="addCommentBtn">Post Comment</button>
+    <!-- Custom HTML Editor (MySpace-style) -->
+    <div class="custom-html-container card" id="customHtmlSection">
+      <h3>💻 Custom HTML/CSS</h3>
+      <p class="info-text">Customize your profile with HTML & CSS (like the old MySpace days!)</p>
+      <textarea id="customHtmlInput" placeholder="Enter your custom HTML/CSS here..." rows="6"></textarea>
+      <button id="saveCustomHtmlBtn">Save Custom Code</button>
+      <button id="clearCustomHtmlBtn">Clear Custom Code</button>
+      <div id="customHtmlPreview"></div>
     </div>
 
     <!-- Music Player -->
-    <div class="music-player-section">
-      <h3>Music Player</h3>
+    <div class="music-player card">
+      <h3>🎵 Music Player</h3>
+      <div class="music-controls">
+        <label>
+          <input type="checkbox" id="autoplayToggle" checked> Autoplay
+        </label>
+      </div>
+      <div id="musicSlotsContainer">
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="YouTube/Spotify/SoundCloud link" data-slot="0">
+          <button class="add-music-btn" data-slot="0">Add</button>
+          <button class="remove-music-btn" data-slot="0" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 2" data-slot="1">
+          <button class="add-music-btn" data-slot="1">Add</button>
+          <button class="remove-music-btn" data-slot="1" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 3" data-slot="2">
+          <button class="add-music-btn" data-slot="2">Add</button>
+          <button class="remove-music-btn" data-slot="2" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 4" data-slot="3">
+          <button class="add-music-btn" data-slot="3">Add</button>
+          <button class="remove-music-btn" data-slot="3" style="display:none;">Remove</button>
+        </div>
+      </div>
       <div id="musicPlayerContainer"></div>
+    </div>
+
+    <!-- Top 10 Friends -->
+    <div class="top10-container card">
+      <h3>👥 Top 10 Friends</h3>
+      <input type="text" id="searchFriendInput" placeholder="Search username to add...">
+      <button id="searchFriendBtn">Search</button>
+      <div id="searchResults"></div>
+      <div id="topFriendsContainer" class="top-friends-list">
+        <!-- Drag and drop friends here -->
+      </div>
+    </div>
+
+    <!-- Comments Wall -->
+    <div class="wall-container card">
+      <h3>💬 Comments Wall</h3>
+      <div id="wallCommentsContainer">
+        <!-- Comments will be rendered here -->
+      </div>
+      <textarea id="commentInput" placeholder="Leave a comment..." rows="3"></textarea>
+      <button id="addCommentBtn">Post Comment</button>
     </div>
   </section>
 
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="auth-guard.js"></script>
+  <!-- Messages Modal -->
+  <div id="messagesModal" class="modal" style="display:none;">
+    <div class="modal-content messages-modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>💬 Private Messages</h3>
+      <div class="messages-layout">
+        <div class="conversations-list">
+          <h4>Conversations</h4>
+          <div id="conversationsList"></div>
+        </div>
+        <div class="message-thread">
+          <h4 id="currentChatUser">Select a conversation</h4>
+          <div id="messagesContainer"></div>
+          <div class="message-input-container">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button id="sendMessageBtnInChat">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="profile.js"></script>
 </body>
 </html>

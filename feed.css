@@ -1,64 +1,51 @@
-/* feed.css – FINAL version with aggressive image size fix (no more huge images on mobile/desktop) */
-
 :root {
   --primary: #1a1a1a;
   --accent: #007bff;
   --bg: #f0f4f8;
-  --card-bg: #ffffff;
-  --text: #333;
-  --text-light: #666;
+  --card: #ffffff;
   --border: #ddd;
   --shadow: 0 2px 10px rgba(0,0,0,0.08);
-  --like: #28a745;
-  --dislike: #dc3545;
-  --delete: #6c757d;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: var(--bg);
-  color: var(--text);
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
 }
 
-/* Navigation */
+/* NAV */
 .navbar {
   background: var(--primary);
-  color: white;
   padding: 1rem;
   display: flex;
   gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 .navbar button {
   background: rgba(255,255,255,0.15);
-  color: white;
   border: none;
+  color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.navbar button:hover {
-  background: rgba(255,255,255,0.25);
-}
-
-/* Feed Container */
+/* FEED */
 .feed-container {
   max-width: 800px;
-  margin: 2rem auto;
+  margin: 1.5rem auto;
   padding: 1rem;
 }
 
-/* New Post Form */
+/* NEW POST */
 .new-post {
-  background: var(--card-bg);
-  padding: 1.5rem;
+  background: var(--card);
+  padding: 1rem;
   border-radius: 8px;
   box-shadow: var(--shadow);
   margin-bottom: 2rem;
@@ -68,222 +55,99 @@ body {
   width: 100%;
   min-height: 100px;
   padding: 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  resize: vertical;
-  box-sizing: border-box;
+  margin-bottom: 0.8rem;
 }
 
-.new-post input[type="file"] {
-  margin-bottom: 1rem;
-  width: 100%;
+.new-post input {
+  margin-bottom: 0.8rem;
 }
 
 #postBtn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
   width: 100%;
+  padding: 0.8rem;
+  background: var(--accent);
+  border: none;
+  color: white;
+  border-radius: 6px;
 }
 
-#postBtn:hover {
-  background: #0056b3;
-}
-
-/* Individual Post */
-.post-card {
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 12px;
+/* POST */
+.post {
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 10px;
   box-shadow: var(--shadow);
   margin-bottom: 1.5rem;
 }
 
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
+.post strong {
+  font-size: 1.1rem;
 }
 
-.post-header strong {
-  font-size: 1.2rem;
-  color: var(--primary);
-}
-
-.post-header small {
-  color: var(--text-light);
-  font-size: 0.9rem;
-}
-
-.post-text {
-  margin-bottom: 1rem;
+.post p {
   white-space: pre-wrap;
 }
 
-/* IMAGE FIX – Aggressive Size Control (No More Huge Images!) */
-.post-image {
+/* 🔥 IMAGE & VIDEO FIX (THIS IS THE KEY) */
+.post-media {
   display: block;
-  margin: 1rem auto;               /* Center image */
-  max-width: 100%;                 /* Never wider than parent */
-  max-height: 500px;               /* Max height on desktop */
+  margin: 1rem auto;
+  max-width: 100% !important;
+  max-height: 500px;
   width: auto;
   height: auto;
-  object-fit: contain;             /* Fit inside without cropping/distortion */
+  object-fit: contain;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Actions (Like/Dislike/Delete) */
+/* ACTIONS */
 .actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.actions button {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-.like-btn {
-  background: var(--like);
-  color: white;
-}
-
-.like-btn:hover {
-  background: #218838;
-}
-
-.dislike-btn {
-  background: var(--dislike);
-  color: white;
-}
-
-.dislike-btn:hover {
-  background: #c82333;
-}
-
-.delete-btn {
-  background: var(--delete);
-  color: white;
-}
-
-.delete-btn:hover {
-  background: #5a6268;
-}
-
-/* Comments Section */
-.comments-section {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.comments-section h4 {
-  margin-bottom: 0.5rem;
-  color: var(--primary);
-}
-
-.comment {
-  background: #f9f9f9;
-  padding: 0.8rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-}
-
-.comment strong {
-  color: var(--primary);
-}
-
-/* Comment Input */
-.comment-form {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
   flex-wrap: wrap;
 }
 
-.comment-form input {
+.actions button {
   flex: 1;
-  padding: 0.8rem;
-  border: 1px solid var(--border);
+  padding: 0.5rem;
   border-radius: 6px;
-  min-width: 200px;
-}
-
-.comment-btn {
-  background: var(--accent);
-  color: white;
   border: none;
-  padding: 0.8rem 1rem;
-  border-radius: 6px;
   cursor: pointer;
 }
 
-/* No Posts Message */
-.no-posts {
-  text-align: center;
-  color: var(--text-light);
-  font-style: italic;
-  padding: 2rem;
+/* COMMENTS */
+.comments-container {
+  margin-top: 1rem;
 }
 
-/* Responsive Design – Mobile-First */
-@media (max-width: 768px) {
-  .feed-container {
-    padding: 0.5rem;
-  }
-
-  .new-post {
-    padding: 1rem;
-  }
-
-  .actions {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .actions button {
-    width: 100%;
-  }
-
-  .comment-form {
-    flex-direction: column;
-  }
-
-  .comment-form input {
-    width: 100%;
-  }
-
-  .post-image {
-    max-height: 400px;  /* Smaller cap on tablet/mobile */
-  }
+.comment {
+  background: #f9f9f9;
+  padding: 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
 }
 
-@media (max-width: 480px) {
-  .post-card {
-    padding: 1rem;
-  }
+/* COMMENT INPUT */
+.comment-input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.5rem;
+}
 
-  .post-image {
-    max-height: 300px;  /* Even smaller on small phones */
-  }
+.comment-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
 
-  .post-header {
-    flex-direction: column;
-    align-items: flex-start;
+/* MOBILE */
+@media (max-width: 600px) {
+  .post-media {
+    max-height: 300px;
   }
 }

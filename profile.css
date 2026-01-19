@@ -1,4 +1,4 @@
-/* profile.css – ENHANCED with unique backgrounds, colors, and effects for all themes to make them distinct and match their names */
+/* profile.css – 50+ PRESET THEMES + MySpace-style custom HTML injection */
 
 :root {
   --primary: #1a1a1a;
@@ -20,755 +20,536 @@ body {
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   line-height: 1.6;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
+  min-height: 100vh;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   THEME STYLES - ENHANCED FOR UNIQUENESS
+   BASIC THEMES
    ═══════════════════════════════════════════════════════════ */
 
-/* Default Theme - Light professional gradient */
 body.default-theme {
-  background: linear-gradient(to bottom, #f0f4f8, #e0e8f0);
+  background: linear-gradient(135deg, #f0f4f8 0%, #e0e8f0 100%);
   color: #333;
 }
 
-body.default-theme .card {
-  background: white;
-  color: #333;
-  border: 1px solid #e0e0e0;
-}
-
-/* Dark Theme - Deep space-like with subtle stars */
 body.dark-theme {
-  background: #0a0a0a url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Ccircle cx="10" cy="10" r="1" fill="%23fff" /%3E%3Ccircle cx="50" cy="50" r="1" fill="%23fff" /%3E%3Ccircle cx="90" cy="90" r="1" fill="%23fff" /%3E%3C/svg%3E') repeat;
+  background: #0a0a0a;
   color: #e8e8e8;
 }
 
-body.dark-theme .card {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  color: #e8e8e8;
-  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+body.dark-theme .card { background: #1a1a1a; border: 1px solid #333; color: #e8e8e8; }
+body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background: #2a2a2a; color: #e8e8e8; border-color: #444; }
+
+body.light-theme {
+  background: #ffffff;
+  color: #222;
 }
 
-body.dark-theme input,
-body.dark-theme textarea,
-body.dark-theme select {
-  background: #2a2a2a;
-  color: #e8e8e8;
-  border-color: #444;
-}
+body.light-theme .card { background: #f8f9fa; border: 1px solid #e0e0e0; }
 
-body.dark-theme .wall-comment,
-body.dark-theme .top-friend,
-body.dark-theme .search-result,
-body.dark-theme .conversation-item {
-  background: #252525;
-  color: #e8e8e8;
-}
+/* ═══════════════════════════════════════════════════════════
+   GRADIENT THEMES
+   ═══════════════════════════════════════════════════════════ */
 
-body.dark-theme .friend-name,
-body.dark-theme .wall-comment strong a {
-  color: #60a5fa;
-}
+body.blue-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+body.red-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+body.green-gradient { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+body.purple-gradient { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: white; }
+body.orange-gradient { background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%); color: white; }
+body.pink-gradient { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
+body.ocean-gradient { background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%); color: white; }
+body.sunset-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+body.forest-gradient { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); color: white; }
 
-body.dark-theme .empty-friends,
-body.dark-theme .empty-comments {
-  color: #888;
-}
-
-/* Neon Theme - Glowing cyber neon with pulse animation */
-body.neon-theme {
-  background: #000;
-  color: #0ff;
-  animation: neon-pulse 2s infinite alternate;
-}
-
-@keyframes neon-pulse {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.2); }
-}
-
-body.neon-theme .card {
-  background: rgba(0, 20, 20, 0.9);
-  border: 2px solid #0ff;
-  box-shadow: 0 0 15px #0ff, inset 0 0 10px rgba(0,255,255,0.2);
-  color: #0ff;
-}
-
-body.neon-theme input,
-body.neon-theme textarea,
-body.neon-theme select {
-  background: rgba(0, 40, 40, 0.8);
-  color: #0ff;
-  border: 2px solid #0ff;
-}
-
-body.neon-theme button {
-  border: 2px solid #0ff;
-  color: #0ff;
-  background: rgba(0,255,255,0.1);
-}
-
-body.neon-theme button:hover {
-  background: rgba(0,255,255,0.3);
-  box-shadow: 0 0 10px #0ff;
-}
-
-body.neon-theme .wall-comment,
-body.neon-theme .top-friend {
-  background: rgba(0, 40, 40, 0.6);
-  border: 1px solid #0ff;
-  color: #0ff;
-}
-
-body.neon-theme .friend-name,
-body.neon-theme .wall-comment strong a {
-  color: #0ff;
-}
-
-/* Blue Gradient Theme - Ocean wave-like with blue tones */
-body.blue-gradient {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: white;
-}
-
-body.blue-gradient .card {
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-}
-
-body.blue-gradient input,
-body.blue-gradient textarea,
-body.blue-gradient select {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-body.blue-gradient input::placeholder,
-body.blue-gradient textarea::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-body.blue-gradient .wall-comment,
-body.blue-gradient .top-friend {
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
-
-body.blue-gradient .friend-name,
-body.blue-gradient .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(0,123,255,0.5);
-}
-
-/* Red Gradient Theme - Fiery lava with red/orange */
-body.red-gradient {
-  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-  color: white;
-}
-
-body.red-gradient .card {
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-}
-
-body.red-gradient input,
-body.red-gradient textarea,
-body.red-gradient select {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-body.red-gradient input::placeholder,
-body.red-gradient textarea::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-body.red-gradient .wall-comment,
-body.red-gradient .top-friend {
-  background: rgba(255,255,255,0.15);
-  color: white;
-}
-
-body.red-gradient .friend-name,
-body.red-gradient .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(255,0,0,0.5);
-}
-
-/* Green Gradient Theme - Lush forest with green shades */
-body.green-gradient {
-  background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
-  color: #333;
-}
-
-body.green-gradient .card {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0,255,0,0.3);
-  color: #333;
-}
-
-/* Animated Rainbow Theme - Vibrant shifting rainbow with faster animation */
 body.animated-rainbow {
-  background: linear-gradient(270deg, #ff0080, #ff8c00, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
-  background-size: 1400% 1400%;
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db, #ff0080);
+  background-size: 400% 400%;
   animation: rainbow 15s ease infinite;
   color: white;
 }
 
 @keyframes rainbow {
-  0% { background-position: 0% 50%; }
+  0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
-body.animated-rainbow .card {
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255,255,255,0.4);
-  color: white;
-}
-
-body.animated-rainbow input,
-body.animated-rainbow textarea,
-body.animated-rainbow select {
+[class*="gradient"] .card {
   background: rgba(255,255,255,0.15);
-  color: white;
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.3);
+  color: inherit;
 }
 
-body.animated-rainbow input::placeholder,
-body.animated-rainbow textarea::placeholder {
+[class*="gradient"] input, [class*="gradient"] textarea, [class*="gradient"] select {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+[class*="gradient"] input::placeholder, [class*="gradient"] textarea::placeholder {
   color: rgba(255,255,255,0.7);
 }
 
-body.animated-rainbow .wall-comment,
-body.animated-rainbow .top-friend {
-  background: rgba(255,255,255,0.1);
+/* ═══════════════════════════════════════════════════════════
+   NEON & VIBRANT THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.neon-theme { background: #000; color: #0ff; }
+body.neon-theme .card { background: rgba(0, 20, 20, 0.9); border: 2px solid #0ff; box-shadow: 0 0 20px #0ff; color: #0ff; }
+
+body.neon-pink { background: #000; color: #ff00ff; }
+body.neon-pink .card { background: rgba(20, 0, 20, 0.9); border: 2px solid #ff00ff; box-shadow: 0 0 20px #ff00ff; color: #ff00ff; }
+
+body.neon-green { background: #000; color: #39ff14; }
+body.neon-green .card { background: rgba(0, 20, 0, 0.9); border: 2px solid #39ff14; box-shadow: 0 0 20px #39ff14; color: #39ff14; }
+
+body.cyberpunk {
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  color: #00ffff;
+}
+body.cyberpunk .card { background: rgba(0,0,0,0.7); border: 2px solid #ff00ff; box-shadow: 0 0 15px #00ffff; color: #00ffff; }
+
+body.vaporwave {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
   color: white;
 }
+body.vaporwave .card { background: rgba(255,255,255,0.1); border: 2px solid #00ffff; backdrop-filter: blur(10px); }
 
-body.animated-rainbow .friend-name,
-body.animated-rainbow .wall-comment strong a {
-  color: white;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* Light Blue - Soft sky with cloud pattern */
-body.light-blue {
-  background: linear-gradient(to bottom, #87cefa, #add8e6) url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Cpath d="M100 50c20 0 30 10 30 30s-10 40-30 40-30-20-30-40 10-30 30-30z" fill="%23fff" opacity="0.3"/%3E%3C/svg%3E') repeat;
-  color: #333;
-}
-
-body.light-blue .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-  border: 1px solid #87cefa;
-}
-
-/* Purple Haze - Misty purple with fog effect */
-body.purple-haze {
-  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
-  color: white;
-  position: relative;
-}
-
-body.purple-haze::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-body.purple-haze .card {
-  background: rgba(0,0,0,0.4);
+body.synthwave {
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
   color: white;
 }
-
-/* Sunset Orange - Warm sunset with ray effects */
-body.sunset-orange {
-  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
-  color: white;
-}
-
-body.sunset-orange .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-  box-shadow: 0 0 20px rgba(255,165,0,0.5);
-}
-
-/* Forest Green - Deep green with leaf pattern */
-body.forest-green {
-  background: linear-gradient(135deg, #093028 0%, #237a57 100%);
-  color: white;
-}
-
-body.forest-green .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Midnight Blue - Starry night with twinkling */
-body.midnight-blue {
-  background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
-  color: white;
-}
-
-body.midnight-blue .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Pink Blush - Soft pink with heart patterns */
-body.pink-blush {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-  color: #333;
-}
-
-body.pink-blush .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Golden Hour - Warm gold with shine */
-body.golden-hour {
-  background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
-  color: #333;
-}
-
-body.golden-hour .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-  box-shadow: 0 0 15px rgba(255,215,0,0.5);
-}
-
-/* Ocean Depths - Deep blue with bubble effect */
-body.ocean-depths {
-  background: linear-gradient(135deg, #021b79 0%, #0575e6 100%);
-  color: white;
-}
-
-body.ocean-depths .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Lavender Fields - Purple lavender gradients with flower hint */
-body.lavender-fields {
-  background: linear-gradient(135deg, #e6e6fa 0%, #967bb6 100%);
-  color: #333;
-}
-
-body.lavender-fields .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Fiery Red - Intense red with flame animation */
-body.fiery-red {
-  background: linear-gradient(135deg, #ff0000 0%, #ff7f00 100%);
-  animation: fire-glow 3s infinite alternate;
-  color: white;
-}
-
-@keyframes fire-glow {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.1); }
-}
-
-body.fiery-red .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Cats Theme - Cat images with playful borders */
-body.cats-theme {
-  background: url('https://source.unsplash.com/featured/?cats') no-repeat center center/cover;
-  color: #333;
-}
-
-body.cats-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-  border: 2px dashed #ff69b4;
-}
-
-/* Dogs Theme - Dog images with paw prints */
-body.dogs-theme {
-  background: url('https://source.unsplash.com/featured/?dogs') no-repeat center center/cover;
-  color: #333;
-}
-
-body.dogs-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-}
-
-/* Cars Theme - High-speed car backgrounds */
-body.cars-theme {
-  background: url('https://source.unsplash.com/featured/?cars') no-repeat center center/cover;
-  color: white;
-}
-
-body.cars-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Storms Theme - Dramatic storm with lightning flash */
-body.storms-theme {
-  background: url('https://source.unsplash.com/featured/?storm') no-repeat center center/cover;
-  color: white;
-  animation: lightning-flash 5s infinite;
-}
-
-@keyframes lightning-flash {
-  0%, 90% { filter: brightness(1); }
-  95% { filter: brightness(1.5); }
-  100% { filter: brightness(1); }
-}
-
-body.storms-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Flowers Theme - Vibrant flowers with bloom effect */
-body.flowers-theme {
-  background: url('https://source.unsplash.com/featured/?flowers') no-repeat center center/cover;
-  color: #333;
-}
-
-body.flowers-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-}
-
-/* Gothic Theme - Dark castle-like with ornate borders */
-body.gothic-theme {
-  background: linear-gradient(135deg, #232526 0%, #414345 100%);
-  color: #ccc;
-}
-
-body.gothic-theme .card {
-  background: rgba(0,0,0,0.8);
-  border: 2px solid #666;
-  color: #ccc;
-  border-radius: 0;
-  box-shadow: 0 0 10px #000;
-}
-
-/* Emo Theme - Black with hot pink accents */
-body.emo-theme {
-  background: linear-gradient(135deg, #000000 0%, #434343 100%);
-  color: #ff69b4;
-}
-
-body.emo-theme .card {
-  background: rgba(0,0,0,0.8);
-  color: #ff69b4;
-  border: 1px solid #ff69b4;
-}
-
-/* Retro Theme - 80s synthwave with grid */
-body.retro-theme {
-  background: linear-gradient(135deg, #f7797d 0%, #fbd786 33%, #c6ffdd 66%);
-  color: #000;
-}
-
-body.retro-theme .card {
-  background: rgba(255,255,255,0.2);
-  color: #000;
-  border: 2px dotted #000;
-}
-
-/* Space Theme - Galaxy with stars */
-body.space-theme {
-  background: url('https://source.unsplash.com/featured/?space') no-repeat center center/cover;
-  color: white;
-}
-
-body.space-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Beach Theme - Sandy beach with waves */
-body.beach-theme {
-  background: url('https://source.unsplash.com/featured/?beach') no-repeat center center/cover;
-  color: #333;
-}
-
-body.beach-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-}
-
-/* Mountain Theme - Majestic mountains */
-body.mountain-theme {
-  background: url('https://source.unsplash.com/featured/?mountain') no-repeat center center/cover;
-  color: white;
-}
-
-body.mountain-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Forest Theme - Dense forest */
-body.forest-theme {
-  background: url('https://source.unsplash.com/featured/?forest') no-repeat center center/cover;
-  color: white;
-}
-
-body.forest-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Cityscape Theme - Urban lights */
-body.cityscape-theme {
-  background: url('https://source.unsplash.com/featured/?city') no-repeat center center/cover;
-  color: white;
-}
-
-body.cityscape-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Abstract Art Theme - Dynamic abstract animation */
-body.abstract-theme {
-  background: linear-gradient(135deg, #ee7752 0%, #e73c7e 33%, #23a6d5 66%, #23d5ab 100%);
-  background-size: 400% 400%;
-  animation: abstract-shift 20s ease infinite;
-  color: white;
-}
-
-@keyframes abstract-shift {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
-
-body.abstract-theme .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Vintage Theme - Sepia toned paper */
-body.vintage-theme {
-  background: linear-gradient(135deg, #e6dace 0%, #d2b48c 100%);
-  color: #5c3c0d;
-}
-
-body.vintage-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #5c3c0d;
-  border: 1px dashed #8b4513;
-}
-
-/* Cyberpunk Theme - Neon gridlines */
-body.cyberpunk-theme {
-  background: linear-gradient(135deg, #f64f59 0%, #c471ed 50%, #12c2e9 100%);
-  color: #fff;
-}
-
-body.cyberpunk-theme .card {
-  background: rgba(0,0,0,0.6);
-  color: #fff;
-  border: 1px solid #0ff;
-  box-shadow: 0 0 10px #f0f;
-}
-
-/* Pastel Theme - Soft pastels */
-body.pastel-theme {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-  color: #333;
-}
-
-body.pastel-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Monochrome Theme - Grayscale */
-body.monochrome-theme {
-  background: linear-gradient(135deg, #000 0%, #808080 100%);
-  color: #fff;
-}
-
-body.monochrome-theme .card {
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-}
-
-/* Tropical Theme - Vibrant tropical */
-body.tropical-theme {
-  background: url('https://source.unsplash.com/featured/?tropical') no-repeat center center/cover;
-  color: #333;
-}
-
-body.tropical-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-}
-
-/* Desert Theme - Sandy desert */
-body.desert-theme {
-  background: url('https://source.unsplash.com/featured/?desert') no-repeat center center/cover;
-  color: #333;
-}
-
-body.desert-theme .card {
-  background: rgba(255,255,255,0.7);
-  color: #333;
-}
-
-/* Underwater Theme - Blue underwater */
-body.underwater-theme {
-  background: url('https://source.unsplash.com/featured/?underwater') no-repeat center center/cover;
-  color: white;
-}
-
-body.underwater-theme .card {
-  background: rgba(0,0,0,0.5);
-  color: white;
-}
-
-/* Autumn Theme - Fall leaves colors */
-body.autumn-theme {
-  background: linear-gradient(135deg, #cb2d3e 0%, #ef473a 100%);
-  color: white;
-}
-
-body.autumn-theme .card {
-  background: rgba(0,0,0,0.4);
-  color: white;
-}
-
-/* Winter Theme - Snowy blue-white */
-body.winter-theme {
-  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-  color: #333;
-}
-
-body.winter-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-  box-shadow: 0 0 10px rgba(0,0,255,0.2);
-}
-
-/* Spring Theme - Fresh green bloom */
-body.spring-theme {
-  background: linear-gradient(135deg, #76b852 0%, #8dc26f 100%);
-  color: #333;
-}
-
-body.spring-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Summer Theme - Bright sunny yellow */
-body.summer-theme {
-  background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
-  color: #333;
-}
-
-body.summer-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Halloween Theme - Spooky orange-black */
-body.halloween-theme {
-  background: linear-gradient(135deg, #fc4a1a 0%, #000 100%);
-  color: white;
-}
-
-body.halloween-theme .card {
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border: 1px solid #ff7518;
-}
-
-/* Christmas Theme - Festive red-green */
-body.christmas-theme {
-  background: linear-gradient(135deg, #c31432 0%, #228b22 100%);
-  color: white;
-}
-
-body.christmas-theme .card {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-
-/* Valentine Theme - Romantic pink-red */
-body.valentine-theme {
-  background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
-  color: #333;
-}
-
-body.valentine-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Easter Theme - Pastel eggs colors */
-body.easter-theme {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  color: #333;
-}
-
-body.easter-theme .card {
-  background: rgba(255,255,255,0.8);
-  color: #333;
-}
-
-/* Common overrides for all themes */
-body[class*="-theme"] input,
-body[class*="-theme"] textarea,
-body[class*="-theme"] select {
-  border-color: inherit;
-}
-
-body[class*="-theme"] .wall-comment,
-body[class*="-theme"] .top-friend {
-  background: rgba(255,255,255,0.2);
-  color: inherit;
-}
-
-body[class*="-theme"] .friend-name,
-body[class*="-theme"] .wall-comment strong a {
-  color: inherit;
-}
-
-body[class*="-theme"] button {
-  background: var(--accent, #007bff);
-}
+body.synthwave .card { background: rgba(0,0,0,0.6); border: 2px solid #fc00ff; }
 
 /* ═══════════════════════════════════════════════════════════
-   NAVIGATION
+   NATURE & ANIMALS
+   ═══════════════════════════════════════════════════════════ */
+
+body.cats-paradise {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1920') center/cover;
+  color: white;
+}
+body.cats-paradise .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.dogs-world {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920') center/cover;
+  color: white;
+}
+body.dogs-world .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.butterflies {
+  background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)),
+              url('https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=1920') center/cover;
+  color: #333;
+}
+body.butterflies .card { background: rgba(255,255,255,0.95); }
+
+body.ocean-life {
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+              url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.ocean-life .card { background: rgba(0,100,150,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.forest-path {
+  background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920') center/cover;
+  color: white;
+}
+body.forest-path .card { background: rgba(34,139,34,0.85); color: white; }
+
+body.mountain-view {
+  background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920') center/cover;
+  color: white;
+}
+body.mountain-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(5px); }
+
+body.sakura-blossom {
+  background: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920') center/cover;
+  color: #333;
+}
+body.sakura-blossom .card { background: rgba(255,192,203,0.9); }
+
+body.tropical-beach {
+  background: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.tropical-beach .card { background: rgba(0,150,200,0.8); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   HOLIDAYS & SEASONS
+   ═══════════════════════════════════════════════════════════ */
+
+body.christmas {
+  background: linear-gradient(135deg, #c31432 0%, #240b36 100%),
+              repeating-linear-gradient(45deg, transparent, transparent 50px, rgba(255,255,255,.1) 50px, rgba(255,255,255,.1) 100px);
+  color: white;
+}
+body.christmas .card { background: rgba(139,0,0,0.8); color: white; border: 2px solid gold; }
+
+body.halloween {
+  background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+  color: #ff6600;
+}
+body.halloween .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 2px solid #ff6600; }
+
+body.valentines {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  color: white;
+}
+body.valentines .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid #ff1493; }
+
+body.easter {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.easter .card { background: rgba(255,255,255,0.9); border: 2px dashed #ff69b4; }
+
+body.autumn-leaves {
+  background: url('https://images.unsplash.com/photo-1511497584788-876760111969?w=1920') center/cover;
+  color: white;
+}
+body.autumn-leaves .card { background: rgba(139,69,19,0.85); color: white; }
+
+body.winter-snow {
+  background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+  color: #333;
+}
+body.winter-snow .card { background: rgba(255,255,255,0.95); box-shadow: 0 0 20px rgba(200,220,255,0.5); }
+
+body.spring-flowers {
+  background: url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1920') center/cover;
+  color: #333;
+}
+body.spring-flowers .card { background: rgba(255,255,255,0.95); }
+
+body.summer-vibes {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.summer-vibes .card { background: rgba(255,255,255,0.9); border: 2px solid #ffa500; }
+
+/* ═══════════════════════════════════════════════════════════
+   AESTHETIC & EMO
+   ═══════════════════════════════════════════════════════════ */
+
+body.emo-black {
+  background: #000;
+  color: #ff0000;
+}
+body.emo-black .card { background: #1a1a1a; border: 2px solid #ff0000; color: white; }
+
+body.emo-red {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: #ff0000;
+}
+body.emo-red .card { background: rgba(0,0,0,0.9); border: 3px solid #ff0000; color: #ff0000; }
+
+body.gothic {
+  background: linear-gradient(135deg, #2c003e 0%, #000000 100%);
+  color: #9932cc;
+}
+body.gothic .card { background: rgba(0,0,0,0.95); border: 2px solid #9932cc; color: #dda0dd; }
+
+body.grunge {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              repeating-linear-gradient(90deg, #2a2a2a, #1a1a1a 2px, #2a2a2a 4px);
+  color: #888;
+}
+body.grunge .card { background: rgba(40,40,40,0.9); color: #ccc; border: 1px solid #666; }
+
+body.pastel-goth {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
+  color: #333;
+}
+body.pastel-goth .card { background: rgba(0,0,0,0.7); color: #ff6ec4; border: 2px solid #7873f5; }
+
+body.vintage-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #8b4513;
+  font-family: 'Georgia', serif;
+}
+body.vintage-aesthetic .card { background: rgba(255,248,220,0.95); border: 3px double #8b4513; }
+
+body.soft-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.soft-aesthetic .card { background: rgba(255,255,255,0.9); border-radius: 20px; }
+
+body.y2k {
+  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%);
+  color: #333;
+  animation: rainbow 10s ease infinite;
+}
+body.y2k .card { background: rgba(255,255,255,0.95); border: 3px solid #ff00ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   CARS & RACING
+   ═══════════════════════════════════════════════════════════ */
+
+body.racing-stripes {
+  background: 
+    repeating-linear-gradient(90deg, #000 0px, #000 40px, #ff0000 40px, #ff0000 80px),
+    linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+  color: white;
+}
+body.racing-stripes .card { background: rgba(0,0,0,0.9); border: 2px solid #ff0000; color: white; }
+
+body.jdm-style {
+  background: linear-gradient(135deg, #000000 0%, #ff0000 100%);
+  color: white;
+}
+body.jdm-style .card { background: rgba(0,0,0,0.85); border: 2px solid #ff0000; }
+
+body.muscle-cars {
+  background: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920') center/cover;
+  color: white;
+}
+body.muscle-cars .card { background: rgba(0,0,0,0.8); color: white; }
+
+body.neon-garage {
+  background: #0a0a0a;
+  color: #00ff00;
+}
+body.neon-garage .card { background: rgba(0,0,0,0.95); border: 2px solid #00ff00; box-shadow: 0 0 20px #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPACE & SCI-FI
+   ═══════════════════════════════════════════════════════════ */
+
+body.galaxy {
+  background: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.galaxy .card { background: rgba(25,25,112,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.nebula {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+}
+body.nebula .card { background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+
+body.stars {
+  background: #000 url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.stars .card { background: rgba(0,0,50,0.8); color: white; }
+
+body.matrix {
+  background: #000;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.matrix .card { background: rgba(0,20,0,0.95); border: 1px solid #00ff00; color: #00ff00; }
+
+body.alien {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: #00ff00;
+}
+body.alien .card { background: rgba(0,0,0,0.8); border: 2px solid #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   MUSIC & ART
+   ═══════════════════════════════════════════════════════════ */
+
+body.vinyl-records {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1458560871784-56d23406c091?w=1920') center/cover;
+  color: white;
+}
+body.vinyl-records .card { background: rgba(0,0,0,0.85); color: white; }
+
+body.graffiti {
+  background: url('https://images.unsplash.com/photo-1561677843-39dee7a319ca?w=1920') center/cover;
+  color: white;
+}
+body.graffiti .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.concert {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920') center/cover;
+  color: white;
+}
+body.concert .card { background: rgba(0,0,0,0.75); color: white; }
+
+body.paint-splash {
+  background: linear-gradient(135deg, #ff0080 0%, #ff8c00 25%, #40e0d0 50%, #9370db 75%, #ff0080 100%);
+  color: white;
+}
+body.paint-splash .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid white; }
+
+/* ═══════════════════════════════════════════════════════════
+   FOOD & DRINK
+   ═══════════════════════════════════════════════════════════ */
+
+body.coffee-vibes {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920') center/cover;
+  color: white;
+}
+body.coffee-vibes .card { background: rgba(101,67,33,0.9); color: white; }
+
+body.candy-land {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 50%, #ffeaa7 100%);
+  color: #333;
+}
+body.candy-land .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 25px; }
+
+body.pizza-party {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1920') center/cover;
+  color: white;
+}
+body.pizza-party .card { background: rgba(255,100,0,0.85); color: white; border: 3px solid #ffeb3b; }
+
+body.sushi-night {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+}
+body.sushi-night .card { background: rgba(44,62,80,0.9); color: white; border: 2px solid #e74c3c; }
+
+/* ═══════════════════════════════════════════════════════════
+   GAMING & GEEK
+   ═══════════════════════════════════════════════════════════ */
+
+body.retro-gaming {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, rgba(255,0,0,0.1) 0px, transparent 1px, transparent 2px, rgba(255,0,0,0.1) 3px),
+    repeating-linear-gradient(90deg, rgba(0,255,0,0.1) 0px, transparent 1px, transparent 2px, rgba(0,255,0,0.1) 3px);
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.retro-gaming .card { background: rgba(0,0,0,0.95); border: 3px solid #00ff00; color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+
+body.pixel-art {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, #111 0px, #111 4px, #000 4px, #000 8px),
+    repeating-linear-gradient(90deg, #111 0px, #111 4px, #000 4px, #000 8px);
+  color: #ff00ff;
+}
+body.pixel-art .card { background: rgba(0,0,0,0.9); border: 4px solid #ff00ff; color: #00ffff; }
+
+body.arcade {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: #ffff00;
+  animation: rainbow 8s ease infinite;
+}
+body.arcade .card { background: rgba(0,0,0,0.85); border: 3px solid #ffff00; color: #ffff00; box-shadow: 0 0 30px #ff00ff; }
+
+body.anime-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.anime-aesthetic .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 20px; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPORTS & FITNESS
+   ═══════════════════════════════════════════════════════════ */
+
+body.basketball {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1920') center/cover;
+  color: white;
+}
+body.basketball .card { background: rgba(255,87,34,0.9); color: white; border: 3px solid #fff; }
+
+body.soccer-field {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1920') center/cover;
+  color: white;
+}
+body.soccer-field .card { background: rgba(34,139,34,0.9); color: white; border: 2px solid white; }
+
+body.gym-life {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #e74c3c;
+}
+body.gym-life .card { background: rgba(0,0,0,0.85); color: white; border: 3px solid #e74c3c; }
+
+body.skateboard {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=1920') center/cover;
+  color: white;
+}
+body.skateboard .card { background: rgba(0,0,0,0.85); color: white; border: 3px dashed #ffeb3b; }
+
+/* ═══════════════════════════════════════════════════════════
+   CITY & URBAN
+   ═══════════════════════════════════════════════════════════ */
+
+body.new-york {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1920') center/cover;
+  color: white;
+}
+body.new-york .card { background: rgba(0,0,0,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.tokyo-lights {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920') center/cover;
+  color: white;
+}
+body.tokyo-lights .card { background: rgba(255,0,100,0.7); color: white; border: 2px solid #00ffff; }
+
+body.street-art {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=1920') center/cover;
+  color: white;
+}
+body.street-art .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.rooftop-view {
+  background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920') center/cover;
+  color: white;
+}
+body.rooftop-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(8px); }
+
+/* ═══════════════════════════════════════════════════════════
+   FANTASY & MAGIC
+   ═══════════════════════════════════════════════════════════ */
+
+body.unicorn-dreams {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 25%, #ff9a9e 50%, #fecfef 75%, #feada6 100%);
+  color: #333;
+  animation: rainbow 12s ease infinite;
+}
+body.unicorn-dreams .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 30px; box-shadow: 0 0 30px rgba(255,110,196,0.5); }
+
+body.dragon-lair {
+  background: linear-gradient(135deg, #2c003e 0%, #8e0e00 50%, #1f1c18 100%);
+  color: #ff6600;
+}
+body.dragon-lair .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 3px solid #ff0000; box-shadow: 0 0 20px #ff0000; }
+
+body.fairy-forest {
+  background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+              url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1920') center/cover;
+  color: #fff;
+}
+body.fairy-forest .card { background: rgba(144,238,144,0.85); color: #333; border: 2px solid #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+
+body.wizard-castle {
+  background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 50%, #c471ed 100%);
+  color: white;
+}
+body.wizard-castle .card { background: rgba(44,62,80,0.9); color: white; border: 3px solid #c471ed; box-shadow: 0 0 25px #c471ed; }
+
+/* ═══════════════════════════════════════════════════════════
+   BASE LAYOUT
    ═══════════════════════════════════════════════════════════ */
 
 .navbar {
   background: var(--primary);
   color: white;
-  padding: 1rem;
+  padding: 1rem 2rem;
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -783,7 +564,7 @@ body[class*="-theme"] button {
   background: rgba(255,255,255,0.15);
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -792,155 +573,97 @@ body[class*="-theme"] button {
 
 .navbar button:hover {
   background: rgba(255,255,255,0.25);
-  transform: translateY(-2px);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MAIN LAYOUT
-   ═══════════════════════════════════════════════════════════ */
-
 .profile-main {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 0 2rem;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 2rem;
+  border-radius: 16px;
   box-shadow: var(--shadow);
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   transition: all 0.3s ease;
 }
 
-.card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.card h3 {
-  margin-top: 0;
-  color: inherit;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   PROFILE TOP
-   ═══════════════════════════════════════════════════════════ */
-
 .profile-top {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 3rem;
+  margin-bottom: 3rem;
   flex-wrap: wrap;
-  align-items: flex-start;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
 }
 
 .pfp-container {
-  flex: 0 0 180px;
+  flex: 0 0 200px;
   text-align: center;
 }
 
 #profilePic {
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid var(--accent);
   box-shadow: var(--shadow);
-  margin-bottom: 1rem;
-  transition: transform 0.3s ease;
-}
-
-#profilePic:hover {
-  transform: scale(1.05);
-}
-
-#changePfpBtn {
-  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .profile-info-box {
   flex: 1;
-  min-width: 300px;
+  min-width: 350px;
 }
 
 .profile-info-box h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+  margin: 0 0 1rem 0;
+  font-size: 2.2rem;
+  font-weight: 700;
 }
-
-.location-text,
-.bio-text {
-  margin: 0.5rem 0;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   BUTTONS
-   ═══════════════════════════════════════════════════════════ */
 
 button {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.8rem;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 button:hover {
   background: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
 }
 
-button:active {
-  transform: translateY(0);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   INPUTS
-   ═══════════════════════════════════════════════════════════ */
-
-input[type="text"],
-input[type="email"],
-textarea,
-select {
+input, textarea, select {
   width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
   border: 2px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
-  transition: border-color 0.2s;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--accent);
 }
 
-textarea {
-  min-height: 100px;
-  resize: vertical;
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
-
-/* ═══════════════════════════════════════════════════════════
-   MODALS
-   ═══════════════════════════════════════════════════════════ */
 
 .modal {
   display: none;
@@ -951,41 +674,16 @@ textarea {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.7);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .modal-content {
   background: white;
   margin: 5% auto;
-  padding: 2rem;
-  border-radius: 12px;
+  padding: 2.5rem;
+  border-radius: 16px;
   width: 90%;
-  max-width: 600px;
-  position: relative;
-  animation: slideDown 0.3s ease;
+  max-width: 650px;
   color: #333;
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.messages-modal-content {
-  max-width: 800px;
-  height: 600px;
-  overflow: hidden;
 }
 
 .close-modal {
@@ -994,27 +692,48 @@ textarea {
   right: 1.5rem;
   font-size: 2rem;
   cursor: pointer;
-  color: var(--text-light);
-  transition: color 0.2s;
+  color: #666;
 }
 
-.close-modal:hover {
-  color: var(--primary);
+/* Custom HTML Preview - Shows confirmation */
+#customHtmlPreview {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 2px dashed #28a745;
+  border-radius: 12px;
+  min-height: 60px;
+  text-align: center;
+  background: rgba(40, 167, 69, 0.05);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MUSIC PLAYER
-   ═══════════════════════════════════════════════════════════ */
+#customHtmlPreview:empty {
+  display: none;
+}
 
-.music-controls {
+/* Custom styles injected by users appear here */
+#customProfileStyles {
+  display: none; /* Hidden container, styles apply globally */
+}
+
+.example-box {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
   margin-bottom: 1rem;
+  border-left: 4px solid var(--accent);
+}
+
+.example-box pre {
+  margin: 0.5rem 0 0 0;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .music-slot {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
-  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .music-slot input {
@@ -1022,449 +741,102 @@ textarea {
   margin-bottom: 0;
 }
 
-.music-slot button {
-  padding: 0.6rem 1rem;
-}
-
-.music-embed {
-  margin-bottom: 1rem;
-}
-
-.music-embed iframe {
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TOP 10 FRIENDS
-   ═══════════════════════════════════════════════════════════ */
-
 .top-friends-list {
-  min-height: 200px;
-  margin-top: 1rem;
+  min-height: 250px;
+  margin-top: 1.5rem;
 }
 
 .top-friend {
   background: rgba(0,123,255,0.08);
-  padding: 1rem;
-  margin-bottom: 0.8rem;
-  border-radius: 8px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
   cursor: move;
-  transition: all 0.2s;
-  border: 2px solid transparent;
-}
-
-.top-friend:hover {
-  background: rgba(0,123,255,0.15);
-  border-color: var(--accent);
-  transform: translateX(5px);
 }
 
 .top-friend .rank {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
   color: var(--accent);
-  width: 40px;
-  text-align: center;
+  width: 50px;
 }
 
 .friend-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--accent);
+  border: 3px solid var(--accent);
 }
 
 .friend-name {
   flex: 1;
   font-weight: 600;
   text-decoration: none;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
-.friend-name:hover {
-  text-decoration: underline;
-}
-
-.remove-friend-btn {
-  background: rgba(255,68,68,0.1);
-  color: #ff4444;
-  padding: 0.4rem 0.8rem;
-  font-size: 1.2rem;
-}
-
-.remove-friend-btn:hover {
-  background: rgba(255,68,68,0.2);
-}
-
-.empty-friends {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-/* Search Results */
-#searchResults,
-#userSearchResults {
-  margin: 1rem 0;
-  max-height: 300px;
+#searchResults {
+  margin: 1.5rem 0;
+  max-height: 350px;
   overflow-y: auto;
 }
 
 .search-result {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.8rem;
+  gap: 1.2rem;
+  padding: 1rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  transition: background 0.2s;
-  background: rgba(255,255,255,0.5);
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
 }
-
-.search-result:hover {
-  background: rgba(0,123,255,0.1);
-}
-
-.search-result img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.search-result span {
-  flex: 1;
-  font-weight: 500;
-}
-
-.add-friend-btn,
-.message-user-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENTS WALL
-   ═══════════════════════════════════════════════════════════ */
 
 #wallCommentsContainer {
-  max-height: 500px;
+  max-height: 600px;
   overflow-y: auto;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
   background: rgba(0,0,0,0.02);
-  border-radius: 8px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar {
-  width: 8px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar-track {
-  background: var(--light-bg);
-  border-radius: 10px;
-}
-
-#wallCommentsContainer::-webkit-scrollbar-thumb {
-  background: var(--border);
   border-radius: 10px;
 }
 
 .wall-comment {
   background: rgba(255,255,255,0.9);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 10px;
   position: relative;
-  transition: all 0.2s;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.wall-comment:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .comment-header {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .comment-avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  object-fit: cover;
   border: 2px solid var(--accent);
-}
-
-.wall-comment strong a {
-  text-decoration: none;
-}
-
-.wall-comment strong a:hover {
-  text-decoration: underline;
-}
-
-.wall-comment small {
-  font-size: 0.85rem;
-  display: block;
-  margin-top: 0.2rem;
-  opacity: 0.7;
-}
-
-.wall-comment p {
-  margin: 0.5rem 0 0 0;
 }
 
 .delete-wall-comment {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.8rem;
+  right: 0.8rem;
   background: transparent;
   color: #ff4444;
-  padding: 0.3rem 0.5rem;
-  font-size: 1.2rem;
-  opacity: 0.6;
+  padding: 0.4rem 0.7rem;
 }
-
-.delete-wall-comment:hover {
-  opacity: 1;
-  background: rgba(255,68,68,0.1);
-}
-
-.empty-comments {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MESSAGES
-   ═══════════════════════════════════════════════════════════ */
-
-.message-search {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border);
-}
-
-.messages-layout {
-  display: flex;
-  height: 400px;
-  gap: 1rem;
-}
-
-.conversations-list {
-  flex: 0 0 250px;
-  border-right: 2px solid var(--border);
-  overflow-y: auto;
-  padding-right: 1rem;
-}
-
-.conversation-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-bottom: 0.5rem;
-}
-
-.conversation-item:hover {
-  background: rgba(0,123,255,0.1);
-}
-
-.conversation-item img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.message-thread {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-#messagesContainer {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  background: rgba(0,0,0,0.02);
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.message {
-  padding: 0.8rem;
-  border-radius: 12px;
-  margin-bottom: 0.8rem;
-  max-width: 70%;
-  animation: messageSlide 0.2s ease;
-  word-wrap: break-word;
-}
-
-@keyframes messageSlide {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.message.sent {
-  background: var(--accent);
-  color: white;
-  margin-left: auto;
-}
-
-.message.received {
-  background: white;
-  border: 1px solid var(--border);
-  margin-right: auto;
-  color: #333;
-}
-
-.message-input-container {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.message-input-container input {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   UPLOAD PROGRESS
-   ═══════════════════════════════════════════════════════════ */
-
-.upload-progress {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.3);
-  z-index: 2000;
-  text-align: center;
-  min-width: 300px;
-}
-
-.upload-progress progress {
-  width: 100%;
-  height: 20px;
-  margin: 1rem 0;
-}
-
-.upload-progress .percent {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--accent);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  .profile-top {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .pfp-container {
-    margin-bottom: 1.5rem;
-  }
-
-  #profilePic {
-    width: 120px;
-    height: 120px;
-  }
-
-  .profile-info-box {
-    width: 100%;
-  }
-
-  .messages-layout {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .conversations-list {
-    flex: 0 0 auto;
-    border-right: none;
-    border-bottom: 2px solid var(--border);
-    padding-right: 0;
-    padding-bottom: 1rem;
-    max-height: 200px;
-  }
-
-  .navbar {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .navbar button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-main {
-    padding: 0 0.5rem;
-  }
-
-  .card {
-    padding: 1rem;
-  }
-
-  button {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .music-slot {
-    flex-direction: column;
-  }
-
-  .music-slot button {
-    width: 100%;
-  }
-
-  #profilePic {
-    width: 100px;
-    height: 100px;
-  }
+  .profile-main { padding: 0 1rem; }
+  .profile-top { flex-direction: column; align-items: center; gap: 2rem; }
+  .card { padding: 1.5rem; }
+  #profilePic { width: 140px; height: 140px; }
 }

@@ -1,4 +1,4 @@
-/* profile.css – COMPLETE with FIXED theme visibility */
+/* profile.css – COMPLETE with FIXED theme visibility, added 40+ preset themes */
 
 :root {
   --primary: #1a1a1a;
@@ -253,6 +253,455 @@ body.animated-rainbow .friend-name,
 body.animated-rainbow .wall-comment strong a {
   color: white;
   text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* Additional Preset Themes */
+
+/* Color Selections */
+body.light-blue {
+  background: linear-gradient(to bottom, #add8e6, #87ceeb);
+  color: #333;
+}
+
+body.light-blue .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+body.purple-haze {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  color: white;
+}
+
+body.purple-haze .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.sunset-orange {
+  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+  color: white;
+}
+
+body.sunset-orange .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.forest-green {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+body.forest-green .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.midnight-blue {
+  background: linear-gradient(135deg, #2c3e50 0%, #bdc3c7 100%);
+  color: white;
+}
+
+body.midnight-blue .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.pink-blush {
+  background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+  color: #333;
+}
+
+body.pink-blush .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+body.golden-hour {
+  background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  color: #333;
+}
+
+body.golden-hour .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+body.ocean-depths {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: white;
+}
+
+body.ocean-depths .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.lavender-fields {
+  background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+  color: white;
+}
+
+body.lavender-fields .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+body.fiery-red {
+  background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);
+  color: white;
+}
+
+body.fiery-red .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Cats Theme (using a pattern or image) */
+body.cats-theme {
+  background: url('https://source.unsplash.com/featured/?cats') no-repeat center center/cover;
+  color: #333;
+}
+
+body.cats-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Dogs Theme */
+body.dogs-theme {
+  background: url('https://source.unsplash.com/featured/?dogs') no-repeat center center/cover;
+  color: #333;
+}
+
+body.dogs-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Cars Theme */
+body.cars-theme {
+  background: url('https://source.unsplash.com/featured/?cars') no-repeat center center/cover;
+  color: white;
+}
+
+body.cars-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Storms Theme */
+body.storms-theme {
+  background: url('https://source.unsplash.com/featured/?storm') no-repeat center center/cover;
+  color: white;
+}
+
+body.storms-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Flowers Theme */
+body.flowers-theme {
+  background: url('https://source.unsplash.com/featured/?flowers') no-repeat center center/cover;
+  color: #333;
+}
+
+body.flowers-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Gothic Theme */
+body.gothic-theme {
+  background: linear-gradient(135deg, #434343 0%, #000000 100%);
+  color: #ccc;
+}
+
+body.gothic-theme .card {
+  background: rgba(0,0,0,0.8);
+  border: 1px solid #666;
+  color: #ccc;
+}
+
+/* Emo Theme */
+body.emo-theme {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: #ff69b4;
+}
+
+body.emo-theme .card {
+  background: rgba(0,0,0,0.8);
+  color: #ff69b4;
+}
+
+/* Retro Theme */
+body.retro-theme {
+  background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+  color: white;
+}
+
+body.retro-theme .card {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Space Theme */
+body.space-theme {
+  background: url('https://source.unsplash.com/featured/?space') no-repeat center center/cover;
+  color: white;
+}
+
+body.space-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Beach Theme */
+body.beach-theme {
+  background: url('https://source.unsplash.com/featured/?beach') no-repeat center center/cover;
+  color: #333;
+}
+
+body.beach-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Mountain Theme */
+body.mountain-theme {
+  background: url('https://source.unsplash.com/featured/?mountain') no-repeat center center/cover;
+  color: white;
+}
+
+body.mountain-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Forest Theme */
+body.forest-theme {
+  background: url('https://source.unsplash.com/featured/?forest') no-repeat center center/cover;
+  color: white;
+}
+
+body.forest-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Cityscape Theme */
+body.cityscape-theme {
+  background: url('https://source.unsplash.com/featured/?city') no-repeat center center/cover;
+  color: white;
+}
+
+body.cityscape-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Abstract Art Theme */
+body.abstract-theme {
+  background: linear-gradient(135deg, #ee7752 0%, #e73c7e 33%, #23a6d5 66%, #23d5ab 100%);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  color: white;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body.abstract-theme .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Vintage Theme */
+body.vintage-theme {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #333;
+}
+
+body.vintage-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Cyberpunk Theme */
+body.cyberpunk-theme {
+  background: linear-gradient(135deg, #f64f59 0%, #c471ed 50%, #12c2e9 100%);
+  color: #fff;
+}
+
+body.cyberpunk-theme .card {
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+}
+
+/* Pastel Theme */
+body.pastel-theme {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  color: #333;
+}
+
+body.pastel-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Monochrome Theme */
+body.monochrome-theme {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: #fff;
+}
+
+body.monochrome-theme .card {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+}
+
+/* Tropical Theme */
+body.tropical-theme {
+  background: url('https://source.unsplash.com/featured/?tropical') no-repeat center center/cover;
+  color: #333;
+}
+
+body.tropical-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Desert Theme */
+body.desert-theme {
+  background: url('https://source.unsplash.com/featured/?desert') no-repeat center center/cover;
+  color: #333;
+}
+
+body.desert-theme .card {
+  background: rgba(255,255,255,0.7);
+  color: #333;
+}
+
+/* Underwater Theme */
+body.underwater-theme {
+  background: url('https://source.unsplash.com/featured/?underwater') no-repeat center center/cover;
+  color: white;
+}
+
+body.underwater-theme .card {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* Autumn Theme */
+body.autumn-theme {
+  background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+  color: white;
+}
+
+body.autumn-theme .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Winter Theme */
+body.winter-theme {
+  background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+  color: white;
+}
+
+body.winter-theme .card {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Spring Theme */
+body.spring-theme {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  color: #333;
+}
+
+body.spring-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Summer Theme */
+body.summer-theme {
+  background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+  color: #333;
+}
+
+body.summer-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* Halloween Theme */
+body.halloween-theme {
+  background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+  color: white;
+}
+
+body.halloween-theme .card {
+  background: rgba(0,0,0,0.6);
+  color: white;
+}
+
+/* Christmas Theme */
+body.christmas-theme {
+  background: linear-gradient(135deg, #c31432 0%, #240b36 100%);
+  color: white;
+}
+
+body.christmas-theme .card {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Valentine Theme */
+body.valentine-theme {
+  background: linear-gradient(135deg, #e94057 0%, #8a2387 50%, #f27121 100%);
+  color: white;
+}
+
+body.valentine-theme .card {
+  background: rgba(0,0,0,0.4);
+  color: white;
+}
+
+/* Easter Theme */
+body.easter-theme {
+  background: linear-gradient(135deg, #ffd194 0%, #d1913c 100%);
+  color: #333;
+}
+
+body.easter-theme .card {
+  background: rgba(255,255,255,0.8);
+  color: #333;
+}
+
+/* For all themes, add common overrides if needed */
+body[class*="-theme"] input,
+body[class*="-theme"] textarea,
+body[class*="-theme"] select {
+  border-color: inherit;
+}
+
+body[class*="-theme"] .wall-comment,
+body[class*="-theme"] .top-friend {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+}
+
+body[class*="-theme"] .friend-name,
+body[class*="-theme"] .wall-comment strong a {
+  color: inherit;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -752,31 +1201,6 @@ textarea {
   padding: 2rem;
   color: var(--text-light);
   font-style: italic;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CUSTOM HTML PREVIEW
-   ═══════════════════════════════════════════════════════════ */
-
-#customHtmlPreview {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 2px dashed var(--border);
-  border-radius: 8px;
-  min-height: 100px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Allow custom HTML to affect body and global styles */
-body[class*="theme"] #customHtmlPreview * {
-  all: revert;
-}
-
-.info-text {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.8;
 }
 
 /* ═══════════════════════════════════════════════════════════

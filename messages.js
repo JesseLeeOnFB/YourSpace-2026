@@ -286,7 +286,7 @@ async function sendMessage() {
     messageInput.value = "";
   } catch (err) {
     console.error("Error sending message:", err);
-    alert("Error sending message: " + err.message);  // Show exact error
+    alert("Error sending message: " + err.message);
   }
 }
 
@@ -340,7 +340,7 @@ deleteSelectedBtn.addEventListener("click", async () => {
     deleteSelectedBtn.style.display = "none";
   } catch (err) {
     console.error("Error deleting messages:", err);
-    alert("Error deleting messages: " + err.message);  // Show exact error
+    alert("Error deleting messages: " + err.message);
   }
 });
 

@@ -93,6 +93,11 @@ const userDisliked = dislikedBy.includes(currentUserId);
 const isPinned = post.pinned || false;
 const isTrending = post.trending || false;
 
+// Check if post is saved by current user
+const userDoc = await getDoc(doc(db, “users”, currentUserId));
+const savedPosts = userDoc.data()?.savedPosts || [];
+const isSaved = savedPosts.includes(postId);
+
 const postEl = document.createElement(“div”);
 postEl.className = “post-card”;
 if (isPinned) postEl.classList.add(“pinned-post”);
@@ -100,7 +105,7 @@ if (isTrending) postEl.classList.add(“trending-post”);
 
 const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : “just now”;
 
-postEl.innerHTML = `${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''} ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''} <div class="post-header"> <strong>${post.username || "Anonymous"}</strong> <small>${time}</small> </div> <p>${post.text || ""}</p> ${post.mediaURL ?`<${post.mediaType === “video” ? “video controls” : “img”} src=”${post.mediaURL}” class=“post-media” />`: ""} <div class="actions"> <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button> <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button> <button class="comment-toggle" data-id="${postId}">💬</button> <button class="share-btn" data-id="${postId}">🔗</button> ${isOwner ?`<button class="delete-btn" data-id="${postId}">🗑️</button>`: ""} ${isAdmin(currentUserEmail) && !isPinned ?`<button class="pin-btn" data-id="${postId}">📌 Pin</button>`: ""} ${isAdmin(currentUserEmail) && isPinned ?`<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>`: ""} </div> <div class="comments-section" id="comments-${postId}"></div> <div class="comment-form"> <input type="text" class="comment-input" placeholder="Write a comment..." /> <button class="comment-btn" data-id="${postId}">💬</button> </div>`;
+postEl.innerHTML = `${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''} ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''} <div class="post-header"> <strong>${post.username || "Anonymous"}</strong> <small>${time}</small> </div> <p>${post.text || ""}</p> ${post.mediaURL ?`<${post.mediaType === “video” ? “video controls” : “img”} src=”${post.mediaURL}” class=“post-media” />`: ""} <div class="actions"> <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button> <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button> <button class="comment-toggle" data-id="${postId}">💬</button> <button class="share-btn" data-id="${postId}">🔗</button> <button class="save-btn ${isSaved ? 'saved' : ''}" data-id="${postId}">🔖 ${isSaved ? 'Saved' : 'Save'}</button> ${isOwner ?`<button class="delete-btn" data-id="${postId}">🗑️</button>`: ""} ${isAdmin(currentUserEmail) && !isPinned ?`<button class="pin-btn" data-id="${postId}">📌 Pin</button>`: ""} ${isAdmin(currentUserEmail) && isPinned ?`<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>`: ""} </div> <div class="comments-section" id="comments-${postId}"></div> <div class="comment-form"> <input type="text" class="comment-input" placeholder="Write a comment..." /> <button class="comment-btn" data-id="${postId}">💬</button> </div>`;
 
 postEl.querySelector(”.like-btn”).onclick = async (e) => {
 e.preventDefault();
@@ -121,6 +126,19 @@ if (userLiked) {
     updates.dislikedBy = arrayRemove(currentUserId);
   }
   await updateDoc(postRef, updates);
+  
+  // Create notification for post owner (Feature #18)
+  if (post.userId !== currentUserId) {
+    await addDoc(collection(db, "notifications"), {
+      userId: post.userId,
+      type: "like",
+      from: currentUserId,
+      fromUsername: auth.currentUser.email.split("@")[0],
+      postId: postId,
+      read: false,
+      timestamp: serverTimestamp()
+    });
+  }
 }
 ```
 
@@ -156,6 +174,36 @@ e.stopPropagation();
 haptic(“medium”);
 navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
 alert(“Post link copied!”);
+};
+
+// Save/Bookmark post handler
+postEl.querySelector(”.save-btn”).onclick = async (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“medium”);
+
+```
+const userRef = doc(db, "users", currentUserId);
+const userDoc = await getDoc(userRef);
+const currentSavedPosts = userDoc.data()?.savedPosts || [];
+
+if (currentSavedPosts.includes(postId)) {
+  // Unsave
+  await updateDoc(userRef, {
+    savedPosts: arrayRemove(postId)
+  });
+  e.target.classList.remove('saved');
+  e.target.textContent = '🔖 Save';
+} else {
+  // Save
+  await updateDoc(userRef, {
+    savedPosts: arrayUnion(postId)
+  });
+  e.target.classList.add('saved');
+  e.target.textContent = '🔖 Saved';
+}
+```
+
 };
 
 const deleteBtn = postEl.querySelector(”.delete-btn”);
@@ -366,6 +414,20 @@ try {
   });
 
   input.value = "";
+  
+  // Create notification for post owner (Feature #18)
+  if (post.userId !== auth.currentUser.uid) {
+    await addDoc(collection(db, "notifications"), {
+      userId: post.userId,
+      type: "comment",
+      from: auth.currentUser.uid,
+      fromUsername: username,
+      postId: postId,
+      commentText: text.substring(0, 50) + (text.length > 50 ? "..." : ""),
+      read: false,
+      timestamp: serverTimestamp()
+    });
+  }
 } catch (err) {
   alert("Error posting comment: " + err.message);
 }
@@ -463,3 +525,103 @@ auth.onAuthStateChanged((user) => {
 if (!user) window.location.href = “login.html”;
 else loadPosts();
 });
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICATIONS SYSTEM (Features #18, #19, #20)
+// ═══════════════════════════════════════════════════════════
+
+function setupNotifications() {
+const notifBtn = document.getElementById(“notificationsBtn”);
+const notifModal = document.getElementById(“notificationsModal”);
+const closeBtn = document.getElementById(“closeNotifModal”);
+const notifCount = document.getElementById(“notifCount”);
+const notifsList = document.getElementById(“notificationsList”);
+
+// Listen for new notifications
+const notifQuery = query(
+collection(db, “notifications”),
+where(“userId”, “==”, auth.currentUser.uid),
+orderBy(“timestamp”, “desc”)
+);
+
+onSnapshot(notifQuery, async (snapshot) => {
+const unreadCount = snapshot.docs.filter(doc => !doc.data().read).length;
+notifCount.textContent = unreadCount;
+notifCount.style.display = unreadCount > 0 ? “inline” : “none”;
+
+```
+// Render notifications
+notifsList.innerHTML = "";
+
+if (snapshot.empty) {
+  notifsList.innerHTML = "<p class='no-notifs'>No notifications yet</p>";
+  return;
+}
+
+for (const docSnap of snapshot.docs) {
+  const notif = docSnap.data();
+  const notifId = docSnap.id;
+  
+  const notifEl = document.createElement("div");
+  notifEl.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
+  
+  let message = "";
+  if (notif.type === "like") {
+    message = `<strong>${notif.fromUsername}</strong> liked your post`;
+  } else if (notif.type === "comment") {
+    message = `<strong>${notif.fromUsername}</strong> commented: "${notif.commentText}"`;
+  } else if (notif.type === "reply") {
+    message = `<strong>${notif.fromUsername}</strong> replied to your comment`;
+  }
+  
+  const time = notif.timestamp ? new Date(notif.timestamp.toMillis()).toLocaleString() : "just now";
+  
+  notifEl.innerHTML = `
+    <div class="notif-content">
+      <p>${message}</p>
+      <small>${time}</small>
+    </div>
+    <button class="mark-read-btn" data-id="${notifId}">${notif.read ? '✓' : '📧'}</button>
+  `;
+  
+  // Mark as read on click
+  notifEl.querySelector(".mark-read-btn").onclick = async (e) => {
+    e.stopPropagation();
+    await updateDoc(doc(db, "notifications", notifId), {
+      read: !notif.read
+    });
+  };
+  
+  // Navigate to post on click
+  notifEl.onclick = () => {
+    if (notif.postId) {
+      window.location.href = `feed.html#${notif.postId}`;
+      notifModal.style.display = "none";
+    }
+  };
+  
+  notifsList.appendChild(notifEl);
+}
+```
+
+});
+
+// Open modal
+notifBtn.onclick = () => {
+notifModal.style.display = “block”;
+};
+
+// Close modal
+closeBtn.onclick = () => {
+notifModal.style.display = “none”;
+};
+
+window.onclick = (e) => {
+if (e.target === notifModal) {
+notifModal.style.display = “none”;
+}
+};
+}
+
+// Initialize notifications
+setupNotifications();

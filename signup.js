@@ -61,6 +61,10 @@ await setDoc(doc(db, "users", user.uid), {
   autoplay: true,
   topFriends: [],
   customHtml: "",
+  savedPosts: [],
+  loginStreak: 1,
+  longestStreak: 1,
+  lastLoginDate: new Date().getTime(),
   termsAcceptedAt: serverTimestamp(),
   createdAt: serverTimestamp()
 });

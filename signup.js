@@ -1,8 +1,8 @@
-// signup.js - Username uniqueness enforcement
+// signup.js - With Terms & Conditions acceptance
 
 import { initializeApp } from “https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js”;
 import { getAuth, createUserWithEmailAndPassword } from “https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js”;
-import { getFirestore, collection, query, where, getDocs, doc, setDoc } from “https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js”;
+import { getFirestore, doc, setDoc, serverTimestamp } from “https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js”;
 
 const firebaseConfig = {
 apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
@@ -17,94 +17,65 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Check if username is unique
-async function isUsernameUnique(username) {
-const usernameQuery = query(
-collection(db, “users”),
-where(“username”, “==”, username.toLowerCase())
-);
+document.getElementById(“signupForm”).addEventListener(“submit”, async (e) => {
+e.preventDefault();
 
-const snapshot = await getDocs(usernameQuery);
-return snapshot.empty;
-}
+const email = document.getElementById(“email”).value;
+const password = document.getElementById(“password”).value;
+const confirmPassword = document.getElementById(“confirmPassword”).value;
+const acceptTerms = document.getElementById(“acceptTerms”).checked;
+const errorDiv = document.getElementById(“errorMessage”);
 
-document.getElementById(“signupBtn”)?.addEventListener(“click”, async () => {
-const email = document.getElementById(“emailInput”).value.trim();
-const password = document.getElementById(“passwordInput”).value;
-const username = document.getElementById(“usernameInput”).value.trim();
-const termsAccepted = document.getElementById(“termsCheckbox”)?.checked;
+errorDiv.textContent = “”;
 
-if (!email || !password || !username) {
-alert(“Please fill in all fields”);
+if (!acceptTerms) {
+errorDiv.textContent = “You must accept the Terms & Conditions to create an account.”;
 return;
 }
 
-if (!termsAccepted) {
-alert(“You must accept the Terms & Conditions to create an account”);
+if (password !== confirmPassword) {
+errorDiv.textContent = “Passwords do not match!”;
 return;
 }
 
-if (username.length < 3) {
-alert(“Username must be at least 3 characters long”);
+if (password.length < 6) {
+errorDiv.textContent = “Password must be at least 6 characters.”;
 return;
 }
 
-if (username.length > 20) {
-alert(“Username must be 20 characters or less”);
-return;
-}
-
-// Check username uniqueness
 try {
-const isUnique = await isUsernameUnique(username);
-if (!isUnique) {
-alert(“This username is already taken. Please choose another.”);
-return;
-}
-
-```
-// Create account
 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 const user = userCredential.user;
 
-// Create user profile
+```
+const username = email.split("@")[0];
+
 await setDoc(doc(db, "users", user.uid), {
-  username: username.toLowerCase(),
-  email: email,
+  email: user.email,
+  username: username,
   photoURL: "default-avatar.png",
   bio: "",
   location: "",
   theme: "default-theme",
-  customHtml: "",
   music: ["", "", "", ""],
   autoplay: true,
   topFriends: [],
-  createdAt: new Date(),
-  stats: {
-    posts: 0,
-    comments: 0,
-    reportsSubmitted: 0,
-    reportsReceived: 0
-  }
+  customHtml: "",
+  termsAcceptedAt: serverTimestamp(),
+  createdAt: serverTimestamp()
 });
 
-alert("Account created successfully!");
 window.location.href = "feed.html";
 ```
 
 } catch (error) {
 console.error(“Signup error:”, error);
-if (error.code === ‘auth/email-already-in-use’) {
-alert(“This email is already registered. Please login instead.”);
-} else if (error.code === ‘auth/weak-password’) {
-alert(“Password should be at least 6 characters”);
+if (error.code === “auth/email-already-in-use”) {
+errorDiv.textContent = “Email already in use. Please log in instead.”;
+} else if (error.code === “auth/invalid-email”) {
+errorDiv.textContent = “Invalid email address.”;
 } else {
-alert(“Error creating account: “ + error.message);
+errorDiv.textContent = “Error creating account. Please try again.”;
 }
 }
-});
-
-// Login redirect
-document.getElementById(“loginLink”)?.addEventListener(“click”, () => {
-window.location.href = “login.html”;
 });

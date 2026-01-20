@@ -842,238 +842,97 @@ padding: 0.4rem 0.7rem;
 }
 
 /* ═══════════════════════════════════════════════════════════
-EMERGENCY RESET BUTTON
+FEATURE #4 - BETTER RESET BUTTON STYLING
 ═══════════════════════════════════════════════════════════ */
 
-.emergency-reset-container {
-background: #fff3cd !important;
-border-left: 5px solid #ffc107 !important;
-margin-bottom: 2rem;
+#resetThemeBtn {
+background: #ff6b6b !important;
+color: white !important;
+font-weight: 600 !important;
+margin-left: 0.5rem !important;
+border: 2px solid #ff5252 !important;
+transition: all 0.2s !important;
 }
 
-.emergency-reset-container h3 {
-color: #856404;
-margin-bottom: 0.5rem;
-}
-
-.emergency-reset-container p {
-color: #856404;
-margin-bottom: 1rem;
-}
-
-.emergency-reset-btn {
-background: #ffc107 !important;
-color: #000 !important;
-font-weight: 700 !important;
-padding: 1rem 2rem !important;
-font-size: 1.1rem !important;
-border: 3px solid #ff8800 !important;
-box-shadow: 0 4px 12px rgba(255,193,7,0.4) !important;
-}
-
-.emergency-reset-btn:hover {
-background: #ff8800 !important;
+#resetThemeBtn:hover {
+background: #ff5252 !important;
 transform: scale(1.05) !important;
+box-shadow: 0 4px 12px rgba(255,107,107,0.4) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
-SAFE CUSTOM HTML FEATURES
+FEATURE #5 - TEXT OVERFLOW FIXES
 ═══════════════════════════════════════════════════════════ */
 
-.warning-box {
-background: #f8d7da;
-border-left: 4px solid #dc3545;
-padding: 1rem;
-margin: 1rem 0;
-border-radius: 4px;
-}
-
-.warning-box strong {
-color: #721c24;
-display: block;
-margin-bottom: 0.5rem;
-}
-
-.warning-box ul {
-margin: 0;
-padding-left: 1.5rem;
-color: #721c24;
-}
-
-.warning-box code {
-background: rgba(0,0,0,0.1);
-padding: 0.2rem 0.4rem;
-border-radius: 3px;
-font-family: monospace;
-}
-
-.custom-html-actions {
-display: flex;
-gap: 1rem;
-margin-top: 1rem;
-flex-wrap: wrap;
-}
-
-.secondary-btn {
-background: #6c757d !important;
-color: white !important;
-}
-
-.secondary-btn:hover {
-background: #5a6268 !important;
-}
-
-.danger-btn {
-background: #dc3545 !important;
-color: white !important;
-}
-
-.danger-btn:hover {
-background: #c82333 !important;
-}
-
-.input-hint {
-font-size: 0.85rem;
-color: #666;
-margin: -0.8rem 0 1rem 0;
-font-style: italic;
-}
-
-/* ═══════════════════════════════════════════════════════════
-TEXT OVERFLOW FIXES
-═══════════════════════════════════════════════════════════ */
-
-.card {
+/* Prevent text overflow in all containers */
+.card, .profile-main, .theme-container, .custom-html-container,
+.music-player, .top10-container, .wall-container {
 overflow: hidden !important;
 word-wrap: break-word !important;
+overflow-wrap: break-word !important;
 }
 
-.card h3, .card h2, .card p {
+/* Fix text elements */
+.card h3, .card h2, .card p, .card div {
+word-wrap: break-word !important;
 overflow-wrap: break-word !important;
 word-break: break-word !important;
-}
-
-textarea, input {
 max-width: 100% !important;
-overflow: hidden !important;
 }
 
+/* Fix username display */
 .profile-info-box h2 {
 overflow: hidden !important;
 text-overflow: ellipsis !important;
 max-width: 100% !important;
+word-wrap: break-word !important;
 }
 
+/* Fix bio and location text */
 .bio-text, .location-text {
-overflow-wrap: break-word !important;
-word-break: break-word !important;
 white-space: pre-wrap !important;
+word-wrap: break-word !important;
+overflow-wrap: break-word !important;
+max-width: 100% !important;
 }
 
-/* ═══════════════════════════════════════════════════════════
-WALL COMMENTS IMPROVEMENTS
-═══════════════════════════════════════════════════════════ */
+/* Fix input fields */
+textarea, input[type=“text”] {
+max-width: 100% !important;
+box-sizing: border-box !important;
+}
 
+/* Fix wall comments */
 .wall-comment {
 overflow: hidden !important;
 word-wrap: break-word !important;
 }
 
 .wall-comment p {
+word-wrap: break-word !important;
 overflow-wrap: break-word !important;
-word-break: break-word !important;
-margin: 0.5rem 0;
+white-space: pre-wrap !important;
 }
 
-#commentInput {
-width: 100%;
-min-height: 80px;
-resize: vertical;
+/* Fix custom HTML container */
+#customHtmlSection {
+overflow-x: hidden !important;
 }
 
-#addCommentBtn {
-width: 100%;
-margin-top: 0.5rem;
+#customHtmlSection * {
+max-width: 100% !important;
+word-wrap: break-word !important;
 }
 
-/* ═══════════════════════════════════════════════════════════
-RESPONSIVE NAVIGATION (if not already present)
-═══════════════════════════════════════════════════════════ */
-
-.nav-toggle {
-display: none;
-background: none;
-border: none;
-color: white;
-font-size: 1.5rem;
-cursor: pointer;
-padding: 0.5rem;
-}
-
-.nav-menu {
-display: flex;
-gap: 0.6rem;
-flex-wrap: wrap;
-justify-content: center;
-flex: 1;
-}
-
+/* Mobile specific fixes */
 @media (max-width: 768px) {
-.navbar {
-position: relative;
-flex-wrap: nowrap;
-justify-content: space-between;
-padding: 0.8rem 1rem;
-}
-
-.nav-toggle {
-display: block;
-order: 1;
-}
-
-.nav-menu {
-display: none;
-position: absolute;
-top: 100%;
-left: 0;
-right: 0;
-background: #1a1a1a;
-flex-direction: column;
-gap: 0;
-padding: 0;
-box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-z-index: 1000;
-}
-
-.nav-menu.active {
-display: flex;
-}
-
-.nav-menu button {
-width: 100%;
-text-align: left;
-padding: 1rem 1.5rem;
-border-radius: 0;
-border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.nav-menu button:hover {
-background: rgba(255,255,255,0.2);
-}
-
 .profile-main {
-padding: 0 1.5rem;
+padding: 0 1rem !important;
+overflow-x: hidden !important;
 }
 
-.emergency-reset-container {
-padding: 1.5rem !important;
-}
-
-.custom-html-actions {
-flex-direction: column;
-}
-
-.custom-html-actions button {
-width: 100%;
+.card {
+padding: 1rem !important;
+margin: 0 0 1rem 0 !important;
 }
 }

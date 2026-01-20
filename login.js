@@ -85,38 +85,9 @@ loginError.textContent = “Login failed: “ + err.message;
 }
 });
 
-// SIGN UP
-signupBtn.addEventListener(“click”, async () => {
-loginError.textContent = “”;
-const email = emailInput.value.trim();
-const password = passwordInput.value.trim();
-
-if (!email || !password) {
-loginError.textContent = “Please enter both email and password.”;
-return;
-}
-
-try {
-const userCred = await createUserWithEmailAndPassword(auth, email, password);
-
-```
-// Create default user profile in Firestore
-await setDoc(doc(db, "users", userCred.user.uid), {
-  username: email.split("@")[0],
-  bio: "",
-  location: "",
-  pfpURL: "default-avatar.png",
-  topFriends: [],
-  wallComments: [],
-  musicURL: ""
-});
-
-window.location.href = "feed.html"; // redirect to feed
-```
-
-} catch (err) {
-loginError.textContent = “Sign up failed: “ + err.message;
-}
+// SIGN UP - Redirect to signup page
+signupBtn.addEventListener(“click”, () => {
+window.location.href = “signup.html”;
 });
 
 // Auto-redirect if already logged in

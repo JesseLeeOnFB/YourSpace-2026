@@ -1,627 +1,127 @@
-// feed.js — FIXED - All buttons working, username display
-
-import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
-updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
-} from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
-import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
-import { getStorage, ref, uploadBytes, getDownloadURL } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js”;
+  getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp,
+  arrayUnion, arrayRemove, where
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
 const firebaseConfig = {
-apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
-authDomain: “yourspace-2026.firebaseapp.com”,
-projectId: “yourspace-2026”,
-storageBucket: “yourspace-2026.firebasestorage.app”,
-messagingSenderId: “72667267302”,
-appId: “1:72667267302:web:2bed5f543e05d49ca8fb27”
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.appspot.com",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
-// Admin accounts
-const ADMIN_EMAILS = [
-“skeeterjeeter8@gmail.com”,
-“daniellehunt01@gmail.com”
-];
+const postsContainer = document.getElementById("postsContainer");
+const postBtn = document.getElementById("postBtn");
+const postText = document.getElementById("postText");
+const postFileInput = document.getElementById("postFileInput");
 
-// Keyword filter - blocks offensive content
-const BLOCKED_KEYWORDS = [
-// Racist slurs (partial list - add more as needed)
-“n***er”, “n***a”, “f****t”, “d**e”, “ch**k”, “sp*c”, “k**e”, “r****d”,
-// Threats
-“kill yourself”, “kys”, “kill you”, “murder”, “bomb threat”,
-// Self-harm
-“suicide”, “cut myself”, “end it all”, “kill myself”,
-// Add more keywords as needed
-];
-
-function containsBlockedKeyword(text) {
-const lowerText = text.toLowerCase();
-return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
-}
-
-function isAdmin(email) {
-return ADMIN_EMAILS.includes(email.toLowerCase());
-}
-
-function haptic(type = “light”) {
-if (!navigator.vibrate) return;
-if (type === “light”) navigator.vibrate(10);
-if (type === “medium”) navigator.vibrate(20);
-if (type === “heavy”) navigator.vibrate([30, 20, 30]);
-}
-
-const postsContainer = document.getElementById(“postsContainer”);
-const postBtn = document.getElementById(“postBtn”);
-const postText = document.getElementById(“postText”);
-const postFileInput = document.getElementById(“postFileInput”);
-
-document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
-window.location.href = “feed.html”;
-});
-
-document.getElementById(“profileNavBtn”)?.addEventListener(“click”, () => {
-window.location.href = “profile.html”;
-});
-
-document.getElementById(“messagesNavBtn”)?.addEventListener(“click”, () => {
-window.location.href = “messages.html”;
-});
-
-document.getElementById(“contactNavBtn”)?.addEventListener(“click”, () => {
-window.location.href = “contact.html”;
-});
-
-document.getElementById(“logoutBtn”)?.addEventListener(“click”, async () => {
-await signOut(auth);
-window.location.href = “login.html”;
-});
-
-async function renderPost(post, postId) {
-const isOwner = post.userId === auth.currentUser.uid;
-const currentUserId = auth.currentUser.uid;
-const currentUserEmail = auth.currentUser.email;
-
-const likedBy = post.likedBy || [];
-const dislikedBy = post.dislikedBy || [];
-const userLiked = likedBy.includes(currentUserId);
-const userDisliked = dislikedBy.includes(currentUserId);
-const isPinned = post.pinned || false;
-const isTrending = post.trending || false;
-
-// Check if post is saved by current user
-const userDoc = await getDoc(doc(db, “users”, currentUserId));
-const savedPosts = userDoc.data()?.savedPosts || [];
-const isSaved = savedPosts.includes(postId);
-
-const postEl = document.createElement(“div”);
-postEl.className = “post-card”;
-if (isPinned) postEl.classList.add(“pinned-post”);
-if (isTrending) postEl.classList.add(“trending-post”);
-
-const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : “just now”;
-
-postEl.innerHTML = `${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''} ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''} <div class="post-header"> <strong>${post.username || "Anonymous"}</strong> <small>${time}</small> </div> <p>${post.text || ""}</p> ${post.mediaURL ?`<${post.mediaType === “video” ? “video controls” : “img”} src=”${post.mediaURL}” class=“post-media” />`: ""} <div class="actions"> <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button> <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button> <button class="comment-toggle" data-id="${postId}">💬</button> <button class="share-btn" data-id="${postId}">🔗</button> <button class="save-btn ${isSaved ? 'saved' : ''}" data-id="${postId}">🔖 ${isSaved ? 'Saved' : 'Save'}</button> ${isOwner ?`<button class="delete-btn" data-id="${postId}">🗑️</button>`: ""} ${isAdmin(currentUserEmail) && !isPinned ?`<button class="pin-btn" data-id="${postId}">📌 Pin</button>`: ""} ${isAdmin(currentUserEmail) && isPinned ?`<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>`: ""} </div> <div class="comments-section" id="comments-${postId}"></div> <div class="comment-form"> <input type="text" class="comment-input" placeholder="Write a comment..." /> <button class="comment-btn" data-id="${postId}">💬</button> </div>`;
-
-postEl.querySelector(”.like-btn”).onclick = async (e) => {
-e.preventDefault();
-e.stopPropagation();
-haptic(“light”);
-const postRef = doc(db, “posts”, postId);
-
-```
-if (userLiked) {
-  await updateDoc(postRef, {
-    likedBy: arrayRemove(currentUserId)
-  });
-} else {
-  const updates = {
-    likedBy: arrayUnion(currentUserId)
-  };
-  if (userDisliked) {
-    updates.dislikedBy = arrayRemove(currentUserId);
-  }
-  await updateDoc(postRef, updates);
-  
-  // Create notification for post owner (Feature #18)
-  if (post.userId !== currentUserId) {
-    await addDoc(collection(db, "notifications"), {
-      userId: post.userId,
-      type: "like",
-      from: currentUserId,
-      fromUsername: auth.currentUser.email.split("@")[0],
-      postId: postId,
-      read: false,
-      timestamp: serverTimestamp()
-    });
-  }
-}
-```
-
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
 };
 
-postEl.querySelector(”.dislike-btn”).onclick = async (e) => {
-e.preventDefault();
-e.stopPropagation();
-haptic(“light”);
-const postRef = doc(db, “posts”, postId);
+function renderPost(post, postId) {
+  const div = document.createElement("div");
+  div.className = "post-card";
 
-```
-if (userDisliked) {
-  await updateDoc(postRef, {
-    dislikedBy: arrayRemove(currentUserId)
-  });
-} else {
-  const updates = {
-    dislikedBy: arrayUnion(currentUserId)
-  };
-  if (userLiked) {
-    updates.likedBy = arrayRemove(currentUserId);
-  }
-  await updateDoc(postRef, updates);
-}
-```
+  const time = post.createdAt?.toDate().toLocaleString() || "Just now";
 
-};
-
-postEl.querySelector(”.share-btn”).onclick = (e) => {
-e.preventDefault();
-e.stopPropagation();
-haptic(“medium”);
-navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
-alert(“Post link copied!”);
-};
-
-// Save/Bookmark post handler
-postEl.querySelector(”.save-btn”).onclick = async (e) => {
-e.preventDefault();
-e.stopPropagation();
-haptic(“medium”);
-
-```
-const userRef = doc(db, "users", currentUserId);
-const userDoc = await getDoc(userRef);
-const currentSavedPosts = userDoc.data()?.savedPosts || [];
-
-if (currentSavedPosts.includes(postId)) {
-  // Unsave
-  await updateDoc(userRef, {
-    savedPosts: arrayRemove(postId)
-  });
-  e.target.classList.remove('saved');
-  e.target.textContent = '🔖 Save';
-} else {
-  // Save
-  await updateDoc(userRef, {
-    savedPosts: arrayUnion(postId)
-  });
-  e.target.classList.add('saved');
-  e.target.textContent = '🔖 Saved';
-}
-```
-
-};
-
-const deleteBtn = postEl.querySelector(”.delete-btn”);
-if (deleteBtn) {
-deleteBtn.addEventListener(“click”, async (e) => {
-e.preventDefault();
-e.stopPropagation();
-haptic(“heavy”);
-if (confirm(“Delete this post?”)) {
-try {
-await deleteDoc(doc(db, “posts”, postId));
-postEl.remove();
-} catch (err) {
-alert(“Error deleting post: “ + err.message);
-}
-}
-});
-}
-
-// PIN/UNPIN BUTTON (Admin only)
-const pinBtn = postEl.querySelector(”.pin-btn”);
-if (pinBtn) {
-pinBtn.addEventListener(“click”, async (e) => {
-e.preventDefault();
-e.stopPropagation();
-try {
-await updateDoc(doc(db, “posts”, postId), { pinned: true });
-alert(“Post pinned to top of feed!”);
-} catch (err) {
-alert(“Error pinning post: “ + err.message);
-}
-});
-}
-
-const unpinBtn = postEl.querySelector(”.unpin-btn”);
-if (unpinBtn) {
-unpinBtn.addEventListener(“click”, async (e) => {
-e.preventDefault();
-e.stopPropagation();
-try {
-await updateDoc(doc(db, “posts”, postId), { pinned: false });
-} catch (err) {
-alert(“Error unpinning post: “ + err.message);
-}
-});
-}
-
-const commentsSection = postEl.querySelector(”.comments-section”);
-const commentsQ = query(collection(db, “posts”, postId, “comments”), orderBy(“createdAt”, “desc”));
-
-onSnapshot(commentsQ, (snap) => {
-commentsSection.innerHTML = “”;
-
-```
-snap.forEach((cDoc) => {
-  const c = cDoc.data();
-  const cEl = document.createElement("div");
-  cEl.className = "comment";
-
-  const isCommentOwner = c.userId === auth.currentUser.uid;
-  const replies = c.replies || [];
-
-  cEl.innerHTML = `
-    <strong>${c.username || "Anonymous"}</strong>
-    <p>${c.text}</p>
-    <div class="comment-actions">
-      <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
-      ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
-    </div>
-    <div class="replies-container" id="replies-${cDoc.id}">
-      ${replies.map(reply => `
-        <div class="reply">
-          <strong>${reply.username}</strong>
-          <p>${reply.text}</p>
-          ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
-        </div>
-      `).join('')}
-    </div>
-    <div class="reply-form" id="reply-form-${cDoc.id}" style="display:none;">
-      <input type="text" class="reply-input" placeholder="Write a reply..." />
-      <button class="reply-submit-btn" data-comment-id="${cDoc.id}">Send</button>
-      <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
-    </div>
+  div.innerHTML = `
+    <strong>${post.username || "Anonymous"}</strong>
+    <small>${time}</small>
+    <p>${post.text || ""}</p>
+    ${post.mediaURL ? `<img src="${post.mediaURL}" class="post-media">` : ""}
   `;
 
-  // Reply button
-  cEl.querySelector(".reply-btn").onclick = () => {
-    const replyForm = document.getElementById(`reply-form-${cDoc.id}`);
-    replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
-  };
-
-  // Submit reply
-  const replySubmitBtn = cEl.querySelector(".reply-submit-btn");
-  if (replySubmitBtn) {
-    replySubmitBtn.onclick = async () => {
-      const replyInput = cEl.querySelector(".reply-input");
-      const replyText = replyInput.value.trim();
-      if (!replyText) return;
-
-      if (containsBlockedKeyword(replyText)) {
-        alert("Your reply contains blocked content and cannot be posted.");
-        return;
-      }
-
-      const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-      const userData = userDoc.data();
-
-      const newReply = {
-        id: Date.now().toString(),
-        userId: auth.currentUser.uid,
-        username: userData?.username || auth.currentUser.email.split("@")[0],
-        text: replyText,
-        createdAt: new Date().toISOString()
-      };
-
-      const commentRef = doc(db, "posts", postId, "comments", cDoc.id);
-      const commentDoc = await getDoc(commentRef);
-      const existingReplies = commentDoc.data().replies || [];
-
-      await updateDoc(commentRef, {
-        replies: [...existingReplies, newReply]
-      });
-
-      replyInput.value = "";
-      document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
-    };
-  }
-
-  // Cancel reply
-  const replyCancelBtn = cEl.querySelector(".reply-cancel-btn");
-  if (replyCancelBtn) {
-    replyCancelBtn.onclick = () => {
-      document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
-    };
-  }
-
-  // Delete comment
-  const deleteCommentBtn = cEl.querySelector(".delete-comment");
-  if (deleteCommentBtn) {
-    deleteCommentBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      haptic("heavy");
-      if (confirm("Delete this comment?")) {
-        const commentId = e.target.getAttribute("data-comment-id");
-        const postIdForComment = e.target.getAttribute("data-post-id");
-        try {
-          await deleteDoc(doc(db, "posts", postIdForComment, "comments", commentId));
-        } catch (err) {
-          alert("Error deleting comment: " + err.message);
-        }
-      }
-    });
-  }
-
-  // Delete reply buttons
-  cEl.querySelectorAll(".delete-reply").forEach(btn => {
-    btn.onclick = async (e) => {
-      if (confirm("Delete this reply?")) {
-        const commentId = e.target.getAttribute("data-comment-id");
-        const replyId = e.target.getAttribute("data-reply-id");
-        const postIdForReply = e.target.getAttribute("data-post-id");
-
-        const commentRef = doc(db, "posts", postIdForReply, "comments", commentId);
-        const commentDoc = await getDoc(commentRef);
-        const existingReplies = commentDoc.data().replies || [];
-        const updatedReplies = existingReplies.filter(r => r.id !== replyId);
-
-        await updateDoc(commentRef, {
-          replies: updatedReplies
-        });
-      }
-    };
-  });
-
-  commentsSection.appendChild(cEl);
-});
-```
-
-});
-
-postEl.querySelector(”.comment-btn”).onclick = async (e) => {
-e.preventDefault();
-e.stopPropagation();
-const input = postEl.querySelector(”.comment-input”);
-const text = input.value.trim();
-if (!text) return;
-
-```
-// KEYWORD FILTER - Block offensive comments
-if (containsBlockedKeyword(text)) {
-  alert("Your comment contains blocked content and cannot be posted. Please remove offensive language.");
-  return;
-}
-
-haptic("medium");
-
-const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-const userData = userDoc.data();
-const username = userData?.username || auth.currentUser.email.split("@")[0];
-
-try {
-  await addDoc(collection(db, "posts", postId, "comments"), {
-    text,
-    userId: auth.currentUser.uid,
-    username: username,
-    createdAt: serverTimestamp()
-  });
-
-  input.value = "";
-  
-  // Create notification for post owner (Feature #18)
-  if (post.userId !== auth.currentUser.uid) {
-    await addDoc(collection(db, "notifications"), {
-      userId: post.userId,
-      type: "comment",
-      from: auth.currentUser.uid,
-      fromUsername: username,
-      postId: postId,
-      commentText: text.substring(0, 50) + (text.length > 50 ? "..." : ""),
-      read: false,
-      timestamp: serverTimestamp()
-    });
-  }
-} catch (err) {
-  alert("Error posting comment: " + err.message);
-}
-```
-
-};
-
-postsContainer.appendChild(postEl);
+  postsContainer.appendChild(div);
 }
 
 function loadPosts() {
-const q = query(collection(db, “posts”), orderBy(“createdAt”, “desc”));
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-onSnapshot(q, (snap) => {
-postsContainer.innerHTML = “”;
+  onSnapshot(q, snap => {
+    postsContainer.innerHTML = "";
+    snap.forEach(docSnap => renderPost(docSnap.data(), docSnap.id));
+  });
+}
 
-```
-// Separate pinned, trending, and regular posts
-const pinnedPosts = [];
-const trendingPosts = [];
-const regularPosts = [];
+postBtn.onclick = async () => {
+  const text = postText.value.trim();
+  const file = postFileInput.files[0];
 
-snap.forEach((docSnap) => {
-  const post = docSnap.data();
-  if (post.pinned) {
-    pinnedPosts.push({ data: post, id: docSnap.id });
-  } else if (post.trending) {
-    trendingPosts.push({ data: post, id: docSnap.id });
-  } else {
-    regularPosts.push({ data: post, id: docSnap.id });
+  if (!text && !file) return alert("Post cannot be empty");
+
+  let mediaURL = "";
+
+  if (file) {
+    const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    mediaURL = await getDownloadURL(storageRef);
   }
-});
 
-// Render in order: Pinned → Trending → Regular
-pinnedPosts.forEach(({ data, id }) => renderPost(data, id));
-trendingPosts.forEach(({ data, id }) => renderPost(data, id));
-regularPosts.forEach(({ data, id }) => renderPost(data, id));
-```
+  const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+  const username = userDoc.data()?.username || auth.currentUser.email.split("@")[0];
 
-});
-}
+  await addDoc(collection(db, "posts"), {
+    text,
+    mediaURL,
+    username,
+    userId: auth.currentUser.uid,
+    createdAt: serverTimestamp()
+  });
 
-postBtn.addEventListener(“click”, async () => {
-const text = postText.value.trim();
-const file = postFileInput.files[0];
+  postText.value = "";
+  postFileInput.value = "";
+};
 
-if (!text && !file) return alert(“Post cannot be empty”);
+function setupNotifications(user) {
+  const notifBtn = document.getElementById("notificationsBtn");
+  const modal = document.getElementById("notificationsModal");
+  const closeBtn = document.getElementById("closeNotifModal");
+  const list = document.getElementById("notificationsList");
+  const count = document.getElementById("notifCount");
 
-// KEYWORD FILTER - Block offensive posts
-if (containsBlockedKeyword(text)) {
-alert(“Your post contains blocked content and cannot be published. Please remove offensive language.”);
-return;
-}
+  const q = query(
+    collection(db, "notifications"),
+    where("userId", "==", user.uid),
+    orderBy("timestamp", "desc")
+  );
 
-let mediaURL = “”;
-let mediaType = “”;
+  onSnapshot(q, snap => {
+    list.innerHTML = "";
+    const unread = snap.docs.filter(d => !d.data().read).length;
+    count.textContent = unread;
+    count.style.display = unread ? "inline" : "none";
 
-if (file) {
-mediaType = file.type.startsWith(“video”) ? “video” : “image”;
-const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-await uploadBytes(storageRef, file);
-mediaURL = await getDownloadURL(storageRef);
-}
-
-const userDoc = await getDoc(doc(db, “users”, auth.currentUser.uid));
-const userData = userDoc.data();
-const username = userData?.username || auth.currentUser.email.split(”@”)[0];
-
-try {
-await addDoc(collection(db, “posts”), {
-userId: auth.currentUser.uid,
-username: username,
-text,
-mediaURL,
-mediaType,
-likedBy: [],
-dislikedBy: [],
-pinned: false,
-createdAt: serverTimestamp()
-});
-
-```
-haptic("medium");
-
-postText.value = "";
-postFileInput.value = "";
-```
-
-} catch (err) {
-alert(“Error creating post: “ + err.message);
-}
-});
-
-auth.onAuthStateChanged((user) => {
-if (!user) window.location.href = “login.html”;
-else loadPosts();
-});
-
-// ═══════════════════════════════════════════════════════════
-// NOTIFICATIONS SYSTEM (Features #18, #19, #20)
-// ═══════════════════════════════════════════════════════════
-
-function setupNotifications() {
-const notifBtn = document.getElementById(“notificationsBtn”);
-const notifModal = document.getElementById(“notificationsModal”);
-const closeBtn = document.getElementById(“closeNotifModal”);
-const notifCount = document.getElementById(“notifCount”);
-const notifsList = document.getElementById(“notificationsList”);
-
-// Listen for new notifications
-const notifQuery = query(
-collection(db, “notifications”),
-where(“userId”, “==”, auth.currentUser.uid),
-orderBy(“timestamp”, “desc”)
-);
-
-onSnapshot(notifQuery, async (snapshot) => {
-const unreadCount = snapshot.docs.filter(doc => !doc.data().read).length;
-notifCount.textContent = unreadCount;
-notifCount.style.display = unreadCount > 0 ? “inline” : “none”;
-
-```
-// Render notifications
-notifsList.innerHTML = "";
-
-if (snapshot.empty) {
-  notifsList.innerHTML = "<p class='no-notifs'>No notifications yet</p>";
-  return;
-}
-
-for (const docSnap of snapshot.docs) {
-  const notif = docSnap.data();
-  const notifId = docSnap.id;
-  
-  const notifEl = document.createElement("div");
-  notifEl.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
-  
-  let message = "";
-  if (notif.type === "like") {
-    message = `<strong>${notif.fromUsername}</strong> liked your post`;
-  } else if (notif.type === "comment") {
-    message = `<strong>${notif.fromUsername}</strong> commented: "${notif.commentText}"`;
-  } else if (notif.type === "reply") {
-    message = `<strong>${notif.fromUsername}</strong> replied to your comment`;
-  }
-  
-  const time = notif.timestamp ? new Date(notif.timestamp.toMillis()).toLocaleString() : "just now";
-  
-  notifEl.innerHTML = `
-    <div class="notif-content">
-      <p>${message}</p>
-      <small>${time}</small>
-    </div>
-    <button class="mark-read-btn" data-id="${notifId}">${notif.read ? '✓' : '📧'}</button>
-  `;
-  
-  // Mark as read on click
-  notifEl.querySelector(".mark-read-btn").onclick = async (e) => {
-    e.stopPropagation();
-    await updateDoc(doc(db, "notifications", notifId), {
-      read: !notif.read
+    snap.forEach(d => {
+      const n = d.data();
+      const el = document.createElement("div");
+      el.className = `notification-item ${n.read ? "read" : "unread"}`;
+      el.textContent = n.type;
+      list.appendChild(el);
     });
-  };
-  
-  // Navigate to post on click
-  notifEl.onclick = () => {
-    if (notif.postId) {
-      window.location.href = `feed.html#${notif.postId}`;
-      notifModal.style.display = "none";
-    }
-  };
-  
-  notifsList.appendChild(notifEl);
-}
-```
+  });
 
+  notifBtn.onclick = () => modal.style.display = "block";
+  closeBtn.onclick = () => modal.style.display = "none";
+}
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadPosts();
+    setupNotifications(user);
+  }
 });
-
-// Open modal
-notifBtn.onclick = () => {
-notifModal.style.display = “block”;
-};
-
-// Close modal
-closeBtn.onclick = () => {
-notifModal.style.display = “none”;
-};
-
-window.onclick = (e) => {
-if (e.target === notifModal) {
-notifModal.style.display = “none”;
-}
-};
-}
-
-// Initialize notifications
-setupNotifications();

@@ -1,7 +1,7 @@
 // login.js
 import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
-import { getFirestore, doc, setDoc } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
 
 const firebaseConfig = {
 apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
@@ -35,8 +35,51 @@ return;
 }
 
 try {
-await signInWithEmailAndPassword(auth, email, password);
-window.location.href = “feed.html”; // redirect to feed
+const userCred = await signInWithEmailAndPassword(auth, email, password);
+const userId = userCred.user.uid;
+
+```
+// Track login streak (Features #11, #12)
+const userRef = doc(db, "users", userId);
+const userDoc = await getDoc(userRef);
+
+if (userDoc.exists()) {
+  const userData = userDoc.data();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  
+  const lastLogin = userData.lastLoginDate || 0;
+  const lastLoginDay = new Date(lastLogin).setHours(0, 0, 0, 0);
+  const yesterday = today - (24 * 60 * 60 * 1000);
+  
+  let newStreak = userData.loginStreak || 0;
+  let longestStreak = userData.longestStreak || 0;
+  
+  if (lastLoginDay === today) {
+    // Already logged in today, don't change streak
+  } else if (lastLoginDay === yesterday) {
+    // Consecutive day login
+    newStreak += 1;
+  } else {
+    // Streak broken, start new
+    newStreak = 1;
+  }
+  
+  // Update longest streak if current is higher
+  if (newStreak > longestStreak) {
+    longestStreak = newStreak;
+  }
+  
+  await updateDoc(userRef, {
+    lastLoginDate: now.getTime(),
+    loginStreak: newStreak,
+    longestStreak: longestStreak
+  });
+}
+
+window.location.href = "feed.html"; // redirect to feed
+```
+
 } catch (err) {
 loginError.textContent = “Login failed: “ + err.message;
 }

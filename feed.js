@@ -1,622 +1,627 @@
-/* feed.css – Restored original design */
-
-:root {
-–primary: #111;
-–accent: #007bff;
-–bg: #f0f4f8;
-–card-bg: #ffffff;
-–text: #222;
-–text-light: #666;
-–border: #ddd;
-–shadow: 0 2px 12px rgba(0,0,0,0.08);
-}
-
-body {
-margin: 0;
-font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Arial, sans-serif;
-background: var(–bg);
-color: var(–text);
-}
-
-.navbar {
-background: var(–primary);
-padding: 0.8rem;
-display: flex;
-justify-content: center;
-gap: 0.6rem;
-position: sticky;
-top: 0;
-z-index: 100;
-box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.navbar button {
-background: rgba(255,255,255,0.15);
-border: none;
-color: white;
-padding: 0.6rem 1rem;
-border-radius: 999px;
-font-size: 0.9rem;
-cursor: pointer;
-transition: all 0.2s;
-}
-
-.navbar button:hover {
-background: rgba(255,255,255,0.25);
-}
-
-.feed-container {
-max-width: 720px;
-margin: auto;
-padding: 1rem;
-}
-
-.feed-container h1 {
-margin-bottom: 1.5rem;
-}
-
-.new-post {
-background: var(–card-bg);
-padding: 1rem;
-border-radius: 12px;
-box-shadow: var(–shadow);
-margin-bottom: 1.5rem;
-}
-
-.new-post textarea {
-width: 100%;
-min-height: 90px;
-resize: vertical;
-padding: 0.8rem;
-border-radius: 8px;
-border: 1px solid var(–border);
-margin-bottom: 0.6rem;
-font-family: inherit;
-}
-
-.new-post input[type=“file”] {
-width: 100%;
-margin-bottom: 0.6rem;
-}
-
-#postBtn {
-width: 100%;
-padding: 0.8rem;
-border-radius: 999px;
-border: none;
-background: var(–accent);
-color: white;
-font-size: 1rem;
-cursor: pointer;
-transition: background 0.2s;
-}
-
-#postBtn:hover {
-background: #0056b3;
-}
-
-.post-card {
-background: var(–card-bg);
-padding: 1rem;
-border-radius: 14px;
-box-shadow: var(–shadow);
-margin-bottom: 1.2rem;
-transition: box-shadow 0.3s;
-}
-
-.post-card:hover {
-box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-}
-
-.pinned-post {
-border: 3px solid #ffd700;
-background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
-box-shadow: 0 4px 20px rgba(255,215,0,0.3);
-}
-
-.pin-badge {
-background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-color: #333;
-padding: 0.5rem 1rem;
-border-radius: 8px;
-font-weight: bold;
-text-align: center;
-margin-bottom: 0.8rem;
-box-shadow: 0 2px 8px rgba(255,215,0,0.3);
-}
-
-.pin-btn,
-.unpin-btn {
-background: #ffd700;
-color: #333;
-font-weight: bold;
-}
-
-.pin-btn:hover,
-.unpin-btn:hover {
-background: #ffed4e;
-}
-
-.trending-post {
-border: 3px solid #ff4500;
-background: linear-gradient(135deg, #fff5ee 0%, #ffffff 100%);
-box-shadow: 0 4px 20px rgba(255,69,0,0.3);
-}
-
-.trending-badge {
-background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
-color: white;
-padding: 0.5rem 1rem;
-border-radius: 8px;
-font-weight: bold;
-text-align: center;
-margin-bottom: 0.8rem;
-box-shadow: 0 2px 8px rgba(255,69,0,0.3);
-animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-0%, 100% {
-transform: scale(1);
-box-shadow: 0 2px 8px rgba(255,69,0,0.3);
-}
-50% {
-transform: scale(1.02);
-box-shadow: 0 4px 16px rgba(255,69,0,0.5);
-}
-}
-
-.post-header {
-display: flex;
-justify-content: space-between;
-margin-bottom: 0.5rem;
-}
-
-.post-header strong {
-font-size: 1rem;
-}
-
-.post-header small {
-color: var(–text-light);
-}
-
-.post-card > p {
-white-space: pre-wrap;
-margin-bottom: 0.6rem;
-}
-
-.post-media {
-display: block;
-margin: 0.6rem auto;
-max-width: 100%;
-max-height: 500px;
-width: auto;
-height: auto;
-object-fit: contain;
-border-radius: 12px;
-}
-
-.actions {
-display: flex;
-justify-content: space-around;
-margin-top: 0.6rem;
-border-top: 1px solid var(–border);
-padding-top: 0.6rem;
-}
-
-.actions button {
-border: none;
-background: none;
-font-size: 1.4rem;
-padding: 0.4rem;
-cursor: pointer;
-border-radius: 6px;
-transition: background 0.2s;
-}
-
-.actions button:hover {
-background: rgba(0,0,0,0.05);
-}
-
-.like-btn.active {
-background: rgba(0, 123, 255, 0.15);
-color: #007bff;
-}
-
-.dislike-btn.active {
-background: rgba(255, 0, 0, 0.15);
-color: #ff4444;
-}
-
-.comments-section {
-margin-top: 0.8rem;
-border-top: 1px solid var(–border);
-padding-top: 0.6rem;
-}
-
-.comment {
-background: #f8f8f8;
-border-radius: 8px;
-padding: 0.5rem;
-margin-bottom: 0.4rem;
-position: relative;
-}
-
-.comment strong {
-font-size: 0.9rem;
-}
-
-.comment p {
-margin: 0.3rem 0 0 0;
-}
-
-.comment-actions {
-display: flex;
-gap: 0.5rem;
-margin-top: 0.5rem;
-}
-
-.reply-btn {
-background: none;
-border: none;
-color: #007bff;
-font-size: 0.85rem;
-cursor: pointer;
-padding: 0.2rem 0.5rem;
-}
-
-.reply-btn:hover {
-text-decoration: underline;
-}
-
-.replies-container {
-margin-left: 2rem;
-margin-top: 0.5rem;
-border-left: 2px solid #e0e0e0;
-padding-left: 0.8rem;
-}
-
-.reply {
-background: #fff;
-border-radius: 6px;
-padding: 0.4rem 0.6rem;
-margin-bottom: 0.4rem;
-position: relative;
-font-size: 0.9rem;
-}
-
-.reply strong {
-font-size: 0.85rem;
-color: #007bff;
-}
-
-.reply p {
-margin: 0.2rem 0 0 0;
-color: #333;
-}
-
-.delete-reply {
-position: absolute;
-top: 0.2rem;
-right: 0.2rem;
-background: none;
-border: none;
-font-size: 0.9rem;
-cursor: pointer;
-opacity: 0.6;
-}
-
-.delete-reply:hover {
-opacity: 1;
-}
-
-.reply-form {
-display: none;
-gap: 0.3rem;
-margin-top: 0.5rem;
-margin-left: 2rem;
-}
-
-.reply-input {
-flex: 1;
-padding: 0.5rem;
-border-radius: 999px;
-border: 1px solid var(–border);
-font-size: 0.9rem;
-}
-
-.reply-submit-btn,
-.reply-cancel-btn {
-border: none;
-padding: 0.5rem 0.8rem;
-border-radius: 999px;
-font-size: 0.85rem;
-cursor: pointer;
-}
-
-.reply-submit-btn {
-background: #007bff;
-color: white;
-}
-
-.reply-cancel-btn {
-background: #6c757d;
-color: white;
-}
-
-.delete-comment {
-position: absolute;
-top: 0.3rem;
-right: 0.3rem;
-background: none;
-border: none;
-font-size: 1rem;
-cursor: pointer;
-opacity: 0.6;
-}
-
-.delete-comment:hover {
-opacity: 1;
-}
-
-.comment-form {
-display: flex;
-gap: 0.4rem;
-margin-top: 0.5rem;
-}
-
-.comment-input {
-flex: 1;
-padding: 0.6rem;
-border-radius: 999px;
-border: 1px solid var(–border);
-}
-
-.comment-btn {
-border: none;
-background: var(–accent);
-color: white;
-border-radius: 999px;
-padding: 0.5rem 0.9rem;
-font-size: 1.1rem;
-cursor: pointer;
-}
-
-.comment-btn:hover {
-background: #0056b3;
-}
-
-.delete-btn {
-background: none;
-border: none;
-font-size: 1.1rem;
-cursor: pointer;
-}
-
-@media (max-width: 768px) {
-.post-media {
-max-height: 350px;
-}
-
-.actions {
-font-size: 1.2rem;
-}
-}
-
-@media (max-width: 480px) {
-.feed-container {
-padding: 0.8rem 0.5rem;
-}
-
-.post-card {
-padding: 1rem;
-border-radius: 12px;
-}
-
-.post-media {
-max-height: 280px;
-}
-
-.actions {
-font-size: 1.1rem;
-gap: 0.3rem;
-}
-
-.actions button {
-padding: 0.4rem 0.6rem;
-font-size: 1.1rem;
-}
-
-.new-post {
-padding: 1rem;
-}
-
-.new-post textarea {
-min-height: 80px;
-font-size: 0.95rem;
-}
-
-.comment {
-padding: 0.6rem 2rem 0.6rem 0.7rem;
-}
-
-.comment-input {
-font-size: 0.9rem;
-padding: 0.6rem 0.9rem;
-}
-}
-
-/* ═══════════════════════════════════════════════════════════
-FEATURE #27 - SAVED/BOOKMARKED POSTS
-═══════════════════════════════════════════════════════════ */
-
-.save-btn {
-background: #fff !important;
-color: #555 !important;
-border: 2px solid #ddd !important;
-padding: 0.5rem 1rem !important;
-border-radius: 6px !important;
-font-weight: 600 !important;
-cursor: pointer !important;
-transition: all 0.2s !important;
-}
-
-.save-btn:hover {
-background: #f5f5f5 !important;
-border-color: #4CAF50 !important;
-transform: translateY(-1px) !important;
-}
-
-.save-btn.saved {
-background: #4CAF50 !important;
-color: white !important;
-border-color: #4CAF50 !important;
-}
-
-.save-btn.saved:hover {
-background: #45a049 !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-FEATURES #18, #19, #20 - NOTIFICATIONS SYSTEM
-═══════════════════════════════════════════════════════════ */
-
-#notificationsBtn {
-position: relative !important;
-background: #fff !important;
-color: #333 !important;
-border: 2px solid #ddd !important;
-font-size: 1.2rem !important;
-padding: 0.6rem 1.2rem !important;
-}
-
-#notificationsBtn:hover {
-background: #f8f8f8 !important;
-border-color: #4CAF50 !important;
-}
-
-.notif-badge {
-position: absolute !important;
-top: -5px !important;
-right: -5px !important;
-background: #ff4444 !important;
-color: white !important;
-border-radius: 50% !important;
-width: 22px !important;
-height: 22px !important;
-display: flex !important;
-align-items: center !important;
-justify-content: center !important;
-font-size: 0.7rem !important;
-font-weight: 700 !important;
-border: 2px solid white !important;
-box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-}
-
-.notification-item {
-display: flex !important;
-justify-content: space-between !important;
-align-items: center !important;
-padding: 1rem !important;
-border-bottom: 1px solid #eee !important;
-cursor: pointer !important;
-transition: background 0.2s !important;
-}
-
-.notification-item:hover {
-background: #f5f5f5 !important;
-}
-
-.notification-item.unread {
-background: #e3f2fd !important;
-border-left: 4px solid #2196F3 !important;
-}
-
-.notification-item.read {
-opacity: 0.7 !important;
-}
-
-.notif-content {
-flex: 1 !important;
-}
-
-.notif-content p {
-margin: 0 0 0.3rem 0 !important;
-color: #333 !important;
-}
-
-.notif-content small {
-color: #999 !important;
-font-size: 0.85rem !important;
-}
-
-.mark-read-btn {
-background: #4CAF50 !important;
-color: white !important;
-border: none !important;
-padding: 0.4rem 0.8rem !important;
-border-radius: 4px !important;
-cursor: pointer !important;
-font-size: 1rem !important;
-transition: all 0.2s !important;
-}
-
-.mark-read-btn:hover {
-background: #45a049 !important;
-transform: scale(1.1) !important;
-}
-
-.no-notifs {
-text-align: center !important;
-padding: 2rem !important;
-color: #999 !important;
-font-style: italic !important;
-}
-
-/* Notification modal */
-.modal {
-display: none !important;
-position: fixed !important;
-z-index: 1000 !important;
-left: 0 !important;
-top: 0 !important;
-width: 100% !important;
-height: 100% !important;
-background: rgba(0,0,0,0.5) !important;
-}
-
-.modal-content {
-background: white !important;
-margin: 5% auto !important;
-padding: 2rem !important;
-width: 90% !important;
-max-width: 600px !important;
-border-radius: 12px !important;
-box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
-max-height: 80vh !important;
-overflow-y: auto !important;
-}
-
-.close-modal {
-float: right !important;
-font-size: 2rem !important;
-font-weight: bold !important;
-cursor: pointer !important;
-color: #999 !important;
-}
-
-.close-modal:hover {
-color: #333 !important;
-}
-
-@media (max-width: 768px) {
-.modal-content {
-width: 95% !important;
-margin: 10% auto !important;
-padding: 1.5rem !important;
-}
-
-.notification-item {
-padding: 0.8rem !important;
-}
-}
+// feed.js — FIXED - All buttons working, username display
+
+import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
+import {
+getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
+updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
+} from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
+import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
+import { getStorage, ref, uploadBytes, getDownloadURL } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js”;
+
+const firebaseConfig = {
+apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
+authDomain: “yourspace-2026.firebaseapp.com”,
+projectId: “yourspace-2026”,
+storageBucket: “yourspace-2026.firebasestorage.app”,
+messagingSenderId: “72667267302”,
+appId: “1:72667267302:web:2bed5f543e05d49ca8fb27”
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
+
+// Admin accounts
+const ADMIN_EMAILS = [
+“skeeterjeeter8@gmail.com”,
+“daniellehunt01@gmail.com”
+];
+
+// Keyword filter - blocks offensive content
+const BLOCKED_KEYWORDS = [
+// Racist slurs (partial list - add more as needed)
+“n***er”, “n***a”, “f****t”, “d**e”, “ch**k”, “sp*c”, “k**e”, “r****d”,
+// Threats
+“kill yourself”, “kys”, “kill you”, “murder”, “bomb threat”,
+// Self-harm
+“suicide”, “cut myself”, “end it all”, “kill myself”,
+// Add more keywords as needed
+];
+
+function containsBlockedKeyword(text) {
+const lowerText = text.toLowerCase();
+return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
+
+function isAdmin(email) {
+return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
+function haptic(type = “light”) {
+if (!navigator.vibrate) return;
+if (type === “light”) navigator.vibrate(10);
+if (type === “medium”) navigator.vibrate(20);
+if (type === “heavy”) navigator.vibrate([30, 20, 30]);
+}
+
+const postsContainer = document.getElementById(“postsContainer”);
+const postBtn = document.getElementById(“postBtn”);
+const postText = document.getElementById(“postText”);
+const postFileInput = document.getElementById(“postFileInput”);
+
+document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “feed.html”;
+});
+
+document.getElementById(“profileNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “profile.html”;
+});
+
+document.getElementById(“messagesNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “messages.html”;
+});
+
+document.getElementById(“contactNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “contact.html”;
+});
+
+document.getElementById(“logoutBtn”)?.addEventListener(“click”, async () => {
+await signOut(auth);
+window.location.href = “login.html”;
+});
+
+async function renderPost(post, postId) {
+const isOwner = post.userId === auth.currentUser.uid;
+const currentUserId = auth.currentUser.uid;
+const currentUserEmail = auth.currentUser.email;
+
+const likedBy = post.likedBy || [];
+const dislikedBy = post.dislikedBy || [];
+const userLiked = likedBy.includes(currentUserId);
+const userDisliked = dislikedBy.includes(currentUserId);
+const isPinned = post.pinned || false;
+const isTrending = post.trending || false;
+
+// Check if post is saved by current user
+const userDoc = await getDoc(doc(db, “users”, currentUserId));
+const savedPosts = userDoc.data()?.savedPosts || [];
+const isSaved = savedPosts.includes(postId);
+
+const postEl = document.createElement(“div”);
+postEl.className = “post-card”;
+if (isPinned) postEl.classList.add(“pinned-post”);
+if (isTrending) postEl.classList.add(“trending-post”);
+
+const time = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : “just now”;
+
+postEl.innerHTML = `${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''} ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''} <div class="post-header"> <strong>${post.username || "Anonymous"}</strong> <small>${time}</small> </div> <p>${post.text || ""}</p> ${post.mediaURL ?`<${post.mediaType === “video” ? “video controls” : “img”} src=”${post.mediaURL}” class=“post-media” />`: ""} <div class="actions"> <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button> <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button> <button class="comment-toggle" data-id="${postId}">💬</button> <button class="share-btn" data-id="${postId}">🔗</button> <button class="save-btn ${isSaved ? 'saved' : ''}" data-id="${postId}">🔖 ${isSaved ? 'Saved' : 'Save'}</button> ${isOwner ?`<button class="delete-btn" data-id="${postId}">🗑️</button>`: ""} ${isAdmin(currentUserEmail) && !isPinned ?`<button class="pin-btn" data-id="${postId}">📌 Pin</button>`: ""} ${isAdmin(currentUserEmail) && isPinned ?`<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>`: ""} </div> <div class="comments-section" id="comments-${postId}"></div> <div class="comment-form"> <input type="text" class="comment-input" placeholder="Write a comment..." /> <button class="comment-btn" data-id="${postId}">💬</button> </div>`;
+
+postEl.querySelector(”.like-btn”).onclick = async (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“light”);
+const postRef = doc(db, “posts”, postId);
+
+```
+if (userLiked) {
+  await updateDoc(postRef, {
+    likedBy: arrayRemove(currentUserId)
+  });
+} else {
+  const updates = {
+    likedBy: arrayUnion(currentUserId)
+  };
+  if (userDisliked) {
+    updates.dislikedBy = arrayRemove(currentUserId);
+  }
+  await updateDoc(postRef, updates);
+  
+  // Create notification for post owner (Feature #18)
+  if (post.userId !== currentUserId) {
+    await addDoc(collection(db, "notifications"), {
+      userId: post.userId,
+      type: "like",
+      from: currentUserId,
+      fromUsername: auth.currentUser.email.split("@")[0],
+      postId: postId,
+      read: false,
+      timestamp: serverTimestamp()
+    });
+  }
+}
+```
+
+};
+
+postEl.querySelector(”.dislike-btn”).onclick = async (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“light”);
+const postRef = doc(db, “posts”, postId);
+
+```
+if (userDisliked) {
+  await updateDoc(postRef, {
+    dislikedBy: arrayRemove(currentUserId)
+  });
+} else {
+  const updates = {
+    dislikedBy: arrayUnion(currentUserId)
+  };
+  if (userLiked) {
+    updates.likedBy = arrayRemove(currentUserId);
+  }
+  await updateDoc(postRef, updates);
+}
+```
+
+};
+
+postEl.querySelector(”.share-btn”).onclick = (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“medium”);
+navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
+alert(“Post link copied!”);
+};
+
+// Save/Bookmark post handler
+postEl.querySelector(”.save-btn”).onclick = async (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“medium”);
+
+```
+const userRef = doc(db, "users", currentUserId);
+const userDoc = await getDoc(userRef);
+const currentSavedPosts = userDoc.data()?.savedPosts || [];
+
+if (currentSavedPosts.includes(postId)) {
+  // Unsave
+  await updateDoc(userRef, {
+    savedPosts: arrayRemove(postId)
+  });
+  e.target.classList.remove('saved');
+  e.target.textContent = '🔖 Save';
+} else {
+  // Save
+  await updateDoc(userRef, {
+    savedPosts: arrayUnion(postId)
+  });
+  e.target.classList.add('saved');
+  e.target.textContent = '🔖 Saved';
+}
+```
+
+};
+
+const deleteBtn = postEl.querySelector(”.delete-btn”);
+if (deleteBtn) {
+deleteBtn.addEventListener(“click”, async (e) => {
+e.preventDefault();
+e.stopPropagation();
+haptic(“heavy”);
+if (confirm(“Delete this post?”)) {
+try {
+await deleteDoc(doc(db, “posts”, postId));
+postEl.remove();
+} catch (err) {
+alert(“Error deleting post: “ + err.message);
+}
+}
+});
+}
+
+// PIN/UNPIN BUTTON (Admin only)
+const pinBtn = postEl.querySelector(”.pin-btn”);
+if (pinBtn) {
+pinBtn.addEventListener(“click”, async (e) => {
+e.preventDefault();
+e.stopPropagation();
+try {
+await updateDoc(doc(db, “posts”, postId), { pinned: true });
+alert(“Post pinned to top of feed!”);
+} catch (err) {
+alert(“Error pinning post: “ + err.message);
+}
+});
+}
+
+const unpinBtn = postEl.querySelector(”.unpin-btn”);
+if (unpinBtn) {
+unpinBtn.addEventListener(“click”, async (e) => {
+e.preventDefault();
+e.stopPropagation();
+try {
+await updateDoc(doc(db, “posts”, postId), { pinned: false });
+} catch (err) {
+alert(“Error unpinning post: “ + err.message);
+}
+});
+}
+
+const commentsSection = postEl.querySelector(”.comments-section”);
+const commentsQ = query(collection(db, “posts”, postId, “comments”), orderBy(“createdAt”, “desc”));
+
+onSnapshot(commentsQ, (snap) => {
+commentsSection.innerHTML = “”;
+
+```
+snap.forEach((cDoc) => {
+  const c = cDoc.data();
+  const cEl = document.createElement("div");
+  cEl.className = "comment";
+
+  const isCommentOwner = c.userId === auth.currentUser.uid;
+  const replies = c.replies || [];
+
+  cEl.innerHTML = `
+    <strong>${c.username || "Anonymous"}</strong>
+    <p>${c.text}</p>
+    <div class="comment-actions">
+      <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
+      ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
+    </div>
+    <div class="replies-container" id="replies-${cDoc.id}">
+      ${replies.map(reply => `
+        <div class="reply">
+          <strong>${reply.username}</strong>
+          <p>${reply.text}</p>
+          ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
+        </div>
+      `).join('')}
+    </div>
+    <div class="reply-form" id="reply-form-${cDoc.id}" style="display:none;">
+      <input type="text" class="reply-input" placeholder="Write a reply..." />
+      <button class="reply-submit-btn" data-comment-id="${cDoc.id}">Send</button>
+      <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
+    </div>
+  `;
+
+  // Reply button
+  cEl.querySelector(".reply-btn").onclick = () => {
+    const replyForm = document.getElementById(`reply-form-${cDoc.id}`);
+    replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
+  };
+
+  // Submit reply
+  const replySubmitBtn = cEl.querySelector(".reply-submit-btn");
+  if (replySubmitBtn) {
+    replySubmitBtn.onclick = async () => {
+      const replyInput = cEl.querySelector(".reply-input");
+      const replyText = replyInput.value.trim();
+      if (!replyText) return;
+
+      if (containsBlockedKeyword(replyText)) {
+        alert("Your reply contains blocked content and cannot be posted.");
+        return;
+      }
+
+      const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+      const userData = userDoc.data();
+
+      const newReply = {
+        id: Date.now().toString(),
+        userId: auth.currentUser.uid,
+        username: userData?.username || auth.currentUser.email.split("@")[0],
+        text: replyText,
+        createdAt: new Date().toISOString()
+      };
+
+      const commentRef = doc(db, "posts", postId, "comments", cDoc.id);
+      const commentDoc = await getDoc(commentRef);
+      const existingReplies = commentDoc.data().replies || [];
+
+      await updateDoc(commentRef, {
+        replies: [...existingReplies, newReply]
+      });
+
+      replyInput.value = "";
+      document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
+    };
+  }
+
+  // Cancel reply
+  const replyCancelBtn = cEl.querySelector(".reply-cancel-btn");
+  if (replyCancelBtn) {
+    replyCancelBtn.onclick = () => {
+      document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
+    };
+  }
+
+  // Delete comment
+  const deleteCommentBtn = cEl.querySelector(".delete-comment");
+  if (deleteCommentBtn) {
+    deleteCommentBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      haptic("heavy");
+      if (confirm("Delete this comment?")) {
+        const commentId = e.target.getAttribute("data-comment-id");
+        const postIdForComment = e.target.getAttribute("data-post-id");
+        try {
+          await deleteDoc(doc(db, "posts", postIdForComment, "comments", commentId));
+        } catch (err) {
+          alert("Error deleting comment: " + err.message);
+        }
+      }
+    });
+  }
+
+  // Delete reply buttons
+  cEl.querySelectorAll(".delete-reply").forEach(btn => {
+    btn.onclick = async (e) => {
+      if (confirm("Delete this reply?")) {
+        const commentId = e.target.getAttribute("data-comment-id");
+        const replyId = e.target.getAttribute("data-reply-id");
+        const postIdForReply = e.target.getAttribute("data-post-id");
+
+        const commentRef = doc(db, "posts", postIdForReply, "comments", commentId);
+        const commentDoc = await getDoc(commentRef);
+        const existingReplies = commentDoc.data().replies || [];
+        const updatedReplies = existingReplies.filter(r => r.id !== replyId);
+
+        await updateDoc(commentRef, {
+          replies: updatedReplies
+        });
+      }
+    };
+  });
+
+  commentsSection.appendChild(cEl);
+});
+```
+
+});
+
+postEl.querySelector(”.comment-btn”).onclick = async (e) => {
+e.preventDefault();
+e.stopPropagation();
+const input = postEl.querySelector(”.comment-input”);
+const text = input.value.trim();
+if (!text) return;
+
+```
+// KEYWORD FILTER - Block offensive comments
+if (containsBlockedKeyword(text)) {
+  alert("Your comment contains blocked content and cannot be posted. Please remove offensive language.");
+  return;
+}
+
+haptic("medium");
+
+const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+const userData = userDoc.data();
+const username = userData?.username || auth.currentUser.email.split("@")[0];
+
+try {
+  await addDoc(collection(db, "posts", postId, "comments"), {
+    text,
+    userId: auth.currentUser.uid,
+    username: username,
+    createdAt: serverTimestamp()
+  });
+
+  input.value = "";
+  
+  // Create notification for post owner (Feature #18)
+  if (post.userId !== auth.currentUser.uid) {
+    await addDoc(collection(db, "notifications"), {
+      userId: post.userId,
+      type: "comment",
+      from: auth.currentUser.uid,
+      fromUsername: username,
+      postId: postId,
+      commentText: text.substring(0, 50) + (text.length > 50 ? "..." : ""),
+      read: false,
+      timestamp: serverTimestamp()
+    });
+  }
+} catch (err) {
+  alert("Error posting comment: " + err.message);
+}
+```
+
+};
+
+postsContainer.appendChild(postEl);
+}
+
+function loadPosts() {
+const q = query(collection(db, “posts”), orderBy(“createdAt”, “desc”));
+
+onSnapshot(q, (snap) => {
+postsContainer.innerHTML = “”;
+
+```
+// Separate pinned, trending, and regular posts
+const pinnedPosts = [];
+const trendingPosts = [];
+const regularPosts = [];
+
+snap.forEach((docSnap) => {
+  const post = docSnap.data();
+  if (post.pinned) {
+    pinnedPosts.push({ data: post, id: docSnap.id });
+  } else if (post.trending) {
+    trendingPosts.push({ data: post, id: docSnap.id });
+  } else {
+    regularPosts.push({ data: post, id: docSnap.id });
+  }
+});
+
+// Render in order: Pinned → Trending → Regular
+pinnedPosts.forEach(({ data, id }) => renderPost(data, id));
+trendingPosts.forEach(({ data, id }) => renderPost(data, id));
+regularPosts.forEach(({ data, id }) => renderPost(data, id));
+```
+
+});
+}
+
+postBtn.addEventListener(“click”, async () => {
+const text = postText.value.trim();
+const file = postFileInput.files[0];
+
+if (!text && !file) return alert(“Post cannot be empty”);
+
+// KEYWORD FILTER - Block offensive posts
+if (containsBlockedKeyword(text)) {
+alert(“Your post contains blocked content and cannot be published. Please remove offensive language.”);
+return;
+}
+
+let mediaURL = “”;
+let mediaType = “”;
+
+if (file) {
+mediaType = file.type.startsWith(“video”) ? “video” : “image”;
+const storageRef = ref(storage, `posts/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
+await uploadBytes(storageRef, file);
+mediaURL = await getDownloadURL(storageRef);
+}
+
+const userDoc = await getDoc(doc(db, “users”, auth.currentUser.uid));
+const userData = userDoc.data();
+const username = userData?.username || auth.currentUser.email.split(”@”)[0];
+
+try {
+await addDoc(collection(db, “posts”), {
+userId: auth.currentUser.uid,
+username: username,
+text,
+mediaURL,
+mediaType,
+likedBy: [],
+dislikedBy: [],
+pinned: false,
+createdAt: serverTimestamp()
+});
+
+```
+haptic("medium");
+
+postText.value = "";
+postFileInput.value = "";
+```
+
+} catch (err) {
+alert(“Error creating post: “ + err.message);
+}
+});
+
+auth.onAuthStateChanged((user) => {
+if (!user) window.location.href = “login.html”;
+else loadPosts();
+});
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICATIONS SYSTEM (Features #18, #19, #20)
+// ═══════════════════════════════════════════════════════════
+
+function setupNotifications() {
+const notifBtn = document.getElementById(“notificationsBtn”);
+const notifModal = document.getElementById(“notificationsModal”);
+const closeBtn = document.getElementById(“closeNotifModal”);
+const notifCount = document.getElementById(“notifCount”);
+const notifsList = document.getElementById(“notificationsList”);
+
+// Listen for new notifications
+const notifQuery = query(
+collection(db, “notifications”),
+where(“userId”, “==”, auth.currentUser.uid),
+orderBy(“timestamp”, “desc”)
+);
+
+onSnapshot(notifQuery, async (snapshot) => {
+const unreadCount = snapshot.docs.filter(doc => !doc.data().read).length;
+notifCount.textContent = unreadCount;
+notifCount.style.display = unreadCount > 0 ? “inline” : “none”;
+
+```
+// Render notifications
+notifsList.innerHTML = "";
+
+if (snapshot.empty) {
+  notifsList.innerHTML = "<p class='no-notifs'>No notifications yet</p>";
+  return;
+}
+
+for (const docSnap of snapshot.docs) {
+  const notif = docSnap.data();
+  const notifId = docSnap.id;
+  
+  const notifEl = document.createElement("div");
+  notifEl.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
+  
+  let message = "";
+  if (notif.type === "like") {
+    message = `<strong>${notif.fromUsername}</strong> liked your post`;
+  } else if (notif.type === "comment") {
+    message = `<strong>${notif.fromUsername}</strong> commented: "${notif.commentText}"`;
+  } else if (notif.type === "reply") {
+    message = `<strong>${notif.fromUsername}</strong> replied to your comment`;
+  }
+  
+  const time = notif.timestamp ? new Date(notif.timestamp.toMillis()).toLocaleString() : "just now";
+  
+  notifEl.innerHTML = `
+    <div class="notif-content">
+      <p>${message}</p>
+      <small>${time}</small>
+    </div>
+    <button class="mark-read-btn" data-id="${notifId}">${notif.read ? '✓' : '📧'}</button>
+  `;
+  
+  // Mark as read on click
+  notifEl.querySelector(".mark-read-btn").onclick = async (e) => {
+    e.stopPropagation();
+    await updateDoc(doc(db, "notifications", notifId), {
+      read: !notif.read
+    });
+  };
+  
+  // Navigate to post on click
+  notifEl.onclick = () => {
+    if (notif.postId) {
+      window.location.href = `feed.html#${notif.postId}`;
+      notifModal.style.display = "none";
+    }
+  };
+  
+  notifsList.appendChild(notifEl);
+}
+```
+
+});
+
+// Open modal
+notifBtn.onclick = () => {
+notifModal.style.display = “block”;
+};
+
+// Close modal
+closeBtn.onclick = () => {
+notifModal.style.display = “none”;
+};
+
+window.onclick = (e) => {
+if (e.target === notifModal) {
+notifModal.style.display = “none”;
+}
+};
+}
+
+// Initialize notifications
+setupNotifications();

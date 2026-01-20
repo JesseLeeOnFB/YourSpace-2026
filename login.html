@@ -2,134 +2,139 @@
 
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourSpace - Login</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-```
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - YourSpace</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    
-    .login-container {
-        background: white;
-        padding: 3rem;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        width: 100%;
-        max-width: 400px;
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
     }
-    
-    h1 {
-        color: #333;
-        margin-bottom: 0.5rem;
-        text-align: center;
-    }
-    
-    .subtitle {
-        color: #666;
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 0.9rem;
-    }
-    
+    h1 { color: #333; text-align: center; margin-bottom: 2rem; }
     input {
-        width: 100%;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border 0.3s;
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
     }
-    
-    input:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-    
     button {
-        width: 100%;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
     }
-    
-    #loginBtn {
-        background: #667eea;
-        color: white;
-    }
-    
-    #loginBtn:hover {
-        background: #5568d3;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    #signupBtn {
-        background: white;
-        color: #667eea;
-        border: 2px solid #667eea;
-    }
-    
-    #signupBtn:hover {
-        background: #f5f7ff;
-    }
-    
-    #loginError {
-        color: #f44336;
-        text-align: center;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .divider {
-        text-align: center;
-        margin: 1.5rem 0;
-        color: #999;
-        font-size: 0.9rem;
-    }
-</style>
-```
-
+    .login-btn { background: #667eea; color: white; }
+    .signup-btn { background: white; color: #667eea; border: 2px solid #667eea; }
+    #error { color: red; text-align: center; margin-top: 1rem; }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>🌐 YourSpace</h1>
-        <p class="subtitle">Login to connect with friends</p>
+  <div class="container">
+    <h1>🌐 YourSpace</h1>
 
 ```
-    <input type="email" id="emailInput" placeholder="Email" autocomplete="email">
-    <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password">
-    
-    <button id="loginBtn">Login</button>
-    
-    <div class="divider">- OR -</div>
-    
-    <button id="signupBtn">Create New Account</button>
-    
-    <p id="loginError"></p>
-</div>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
 
-<script type="module" src="login.js"></script>
+<button class="login-btn" onclick="doLogin()">Login</button>
+<button class="signup-btn" onclick="window.location.href='signup.html'">Create Account</button>
+
+<div id="error"></div>
 ```
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.doLogin = async function() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const error = document.getElementById("error");
+      
+      error.textContent = "";
+      
+      if (!email || !password) {
+        error.textContent = "Enter email and password";
+        return;
+      }
+      
+      try {
+        error.textContent = "Logging in...";
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Update streak
+        const userRef = doc(db, "users", cred.user.uid);
+        const userDoc = await getDoc(userRef);
+        
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          const now = Date.now();
+          const today = new Date(now).setHours(0,0,0,0);
+          const lastDay = new Date(data.lastLoginDate || 0).setHours(0,0,0,0);
+          const yesterday = today - 86400000;
+          
+          let streak = data.loginStreak || 0;
+          let longest = data.longestStreak || 0;
+          
+          if (lastDay === today) {
+            // Same day
+          } else if (lastDay === yesterday) {
+            streak += 1;
+          } else {
+            streak = 1;
+          }
+          
+          if (streak > longest) longest = streak;
+          
+          await updateDoc(userRef, {
+            lastLoginDate: now,
+            loginStreak: streak,
+            longestStreak: longest
+          });
+        }
+        
+        error.textContent = "Success! Redirecting...";
+        setTimeout(() => window.location.href = "feed.html", 1000);
+      } catch (e) {
+        error.textContent = e.message;
+      }
+    };
+  </script>
 
 </body>
 </html>

@@ -9,11 +9,16 @@
 </head>
 <body class="default-theme">
   <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">My Profile</button>
-    <button id="messagesBtn">Messages</button>
-    <button id="dashboardBtn">Dashboard</button>
-    <button id="logoutBtn">Logout</button>
+    <button class="nav-toggle" id="navToggle">☰</button>
+    <div class="nav-menu" id="navMenu">
+      <button id="homeBtn">Home</button>
+      <button id="profileBtn">My Profile</button>
+      <button id="messagesBtn">Messages</button>
+      <button id="dashboardBtn">Dashboard</button>
+      <button id="contactBtn">Contact</button>
+      <button id="privacyBtn">Privacy</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </nav>
 
   <section class="profile-main">
@@ -263,5 +268,29 @@ h2, h3 {
   </section>
 
   <script type="module" src="profile.js"></script>
+  
+  <!-- Hamburger Menu Script -->
+  <script>
+    document.getElementById('navToggle')?.addEventListener('click', function() {
+      const navMenu = document.getElementById('navMenu');
+      navMenu.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.nav-menu button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+          document.getElementById('navMenu')?.classList.remove('active');
+        }
+      });
+    });
+
+    document.getElementById('contactBtn')?.addEventListener('click', () => {
+      window.location.href = 'contact.html';
+    });
+
+    document.getElementById('privacyBtn')?.addEventListener('click', () => {
+      window.location.href = 'privacy.html';
+    });
+  </script>
 </body>
 </html>

@@ -564,40 +564,42 @@ body.wizard-castle .card { background: rgba(44,62,80,0.9); color: white; border:
   background: rgba(255,255,255,0.15);
   color: white;
   border: none;
-  padding: 0.7rem 1.4rem;
+  padding: 0.8rem 1.6rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  font-size: 1rem;
 }
 
 .navbar button:hover {
   background: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
 }
 
 .profile-main {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 2.5rem auto;
+  padding: 0 3rem;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 16px;
   box-shadow: var(--shadow);
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
   transition: all 0.3s ease;
 }
 
 .profile-top {
   display: flex;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  gap: 4rem;
+  margin-bottom: 3.5rem;
   flex-wrap: wrap;
   background: white;
-  padding: 2rem;
-  border-radius: 16px;
+  padding: 3rem;
+  border-radius: 20px;
   box-shadow: var(--shadow);
 }
 
@@ -631,7 +633,7 @@ button {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 0.9rem 1.8rem;
+  padding: 1rem 2rem;
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s;
@@ -642,21 +644,24 @@ button {
 button:hover {
   background: #0056b3;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
 }
 
 input, textarea, select {
   width: 100%;
-  padding: 1rem;
-  margin-bottom: 1.2rem;
+  padding: 1.1rem;
+  margin-bottom: 1.5rem;
   border: 2px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
+  transition: border-color 0.3s ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
 }
 
 label {
@@ -839,4 +844,74 @@ label {
   .profile-top { flex-direction: column; align-items: center; gap: 2rem; }
   .card { padding: 1.5rem; }
   #profilePic { width: 140px; height: 140px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE NAVIGATION (HAMBURGER MENU)
+   ═══════════════════════════════════════════════════════════ */
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    position: relative;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+  }
+
+  .nav-toggle {
+    display: block;
+    order: 1;
+  }
+
+  .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .nav-menu button {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.5rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .nav-menu button:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .profile-main {
+    padding: 0 1.5rem;
+  }
 }

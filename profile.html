@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body class="default-theme">
+  <!-- RESPONSIVE NAVIGATION -->
   <nav class="navbar">
     <button class="nav-toggle" id="navToggle">☰</button>
     <div class="nav-menu" id="navMenu">
@@ -22,6 +23,7 @@
   </nav>
 
   <section class="profile-main">
+    <!-- Profile Header -->
     <div class="profile-top">
       <div class="pfp-container">
         <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
@@ -38,6 +40,7 @@
       </div>
     </div>
 
+    <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal" style="display:none;">
       <div class="modal-content">
         <span class="close-modal">&times;</span>
@@ -52,6 +55,7 @@
       </div>
     </div>
 
+    <!-- Theme Customization -->
     <div class="theme-container card">
       <h3>🎨 Customize Theme</h3>
       <select id="themeSelect">
@@ -177,6 +181,7 @@
       <button id="resetThemeBtn">Reset to Default</button>
     </div>
 
+    <!-- Custom HTML/CSS -->
     <div class="custom-html-container card" id="customHtmlSection">
       <h3>💻 Custom HTML/CSS - MySpace Style</h3>
       <p class="info-text">Just like the old MySpace days! Your code injects directly into the page. Use &lt;style&gt; tags for CSS, add backgrounds, animations, GIFs, and completely customize your profile!</p>
@@ -184,9 +189,9 @@
         <strong>🎨 Example - Animated Background:</strong>
         <pre>&lt;style&gt;
 body {
-  background: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGpsYm91/giphy.gif');
-  background-attachment: fixed;
-  background-size: cover;
+  background: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGpsYm91/giphy.gif') !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
 }
 .card {
   background: rgba(255,255,255,0.95) !important;
@@ -199,8 +204,8 @@ body {
         <strong>✨ Example - Custom Colors & Fonts:</strong>
         <pre>&lt;style&gt;
 body {
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  font-family: 'Comic Sans MS', cursive;
+  background: linear-gradient(45deg, #667eea, #764ba2) !important;
+  font-family: 'Comic Sans MS', cursive !important;
 }
 .card {
   background: rgba(0,0,0,0.8) !important;
@@ -209,7 +214,7 @@ body {
 }
 h2, h3 {
   color: #ff00ff !important;
-  text-shadow: 0 0 10px #ff00ff;
+  text-shadow: 0 0 10px #ff00ff !important;
 }
 &lt;/style&gt;</pre>
       </div>
@@ -219,6 +224,7 @@ h2, h3 {
       <div id="customHtmlPreview"></div>
     </div>
 
+    <!-- Music Player -->
     <div class="music-player card">
       <h3>🎵 Music Player</h3>
       <div class="music-controls">
@@ -251,6 +257,7 @@ h2, h3 {
       <div id="musicPlayerContainer"></div>
     </div>
 
+    <!-- Top 10 Friends -->
     <div class="top10-container card">
       <h3>👥 Top 10 Friends</h3>
       <input type="text" id="searchFriendInput" placeholder="Search username to add...">
@@ -259,6 +266,7 @@ h2, h3 {
       <div id="topFriendsContainer" class="top-friends-list"></div>
     </div>
 
+    <!-- Comments Wall -->
     <div class="wall-container card">
       <h3>💬 Comments Wall</h3>
       <div id="wallCommentsContainer"></div>

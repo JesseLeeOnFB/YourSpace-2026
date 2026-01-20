@@ -8,7 +8,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
@@ -51,24 +51,16 @@
 <body>
   <div class="container">
     <h1>🌐 YourSpace</h1>
-
-```
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-
-<button class="login-btn" onclick="doLogin()">Login</button>
-<button class="signup-btn" onclick="window.location.href='signup.html'">Create Account</button>
-
-<div id="error"></div>
-```
-
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button class="login-btn" onclick="doLogin()">Login</button>
+    <button class="signup-btn" onclick="location.href='signup.html'">Create Account</button>
+    <div id="error"></div>
   </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
     const app = initializeApp({
       apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
       authDomain: "yourspace-2026.firebaseapp.com",
@@ -77,64 +69,26 @@
       messagingSenderId: "72667267302",
       appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
     });
-
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     window.doLogin = async function() {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
       const error = document.getElementById("error");
-      
       error.textContent = "";
-      
       if (!email || !password) {
         error.textContent = "Enter email and password";
         return;
       }
-      
       try {
         error.textContent = "Logging in...";
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        
-        // Update streak
-        const userRef = doc(db, "users", cred.user.uid);
-        const userDoc = await getDoc(userRef);
-        
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          const now = Date.now();
-          const today = new Date(now).setHours(0,0,0,0);
-          const lastDay = new Date(data.lastLoginDate || 0).setHours(0,0,0,0);
-          const yesterday = today - 86400000;
-          
-          let streak = data.loginStreak || 0;
-          let longest = data.longestStreak || 0;
-          
-          if (lastDay === today) {
-            // Same day
-          } else if (lastDay === yesterday) {
-            streak += 1;
-          } else {
-            streak = 1;
-          }
-          
-          if (streak > longest) longest = streak;
-          
-          await updateDoc(userRef, {
-            lastLoginDate: now,
-            loginStreak: streak,
-            longestStreak: longest
-          });
-        }
-        
+        await signInWithEmailAndPassword(auth, email, password);
         error.textContent = "Success! Redirecting...";
-        setTimeout(() => window.location.href = "feed.html", 1000);
+        setTimeout(() => location.href = "feed.html", 500);
       } catch (e) {
         error.textContent = e.message;
       }
     };
   </script>
-
 </body>
 </html>

@@ -54,6 +54,7 @@ onAuthStateChanged(auth, user => {
 
 async function initProfile() {
   await loadProfile();
+  await displayLoginStreak();
   setupThemeControls();
   setupMusicPlayer();
   setupTopFriends();
@@ -600,3 +601,150 @@ document.getElementById("emergencyResetBtn")?.addEventListener("click", async ()
     alert("Error resetting profile: " + err.message);
   }
 });
+
+// LOGIN STREAK DISPLAY
+async function displayLoginStreak() {
+  if (!isOwnProfile) return;
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", viewingUserId));
+    if (!userDoc.exists()) return;
+    
+    const data = userDoc.data();
+    const streak = data.loginStreak || 0;
+    const longestStreak = data.longestStreak || 0;
+    
+    if (streak > 0) {
+      const streakContainer = document.getElementById("streakContainer");
+      const streakNumber = document.getElementById("streakNumber");
+      const badgeContainer = document.getElementById("badgeContainer");
+      
+      streakContainer.style.display = "block";
+      streakNumber.textContent = streak;
+      
+      // Add badges based on milestones
+      badgeContainer.innerHTML = "";
+      
+      if (streak >= 7) {
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = "🏆 Week Warrior";
+        badgeContainer.appendChild(badge);
+      }
+      
+      if (streak >= 30) {
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = "💪 Month Master";
+        badgeContainer.appendChild(badge);
+      }
+      
+      if (longestStreak > streak) {
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = `🥇 Best: ${longestStreak} days`;
+        badgeContainer.appendChild(badge);
+      }
+      
+      if (streak >= 100) {
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = "👑 Century Club";
+        badgeContainer.appendChild(badge);
+      }
+    }
+  } catch (err) {
+    console.error("Error displaying login streak:", err);
+  }
+}
+
+// Call this after loading profile
+async function initProfile() {
+  await loadProfile();
+  await displayLoginStreak();
+  setupThemeControls();
+  setupMusicPlayer();
+  setupTopFriends();
+  setupCommentsWall();
+  setupProfilePictureUpload();
+  setupEditProfile();
+  setupCustomHtml();
+  
+  if (!isOwnProfile) {
+    document.getElementById("editProfileBtn").style.display = "none";
+    document.getElementById("sendMessageBtn").style.display = "inline-block";
+    document.getElementById("customHtmlSection").style.display = "none";
+    document.getElementById("searchFriendBtn").style.display = "none";
+    document.getElementById("searchFriendInput").style.display = "none";
+    document.getElementById("themeSelect").disabled = true;
+    document.getElementById("applyThemeBtn").disabled = true;
+    document.querySelectorAll(".music-input").forEach(input => input.disabled = true);
+    document.querySelectorAll(".add-music-btn").forEach(btn => btn.disabled = true);
+  }
+}
+
+// LOGIN STREAK DISPLAY FUNCTION
+async function displayLoginStreak() {
+  if (!isOwnProfile) {
+    const streakContainer = document.getElementById("streakContainer");
+    if (streakContainer) {
+      streakContainer.style.display = "none";
+    }
+    return;
+  }
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", viewingUserId));
+    if (!userDoc.exists()) return;
+    
+    const data = userDoc.data();
+    const streak = data.loginStreak || 0;
+    const longestStreak = data.longestStreak || 0;
+    
+    const streakContainer = document.getElementById("streakContainer");
+    const streakNumber = document.getElementById("streakNumber");
+    
+    if (streak > 0 && streakContainer && streakNumber) {
+      streakContainer.style.display = "block";
+      streakNumber.textContent = streak;
+      
+      // Add badges
+      const badgeContainer = document.getElementById("badgeContainer");
+      if (badgeContainer) {
+        badgeContainer.innerHTML = "";
+        
+        if (streak >= 7) {
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = "🏆 Week Warrior";
+          badgeContainer.appendChild(badge);
+        }
+        
+        if (streak >= 30) {
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = "💪 Month Master";
+          badgeContainer.appendChild(badge);
+        }
+        
+        if (streak >= 100) {
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = "👑 Century Club";
+          badgeContainer.appendChild(badge);
+        }
+        
+        if (longestStreak > streak) {
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = `🥇 Best: ${longestStreak} days`;
+          badgeContainer.appendChild(badge);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error displaying login streak:", err);
+  }
+}
+
+// Call displayLoginStreak in the initProfile function

@@ -475,6 +475,7 @@ const navLinks = document.getElementById("navLinks");
 
 if (hamburger) {
   hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
     navLinks.classList.toggle("active");
   });
 }
@@ -521,7 +522,7 @@ if (searchBar) {
         searchResults.querySelectorAll(".search-result-item").forEach(item => {
           item.addEventListener("click", () => {
             const userId = item.getAttribute("data-user-id");
-            window.location.href = `profile.html?user=${userId}`;
+            window.location.href = `profile.html?userId=${userId}`;
           });
         });
       } else {

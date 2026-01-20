@@ -674,3 +674,73 @@ body {
     max-width: 600px;
   }
 }
+
+/* HAMBURGER MENU ANIMATIONS */
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: #1c1e21;
+  margin: 4px 0;
+  transition: 0.3s;
+  border-radius: 2px;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* NOTIFICATIONS BUTTON SPECIAL STYLING */
+#notificationsBtn {
+  position: relative;
+  background: #e7f3ff !important;
+  color: #1877f2 !important;
+  font-weight: 600;
+}
+
+#notificationsBtn:hover {
+  background: #d0e9ff !important;
+}
+
+.search-results {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+}
+
+.search-results.active {
+  display: block;
+}
+
+.search-result-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e4e6eb;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-result-item:hover {
+  background: #f0f2f5;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.no-results {
+  padding: 2rem;
+  text-align: center;
+  color: #65676b;
+}

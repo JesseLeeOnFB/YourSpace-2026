@@ -1,48 +1,90 @@
-<!DOCTYPE html>
+* {
+  box-sizing: border-box;
+}
 
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Feed</title>
-  <link rel="stylesheet" href="feed.css">
-</head>
-<body>
-  <nav class="navbar">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="messagesNavBtn">Messages</button>
-    <button id="notificationsBtn">🔔 <span id="notifCount" class="notif-badge">0</span></button>
-    <button id="contactNavBtn">Contact</button>
-    <button id="logoutBtn">Logout</button>
-  </nav>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+}
 
-  <!-- Notifications Modal -->
+.navbar {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #111;
+}
 
-  <div id="notificationsModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close-modal" id="closeNotifModal">&times;</span>
-      <h3>🔔 Notifications</h3>
-      <div id="notificationsList"></div>
-    </div>
-  </div>
+.navbar button {
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-  <main class="feed-container">
-    <h1>Global Feed</h1>
+.feed-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
 
-```
-<section class="new-post">
-  <textarea id="postText" placeholder="What's on your mind?"></textarea>
-  <input type="file" id="postFileInput" accept="image/*,video/*" />
-  <button id="postBtn">Post</button>
-</section>
+.new-post textarea {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+}
 
-<section id="postsContainer"></section>
-```
+.new-post button {
+  padding: 8px 15px;
+}
 
-  </main>
+.post-card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
 
-  <script type="module" src="feed.js"></script>
+.post-media {
+  max-width: 100%;
+  margin-top: 10px;
+  border-radius: 6px;
+}
 
-</body>
-</html>
+.actions button {
+  margin-right: 5px;
+}
+
+.notif-badge {
+  background: red;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 12px;
+  display: none;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  width: 300px;
+  margin: 10% auto;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.notification-item {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.notification-item.unread {
+  background: #eef;
+}

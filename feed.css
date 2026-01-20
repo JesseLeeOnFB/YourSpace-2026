@@ -30,24 +30,6 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.nav-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  flex: 1;
-}
-
 .navbar button {
   background: rgba(255,255,255,0.15);
   border: none;
@@ -465,303 +447,33 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CLICKABLE USERNAMES
+   RESPONSIVE NAVIGATION (HAMBURGER MENU)
    ═══════════════════════════════════════════════════════════ */
 
-.username-link {
-  cursor: pointer;
-  color: #007bff !important;
-  transition: all 0.2s;
-}
-
-.username-link:hover {
-  text-decoration: underline;
-  color: #0056b3 !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   REWARDS DISPLAY ON POSTS
-   ═══════════════════════════════════════════════════════════ */
-
-.rewards-display {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  margin: 0.5rem 0;
-  font-weight: 600;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.reward-btn {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-  color: white !important;
-  font-weight: bold !important;
-}
-
-.reward-btn:hover {
-  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%) !important;
-  transform: scale(1.05);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   REWARD MODAL
-   ═══════════════════════════════════════════════════════════ */
-
-.reward-modal {
+.nav-toggle {
   display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  overflow-y: auto;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.reward-modal-content {
-  background: white;
-  margin: 3% auto;
-  padding: 2rem;
-  border-radius: 20px;
-  max-width: 900px;
-  position: relative;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.close-modal {
-  position: absolute;
-  right: 1.5rem;
-  top: 1.5rem;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.close-modal:hover {
-  color: #000;
-  background: rgba(0,0,0,0.1);
-}
-
-.reward-modal h2 {
-  text-align: center;
-  color: #333;
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-}
-
-.reward-subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-}
-
-.reward-packages {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.reward-package {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 3px solid #dee2e6;
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.reward-package:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-.reward-package.popular {
-  background: linear-gradient(135deg, #fff9e6 0%, #ffe066 100%);
-  border-color: #ffd700;
-}
-
-.reward-package.ultimate {
-  background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%);
-  border-color: #2196f3;
-}
-
-.popular-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #333;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0 12px 0 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.package-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.package-name {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.package-description {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  min-height: 40px;
-}
-
-.package-price {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 1rem;
-}
-
-.select-reward-btn {
-  width: 100%;
-  padding: 0.8rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: none;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  color: white;
+  font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s;
+  padding: 0.5rem;
 }
 
-.select-reward-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+.nav-menu {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
 }
 
-.select-reward-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
+.navbar {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
-
-.reward-info {
-  background: #f8f9fa;
-  border-left: 4px solid #007bff;
-  padding: 1.5rem;
-  border-radius: 8px;
-}
-
-.reward-info strong {
-  color: #007bff;
-  font-size: 1.1rem;
-}
-
-.reward-info ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.5rem;
-}
-
-.reward-info li {
-  color: #555;
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-}
-
-/* Responsive Reward Modal */
-@media (max-width: 768px) {
-  .reward-modal-content {
-    margin: 2% auto;
-    padding: 1.5rem;
-    max-width: 95%;
-  }
-
-  .reward-packages {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .reward-modal h2 {
-    font-size: 1.6rem;
-  }
-
-  .package-icon {
-    font-size: 2.5rem;
-  }
-
-  .package-name {
-    font-size: 1.1rem;
-  }
-
-  .package-price {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .reward-modal-content {
-    padding: 1rem;
-  }
-
-  .close-modal {
-    right: 0.5rem;
-    top: 0.5rem;
-    font-size: 1.5rem;
-  }
-
-  .reward-modal h2 {
-    font-size: 1.4rem;
-    margin-top: 1rem;
-  }
-
-  .reward-subtitle {
-    font-size: 1rem;
-  }
-
-  .reward-info {
-    padding: 1rem;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MOBILE NAVIGATION RESPONSIVE
-   ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
   .navbar {
@@ -782,7 +494,7 @@ body {
     top: 100%;
     left: 0;
     right: 0;
-    background: #111;
+    background: #1a1a1a;
     flex-direction: column;
     gap: 0;
     padding: 0;
@@ -804,5 +516,394 @@ body {
 
   .nav-menu button:hover {
     background: rgba(255,255,255,0.2);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REPORT MODAL STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+.report-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.3s ease;
+}
+
+.report-modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  animation: slideDown 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.close-report-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-report-modal:hover {
+  color: #ff0000;
+}
+
+.report-modal h2 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.report-subtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.report-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.report-form select,
+.report-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1.2rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.report-form select:focus,
+.report-form textarea:focus {
+  outline: none;
+  border-color: #ff4444;
+}
+
+.report-warning {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+.report-warning strong {
+  color: #856404;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.report-warning ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #856404;
+}
+
+.report-warning li {
+  margin-bottom: 0.3rem;
+}
+
+.report-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.submit-report-btn {
+  flex: 1;
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-report-btn:hover {
+  background: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255,68,68,0.4);
+}
+
+.cancel-report-btn {
+  flex: 1;
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-report-btn:hover {
+  background: #5a6268;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REWARD MODAL STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1500;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  animation: slideDown 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal h2 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.modal-subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.reward-packages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reward-package {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+}
+
+.reward-package:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-color: #007bff;
+}
+
+.reward-package.selected {
+  background: #e3f2fd;
+  border-color: #007bff;
+  box-shadow: 0 8px 20px rgba(0,123,255,0.3);
+}
+
+.reward-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.reward-package h3 {
+  margin: 0.5rem 0;
+  font-size: 1.3rem;
+}
+
+.reward-package .price {
+  color: #007bff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.reward-package .description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.reward-btn {
+  width: 100%;
+  padding: 1.2rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reward-btn:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+}
+
+.reward-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GENERAL IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════ */
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+.new-post {
+  margin-bottom: 2rem;
+}
+
+.new-post textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.post-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.primary-btn {
+  background: #007bff;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primary-btn:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: #6c757d;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+}
+
+.file-preview {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-modal-content,
+  .modal-content {
+    margin: 10% auto;
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .report-actions {
+    flex-direction: column;
+  }
+  
+  .reward-packages {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .post-actions {
+    flex-direction: column;
   }
 }

@@ -565,3 +565,38 @@ document.querySelectorAll(".close-modal").forEach(btn => {
     document.getElementById("editProfileModal").style.display = "none";
   };
 });
+
+// EMERGENCY RESET BUTTON - Restore to default
+document.getElementById("emergencyResetBtn")?.addEventListener("click", async () => {
+  if (!confirm("⚠️ EMERGENCY RESET ⚠️\n\nThis will:\n- Reset your theme to default\n- Remove all custom HTML/CSS\n- Keep your username, bio, and photos\n\nAre you sure?")) {
+    return;
+  }
+  
+  if (!confirm("This action cannot be undone. Continue?")) {
+    return;
+  }
+  
+  try {
+    const userId = auth.currentUser.uid;
+    await updateDoc(doc(db, "users", userId), {
+      theme: "default-theme",
+      customHtml: "",
+      music: ["", "", "", ""],
+      autoplay: false
+    });
+    
+    // Remove custom styles
+    const customStyles = document.getElementById("customProfileStyles");
+    if (customStyles) {
+      customStyles.remove();
+    }
+    
+    // Reset body theme
+    document.body.className = "default-theme";
+    
+    alert("✅ Profile reset to default! The page will reload.");
+    location.reload();
+  } catch (err) {
+    alert("Error resetting profile: " + err.message);
+  }
+});

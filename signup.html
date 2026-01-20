@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,45 +13,49 @@
       <h1>Join YourSpace</h1>
       <p class="subtitle">Create your profile and connect with friends</p>
 
-      <form id="signupForm">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="your.email@example.com" required>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Min. 6 characters" required>
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
-        </div>
-
-        <div class="terms-checkbox">
-          <input type="checkbox" id="acceptTerms" required>
-          <label for="acceptTerms">
-            I agree to the <a href="terms.html" target="_blank">Terms & Conditions</a> and understand that:
-            <ul>
-              <li>My data will be collected and stored</li>
-              <li>Virtual reward purchases are non-refundable</li>
-              <li>I will follow community guidelines</li>
-              <li>YourSpace may terminate my account for violations</li>
-            </ul>
-          </label>
-        </div>
-
-        <button type="submit" class="auth-btn">Create Account</button>
-        <div id="errorMessage" class="error-message"></div>
-      </form>
-
-      <p class="switch-auth">
-        Already have an account? <a href="login.html">Log In</a>
-      </p>
+```
+  <form id="signupForm">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="your.email@example.com" required>
     </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Min. 6 characters" required>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+    </div>
+
+    <div class="terms-checkbox">
+      <input type="checkbox" id="acceptTerms" required>
+      <label for="acceptTerms">
+        I agree to the <a href="terms.html" target="_blank">Terms & Conditions</a> and understand that:
+        <ul>
+          <li>My data will be collected and stored</li>
+          <li>Virtual reward purchases are non-refundable</li>
+          <li>I will follow community guidelines</li>
+          <li>YourSpace may terminate my account for violations</li>
+        </ul>
+      </label>
+    </div>
+
+    <button type="submit" class="auth-btn">Create Account</button>
+    <div id="errorMessage" class="error-message"></div>
+  </form>
+
+  <p class="switch-auth">
+    Already have an account? <a href="login.html">Log In</a>
+  </p>
+</div>
+```
+
   </div>
 
   <script type="module" src="signup.js"></script>
+
 </body>
 </html>

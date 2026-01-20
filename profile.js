@@ -101,6 +101,12 @@ document.getElementById(“location”).textContent = data.location || “📍 N
 document.getElementById(“bio”).textContent = data.bio || “No bio yet”;
 document.getElementById(“profilePic”).src = data.photoURL || “default-avatar.png”;
 
+// Display login streaks (Features #11, #12)
+const currentStreak = data.loginStreak || 0;
+const longestStreak = data.longestStreak || 0;
+document.getElementById(“currentStreak”).textContent = currentStreak;
+document.getElementById(“longestStreak”).textContent = longestStreak;
+
 if (data.theme) {
 document.body.className = data.theme;
 }

@@ -12,9 +12,20 @@
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="messagesNavBtn">Messages</button>
+    <button id="notificationsBtn">🔔 <span id="notifCount" class="notif-badge">0</span></button>
     <button id="contactNavBtn">Contact</button>
     <button id="logoutBtn">Logout</button>
   </nav>
+
+  <!-- Notifications Modal -->
+
+  <div id="notificationsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" id="closeNotifModal">&times;</span>
+      <h3>🔔 Notifications</h3>
+      <div id="notificationsList"></div>
+    </div>
+  </div>
 
   <main class="feed-container">
     <h1>Global Feed</h1>

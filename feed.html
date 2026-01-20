@@ -2,195 +2,36 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YourSpace – Feed</title>
   <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-  <!-- RESPONSIVE NAVIGATION -->
   <nav class="navbar">
-    <button class="nav-toggle" id="navToggle">☰</button>
-    <div class="nav-menu" id="navMenu">
-      <button id="feedBtn">Feed</button>
-      <button id="profileBtn">My Profile</button>
-      <button id="messagesBtn">Messages</button>
-      <button id="dashboardBtn">Dashboard</button>
-      <button id="contactBtn">Contact</button>
-      <button id="privacyBtn">Privacy</button>
-      <button id="logoutBtn">Logout</button>
-    </div>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="messagesNavBtn">Messages</button>
+    <button id="contactNavBtn">Contact</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
-  <!-- MAIN FEED -->
-
   <main class="feed-container">
-    <h1>🌐 Global Feed</h1>
+    <h1>Global Feed</h1>
 
 ```
-<!-- New Post Section -->
-<section class="new-post card">
-  <textarea id="postText" placeholder="What's on your mind?" rows="3"></textarea>
-  <div class="post-actions">
-    <input type="file" id="postFileInput" accept="image/*,video/*" style="display:none;">
-    <button id="selectFileBtn" class="secondary-btn">📎 Add Media</button>
-    <button id="postBtn" class="primary-btn">Post</button>
-  </div>
-  <div id="filePreview" class="file-preview"></div>
+<section class="new-post">
+  <textarea id="postText" placeholder="What's on your mind?"></textarea>
+  <input type="file" id="postFileInput" accept="image/*,video/*" />
+  <button id="postBtn">Post</button>
 </section>
 
-<!-- Posts Container -->
-<section id="postsContainer" class="posts-container">
-  <p class="loading">Loading posts...</p>
-</section>
+<section id="postsContainer"></section>
 ```
 
   </main>
 
-  <!-- VIRTUAL REWARDS MODAL -->
-
-  <div id="rewardModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close-modal" id="closeRewardModal">&times;</span>
-      <h2>💎 Send Virtual Reward</h2>
-      <p class="modal-subtitle">Support this creator with a virtual reward!</p>
-
-```
-  <div class="reward-packages">
-    <div class="reward-package" data-amount="5">
-      <div class="reward-icon">⭐</div>
-      <h3>Star</h3>
-      <p class="price">$5</p>
-      <p class="description">Show some love</p>
-    </div>
-    
-    <div class="reward-package" data-amount="15">
-      <div class="reward-icon">💎</div>
-      <h3>Diamond</h3>
-      <p class="price">$15</p>
-      <p class="description">You're amazing!</p>
-    </div>
-    
-    <div class="reward-package" data-amount="50">
-      <div class="reward-icon">👑</div>
-      <h3>Crown</h3>
-      <p class="price">$50</p>
-      <p class="description">True supporter</p>
-    </div>
-    
-    <div class="reward-package" data-amount="100">
-      <div class="reward-icon">🚀</div>
-      <h3>Rocket</h3>
-      <p class="price">$100</p>
-      <p class="description">You're incredible!</p>
-    </div>
-  </div>
-  
-  <button id="sendRewardBtn" class="reward-btn" disabled>Select a reward package</button>
-</div>
-```
-
-  </div>
-
-  <!-- REPORT MODAL -->
-
-  <div id="reportModal" class="report-modal" style="display:none;">
-    <div class="report-modal-content">
-      <span class="close-report-modal" id="closeReportModal">&times;</span>
-      <h2>🚨 Report Content</h2>
-      <p class="report-subtitle">Help us keep YourSpace safe</p>
-
-```
-  <div class="report-form">
-    <label for="reportReason">Why are you reporting this?</label>
-    <select id="reportReason" required>
-      <option value="">Select a reason...</option>
-      <option value="spam">Spam or fake content</option>
-      <option value="harassment">Harassment or bullying</option>
-      <option value="hate_speech">Hate speech or discrimination</option>
-      <option value="inappropriate">Inappropriate or offensive content</option>
-      <option value="violence">Violence or threats</option>
-      <option value="self_harm">Self-harm or suicide content</option>
-      <option value="other">Other (explain below)</option>
-    </select>
-    
-    <label for="reportDescription">Additional details (optional):</label>
-    <textarea id="reportDescription" placeholder="Provide any additional context that would help us review this report..." rows="4"></textarea>
-    
-    <div class="report-warning">
-      <strong>⚠️ Important:</strong>
-      <ul>
-        <li>False reports may result in restrictions on your account</li>
-        <li>Reports are reviewed by our moderation team</li>
-        <li>You'll be notified once we take action</li>
-      </ul>
-    </div>
-    
-    <div class="report-actions">
-      <button id="submitReportBtn" class="submit-report-btn">Submit Report</button>
-      <button id="cancelReportBtn" class="cancel-report-btn">Cancel</button>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-
   <script type="module" src="feed.js"></script>
-
-  <!-- Hamburger Menu Script -->
-
-  <script>
-    // Navigation handlers
-    document.getElementById('navToggle')?.addEventListener('click', function() {
-      const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('active');
-    });
-
-    document.querySelectorAll('.nav-menu button').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (window.innerWidth <= 768) {
-          document.getElementById('navMenu')?.classList.remove('active');
-        }
-      });
-    });
-
-    document.getElementById('profileBtn')?.addEventListener('click', () => {
-      window.location.href = 'profile.html';
-    });
-
-    document.getElementById('messagesBtn')?.addEventListener('click', () => {
-      window.location.href = 'messages.html';
-    });
-
-    document.getElementById('dashboardBtn')?.addEventListener('click', () => {
-      window.location.href = 'creator-dashboard.html';
-    });
-
-    document.getElementById('contactBtn')?.addEventListener('click', () => {
-      window.location.href = 'contact.html';
-    });
-
-    document.getElementById('privacyBtn')?.addEventListener('click', () => {
-      window.location.href = 'privacy.html';
-    });
-
-    // File select button
-    document.getElementById('selectFileBtn')?.addEventListener('click', () => {
-      document.getElementById('postFileInput').click();
-    });
-
-    document.getElementById('postFileInput')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      const preview = document.getElementById('filePreview');
-      
-      if (file) {
-        preview.innerHTML = `<p>📎 ${file.name}</p>`;
-      } else {
-        preview.innerHTML = '';
-      }
-    });
-  </script>
 
 </body>
 </html>

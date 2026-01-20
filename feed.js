@@ -1,9 +1,9 @@
-// feed.js — UPDATED with clickable usernames and rewards system
+// feed.js — FIXED - All buttons working, username display
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
-  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, increment
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -29,39 +29,23 @@ const ADMIN_EMAILS = [
 ];
 
 // Keyword filter - blocks offensive content
-// ═══════════════════════════════════════════════════════════
-// KEYWORD FILTER FIX - COPY THIS INTO feed.js
-// ═══════════════════════════════════════════════════════════
-
-// REPLACE lines 32-40 in feed.js with this:
-
 const BLOCKED_KEYWORDS = [
   // Racial slurs - ACTUAL WORDS (no asterisks!)
   "nigger", "nigga", "faggot", "fag", "dyke", "chink", "spic", "kike", "retard", "retarded",
   "coon", "beaner", "wetback", "gook", "jap", "towelhead", "camel jockey", "tranny",
-  
   // Threats of violence
   "kill yourself", "kys", "kill you", "kill him", "kill her", "murder you", "murder him", "murder her",
   "bomb threat", "shoot up", "mass shooting", "blow up", "terrorist attack", "school shooter",
-  
   // Self-harm and suicide
   "suicide", "kill myself", "end my life", "hang myself", "cut myself", "slit my wrists",
   "end it all", "better off dead", "overdose", "jump off", "end myself",
-  
   // Sexual violence
   "rape you", "rape her", "rape him", "sexual assault", "molest", "rape",
-  
   // Hate speech
-  "gas the", "hang the", "lynch", "execute the", "exterminate",
-  
-  // Add more as needed
+  "gas the", "hang the", "lynch", "execute the", "exterminate"
 ];
 
-// The function stays the same - it will now catch actual words
 function containsBlockedKeyword(text) {
-  const lowerText = text.toLowerCase();
-  return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
-}
   const lowerText = text.toLowerCase();
   return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
 }
@@ -94,10 +78,6 @@ document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
   window.location.href = "messages.html";
 });
 
-document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
-  window.location.href = "creator-dashboard.html";
-});
-
 document.getElementById("contactNavBtn")?.addEventListener("click", () => {
   window.location.href = "contact.html";
 });
@@ -105,43 +85,6 @@ document.getElementById("contactNavBtn")?.addEventListener("click", () => {
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
-});
-
-// ========== REWARD MODAL FUNCTIONS ==========
-function openRewardModal(postId, creatorUserId, creatorUsername) {
-  const modal = document.getElementById("rewardModal");
-  if (!modal) return;
-  
-  modal.dataset.postId = postId;
-  modal.dataset.creatorUserId = creatorUserId;
-  modal.dataset.creatorUsername = creatorUsername;
-  
-  modal.style.display = "flex";
-}
-
-function closeRewardModal() {
-  const modal = document.getElementById("rewardModal");
-  if (modal) {
-    modal.style.display = "none";
-  }
-}
-
-// Initialize reward modal close button
-document.addEventListener("DOMContentLoaded", () => {
-  const closeBtn = document.getElementById("closeRewardModal");
-  if (closeBtn) {
-    closeBtn.onclick = closeRewardModal;
-  }
-  
-  // Close modal when clicking outside
-  const modal = document.getElementById("rewardModal");
-  if (modal) {
-    modal.onclick = (e) => {
-      if (e.target === modal) {
-        closeRewardModal();
-      }
-    };
-  }
 });
 
 async function renderPost(post, postId) {
@@ -156,10 +99,6 @@ async function renderPost(post, postId) {
   const isPinned = post.pinned || false;
   const isTrending = post.trending || false;
 
-  // Get rewards count
-  const rewards = post.rewards || {};
-  const totalRewards = Object.values(rewards).reduce((sum, count) => sum + count, 0);
-
   const postEl = document.createElement("div");
   postEl.className = "post-card";
   if (isPinned) postEl.classList.add("pinned-post");
@@ -171,17 +110,15 @@ async function renderPost(post, postId) {
     ${isPinned ? '<div class="pin-badge">📌 Pinned by Admin</div>' : ''}
     ${isTrending && !isPinned ? '<div class="trending-badge">🔥 Trending Now</div>' : ''}
     <div class="post-header">
-      <strong class="username-link" data-user-id="${post.userId}">${post.username || "Anonymous"}</strong>
+      <strong>${post.username || "Anonymous"}</strong>
       <small>${time}</small>
     </div>
     <p>${post.text || ""}</p>
     ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
-    ${totalRewards > 0 ? `<div class="rewards-display">🎁 ${totalRewards} reward${totalRewards !== 1 ? 's' : ''} received</div>` : ''}
     <div class="actions">
       <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
-      <button class="reward-btn" data-id="${postId}" data-creator-id="${post.userId}" data-creator-name="${post.username}">🎁 Send Reward</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
       ${isAdmin(currentUserEmail) && !isPinned ? `<button class="pin-btn" data-id="${postId}">📌 Pin</button>` : ""}
@@ -193,22 +130,6 @@ async function renderPost(post, postId) {
       <button class="comment-btn" data-id="${postId}">💬</button>
     </div>
   `;
-
-  // Make username clickable
-  const usernameLink = postEl.querySelector(".username-link");
-  usernameLink.style.cursor = "pointer";
-  usernameLink.style.color = "#007bff";
-  usernameLink.onclick = () => {
-    window.location.href = `profile.html?uid=${post.userId}`;
-  };
-
-  // Reward button
-  const rewardBtn = postEl.querySelector(".reward-btn");
-  rewardBtn.onclick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openRewardModal(postId, post.userId, post.username);
-  };
 
   postEl.querySelector(".like-btn").onclick = async (e) => {
     e.preventDefault();
@@ -320,7 +241,7 @@ async function renderPost(post, postId) {
       const replies = c.replies || [];
 
       cEl.innerHTML = `
-        <strong class="username-link" data-user-id="${c.userId}">${c.username || "Anonymous"}</strong>
+        <strong>${c.username || "Anonymous"}</strong>
         <p>${c.text}</p>
         <div class="comment-actions">
           <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
@@ -329,7 +250,7 @@ async function renderPost(post, postId) {
         <div class="replies-container" id="replies-${cDoc.id}">
           ${replies.map(reply => `
             <div class="reply">
-              <strong class="username-link" data-user-id="${reply.userId}">${reply.username}</strong>
+              <strong>${reply.username}</strong>
               <p>${reply.text}</p>
               ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
             </div>
@@ -341,16 +262,6 @@ async function renderPost(post, postId) {
           <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
         </div>
       `;
-
-      // Make comment username clickable
-      cEl.querySelectorAll(".username-link").forEach(link => {
-        link.style.cursor = "pointer";
-        link.style.color = "#007bff";
-        link.onclick = () => {
-          const userId = link.dataset.userId;
-          window.location.href = `profile.html?uid=${userId}`;
-        };
-      });
 
       // Reply button
       cEl.querySelector(".reply-btn").onclick = () => {
@@ -547,7 +458,6 @@ postBtn.addEventListener("click", async () => {
       likedBy: [],
       dislikedBy: [],
       pinned: false,
-      rewards: {},
       createdAt: serverTimestamp()
     });
 

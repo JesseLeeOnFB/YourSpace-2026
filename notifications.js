@@ -1,4 +1,4 @@
-// notifications.js - Real-time browser notifications system (rewritten for UNLIMITED posts/conversations)
+// notifications.js - Real-time browser notifications (with error handling + safety cap)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, collection, query, where, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -20,7 +20,7 @@ const auth = getAuth(app);
 let isInitialized = false;
 let lastNotificationTime = Date.now();
 
-// Notification sound
+// Notification sound (unchanged)
 const notificationSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwNUKXh8LJnHwU2jdT0zn0vBSh+zPLaizsKFFu16+qnVhMJRp/g8r5sIAUrgc/z2YY2Bxtr');
 
 export function requestNotificationPermission() {
@@ -29,7 +29,6 @@ export function requestNotificationPermission() {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
           console.log("🔔 Browser notifications enabled!");
-          // Optional test notification
           showNotification("Test", "Notifications are now enabled!");
         }
       });
@@ -39,7 +38,6 @@ export function requestNotificationPermission() {
 
 function showNotification(title, body, icon = "🔔") {
   if ("Notification" in window && Notification.permission === "granted") {
-    // Rate limit to 1 per 3 seconds (prevents spam)
     if (Date.now() - lastNotificationTime < 3000) return;
     
     lastNotificationTime = Date.now();
@@ -58,79 +56,86 @@ function showNotification(title, body, icon = "🔔") {
   }
 }
 
-// Maps to store unsubscribe functions for dynamic listeners
-const postCommentUnsubs = new Map(); // postId => unsubscribe
-const convMessageUnsubs = new Map(); // convId => unsubscribe
+const postCommentUnsubs = new Map();
+const convMessageUnsubs = new Map();
 
 export function initNotifications(currentUser) {
   if (!currentUser || isInitialized) return;
   isInitialized = true;
 
-  // IMPORTANT: Do NOT call requestNotificationPermission() here automatically.
-  // It must be triggered by a user gesture (e.g. button click) or it will be blocked.
-  // Call requestNotificationPermission() from a button in your UI instead.
+  console.log("📢 Initializing live notifications...");
 
-  // === Likes on ALL user's posts (no limit) ===
+  // === Likes & setup for recent posts (comments) ===
+  const MAX_COMMENT_MONITORED_POSTS = 1000; // Safety cap — adjust or remove if desired
+
   const postsQuery = query(
     collection(db, "posts"),
     where("userId", "==", currentUser.uid),
     orderBy("createdAt", "desc")
-    // No limit → covers every post, even years old
+    // No limit here → likes detected on EVERY post
   );
 
-  const postLikeCounts = new Map(); // postId => previous like count
-  let postsInitialLoad = true;
+  const postLikeCounts = new Map();
+  let monitoredPostIds = new Set(); // For comment listener cap
 
-  onSnapshot(postsQuery, (snapshot) => {
-    if (postsInitialLoad) {
-      // Initial load: store like counts and set up comment listeners for all existing posts
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        postLikeCounts.set(doc.id, (data.likedBy || []).length);
-        setupPostCommentListener(doc.id, currentUser.uid);
+  const unsubPosts = onSnapshot(postsQuery, 
+    (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const postId = change.doc.id;
+        const data = change.doc.data();
+
+        if (change.type === "added" || change.type === "modified") {
+          const prevLikes = postLikeCounts.get(postId) || 0;
+          const currLikes = (data.likedBy || []).length;
+
+          if (currLikes > prevLikes) {
+            const newLikes = currLikes - prevLikes;
+            showNotification(
+              "👍 New Like!",
+              `Your post received ${newLikes} new like${newLikes > 1 ? 's' : ''}!`,
+              "👍"
+            );
+          }
+          postLikeCounts.set(postId, currLikes);
+
+          // Setup comment listener only for recent posts (safety)
+          if (change.type === "added" && monitoredPostIds.size < MAX_COMMENT_MONITORED_POSTS) {
+            setupPostCommentListener(postId, currentUser.uid);
+            monitoredPostIds.add(postId);
+          }
+        }
+
+        if (change.type === "removed") {
+          postLikeCounts.delete(postId);
+          if (postCommentUnsubs.has(postId)) {
+            postCommentUnsubs.get(postId)();
+            postCommentUnsubs.delete(postId);
+            monitoredPostIds.delete(postId);
+          }
+        }
       });
-      postsInitialLoad = false;
-      return;
+
+      // Initial load: setup comment listeners for existing recent posts
+      if (snapshot.metadata.fromCache === false && snapshot.docs.length > 0) {
+        snapshot.docs.slice(0, MAX_COMMENT_MONITORED_POSTS).forEach((doc) => {
+          const postId = doc.id;
+          postLikeCounts.set(postId, (doc.data().likedBy || []).length);
+          if (!monitoredPostIds.has(postId)) {
+            setupPostCommentListener(postId, currentUser.uid);
+            monitoredPostIds.add(postId);
+          }
+        });
+      }
+    },
+    (error) => {
+      console.error("🔥 Posts listener error (likely missing index):", error);
+      // If index error, it will log the create-index link here
     }
+  );
 
-    // Handle real-time changes
-    snapshot.docChanges().forEach((change) => {
-      const postId = change.doc.id;
-      const data = change.doc.data();
-
-      if (change.type === "added") {
-        postLikeCounts.set(postId, (data.likedBy || []).length);
-        setupPostCommentListener(postId, currentUser.uid);
-      }
-
-      if (change.type === "modified") {
-        const prevLikes = postLikeCounts.get(postId) || 0;
-        const currLikes = (data.likedBy || []).length;
-
-        if (currLikes > prevLikes) {
-          const newLikes = currLikes - prevLikes;
-          showNotification(
-            "👍 New Like!",
-            `Your post received ${newLikes} new like${newLikes > 1 ? 's' : ''}!`,
-            "👍"
-          );
-        }
-        postLikeCounts.set(postId, currLikes);
-      }
-
-      if (change.type === "removed") {
-        postLikeCounts.delete(postId);
-        if (postCommentUnsubs.has(postId)) {
-          postCommentUnsubs.get(postId)();
-          postCommentUnsubs.delete(postId);
-        }
-      }
-    });
-  });
-
-  // === Comments on individual posts (one lightweight listener per post) ===
+  // === Comment listener per post (lightweight, only latest) ===
   function setupPostCommentListener(postId, uid) {
-    if (postCommentUnsubs.has(postId)) return; // Already listening
+    if (postCommentUnsubs.has(postId)) return;
 
     const commentsQuery = query(
       collection(db, "posts", postId, "comments"),
@@ -140,34 +145,37 @@ export function initNotifications(currentUser) {
 
     let previousCommentId = null;
 
-    const unsub = onSnapshot(commentsQuery, (snap) => {
-      if (snap.empty) {
-        previousCommentId = null;
-        return;
+    const unsub = onSnapshot(commentsQuery,
+      (snap) => {
+        if (snap.empty) {
+          previousCommentId = null;
+          return;
+        }
+
+        const latestDoc = snap.docs[0];
+        const latestId = latestDoc.id;
+        const commentData = latestDoc.data();
+
+        if (latestId !== previousCommentId && commentData.userId !== uid) {
+          const username = commentData.username || "Someone";
+          showNotification(
+            "💬 New Comment!",
+            `${username} commented on your post`,
+            "💬"
+          );
+        }
+
+        previousCommentId = latestId;
+      },
+      (error) => {
+        console.error(`🔥 Comment listener error for post ${postId}:`, error);
       }
-
-      const latestDoc = snap.docs[0];
-      const latestId = latestDoc.id;
-      const commentData = latestDoc.data();
-
-      if (latestId !== previousCommentId && commentData.userId !== uid) {
-        const username = commentData.username || "Someone";
-        showNotification(
-          "💬 New Comment!",
-          `${username} commented on your post`,
-          "💬"
-        );
-        // Optional: include snippet of comment
-        // if (commentData.text) body += `: "${commentData.text.substring(0, 50)}..."`;
-      }
-
-      previousCommentId = latestId;
-    });
+    );
 
     postCommentUnsubs.set(postId, unsub);
   }
 
-  // === Wall comments on user profile ===
+  // === Wall comments ===
   const wallQuery = query(
     collection(db, "users", currentUser.uid, "wallComments"),
     orderBy("createdAt", "desc"),
@@ -176,59 +184,54 @@ export function initNotifications(currentUser) {
 
   let prevWallCommentId = null;
 
-  onSnapshot(wallQuery, (snap) => {
-    if (snap.empty) {
-      prevWallCommentId = null;
-      return;
-    }
+  onSnapshot(wallQuery,
+    (snap) => {
+      if (snap.empty) {
+        prevWallCommentId = null;
+        return;
+      }
 
-    const latestId = snap.docs[0].id;
-    const data = snap.docs[0].data();
+      const latestId = snap.docs[0].id;
+      const data = snap.docs[0].data();
 
-    if (latestId !== prevWallCommentId && data.authorId !== currentUser.uid) {
-      showNotification(
-        "💬 New Wall Comment!",
-        `${data.authorName} commented on your profile`,
-        "💬"
-      );
-    }
+      if (latestId !== prevWallCommentId && data.authorId !== currentUser.uid) {
+        showNotification(
+          "💬 New Wall Comment!",
+          `${data.authorName} commented on your profile`,
+          "💬"
+        );
+      }
 
-    prevWallCommentId = latestId;
-  });
+      prevWallCommentId = latestId;
+    },
+    (error) => console.error("🔥 Wall comments listener error:", error)
+  );
 
-  // === Private messages in ALL conversations ===
+  // === Private messages (unchanged, with error handling) ===
   const conversationsQuery = query(
     collection(db, "conversations"),
     where("participants", "array-contains", currentUser.uid)
-    // No limit → all conversations
   );
 
-  let convsInitialLoad = true;
+  onSnapshot(conversationsQuery,
+    (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const convId = change.doc.id;
 
-  onSnapshot(conversationsQuery, (snapshot) => {
-    if (convsInitialLoad) {
-      snapshot.forEach((doc) => {
-        setupConversationMessageListener(doc.id, currentUser.uid);
-      });
-      convsInitialLoad = false;
-      return;
-    }
-
-    snapshot.docChanges().forEach((change) => {
-      const convId = change.doc.id;
-
-      if (change.type === "added") {
-        setupConversationMessageListener(convId, currentUser.uid);
-      }
-
-      if (change.type === "removed") {
-        if (convMessageUnsubs.has(convId)) {
-          convMessageUnsubs.get(convId)();
-          convMessageUnsubs.delete(convId);
+        if (change.type === "added") {
+          setupConversationMessageListener(convId, currentUser.uid);
         }
-      }
-    });
-  });
+
+        if (change.type === "removed") {
+          if (convMessageUnsubs.has(convId)) {
+            convMessageUnsubs.get(convId)();
+            convMessageUnsubs.delete(convId);
+          }
+        }
+      });
+    },
+    (error) => console.error("🔥 Conversations listener error:", error)
+  );
 
   function setupConversationMessageListener(convId, uid) {
     if (convMessageUnsubs.has(convId)) return;
@@ -241,43 +244,38 @@ export function initNotifications(currentUser) {
 
     let previousMessageId = null;
 
-    const unsub = onSnapshot(messagesQuery, (snap) => {
-      if (snap.empty) {
-        previousMessageId = null;
-        return;
-      }
+    const unsub = onSnapshot(messagesQuery,
+      (snap) => {
+        if (snap.empty) {
+          previousMessageId = null;
+          return;
+        }
 
-      const latestId = snap.docs[0].id;
-      const messageData = snap.docs[0].data();
+        const latestId = snap.docs[0].id;
+        const messageData = snap.docs[0].data();
 
-      if (latestId !== previousMessageId && messageData.senderId !== uid) {
-        // Generic message (original code didn't show sender name)
-        showNotification(
-          "✉️ New Message!",
-          "You have a new private message",
-          "✉️"
-        );
-        // If your message docs include username/senderName, you can do:
-        // const sender = messageData.username || messageData.senderName || "Someone";
-        // body = `${sender} sent you a message`;
-      }
+        if (latestId !== previousMessageId && messageData.senderId !== uid) {
+          showNotification(
+            "✉️ New Message!",
+            "You have a new private message",
+            "✉️"
+          );
+        }
 
-      previousMessageId = latestId;
-    });
+        previousMessageId = latestId;
+      },
+      (error) => console.error(`🔥 Message listener error for conv ${convId}:`, error)
+    );
 
     convMessageUnsubs.set(convId, unsub);
   }
 
-  console.log("📢 Live notifications initialized for ALL posts & conversations!");
+  console.log("📢 Live notifications initialized! (Check console for any errors)");
 }
 
-// Auto-initialize when user logs in
+// Auto-init on login
 auth.onAuthStateChanged((user) => {
   if (user) {
     setTimeout(() => initNotifications(user), 1000);
-  } else {
-    // Optional cleanup on logout
-    isInitialized = false;
-    // You could unsubscribe everything here if desired
   }
 });

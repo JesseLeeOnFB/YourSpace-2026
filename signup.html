@@ -5,12 +5,160 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up - YourSpace</title>
-  <link rel="stylesheet" href="auth.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+```
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.auth-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.9rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #f5576c;
+}
+
+.terms-checkbox {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #fef5f7;
+  border-radius: 8px;
+  border: 2px solid #f5576c;
+}
+
+.terms-checkbox input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.terms-checkbox label {
+  color: #555;
+  font-size: 0.9rem;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+.terms-checkbox ul {
+  margin: 0.8rem 0 0 2rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.terms-checkbox li {
+  margin: 0.3rem 0;
+}
+
+.terms-checkbox a {
+  color: #f5576c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #f5576c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.auth-btn:hover {
+  background: #e5476c;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+}
+
+.error-message {
+  color: #f44336;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.switch-auth {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.switch-auth a {
+  color: #f5576c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.switch-auth a:hover {
+  text-decoration: underline;
+}
+```
+
+  </style>
 </head>
 <body>
   <div class="auth-container">
     <div class="auth-card">
-      <h1>Join YourSpace</h1>
+      <h1>🌐 Join YourSpace</h1>
       <p class="subtitle">Create your profile and connect with friends</p>
 
 ```
@@ -33,7 +181,7 @@
     <div class="terms-checkbox">
       <input type="checkbox" id="acceptTerms" required>
       <label for="acceptTerms">
-        I agree to the <a href="terms.html" target="_blank">Terms & Conditions</a> and understand that:
+        I agree to the Terms & Conditions and understand that:
         <ul>
           <li>My data will be collected and stored</li>
           <li>Virtual reward purchases are non-refundable</li>

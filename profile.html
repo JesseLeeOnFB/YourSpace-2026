@@ -12,10 +12,11 @@
   <nav class="navbar">
     <button class="nav-toggle" id="navToggle">☰</button>
     <div class="nav-menu" id="navMenu">
-      <button id="homeBtn">Home</button>
+      <button id="homeBtn">Feed</button>
       <button id="profileBtn">My Profile</button>
       <button id="messagesBtn">Messages</button>
       <button id="dashboardBtn">Dashboard</button>
+      <button id="adminBtn" style="display:none;">Admin</button>
       <button id="contactBtn">Contact</button>
       <button id="privacyBtn">Privacy</button>
       <button id="logoutBtn">Logout</button>
@@ -47,6 +48,7 @@
         <h3>Edit Profile</h3>
         <label>Username:</label>
         <input type="text" id="usernameInput" placeholder="Username">
+        <div id="usernameError" class="error-message"></div>
         <label>Location:</label>
         <input type="text" id="locationInput" placeholder="Location">
         <label>Bio:</label>
@@ -57,7 +59,7 @@
 
     <!-- Theme Customization -->
     <div class="theme-container card">
-      <h3>🎨 Customize Theme</h3>
+      <h3>🎨 Customize Your Profile Theme</h3>
       <select id="themeSelect">
         <optgroup label="Basic Themes">
           <option value="default-theme">Default</option>
@@ -177,14 +179,26 @@
           <option value="wizard-castle">Wizard Castle</option>
         </optgroup>
       </select>
-      <button id="applyThemeBtn">Apply Theme</button>
-      <button id="resetThemeBtn">Reset to Default</button>
+      <div class="theme-actions">
+        <button id="applyThemeBtn">Apply Theme</button>
+        <button id="resetThemeBtn" class="reset-btn">🔄 Reset to Default</button>
+      </div>
     </div>
 
     <!-- Custom HTML/CSS -->
     <div class="custom-html-container card" id="customHtmlSection">
-      <h3>💻 Custom HTML/CSS - MySpace Style</h3>
-      <p class="info-text">Just like the old MySpace days! Your code injects directly into the page. Use &lt;style&gt; tags for CSS, add backgrounds, animations, GIFs, and completely customize your profile!</p>
+      <h3>💻 Custom HTML/CSS - Personalize Your Profile</h3>
+      <p class="info-text">Customize your profile with HTML and CSS! Add backgrounds, animations, and make it uniquely yours.</p>
+      
+      <div class="warning-box">
+        <strong>⚠️ Important:</strong>
+        <ul>
+          <li>Preview your changes before applying</li>
+          <li>Use <code>!important</code> to override default styles</li>
+          <li>If something breaks, use the Reset button below</li>
+        </ul>
+      </div>
+      
       <div class="example-box">
         <strong>🎨 Example - Animated Background:</strong>
         <pre>&lt;style&gt;
@@ -200,28 +214,24 @@ body {
 }
 &lt;/style&gt;</pre>
       </div>
-      <div class="example-box">
-        <strong>✨ Example - Custom Colors & Fonts:</strong>
-        <pre>&lt;style&gt;
-body {
-  background: linear-gradient(45deg, #667eea, #764ba2) !important;
-  font-family: 'Comic Sans MS', cursive !important;
-}
-.card {
-  background: rgba(0,0,0,0.8) !important;
-  color: #00ffff !important;
-  border-radius: 30px !important;
-}
-h2, h3 {
-  color: #ff00ff !important;
-  text-shadow: 0 0 10px #ff00ff !important;
-}
-&lt;/style&gt;</pre>
-      </div>
+      
       <textarea id="customHtmlInput" placeholder="Paste your HTML/CSS code here... (tip: use !important to override default styles)" rows="10"></textarea>
-      <button id="saveCustomHtmlBtn">💾 Save & Apply to Page</button>
-      <button id="clearCustomHtmlBtn">🗑️ Clear & Reset</button>
+      
+      <div class="custom-actions">
+        <button id="previewCustomHtmlBtn" class="preview-btn">👁️ Preview</button>
+        <button id="saveCustomHtmlBtn" class="save-btn">💾 Save & Apply</button>
+        <button id="clearCustomHtmlBtn" class="reset-btn">🗑️ Clear All Custom Code</button>
+      </div>
+      
       <div id="customHtmlPreview"></div>
+    </div>
+
+    <!-- RESET PROFILE BUTTON - CRITICAL SAFETY FEATURE -->
+    <div class="reset-profile-container card">
+      <h3>🔄 Reset Your Profile</h3>
+      <p class="warning-text">If your profile is broken or you want to start fresh, click below to restore all default settings.</p>
+      <button id="resetProfileBtn" class="danger-btn">⚠️ Reset Profile to Default</button>
+      <p class="info-text-small">This will restore default theme, remove custom HTML/CSS, and reset all customizations. Your posts and data will not be affected.</p>
     </div>
 
     <!-- Music Player -->
@@ -268,7 +278,7 @@ h2, h3 {
 
     <!-- Comments Wall -->
     <div class="wall-container card">
-      <h3>💬 Comments Wall</h3>
+      <h3>💬 Wall Comments</h3>
       <div id="wallCommentsContainer"></div>
       <textarea id="commentInput" placeholder="Leave a comment..." rows="3"></textarea>
       <button id="addCommentBtn">Post Comment</button>
@@ -277,7 +287,7 @@ h2, h3 {
 
   <script type="module" src="profile.js"></script>
   
-  <!-- Hamburger Menu Script -->
+  <!-- Navigation Script -->
   <script>
     document.getElementById('navToggle')?.addEventListener('click', function() {
       const navMenu = document.getElementById('navMenu');
@@ -290,6 +300,22 @@ h2, h3 {
           document.getElementById('navMenu')?.classList.remove('active');
         }
       });
+    });
+
+    document.getElementById('homeBtn')?.addEventListener('click', () => {
+      window.location.href = 'feed.html';
+    });
+
+    document.getElementById('messagesBtn')?.addEventListener('click', () => {
+      window.location.href = 'messages.html';
+    });
+
+    document.getElementById('dashboardBtn')?.addEventListener('click', () => {
+      window.location.href = 'creator-dashboard.html';
+    });
+
+    document.getElementById('adminBtn')?.addEventListener('click', () => {
+      window.location.href = 'admin-panel.html';
     });
 
     document.getElementById('contactBtn')?.addEventListener('click', () => {

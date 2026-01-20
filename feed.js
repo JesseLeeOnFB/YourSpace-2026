@@ -29,16 +29,39 @@ const ADMIN_EMAILS = [
 ];
 
 // Keyword filter - blocks offensive content
+// ═══════════════════════════════════════════════════════════
+// KEYWORD FILTER FIX - COPY THIS INTO feed.js
+// ═══════════════════════════════════════════════════════════
+
+// REPLACE lines 32-40 in feed.js with this:
+
 const BLOCKED_KEYWORDS = [
-  // Racist slurs (partial list - add more as needed)
-  "n***er", "n***a", "f****t", "d**e", "ch**k", "sp*c", "k**e", "r****d",
-  // Threats
-  "kill yourself", "kys", "kill you", "murder", "bomb threat",
-  // Self-harm
-  "suicide", "cut myself", "end it all", "kill myself",
+  // Racial slurs - ACTUAL WORDS (no asterisks!)
+  "nigger", "nigga", "faggot", "fag", "dyke", "chink", "spic", "kike", "retard", "retarded",
+  "coon", "beaner", "wetback", "gook", "jap", "towelhead", "camel jockey", "tranny",
+  
+  // Threats of violence
+  "kill yourself", "kys", "kill you", "kill him", "kill her", "murder you", "murder him", "murder her",
+  "bomb threat", "shoot up", "mass shooting", "blow up", "terrorist attack", "school shooter",
+  
+  // Self-harm and suicide
+  "suicide", "kill myself", "end my life", "hang myself", "cut myself", "slit my wrists",
+  "end it all", "better off dead", "overdose", "jump off", "end myself",
+  
+  // Sexual violence
+  "rape you", "rape her", "rape him", "sexual assault", "molest", "rape",
+  
+  // Hate speech
+  "gas the", "hang the", "lynch", "execute the", "exterminate",
+  
+  // Add more as needed
 ];
 
+// The function stays the same - it will now catch actual words
 function containsBlockedKeyword(text) {
+  const lowerText = text.toLowerCase();
+  return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
   const lowerText = text.toLowerCase();
   return BLOCKED_KEYWORDS.some(keyword => lowerText.includes(keyword.toLowerCase()));
 }

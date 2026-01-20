@@ -1,26 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Feed</title>
-  <link rel="stylesheet" href="feed.css" />
+  <title>YourSpace - Feed</title>
+  <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-
   <nav class="navbar">
     <button id="feedNavBtn">Feed</button>
     <button id="profileNavBtn">Profile</button>
     <button id="messagesNavBtn">Messages</button>
-    <button id="notificationsBtn">
-      🔔 <span id="notifCount" class="notif-badge">0</span>
-    </button>
+    <button id="notificationsBtn">🔔 <span id="notifCount" class="notif-badge" style="display:none;">0</span></button>
     <button id="contactNavBtn">Contact</button>
     <button id="logoutBtn">Logout</button>
   </nav>
 
   <!-- Notifications Modal -->
-  <div id="notificationsModal" class="modal">
+
+  <div id="notificationsModal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close-modal" id="closeNotifModal">&times;</span>
       <h3>🔔 Notifications</h3>
@@ -31,15 +30,19 @@
   <main class="feed-container">
     <h1>Global Feed</h1>
 
-    <section class="new-post">
-      <textarea id="postText" placeholder="What's on your mind?"></textarea>
-      <input type="file" id="postFileInput" accept="image/*,video/*" />
-      <button id="postBtn">Post</button>
-    </section>
+```
+<section class="new-post">
+  <textarea id="postText" placeholder="What's on your mind?"></textarea>
+  <input type="file" id="postFileInput" accept="image/*,video/*" />
+  <button id="postBtn">Post</button>
+</section>
 
-    <section id="postsContainer"></section>
+<section id="postsContainer"></section>
+```
+
   </main>
 
   <script type="module" src="feed.js"></script>
+
 </body>
 </html>

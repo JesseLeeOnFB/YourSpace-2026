@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -21,212 +22,225 @@
   </nav>
 
   <!-- Admin Panel Container -->
+
   <div class="admin-container">
     <h1>🛡️ Admin Panel</h1>
     <p class="admin-subtitle">Moderation & Platform Management</p>
 
-    <!-- Tab Navigation -->
-    <div class="tab-nav">
-      <button class="tab-btn active" data-tab="reports">📋 Reports</button>
-      <button class="tab-btn" data-tab="users">👥 Users</button>
-      <button class="tab-btn" data-tab="analytics">📊 Analytics</button>
-      <button class="tab-btn" data-tab="contact">📧 Contact Messages</button>
-      <button class="tab-btn" data-tab="promotions">📢 Promotions</button>
+```
+<!-- Tab Navigation -->
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="reports">📋 Reports</button>
+  <button class="tab-btn" data-tab="users">👥 Users</button>
+  <button class="tab-btn" data-tab="analytics">📊 Analytics</button>
+  <button class="tab-btn" data-tab="contact">📧 Contact Messages</button>
+  <button class="tab-btn" data-tab="promotions">📢 Promotions</button>
+</div>
+
+<!-- Reports Tab -->
+<div id="reportsTab" class="tab-content active">
+  <h2>📋 Reported Content</h2>
+  
+  <div class="filter-bar">
+    <select id="reportStatusFilter">
+      <option value="pending">Pending Only</option>
+      <option value="all">All Reports</option>
+      <option value="reviewed">Reviewed Only</option>
+    </select>
+    <select id="reportTypeFilter">
+      <option value="all">All Types</option>
+      <option value="spam">Spam</option>
+      <option value="harassment">Harassment</option>
+      <option value="hate_speech">Hate Speech</option>
+      <option value="inappropriate">Inappropriate</option>
+      <option value="violence">Violence</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <div id="reportsContainer" class="reports-list">
+    <p class="loading">Loading reports...</p>
+  </div>
+</div>
+
+<!-- Users Tab -->
+<div id="usersTab" class="tab-content">
+  <h2>👥 User Management</h2>
+  
+  <div class="user-search">
+    <input type="text" id="userSearchInput" placeholder="Search by username or email...">
+    <button id="searchUserBtn">Search</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3 id="totalUsers">0</h3>
+      <p>Total Users</p>
     </div>
-
-    <!-- Reports Tab -->
-    <div id="reportsTab" class="tab-content active">
-      <h2>📋 Reported Content</h2>
-      
-      <div class="filter-bar">
-        <select id="reportStatusFilter">
-          <option value="pending">Pending Only</option>
-          <option value="all">All Reports</option>
-          <option value="reviewed">Reviewed Only</option>
-        </select>
-        <select id="reportTypeFilter">
-          <option value="all">All Types</option>
-          <option value="spam">Spam</option>
-          <option value="harassment">Harassment</option>
-          <option value="hate_speech">Hate Speech</option>
-          <option value="inappropriate">Inappropriate</option>
-          <option value="violence">Violence</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div id="reportsContainer" class="reports-list">
-        <p class="loading">Loading reports...</p>
-      </div>
+    <div class="stat-card">
+      <h3 id="bannedUsers">0</h3>
+      <p>Banned Users</p>
     </div>
-
-    <!-- Users Tab -->
-    <div id="usersTab" class="tab-content">
-      <h2>👥 User Management</h2>
-      
-      <div class="user-search">
-        <input type="text" id="userSearchInput" placeholder="Search by username or email...">
-        <button id="searchUserBtn">Search</button>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3 id="totalUsers">0</h3>
-          <p>Total Users</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="bannedUsers">0</h3>
-          <p>Banned Users</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="activeToday">0</h3>
-          <p>Active Today</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="newThisWeek">0</h3>
-          <p>New This Week</p>
-        </div>
-      </div>
-
-      <div id="userResultsContainer" class="user-results"></div>
+    <div class="stat-card">
+      <h3 id="activeToday">0</h3>
+      <p>Active Today</p>
     </div>
-
-    <!-- Analytics Tab -->
-    <div id="analyticsTab" class="tab-content">
-      <h2>📊 Platform Analytics</h2>
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3 id="totalPosts">0</h3>
-          <p>Total Posts</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="totalComments">0</h3>
-          <p>Total Comments</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="totalRewards">0</h3>
-          <p>Total Rewards Sent</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="totalRevenue">$0</h3>
-          <p>Platform Revenue</p>
-        </div>
-      </div>
-
-      <div class="analytics-charts">
-        <div class="chart-card">
-          <h3>📈 User Growth (Last 30 Days)</h3>
-          <canvas id="userGrowthChart"></canvas>
-        </div>
-        
-        <div class="chart-card">
-          <h3>💰 Revenue (Last 30 Days)</h3>
-          <canvas id="revenueChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact Messages Tab -->
-    <div id="contactTab" class="tab-content">
-      <h2>📧 Contact Messages</h2>
-      
-      <div class="filter-bar">
-        <select id="contactStatusFilter">
-          <option value="unread">Unread Only</option>
-          <option value="all">All Messages</option>
-          <option value="read">Read Only</option>
-        </select>
-      </div>
-
-      <div id="contactMessagesContainer" class="contact-messages">
-        <p class="loading">Loading messages...</p>
-      </div>
-    </div>
-
-    <!-- Promotions Tab -->
-    <div id="promotionsTab" class="tab-content">
-      <h2>📢 Promotional Banners</h2>
-      
-      <div class="promo-stats">
-        <div class="stat-card">
-          <h3 id="pendingPromos">0</h3>
-          <p>Pending Approval</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="activePromos">0</h3>
-          <p>Active Promos</p>
-        </div>
-        <div class="stat-card">
-          <h3 id="promoRevenue">$0</h3>
-          <p>Promo Revenue</p>
-        </div>
-      </div>
-
-      <div id="promotionsContainer" class="promotions-list">
-        <p class="info-text">Promotional system will be available after implementation.</p>
-      </div>
+    <div class="stat-card">
+      <h3 id="newThisWeek">0</h3>
+      <p>New This Week</p>
     </div>
   </div>
 
+  <div id="userResultsContainer" class="user-results"></div>
+</div>
+
+<!-- Analytics Tab -->
+<div id="analyticsTab" class="tab-content">
+  <h2>📊 Platform Analytics</h2>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3 id="totalPosts">0</h3>
+      <p>Total Posts</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="totalComments">0</h3>
+      <p>Total Comments</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="totalRewards">0</h3>
+      <p>Total Rewards Sent</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="totalRevenue">$0</h3>
+      <p>Platform Revenue</p>
+    </div>
+  </div>
+
+  <div class="analytics-charts">
+    <div class="chart-card">
+      <h3>📈 User Growth (Last 30 Days)</h3>
+      <canvas id="userGrowthChart"></canvas>
+    </div>
+    
+    <div class="chart-card">
+      <h3>💰 Revenue (Last 30 Days)</h3>
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Messages Tab -->
+<div id="contactTab" class="tab-content">
+  <h2>📧 Contact Messages</h2>
+  
+  <div class="filter-bar">
+    <select id="contactStatusFilter">
+      <option value="unread">Unread Only</option>
+      <option value="all">All Messages</option>
+      <option value="read">Read Only</option>
+    </select>
+  </div>
+
+  <div id="contactMessagesContainer" class="contact-messages">
+    <p class="loading">Loading messages...</p>
+  </div>
+</div>
+
+<!-- Promotions Tab -->
+<div id="promotionsTab" class="tab-content">
+  <h2>📢 Promotional Banners</h2>
+  
+  <div class="promo-stats">
+    <div class="stat-card">
+      <h3 id="pendingPromos">0</h3>
+      <p>Pending Approval</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="activePromos">0</h3>
+      <p>Active Promos</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="promoRevenue">$0</h3>
+      <p>Promo Revenue</p>
+    </div>
+  </div>
+
+  <div id="promotionsContainer" class="promotions-list">
+    <p class="info-text">Promotional system will be available after implementation.</p>
+  </div>
+</div>
+```
+
+  </div>
+
   <!-- User Detail Modal -->
+
   <div id="userDetailModal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close-modal" id="closeUserModal">&times;</span>
       <h2>User Details</h2>
-      
-      <div id="userDetailContent">
-        <div class="user-info">
-          <img id="userModalPic" src="" alt="Profile Picture" class="user-modal-pic">
-          <div>
-            <h3 id="userModalName"></h3>
-            <p id="userModalEmail"></p>
-          </div>
-        </div>
-        
-        <div class="user-stats">
-          <p><strong>Posts:</strong> <span id="userModalPosts">0</span></p>
-          <p><strong>Comments:</strong> <span id="userModalComments">0</span></p>
-          <p><strong>Violations:</strong> <span id="userModalViolations">0</span></p>
-          <p><strong>Reports Received:</strong> <span id="userModalReports">0</span></p>
-        </div>
-        
-        <div class="user-actions">
-          <button id="banUserBtn" class="danger-btn">Ban User</button>
-          <button id="unbanUserBtn" class="success-btn" style="display:none;">Unban User</button>
-          <button id="viewUserProfileBtn" class="primary-btn">View Profile</button>
-        </div>
+
+```
+  <div id="userDetailContent">
+    <div class="user-info">
+      <img id="userModalPic" src="" alt="Profile Picture" class="user-modal-pic">
+      <div>
+        <h3 id="userModalName"></h3>
+        <p id="userModalEmail"></p>
       </div>
     </div>
+    
+    <div class="user-stats">
+      <p><strong>Posts:</strong> <span id="userModalPosts">0</span></p>
+      <p><strong>Comments:</strong> <span id="userModalComments">0</span></p>
+      <p><strong>Violations:</strong> <span id="userModalViolations">0</span></p>
+      <p><strong>Reports Received:</strong> <span id="userModalReports">0</span></p>
+    </div>
+    
+    <div class="user-actions">
+      <button id="banUserBtn" class="danger-btn">Ban User</button>
+      <button id="unbanUserBtn" class="success-btn" style="display:none;">Unban User</button>
+      <button id="viewUserProfileBtn" class="primary-btn">View Profile</button>
+    </div>
+  </div>
+</div>
+```
+
   </div>
 
   <!-- Ban User Modal -->
+
   <div id="banModal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close-modal" id="closeBanModal">&times;</span>
       <h2>Ban User</h2>
-      
-      <label for="banReason">Reason:</label>
-      <textarea id="banReason" placeholder="Enter ban reason..." rows="3"></textarea>
-      
-      <label for="banDuration">Duration:</label>
-      <select id="banDuration">
-        <option value="24">24 Hours</option>
-        <option value="168">7 Days</option>
-        <option value="720">30 Days</option>
-        <option value="null">Permanent</option>
-      </select>
-      
-      <div class="modal-actions">
-        <button id="confirmBanBtn" class="danger-btn">Confirm Ban</button>
-        <button id="cancelBanBtn" class="secondary-btn">Cancel</button>
-      </div>
-    </div>
+
+```
+  <label for="banReason">Reason:</label>
+  <textarea id="banReason" placeholder="Enter ban reason..." rows="3"></textarea>
+  
+  <label for="banDuration">Duration:</label>
+  <select id="banDuration">
+    <option value="24">24 Hours</option>
+    <option value="168">7 Days</option>
+    <option value="720">30 Days</option>
+    <option value="null">Permanent</option>
+  </select>
+  
+  <div class="modal-actions">
+    <button id="confirmBanBtn" class="danger-btn">Confirm Ban</button>
+    <button id="cancelBanBtn" class="secondary-btn">Cancel</button>
+  </div>
+</div>
+```
+
   </div>
 
   <script type="module" src="admin-panel.js"></script>
-  
+
   <!-- Hamburger Menu Script -->
+
   <script>
     document.getElementById('navToggle')?.addEventListener('click', function() {
       const navMenu = document.getElementById('navMenu');
@@ -257,5 +271,6 @@
       window.location.href = 'creator-dashboard.html';
     });
   </script>
+
 </body>
 </html>

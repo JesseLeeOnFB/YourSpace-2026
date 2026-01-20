@@ -1,37 +1,52 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YourSpace – Feed</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed - YourSpace</title>
   <link rel="stylesheet" href="feed.css">
 </head>
 <body>
   <nav class="navbar">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="messagesNavBtn">Messages</button>
-    <button id="contactNavBtn">Contact</button>
-    <button id="logoutBtn">Logout</button>
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">☰</button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">Feed</button>
+      <button id="profileNavBtn">Profile</button>
+      <button id="messagesNavBtn">Messages</button>
+      <button id="savedNavBtn">Saved Posts</button>
+      <button id="notificationsBtn">🔔 <span id="notifCount" class="notif-badge">0</span></button>
+      <button id="contactNavBtn">Contact</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </nav>
 
+  <div id="notificationsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" id="closeNotifModal">&times;</span>
+      <h3>🔔 Notifications</h3>
+      <div id="notificationsList"></div>
+    </div>
+  </div>
+
   <main class="feed-container">
-    <h1>Global Feed</h1>
+    <div class="search-container">
+      <input type="text" id="searchBar" placeholder="🔍 Search users...">
+      <div id="searchResults"></div>
+    </div>
 
-```
-<section class="new-post">
-  <textarea id="postText" placeholder="What's on your mind?"></textarea>
-  <input type="file" id="postFileInput" accept="image/*,video/*" />
-  <button id="postBtn">Post</button>
-</section>
+    <div id="trendingPost" class="trending-container"></div>
 
-<section id="postsContainer"></section>
-```
+    <section class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFileInput" accept="image/*,video/*" multiple>
+      <div id="filePreview"></div>
+      <button id="postBtn">Post</button>
+    </section>
 
+    <section id="postsContainer"></section>
   </main>
 
   <script type="module" src="feed.js"></script>
-
 </body>
 </html>

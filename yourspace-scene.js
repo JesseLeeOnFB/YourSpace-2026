@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebas
 import {
   getFirestore, doc, getDoc, updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -19,10 +19,74 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+const ADMIN_EMAILS = [
+  "skeeterjeeter8@gmail.com",
+  "daniellehunt01@gmail.com"
+];
+
+function isAdmin(email) {
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 const UNLOCK_ORDER = ['house', 'grass', 'driveway', 'car', 'trees', 'truck', 'minivan', 'jet'];
 
+// Universal navigation handlers
+document.getElementById("feedNavBtn")?.addEventListener("click", () => {
+  window.location.href = "feed.html";
+});
+
+document.getElementById("profileNavBtn")?.addEventListener("click", () => {
+  window.location.href = "profile.html";
+});
+
+document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
+  window.location.href = "messages.html";
+});
+
+document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
+  window.location.href = "dashboard.html";
+});
+
+document.getElementById("adminNavBtn")?.addEventListener("click", () => {
+  window.location.href = "admin.html";
+});
+
+document.getElementById("contactNavBtn")?.addEventListener("click", () => {
+  window.location.href = "contact.html";
+});
+
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+
+// Hamburger menu functionality
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    navLinks.classList.toggle("active");
+  });
+  
+  navLinks.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", () => {
+      hamburger.classList.remove("active");
+      navLinks.classList.remove("active");
+    });
+  });
+  
+  document.addEventListener("click", (e) => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+      hamburger.classList.remove("active");
+      navLinks.classList.remove("active");
+    }
+  });
+}
+
 // Back button
-document.getElementById("backToDashboard").addEventListener("click", () => {
+document.getElementById("backToDashboard")?.addEventListener("click", () => {
   window.location.href = "dashboard.html";
 });
 
@@ -62,12 +126,26 @@ createStars();
 function unlockReward(rewardName) {
   console.log("Unlocking reward:", rewardName);
   
-  const element = document.getElementById(rewardName);
-  if (element) {
-    element.classList.add("unlocked");
-    console.log("Added unlocked class to element:", rewardName);
+  // Handle trees specially (two separate elements)
+  if (rewardName === 'trees') {
+    const treeLeft = document.getElementById("treeLeft");
+    const treeRight = document.getElementById("treeRight");
+    if (treeLeft) {
+      treeLeft.classList.add("unlocked");
+      console.log("Added unlocked class to treeLeft");
+    }
+    if (treeRight) {
+      treeRight.classList.add("unlocked");
+      console.log("Added unlocked class to treeRight");
+    }
   } else {
-    console.error("Element not found:", rewardName);
+    const element = document.getElementById(rewardName);
+    if (element) {
+      element.classList.add("unlocked");
+      console.log("Added unlocked class to element:", rewardName);
+    } else {
+      console.error("Element not found:", rewardName);
+    }
   }
   
   // Update checklist
@@ -206,6 +284,16 @@ onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
+    // Show dashboard for all users
+    const dashboardBtn = document.getElementById("dashboardNavBtn");
+    if (dashboardBtn) dashboardBtn.style.display = "inline-block";
+    
+    // Show admin button only for admins
+    if (isAdmin(user.email)) {
+      const adminBtn = document.getElementById("adminNavBtn");
+      if (adminBtn) adminBtn.style.display = "inline-block";
+    }
+    
     loadUserRewards();
   }
 });

@@ -138,7 +138,6 @@ function getBlockedMessage(category) {
   };
   return messages[category] || "⛔ This content violates our community guidelines and cannot be posted.";
 }
-}
 
 function isAdmin(email) {
   return ADMIN_EMAILS.includes(email.toLowerCase());
@@ -438,266 +437,205 @@ async function renderPost(post, postId) {
 
   onSnapshot(commentsQ, (snap) => {
     commentsSection.innerHTML = "";
-
-    snap.forEach((cDoc) => {
-      const c = cDoc.data();
-      const cEl = document.createElement("div");
-      cEl.className = "comment";
-
-      const isCommentOwner = c.userId === auth.currentUser.uid;
-      const replies = c.replies || [];
-
-      cEl.innerHTML = `
-        <strong>${c.username || "Anonymous"}</strong>
-        <p>${c.text}</p>
+    snap.forEach((commentDoc) => {
+      const comment = commentDoc.data();
+      const commentEl = document.createElement("div");
+      commentEl.className = "comment";
+      const commentTime = comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now";
+      commentEl.innerHTML = `
+        <strong>${comment.username || "Anonymous"}</strong>
+        <p>${comment.text}</p>
+        <small>${commentTime}</small>
         <div class="comment-actions">
-          <button class="reply-btn" data-comment-id="${cDoc.id}">↩️ Reply</button>
-          ${isCommentOwner ? `<button class="delete-comment" data-comment-id="${cDoc.id}" data-post-id="${postId}">🗑️</button>` : ""}
+          <button class="reply-btn" data-comment-id="${commentDoc.id}">Reply</button>
         </div>
-        <div class="replies-container" id="replies-${cDoc.id}">
-          ${replies.map(reply => `
-            <div class="reply">
-              <strong>${reply.username}</strong>
-              <p>${reply.text}</p>
-              ${reply.userId === auth.currentUser.uid ? `<button class="delete-reply" data-comment-id="${cDoc.id}" data-reply-id="${reply.id}" data-post-id="${postId}">🗑️</button>` : ''}
-            </div>
-          `).join('')}
-        </div>
-        <div class="reply-form" id="reply-form-${cDoc.id}" style="display:none;">
+        <div class="replies-container" id="replies-${commentDoc.id}"></div>
+        <div class="reply-form" id="reply-form-${commentDoc.id}" style="display:none;">
           <input type="text" class="reply-input" placeholder="Write a reply..." />
-          <button class="reply-submit-btn" data-comment-id="${cDoc.id}">Send</button>
-          <button class="reply-cancel-btn" data-comment-id="${cDoc.id}">Cancel</button>
+          <button class="reply-submit-btn">Send</button>
+          <button class="reply-cancel-btn">Cancel</button>
         </div>
       `;
 
-      // Reply button
-      cEl.querySelector(".reply-btn").onclick = () => {
-        const replyForm = document.getElementById(`reply-form-${cDoc.id}`);
-        replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
-      };
-
-      // Submit reply
-      const replySubmitBtn = cEl.querySelector(".reply-submit-btn");
-      if (replySubmitBtn) {
-        replySubmitBtn.onclick = async () => {
-          const replyInput = cEl.querySelector(".reply-input");
-          const replyText = replyInput.value.trim();
-          if (!replyText) return;
-
-          if (containsBlockedKeyword(replyText)) {
-            alert("Your reply contains blocked content and cannot be posted.");
-            return;
+      // Delete button for comment owner
+      if (comment.userId === currentUserId) {
+        const deleteCommentBtn = document.createElement("button");
+        deleteCommentBtn.className = "delete-comment";
+        deleteCommentBtn.textContent = "🗑️";
+        deleteCommentBtn.onclick = async () => {
+          if (confirm("Delete this comment?")) {
+            await deleteDoc(doc(db, "posts", postId, "comments", commentDoc.id));
           }
+        };
+        commentEl.appendChild(deleteCommentBtn);
+      }
 
-          const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+      // Report button for non-owners
+      if (comment.userId !== currentUserId) {
+        const reportCommentBtn = document.createElement("button");
+        reportCommentBtn.className = "report-comment-btn";
+        reportCommentBtn.textContent = "🚨 Report";
+        reportCommentBtn.onclick = () => {
+          showReportDialog('comment', commentDoc.id, comment.userId);
+        };
+        commentEl.querySelector(".comment-actions").appendChild(reportCommentBtn);
+      }
+
+      // Reply button
+      const replyBtn = commentEl.querySelector(".reply-btn");
+      replyBtn.addEventListener("click", () => {
+        const replyForm = commentEl.querySelector(".reply-form");
+        replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
+      });
+
+      // Reply submit
+      const replySubmitBtn = commentEl.querySelector(".reply-submit-btn");
+      replySubmitBtn.addEventListener("click", async () => {
+        const replyInput = commentEl.querySelector(".reply-input");
+        const replyText = replyInput.value.trim();
+        if (!replyText) return alert("Reply cannot be empty");
+
+        const spamCheck = containsBlockedKeyword(replyText);
+        if (spamCheck.blocked) {
+          alert(getBlockedMessage(spamCheck.category));
+          return;
+        }
+
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUserId));
           const userData = userDoc.data();
+          const username = userData?.username || auth.currentUser.email.split("@")[0];
 
-          const newReply = {
-            id: Date.now().toString(),
-            userId: auth.currentUser.uid,
-            username: userData?.username || auth.currentUser.email.split("@")[0],
+          await addDoc(collection(db, "posts", postId, "comments", commentDoc.id, "replies"), {
+            userId: currentUserId,
+            username: username,
             text: replyText,
-            createdAt: new Date().toISOString()
-          };
-
-          const commentRef = doc(db, "posts", postId, "comments", cDoc.id);
-          const commentDoc = await getDoc(commentRef);
-          const existingReplies = commentDoc.data().replies || [];
-
-          await updateDoc(commentRef, {
-            replies: [...existingReplies, newReply]
+            createdAt: serverTimestamp()
           });
 
           replyInput.value = "";
-          document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
-        };
-      }
+          commentEl.querySelector(".reply-form").style.display = "none";
 
-      // Cancel reply
-      const replyCancelBtn = cEl.querySelector(".reply-cancel-btn");
-      if (replyCancelBtn) {
-        replyCancelBtn.onclick = () => {
-          document.getElementById(`reply-form-${cDoc.id}`).style.display = "none";
-        };
-      }
-
-      // Delete comment
-      const deleteCommentBtn = cEl.querySelector(".delete-comment");
-      if (deleteCommentBtn) {
-        deleteCommentBtn.addEventListener("click", async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          haptic("heavy");
-          if (confirm("Delete this comment?")) {
-            const commentId = e.target.getAttribute("data-comment-id");
-            const postIdForComment = e.target.getAttribute("data-post-id");
-            try {
-              await deleteDoc(doc(db, "posts", postIdForComment, "comments", commentId));
-            } catch (err) {
-              alert("Error deleting comment: " + err.message);
-            }
+          // Create notification for comment owner if not self
+          if (comment.userId !== currentUserId) {
+            await createNotification(comment.userId, currentUserId, "replied to your comment", postId);
           }
-        });
-      }
-
-      // Delete reply buttons
-      cEl.querySelectorAll(".delete-reply").forEach(btn => {
-        btn.onclick = async (e) => {
-          if (confirm("Delete this reply?")) {
-            const commentId = e.target.getAttribute("data-comment-id");
-            const replyId = e.target.getAttribute("data-reply-id");
-            const postIdForReply = e.target.getAttribute("data-post-id");
-
-            const commentRef = doc(db, "posts", postIdForReply, "comments", commentId);
-            const commentDoc = await getDoc(commentRef);
-            const existingReplies = commentDoc.data().replies || [];
-            const updatedReplies = existingReplies.filter(r => r.id !== replyId);
-
-            await updateDoc(commentRef, {
-              replies: updatedReplies
-            });
-          }
-        };
+        } catch (err) {
+          alert("Error adding reply: " + err.message);
+        }
       });
 
-      commentsSection.appendChild(cEl);
+      // Reply cancel
+      const replyCancelBtn = commentEl.querySelector(".reply-cancel-btn");
+      replyCancelBtn.addEventListener("click", () => {
+        commentEl.querySelector(".reply-form").style.display = "none";
+      });
+
+      // Load replies
+      const repliesContainer = commentEl.querySelector(".replies-container");
+      const repliesQ = query(collection(db, "posts", postId, "comments", commentDoc.id, "replies"), orderBy("createdAt", "asc"));
+
+      onSnapshot(repliesQ, (replySnap) => {
+        repliesContainer.innerHTML = "";
+        replySnap.forEach((replyDoc) => {
+          const reply = replyDoc.data();
+          const replyEl = document.createElement("div");
+          replyEl.className = "reply";
+          replyEl.innerHTML = `
+            <strong>${reply.username || "Anonymous"}</strong>
+            <p>${reply.text}</p>
+          `;
+
+          // Delete button for reply owner
+          if (reply.userId === currentUserId) {
+            const deleteReplyBtn = document.createElement("button");
+            deleteReplyBtn.className = "delete-reply";
+            deleteReplyBtn.textContent = "🗑️";
+            deleteReplyBtn.onclick = async () => {
+              if (confirm("Delete this reply?")) {
+                await deleteDoc(doc(db, "posts", postId, "comments", commentDoc.id, "replies", replyDoc.id));
+              }
+            };
+            replyEl.appendChild(deleteReplyBtn);
+          }
+
+          repliesContainer.appendChild(replyEl);
+        });
+      });
+
+      commentsSection.appendChild(commentEl);
     });
   });
 
+  // Comment button
   postEl.querySelector(".comment-btn").onclick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     const input = postEl.querySelector(".comment-input");
     const text = input.value.trim();
-    if (!text) return;
+    if (!text) return alert("Comment cannot be empty");
 
-    // COMPREHENSIVE SPAM PROTECTION
+    // Spam check
     const spamCheck = containsBlockedKeyword(text);
     if (spamCheck.blocked) {
       alert(getBlockedMessage(spamCheck.category));
       return;
     }
 
-    haptic("medium");
-
-    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-    const userData = userDoc.data();
-    const username = userData?.username || auth.currentUser.email.split("@")[0];
-
     try {
+      const userDoc = await getDoc(doc(db, "users", currentUserId));
+      const userData = userDoc.data();
+      const username = userData?.username || auth.currentUser.email.split("@")[0];
+
       await addDoc(collection(db, "posts", postId, "comments"), {
-        text,
-        userId: auth.currentUser.uid,
+        userId: currentUserId,
         username: username,
+        text,
         createdAt: serverTimestamp()
       });
 
       input.value = "";
-      
-      // Create notification for post owner
-      if (post.userId !== auth.currentUser.uid) {
-        await createNotification(post.userId, auth.currentUser.uid, "commented on your post", postId);
+
+      // Create notification for post owner if not self
+      if (post.userId !== currentUserId) {
+        await createNotification(post.userId, currentUserId, "commented on your post", postId);
       }
     } catch (err) {
-      alert("Error posting comment: " + err.message);
+      alert("Error adding comment: " + err.message);
     }
   };
 
-  postsContainer.appendChild(postEl);
+  return postEl;
 }
 
-function loadPosts() {
+async function loadPosts() {
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-
-  onSnapshot(q, async (snap) => {
+  onSnapshot(q, (snap) => {
     postsContainer.innerHTML = "";
     
-    // Calculate trending post (hourly top post based on engagement)
-    await calculateTrendingPost(snap);
-    
-    // Separate pinned, trending, and regular posts
+    // Group pinned and normal posts
     const pinnedPosts = [];
-    const trendingPosts = [];
-    const regularPosts = [];
+    const normalPosts = [];
     
-    snap.forEach((docSnap) => {
-      const post = docSnap.data();
+    snap.forEach((doc) => {
+      const post = doc.data();
       if (post.pinned) {
-        pinnedPosts.push({ data: post, id: docSnap.id });
-      } else if (post.trending) {
-        trendingPosts.push({ data: post, id: docSnap.id });
+        pinnedPosts.push({ post, id: doc.id });
       } else {
-        regularPosts.push({ data: post, id: docSnap.id });
+        normalPosts.push({ post, id: doc.id });
       }
     });
     
-    // Render in order: Pinned → Trending → Regular
-    pinnedPosts.forEach(({ data, id }) => renderPost(data, id));
-    trendingPosts.forEach(({ data, id }) => renderPost(data, id));
-    regularPosts.forEach(({ data, id }) => renderPost(data, id));
+    // Render pinned first
+    pinnedPosts.forEach(({ post, id }) => {
+      postsContainer.appendChild(renderPost(post, id));
+    });
+    
+    // Render normal posts
+    normalPosts.forEach(({ post, id }) => {
+      postsContainer.appendChild(renderPost(post, id));
+    });
   });
-}
-
-// ═══════════════════════════════════════════════════════════
-// HOURLY TRENDING TOP POST CALCULATION (WITH GIFTS!)
-// ═══════════════════════════════════════════════════════════
-async function calculateTrendingPost(snapshot) {
-  try {
-    const oneHourAgo = Date.now() - (60 * 60 * 1000);
-    let topPost = null;
-    let maxEngagement = -1;
-    
-    // Calculate engagement score for each post from the last hour
-    for (const docSnap of snapshot.docs) {
-      const post = docSnap.data();
-      const postTime = post.createdAt?.toMillis() || 0;
-      
-      // Only consider posts from the last hour
-      if (postTime > oneHourAgo && !post.pinned) {
-        const likes = (post.likedBy || []).length;
-        const dislikes = (post.dislikedBy || []).length;
-        const comments = post.commentCount || 0;
-        
-        // Get total gifts received for this post
-        let totalGifts = 0;
-        try {
-          const giftsSnapshot = await getDocs(collection(db, "posts", docSnap.id, "gifts"));
-          totalGifts = giftsSnapshot.size;
-        } catch (err) {
-          console.log("No gifts for post:", docSnap.id);
-        }
-        
-        // Enhanced engagement score: likes + dislikes + (comments * 2) + (gifts * 5)
-        // Gifts weighted 5x because they're paid and show strong support!
-        const engagement = likes + dislikes + (comments * 2) + (totalGifts * 5);
-        
-        if (engagement > maxEngagement) {
-          maxEngagement = engagement;
-          topPost = { id: docSnap.id, engagement, gifts: totalGifts };
-        }
-      }
-    }
-    
-    // Clear all trending flags first
-    const clearPromises = [];
-    snapshot.forEach((docSnap) => {
-      const post = docSnap.data();
-      if (post.trending && !post.pinned) {
-        clearPromises.push(
-          updateDoc(doc(db, "posts", docSnap.id), { trending: false })
-        );
-      }
-    });
-    await Promise.all(clearPromises);
-    
-    // Set new trending post if we found one with meaningful engagement
-    if (topPost && maxEngagement >= 5) {
-      await updateDoc(doc(db, "posts", topPost.id), { trending: true });
-    }
-    
-  } catch (err) {
-    console.error("Error calculating trending post:", err);
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -705,92 +643,71 @@ async function calculateTrendingPost(snapshot) {
 // ═══════════════════════════════════════════════════════════
 
 const GIFT_TYPES = {
-  coffee: { name: "☕ Coffee", price: 3, icon: "☕" },
-  pizza: { name: "🍕 Pizza", price: 5, icon: "🍕" },
-  flower: { name: "🌹 Flower", price: 10, icon: "🌹" },
-  house: { name: "🏠 House", price: 50, icon: "🏠" },
-  car: { name: "🚗 Car", price: 100, icon: "🚗" },
-  jet: { name: "✈️ Private Jet", price: 500, icon: "✈️" }
+  rose: { name: "Rose", icon: "🌹", price: 1.99 },
+  coffee: { name: "Coffee", icon: "☕", price: 4.99 },
+  bear: { name: "Teddy Bear", icon: "🧸", price: 9.99 },
+  cake: { name: "Cake", icon: "🍰", price: 14.99 },
+  diamond: { name: "Diamond", icon: "💎", price: 49.99 },
+  yacht: { name: "Yacht", icon: "🛥️", price: 99.99 }
 };
 
 function showGiftDialog(postId, recipientUserId, recipientUsername) {
-  const dialog = document.createElement("div");
-  dialog.className = "gift-dialog-overlay";
-  
-  const giftsHtml = Object.keys(GIFT_TYPES).map(key => {
-    const gift = GIFT_TYPES[key];
-    return `
-      <button class="gift-option" data-type="${key}" data-price="${gift.price}">
-        <span class="gift-icon">${gift.icon}</span>
-        <span class="gift-name">${gift.name}</span>
-        <span class="gift-price">$${gift.price}</span>
-      </button>
-    `;
-  }).join("");
-  
+  const dialog = document.createElement('div');
+  dialog.className = 'gift-dialog-overlay';
   dialog.innerHTML = `
     <div class="gift-dialog">
       <h3>🎁 Send a Gift to ${recipientUsername}</h3>
-      <p class="gift-subtitle">Choose a gift to show your support!</p>
-      <div class="gift-options">
-        ${giftsHtml}
-      </div>
+      <p class="gift-subtitle">Show appreciation with a virtual gift! 100% goes to the creator after fees.</p>
+      <div class="gift-options"></div>
       <button class="gift-cancel-btn">Cancel</button>
     </div>
   `;
+
+  const optionsContainer = dialog.querySelector('.gift-options');
   
-  document.body.appendChild(dialog);
-  
-  // Handle gift selection
-  dialog.querySelectorAll(".gift-option").forEach(btn => {
-    btn.onclick = async () => {
-      const giftType = btn.dataset.type;
-      const price = parseFloat(btn.dataset.price);
-      
-      if (confirm(`Send ${GIFT_TYPES[giftType].name} for $${price}?`)) {
-        await sendGift(postId, recipientUserId, giftType, price);
-        document.body.removeChild(dialog);
-      }
-    };
+  Object.entries(GIFT_TYPES).forEach(([type, { name, icon, price }]) => {
+    const option = document.createElement('div');
+    option.className = 'gift-option';
+    option.innerHTML = `
+      <div class="gift-icon">${icon}</div>
+      <span class="gift-name">${name}</span>
+      <span class="gift-price">$${price.toFixed(2)}</span>
+    `;
+    option.onclick = () => sendGift(postId, recipientUserId, type, price);
+    optionsContainer.appendChild(option);
   });
-  
-  dialog.querySelector(".gift-cancel-btn").onclick = () => {
-    document.body.removeChild(dialog);
-  };
-  
-  dialog.onclick = (e) => {
-    if (e.target === dialog) {
-      document.body.removeChild(dialog);
-    }
-  };
+
+  dialog.querySelector('.gift-cancel-btn').onclick = () => dialog.remove();
+
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.remove();
+  });
+
+  document.body.appendChild(dialog);
 }
 
 async function sendGift(postId, recipientUserId, giftType, price) {
   try {
-    const senderDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-    const senderData = senderDoc.data();
+    // In a real app, integrate Stripe payment here
+    // For demo, simulate successful payment
+    const paymentSuccess = true;
     
-    // Record gift in post's gifts subcollection
-    await addDoc(collection(db, "posts", postId, "gifts"), {
-      senderId: auth.currentUser.uid,
-      senderName: senderData?.username || auth.currentUser.email.split("@")[0],
-      recipientId: recipientUserId,
-      giftType: giftType,
-      price: price,
-      createdAt: serverTimestamp()
-    });
+    if (!paymentSuccess) {
+      alert("Payment failed. Please try again.");
+      return;
+    }
     
-    // Record gift in recipient's rewards
-    await addDoc(collection(db, "users", recipientUserId, "rewards"), {
-      senderId: auth.currentUser.uid,
-      senderName: senderData?.username || auth.currentUser.email.split("@")[0],
+    // Record gift in Firestore
+    await addDoc(collection(db, "gifts"), {
+      fromUserId: auth.currentUser.uid,
+      toUserId: recipientUserId,
       postId: postId,
       giftType: giftType,
-      price: price,
+      amount: price,
       createdAt: serverTimestamp()
     });
     
-    // Update recipient's total earnings
+    // Update recipient's earnings
     const recipientRef = doc(db, "users", recipientUserId);
     const recipientDoc = await getDoc(recipientRef);
     const currentEarnings = recipientDoc.data().totalEarnings || 0;

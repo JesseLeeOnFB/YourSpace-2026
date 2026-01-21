@@ -1390,3 +1390,197 @@ body.light-theme textarea::placeholder {
     padding: 1rem 3rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE TEXT VISIBILITY FIX - MAXIMUM READABILITY
+   ═══════════════════════════════════════════════════════════ */
+
+/* Username text - ALWAYS READABLE */
+#displayName,
+.profile-info-box h2,
+.username-text {
+  color: #ffffff !important;
+  text-shadow: 
+    2px 2px 8px rgba(0, 0, 0, 0.9),
+    -1px -1px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.7) !important;
+  font-weight: 700 !important;
+  font-size: 2rem !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6)) !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 12px !important;
+  display: inline-block !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Bio text - ALWAYS READABLE */
+#bio,
+.bio-text,
+.profile-info-box .bio {
+  color: #ffffff !important;
+  text-shadow: 
+    1px 1px 6px rgba(0, 0, 0, 0.9),
+    -1px -1px 3px rgba(0, 0, 0, 0.8) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)) !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 10px !important;
+  margin: 0.5rem 0 !important;
+  font-weight: 500 !important;
+}
+
+/* Location text - ALWAYS READABLE */
+#location,
+.location-text,
+.profile-info-box .location {
+  color: #ffffff !important;
+  text-shadow: 
+    1px 1px 6px rgba(0, 0, 0, 0.9),
+    -1px -1px 3px rgba(0, 0, 0, 0.8) !important;
+  font-size: 1rem !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)) !important;
+  padding: 0.8rem 1.2rem !important;
+  border-radius: 10px !important;
+  margin: 0.5rem 0 !important;
+  font-weight: 500 !important;
+}
+
+/* Profile info box - DARK CONTAINER */
+.profile-info-box {
+  background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 20px !important;
+  padding: 2rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Light themes - dark text on light background */
+body.default-theme #displayName,
+body.default-theme .profile-info-box h2,
+body.light-theme #displayName,
+body.light-theme .profile-info-box h2 {
+  color: #1c1e21 !important;
+  text-shadow: 
+    1px 1px 3px rgba(255, 255, 255, 0.8),
+    0 0 10px rgba(255, 255, 255, 0.5) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)) !important;
+}
+
+body.default-theme #bio,
+body.default-theme .bio-text,
+body.light-theme #bio,
+body.light-theme .bio-text {
+  color: #1c1e21 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8)) !important;
+}
+
+body.default-theme #location,
+body.default-theme .location-text,
+body.light-theme #location,
+body.light-theme .location-text {
+  color: #1c1e21 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8)) !important;
+}
+
+body.default-theme .profile-info-box,
+body.light-theme .profile-info-box {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)) !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mobile - even stronger contrast */
+@media (max-width: 768px) {
+  #displayName,
+  .profile-info-box h2 {
+    background: rgba(0, 0, 0, 0.95) !important;
+    padding: 1.2rem !important;
+  }
+  
+  #bio,
+  .bio-text {
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 1rem !important;
+  }
+  
+  #location,
+  .location-text {
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 0.8rem !important;
+  }
+  
+  .profile-info-box {
+    background: rgba(0, 0, 0, 0.92) !important;
+    backdrop-filter: blur(25px) !important;
+  }
+  
+  body.default-theme .profile-info-box,
+  body.light-theme .profile-info-box {
+    background: rgba(255, 255, 255, 0.98) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX THEMES THAT SHOW SOLID WHITE INSTEAD OF INTENDED APPEARANCE
+   ═══════════════════════════════════════════════════════════ */
+
+/* Ensure all themes have their proper backgrounds */
+body.default-theme {
+  background: #f0f2f5 !important;
+}
+
+body.light-theme {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+}
+
+body.green-gradient {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.pink-gradient {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.vaporwave {
+  background: 
+    linear-gradient(135deg, #ff6ec7 0%, #7873f5 50%, #4facfe 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      transparent 2px,
+      transparent 4px,
+      rgba(255, 255, 255, 0.1) 6px
+    ) !important;
+  background-size: 400% 400%, 100% 100% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.cats-paradise {
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 10% 20%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 80% 30%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 50% 60%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 20% 70%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 70% 80%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌺</text></svg>') 40% 85%,
+    linear-gradient(135deg, #ffeef8 0%, #ffe4f3 50%, #ffd4ea 100%) !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-size: 80px 80px, 80px 80px, 80px 80px, 60px 60px, 60px 60px, 60px 60px, cover !important;
+  background-position: 10% 20%, 80% 30%, 50% 60%, 20% 70%, 70% 80%, 40% 85%, center !important;
+  background-attachment: fixed !important;
+  animation: butterflies 20s ease-in-out infinite !important;
+}
+
+/* Ensure all gradient themes animate */
+body[class*="gradient"]:not(.animated-rainbow) {
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}

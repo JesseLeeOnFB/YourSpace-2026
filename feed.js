@@ -2,7 +2,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
+  getFirestore, collection, addDoc, doc, deleteDoc, getDoc, getDocs,
   updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -115,13 +115,14 @@ async function renderPost(post, postId) {
       <strong>${post.username || "Anonymous"}</strong>
       <small>${time}</small>
     </div>
-    <p>${post.text || ""}</p>
+    <p>${post.text || ""}${post.edited ? ' <span class="edited-badge">(edited)</span>' : ""}</p>
     ${post.mediaURL ? `<${post.mediaType === "video" ? "video controls" : "img"} src="${post.mediaURL}" class="post-media" />` : ""}
     <div class="actions">
       <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
+      ${isOwner ? `<button class="edit-btn" data-id="${postId}">✏️ Edit</button>` : ""}
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
       ${isAdmin(currentUserEmail) && !isPinned ? `<button class="pin-btn" data-id="${postId}">📌 Pin</button>` : ""}
       ${isAdmin(currentUserEmail) && isPinned ? `<button class="unpin-btn" data-id="${postId}">📌 Unpin</button>` : ""}
@@ -182,6 +183,69 @@ async function renderPost(post, postId) {
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
     alert("Post link copied!");
   };
+
+  // EDIT BUTTON (Post owner only)
+  const editBtn = postEl.querySelector(".edit-btn");
+  if (editBtn) {
+    editBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      haptic("light");
+      
+      const postTextEl = postEl.querySelector("p");
+      const currentText = post.text || "";
+      
+      // Create edit form
+      const editForm = document.createElement("div");
+      editForm.className = "edit-post-form";
+      editForm.innerHTML = `
+        <textarea class="edit-post-textarea">${currentText}</textarea>
+        <div class="edit-post-actions">
+          <button class="save-edit-btn">💾 Save</button>
+          <button class="cancel-edit-btn">❌ Cancel</button>
+        </div>
+      `;
+      
+      // Replace post text with edit form
+      postTextEl.replaceWith(editForm);
+      const textarea = editForm.querySelector(".edit-post-textarea");
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      
+      // Save button
+      editForm.querySelector(".save-edit-btn").addEventListener("click", async () => {
+        const newText = textarea.value.trim();
+        if (!newText) {
+          alert("Post cannot be empty!");
+          return;
+        }
+        
+        try {
+          await updateDoc(doc(db, "posts", postId), {
+            text: newText,
+            edited: true,
+            editedAt: serverTimestamp()
+          });
+          
+          // Replace edit form with updated text
+          const newPostTextEl = document.createElement("p");
+          newPostTextEl.innerHTML = `${newText} <span class="edited-badge">(edited)</span>`;
+          editForm.replaceWith(newPostTextEl);
+          
+          haptic("success");
+        } catch (err) {
+          alert("Error updating post: " + err.message);
+        }
+      });
+      
+      // Cancel button
+      editForm.querySelector(".cancel-edit-btn").addEventListener("click", () => {
+        const newPostTextEl = document.createElement("p");
+        newPostTextEl.textContent = currentText;
+        editForm.replaceWith(newPostTextEl);
+      });
+    });
+  }
 
   const deleteBtn = postEl.querySelector(".delete-btn");
   if (deleteBtn) {
@@ -514,5 +578,88 @@ if (hamburger && navLinks) {
       hamburger.classList.remove("active");
       navLinks.classList.remove("active");
     }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// FEATURE 1: USER SEARCH BAR
+// ═══════════════════════════════════════════════════════════
+
+const searchBar = document.getElementById("searchBar");
+const searchResults = document.getElementById("searchResults");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+if (searchBar && searchResults) {
+  searchBar.addEventListener("input", async (e) => {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    // Show/hide clear button
+    if (clearSearchBtn) {
+      clearSearchBtn.style.display = searchTerm ? "block" : "none";
+    }
+    
+    if (!searchTerm) {
+      searchResults.style.display = "none";
+      searchResults.innerHTML = "";
+      return;
+    }
+    
+    try {
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      const matchedUsers = [];
+      
+      usersSnapshot.forEach((docSnap) => {
+        const userData = docSnap.data();
+        const username = userData.username || "";
+        if (username.toLowerCase().includes(searchTerm)) {
+          matchedUsers.push({
+            id: docSnap.id,
+            username: username,
+            photoURL: userData.photoURL || "https://via.placeholder.com/50"
+          });
+        }
+      });
+      
+      if (matchedUsers.length > 0) {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = matchedUsers.map(user => `
+          <div class="search-result-item" data-user-id="${user.id}">
+            <img src="${user.photoURL}" alt="${user.username}" class="search-result-avatar" onerror="this.src='https://via.placeholder.com/50'">
+            <strong class="search-result-username">${user.username}</strong>
+          </div>
+        `).join("");
+        
+        // Add click handlers to results
+        searchResults.querySelectorAll(".search-result-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const userId = item.getAttribute("data-user-id");
+            window.location.href = `profile.html?userId=${userId}`;
+          });
+        });
+      } else {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = "<div class='no-results'>No users found</div>";
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+    }
+  });
+  
+  // Close search results when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.style.display = "none";
+    }
+  });
+}
+
+// Clear search button
+if (clearSearchBtn) {
+  clearSearchBtn.addEventListener("click", () => {
+    searchBar.value = "";
+    searchResults.style.display = "none";
+    searchResults.innerHTML = "";
+    clearSearchBtn.style.display = "none";
+    searchBar.focus();
   });
 }

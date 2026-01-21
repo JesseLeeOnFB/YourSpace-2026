@@ -560,3 +560,207 @@ body {
     padding: 1rem 3rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURE: USER SEARCH BAR
+   ═══════════════════════════════════════════════════════════ */
+
+.search-container {
+  position: relative;
+  margin: 1.5rem 0 2rem 0;
+  max-width: 600px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 1rem 3.5rem 1rem 1.5rem;
+  font-size: 1rem;
+  border: 2px solid #e4e6eb;
+  border-radius: 50px;
+  background: #f0f2f5;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #1877f2;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.1);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #65676b;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  z-index: 10;
+  transition: color 0.2s;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-search-btn:hover {
+  background: rgba(0,0,0,0.05);
+  color: #1c1e21;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid #e4e6eb;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: #f0f2f5;
+}
+
+.search-result-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e4e6eb;
+}
+
+.search-result-username {
+  color: #1c1e21;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.no-results {
+  padding: 2rem;
+  text-align: center;
+  color: #65676b;
+  font-size: 0.95rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURE 2: POST EDITING
+   ═══════════════════════════════════════════════════════════ */
+
+.edit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.edit-post-form {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f0f2f5;
+  border-radius: 12px;
+}
+
+.edit-post-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 1rem;
+  border: 2px solid #e4e6eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.edit-post-textarea:focus {
+  outline: none;
+  border-color: #1877f2;
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.1);
+}
+
+.edit-post-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.save-edit-btn {
+  background: #4CAF50;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.save-edit-btn:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.cancel-edit-btn {
+  background: #e4e6eb;
+  color: #1c1e21;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.cancel-edit-btn:hover {
+  background: #d0d2d6;
+}
+
+.edited-badge {
+  font-size: 0.85rem;
+  color: #65676b;
+  font-style: italic;
+  margin-left: 0.5rem;
+}

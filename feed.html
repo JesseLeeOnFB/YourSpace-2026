@@ -28,6 +28,12 @@
   <main class="feed-container">
     <h1>Global Feed</h1>
 
+    <div class="search-container">
+      <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
+      <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
     <section class="new-post">
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
       <input type="file" id="postFileInput" accept="image/*,video/*" />

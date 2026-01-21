@@ -232,11 +232,45 @@ function setupEditProfile() {
   };
 
   document.getElementById("saveProfileBtn").onclick = async () => {
+    const newUsername = document.getElementById("usernameInput").value.trim();
+    const location = document.getElementById("locationInput").value;
+    const bio = document.getElementById("bioInput").value;
+    
+    if (!newUsername) {
+      alert("Username cannot be empty!");
+      return;
+    }
+    
+    // USERNAME UNIQUENESS CHECK
+    const currentUserDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const currentUsername = currentUserDoc.data()?.username;
+    
+    // Only check uniqueness if username changed
+    if (newUsername !== currentUsername) {
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      let usernameTaken = false;
+      
+      usersSnapshot.forEach((docSnap) => {
+        if (docSnap.id !== currentUser.uid) {
+          const userData = docSnap.data();
+          if (userData.username && userData.username.toLowerCase() === newUsername.toLowerCase()) {
+            usernameTaken = true;
+          }
+        }
+      });
+      
+      if (usernameTaken) {
+        alert(`❌ Username "${newUsername}" is already taken. Please choose a different username.`);
+        return;
+      }
+    }
+    
     await updateDoc(doc(db, "users", currentUser.uid), {
-      username: document.getElementById("usernameInput").value,
-      location: document.getElementById("locationInput").value,
-      bio: document.getElementById("bioInput").value
+      username: newUsername,
+      location: location,
+      bio: bio
     });
+    alert("✅ Profile saved successfully!");
     modal.style.display = "none";
     loadProfile();
   };
@@ -518,6 +552,13 @@ function setupCommentsWall() {
       return;
     }
 
+    // SPAM PROTECTION FOR WALL COMMENTS
+    const spamCheck = containsBlockedKeyword(text);
+    if (spamCheck.blocked) {
+      alert(getBlockedMessage(spamCheck.category));
+      return;
+    }
+
     try {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       const userData = userDoc.data();
@@ -531,11 +572,129 @@ function setupCommentsWall() {
       });
 
       document.getElementById("commentInput").value = "";
+      loadWallComments(); // Reload comments after posting
     } catch (err) {
       console.error("Error posting comment:", err);
       alert("Error posting comment: " + err.message);
     }
   };
+  
+  // Load comments initially
+  loadWallComments();
+}
+
+async function loadWallComments() {
+  const commentsRef = collection(db, "users", viewingUserId, "wallComments");
+  const q = query(commentsRef, orderBy("createdAt", "desc"));
+  
+  const container = document.getElementById("wallCommentsContainer");
+  container.innerHTML = "";
+  
+  const snapshot = await getDocs(q);
+  
+  if (snapshot.empty) {
+    container.innerHTML = "<p style='text-align:center;color:#65676b;padding:2rem;'>No comments yet. Be the first to leave one!</p>";
+    return;
+  }
+  
+  snapshot.forEach((docSnap) => {
+    const comment = docSnap.data();
+    const canDelete = currentUser && (comment.authorId === currentUser.uid || isAdmin(currentUser.email));
+    const time = comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now";
+    
+    const div = document.createElement("div");
+    div.className = "wall-comment";
+    div.innerHTML = `
+      <img src="${comment.authorPhoto}" alt="${comment.authorName}" class="wall-comment-avatar">
+      <div class="wall-comment-content">
+        <div class="wall-comment-header">
+          <a href="profile.html?userId=${comment.authorId}" class="wall-comment-author">${comment.authorName}</a>
+          <span class="wall-comment-time">${time}</span>
+          ${canDelete ? `<button class="delete-wall-comment" data-id="${docSnap.id}">🗑️</button>` : ''}
+        </div>
+        <p class="wall-comment-text">${comment.text}</p>
+      </div>
+    `;
+    
+    if (canDelete) {
+      div.querySelector(".delete-wall-comment").onclick = async () => {
+        if (confirm("Delete this comment?")) {
+          try {
+            await deleteDoc(doc(db, "users", viewingUserId, "wallComments", docSnap.id));
+            loadWallComments(); // Reload after deletion
+          } catch (err) {
+            alert("Error deleting comment: " + err.message);
+          }
+        }
+      };
+    }
+    
+    container.appendChild(div);
+  });
+}
+
+// SPAM PROTECTION FOR WALL COMMENTS
+const BLOCKED_KEYWORDS = {
+  racial: [
+    'nigger', 'nigga', 'n1gger', 'n1gga', 'nig', 'coon', 'c00n', 'spic', 'sp1c', 
+    'chink', 'ch1nk', 'gook', 'g00k', 'wetback', 'beaner', 'kike', 'k1ke', 
+    'towelhead', 'raghead', 'sand nigger', 'paki', 'porch monkey',
+    'faggot', 'fag', 'f4ggot', 'tranny', 'tr4nny', 'shemale', 'dyke', 
+    'retard', 'ret4rd', 'r3tard', 'retarded'
+  ],
+  suicide: [
+    'kill myself', 'suicide', 'end my life', 'want to die', 'going to die',
+    'gonna kill myself', 'wanna die', 'better off dead', 'suicide note',
+    'killing myself', 'hang myself', 'shoot myself', 'overdose', 'slit my wrists',
+    'jump off', 'end it all', 'no reason to live', 'don\'t want to live', 'kys', 'k y s'
+  ],
+  threats: [
+    'kill you', 'murder you', 'shoot you', 'stab you', 'hurt you',
+    'find you', 'come after you', 'beat you', 'attack you', 'rape you',
+    'bomb', 'shooting', 'school shooter', 'mass shooting', 'terrorist attack',
+    'going to kill', 'gonna kill', 'planning to kill', 'deserve to die',
+    'i will kill', 'im going to kill', 'youre dead', 'ur dead',
+    'blow up', 'detonate', 'bomb threat', 'sexually assault'
+  ],
+  selfHarm: [
+    'cut myself', 'cutting myself', 'self harm', 'harm myself', 'hurt myself',
+    'burn myself', 'starve myself', 'punish myself'
+  ],
+  sexual: [
+    'send nudes', 'dick pic', 'show me your', 'send pics'
+  ],
+  doxxing: [
+    'your address is', 'you live at', 'phone number is', 'social security'
+  ]
+};
+
+function containsBlockedKeyword(text) {
+  if (!text || typeof text !== 'string') return { blocked: false };
+  
+  const lowerText = text.toLowerCase();
+  
+  for (const category in BLOCKED_KEYWORDS) {
+    for (const keyword of BLOCKED_KEYWORDS[category]) {
+      if (lowerText.includes(keyword)) {
+        return { blocked: true, category: category, keyword: keyword };
+      }
+    }
+  }
+  
+  return { blocked: false };
+}
+
+function getBlockedMessage(category) {
+  const messages = {
+    racial: "⛔ This content contains hate speech and cannot be posted. YourSpace does not tolerate racism or discrimination.",
+    suicide: "❤️ We're concerned about you. If you're having thoughts of suicide, please reach out:\n\n988 Suicide & Crisis Lifeline: Call or text 988\n\nYour message was not sent, but support is available 24/7.",
+    threats: "🚨 Threats of violence are not allowed and have been reported. This content cannot be posted.",
+    selfHarm: "💚 We care about your wellbeing. If you're thinking about self-harm, please get help:\n\n988 Suicide & Crisis Lifeline: Call or text 988\nCrisis Text Line: Text HOME to 741741\n\nYour message was not sent.",
+    sexual: "⛔ Sexual harassment is not allowed on YourSpace. This content cannot be posted.",
+    doxxing: "⛔ Sharing personal information (doxxing) is not allowed. This content cannot be posted.",
+    spam: "⛔ Your message appears to be spam and cannot be posted."
+  };
+  return messages[category] || "⛔ This content violates our community guidelines and cannot be posted.";
 }
 
 function loadComments() {
@@ -557,7 +716,11 @@ function loadComments() {
       div.className = "wall-comment";
 
       const time = comment.createdAt ? new Date(comment.createdAt.toMillis()).toLocaleString() : "just now";
-      const canDelete = (comment.authorId === currentUser.uid) || isOwnProfile;
+      
+      // Allow deletion by: comment author, profile owner, OR admins
+      const canDelete = (comment.authorId === currentUser.uid) || 
+                       isOwnProfile || 
+                       isAdmin(currentUser.email);
 
       div.innerHTML = `
         <div class="comment-header">

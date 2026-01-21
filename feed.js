@@ -29,6 +29,31 @@ const ADMIN_EMAILS = [
 ];
 
 // ═══════════════════════════════════════════════════════════
+// SPAM RATE LIMIT - 5 posts per 2 minutes
+// ═══════════════════════════════════════════════════════════
+const postTimestamps = [];
+const RATE_LIMIT_COUNT = 5;
+const RATE_LIMIT_WINDOW = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+function checkRateLimit() {
+  const now = Date.now();
+  // Remove timestamps older than 2 minutes
+  while (postTimestamps.length > 0 && now - postTimestamps[0] > RATE_LIMIT_WINDOW) {
+    postTimestamps.shift();
+  }
+  
+  if (postTimestamps.length >= RATE_LIMIT_COUNT) {
+    const oldestPost = postTimestamps[0];
+    const waitTime = Math.ceil((RATE_LIMIT_WINDOW - (now - oldestPost)) / 1000);
+    alert(`⏱️ Slow down! You can post again in ${waitTime} seconds. (Limit: ${RATE_LIMIT_COUNT} posts per 2 minutes)`);
+    return false;
+  }
+  
+  postTimestamps.push(now);
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════════
 // COMPREHENSIVE SPAM & CONTENT FILTER
 // ═══════════════════════════════════════════════════════════
 
@@ -193,6 +218,7 @@ async function renderPost(post, postId) {
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
       <button class="share-btn" data-id="${postId}">🔗</button>
+      ${!isOwner ? `<button class="report-post-btn" data-id="${postId}" data-type="post">🚨 Report</button>` : ""}
       ${isOwner ? `<button class="edit-btn" data-id="${postId}">✏️ Edit</button>` : ""}
       ${isOwner ? `<button class="delete-btn" data-id="${postId}">🗑️</button>` : ""}
       ${isAdmin(currentUserEmail) && !isPinned ? `<button class="pin-btn" data-id="${postId}">📌 Pin</button>` : ""}
@@ -337,6 +363,16 @@ async function renderPost(post, postId) {
           alert("Error deleting post: " + err.message);
         }
       }
+    });
+  }
+
+  // REPORT BUTTON
+  const reportBtn = postEl.querySelector(".report-post-btn");
+  if (reportBtn) {
+    reportBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showReportDialog('post', postId, post.userId);
     });
   }
 
@@ -544,8 +580,11 @@ async function renderPost(post, postId) {
 function loadPosts() {
   const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-  onSnapshot(q, (snap) => {
+  onSnapshot(q, async (snap) => {
     postsContainer.innerHTML = "";
+    
+    // Calculate trending post (hourly top post based on engagement)
+    await calculateTrendingPost(snap);
     
     // Separate pinned, trending, and regular posts
     const pinnedPosts = [];
@@ -570,6 +609,59 @@ function loadPosts() {
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// HOURLY TRENDING TOP POST CALCULATION
+// ═══════════════════════════════════════════════════════════
+async function calculateTrendingPost(snapshot) {
+  try {
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    let topPost = null;
+    let maxEngagement = -1;
+    
+    // Calculate engagement score for each post from the last hour
+    snapshot.forEach((docSnap) => {
+      const post = docSnap.data();
+      const postTime = post.createdAt?.toMillis() || 0;
+      
+      // Only consider posts from the last hour
+      if (postTime > oneHourAgo && !post.pinned) {
+        const likes = (post.likedBy || []).length;
+        const dislikes = (post.dislikedBy || []).length;
+        const comments = post.commentCount || 0;
+        
+        // Engagement score: likes + dislikes + (comments * 2)
+        // Comments weighted more to encourage discussion
+        const engagement = likes + dislikes + (comments * 2);
+        
+        if (engagement > maxEngagement) {
+          maxEngagement = engagement;
+          topPost = { id: docSnap.id, engagement };
+        }
+      }
+    });
+    
+    // Clear all trending flags first
+    const clearPromises = [];
+    snapshot.forEach((docSnap) => {
+      const post = docSnap.data();
+      if (post.trending && !post.pinned) {
+        clearPromises.push(
+          updateDoc(doc(db, "posts", docSnap.id), { trending: false })
+        );
+      }
+    });
+    await Promise.all(clearPromises);
+    
+    // Set new trending post if we found one with meaningful engagement
+    if (topPost && maxEngagement >= 5) {
+      await updateDoc(doc(db, "posts", topPost.id), { trending: true });
+    }
+    
+  } catch (err) {
+    console.error("Error calculating trending post:", err);
+  }
+}
+
 postBtn.addEventListener("click", async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
@@ -580,6 +672,11 @@ postBtn.addEventListener("click", async () => {
   const spamCheck = containsBlockedKeyword(text);
   if (spamCheck.blocked) {
     alert(getBlockedMessage(spamCheck.category));
+    return;
+  }
+
+  // RATE LIMIT CHECK
+  if (!checkRateLimit()) {
     return;
   }
 
@@ -619,7 +716,59 @@ postBtn.addEventListener("click", async () => {
   }
 });
 
-auth.onAuthStateChanged((user) => {
+// ═══════════════════════════════════════════════════════════
+// DAILY LOGIN STREAK TRACKING
+// ═══════════════════════════════════════════════════════════
+async function updateLoginStreak(userId) {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) return;
+    
+    const userData = userDoc.data();
+    const today = new Date().toDateString();
+    const lastLogin = userData.lastLoginDate;
+    const currentStreak = userData.loginStreak || 0;
+    
+    // If last login was today, don't update
+    if (lastLogin === today) return;
+    
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toDateString();
+    
+    let newStreak = 1;
+    
+    // If last login was yesterday, increment streak
+    if (lastLogin === yesterdayStr) {
+      newStreak = currentStreak + 1;
+      
+      // Show streak milestone notifications
+      if (newStreak % 7 === 0) {
+        setTimeout(() => {
+          alert(`🔥 ${newStreak} DAY STREAK! You're on fire! Keep it up! 🎉`);
+        }, 1000);
+      } else if (newStreak === 3 || newStreak === 5 || newStreak === 10) {
+        setTimeout(() => {
+          alert(`✨ ${newStreak} day streak! Keep logging in daily! 🌟`);
+        }, 1000);
+      }
+    }
+    // Otherwise, streak resets to 1
+    
+    await updateDoc(userRef, {
+      lastLoginDate: today,
+      loginStreak: newStreak,
+      totalLogins: (userData.totalLogins || 0) + 1
+    });
+    
+  } catch (err) {
+    console.error("Error updating login streak:", err);
+  }
+}
+
+auth.onAuthStateChanged(async (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
@@ -632,6 +781,9 @@ auth.onAuthStateChanged((user) => {
       const adminBtn = document.getElementById("adminNavBtn");
       if (adminBtn) adminBtn.style.display = "inline-block";
     }
+    
+    // 🔥 DAILY LOGIN STREAK TRACKING
+    await updateLoginStreak(user.uid);
     
     loadPosts();
   }
@@ -937,4 +1089,82 @@ if (auth.currentUser) {
   
   // Check for new notifications every 30 seconds
   setInterval(updateNotificationBadge, 30000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// FEATURE: REPORT SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+async function reportContent(contentType, contentId, reportedUserId, reason) {
+  try {
+    await addDoc(collection(db, "reports"), {
+      contentType: contentType, // 'post', 'comment', 'profile'
+      contentId: contentId,
+      reportedUserId: reportedUserId,
+      reporterId: auth.currentUser.uid,
+      reporterEmail: auth.currentUser.email,
+      reason: reason,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+    
+    alert("✅ Report submitted successfully. Our team will review it shortly.");
+  } catch (err) {
+    console.error("Error submitting report:", err);
+    alert("❌ Error submitting report. Please try again.");
+  }
+}
+
+function showReportDialog(contentType, contentId, reportedUserId) {
+  const reasons = [
+    "Hate speech or discrimination",
+    "Threats or violence",
+    "Harassment or bullying",
+    "Spam or scam",
+    "Inappropriate content",
+    "Impersonation",
+    "Other"
+  ];
+  
+  let reasonsHtml = reasons.map((r, i) => `<option value="${r}">${r}</option>`).join('');
+  
+  const dialog = document.createElement('div');
+  dialog.className = 'report-dialog-overlay';
+  dialog.innerHTML = `
+    <div class="report-dialog">
+      <h3>🚨 Report ${contentType}</h3>
+      <p>Help us keep YourSpace safe. Why are you reporting this?</p>
+      <select id="reportReason" class="report-reason-select">
+        <option value="">Select a reason...</option>
+        ${reasonsHtml}
+      </select>
+      <div class="report-dialog-buttons">
+        <button class="report-submit-btn" id="submitReport">Submit Report</button>
+        <button class="report-cancel-btn" id="cancelReport">Cancel</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  document.getElementById('submitReport').addEventListener('click', async () => {
+    const reason = document.getElementById('reportReason').value;
+    if (!reason) {
+      alert("Please select a reason for reporting.");
+      return;
+    }
+    
+    await reportContent(contentType, contentId, reportedUserId, reason);
+    dialog.remove();
+  });
+  
+  document.getElementById('cancelReport').addEventListener('click', () => {
+    dialog.remove();
+  });
+  
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) {
+      dialog.remove();
+    }
+  });
 }

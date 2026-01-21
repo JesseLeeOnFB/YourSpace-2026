@@ -51,6 +51,10 @@ document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
   window.location.href = "messages.html";
 });
 
+document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
+  window.location.href = "notifications.html";
+});
+
 document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
   window.location.href = "dashboard.html";
 });

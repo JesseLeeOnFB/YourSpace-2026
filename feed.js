@@ -180,7 +180,7 @@ function renderPost(post, postId) {
     ${post.mediaURL ? (post.mediaType === "video" ? `<video controls src="${post.mediaURL}" class="post-media"></video>` : `<img src="${post.mediaURL}" class="post-media" />`) : ""}
     <div class="actions">
       <button class="like-btn ${userLiked ? 'active' : ''}">${userLiked ? '❤️' : '👍'} ${likedBy.length}</button>
-      <button class="dislike-btn ${userDisliked ? 'active' : ''}">${userDisliked ? '💔' : '👎'} ${dislikedBy.length}</button>
+      <button class="dislike-btn ${userDisliked ? 'active' : ''}">🖕 ${dislikedBy.length}</button>
       <button class="comment-toggle">💬</button>
       ${!isOwner ? `<button class="gift-btn">🎁</button>` : ""}
       <button class="share-btn">🔗</button>

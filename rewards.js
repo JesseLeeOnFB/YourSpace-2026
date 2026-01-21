@@ -1,8 +1,10 @@
-// rewards.js - Virtual Rewards System with Stripe Integration
+// rewards.js - Interactive Reward Completion Screen
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, updateDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -17,219 +19,186 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Stripe publishable key (TEST MODE - replace with live key in production)
-const stripePublishableKey = 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE';
-const stripe = Stripe(stripePublishableKey);
+const TOTAL_REWARDS = 12; // Total number of unique rewards
 
-// Reward packages configuration
-const REWARD_PACKAGES = {
-  'basic-20': {
-    name: 'Basic Pack',
-    description: '20 Houses',
-    price: 999, // $9.99 in cents
-    rewards: {
-      house: 20
-    },
-    creatorPayout: 200 // $2.00 (20 × $0.10)
-  },
-  'standard-50': {
-    name: 'Standard Pack',
-    description: '50 Houses + 5 Cars',
-    price: 2499, // $24.99 in cents
-    rewards: {
-      house: 50,
-      car: 5
-    },
-    creatorPayout: 550 // $5.50 (50 × $0.10 + 5 × $0.10)
-  },
-  'premium-100': {
-    name: 'Premium Pack',
-    description: '100 Houses + 10 Cars + 5 Trucks',
-    price: 4999, // $49.99 in cents
-    rewards: {
-      house: 100,
-      car: 10,
-      truck: 5
-    },
-    creatorPayout: 1150 // $11.50
-  },
-  'ultimate-jet': {
-    name: 'Ultimate Jet',
-    description: 'Send the ultimate reward!',
-    price: 9999, // $99.99 in cents
-    rewards: {
-      jet: 1
-    },
-    creatorPayout: 5000 // $50.00 (higher payout for ultimate reward)
-  }
-};
-
-// Initialize reward button listeners
-document.addEventListener("DOMContentLoaded", () => {
-  const rewardButtons = document.querySelectorAll(".select-reward-btn");
-  
-  rewardButtons.forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const packageId = e.target.dataset.package;
-      const modal = document.getElementById("rewardModal");
-      const postId = modal.dataset.postId;
-      const creatorUserId = modal.dataset.creatorUserId;
-      const creatorUsername = modal.dataset.creatorUsername;
-      
-      await processRewardPurchase(packageId, postId, creatorUserId, creatorUsername);
-    });
-  });
+// Back button
+document.getElementById("backBtn")?.addEventListener("click", () => {
+  window.location.href = "dashboard.html";
 });
 
-async function processRewardPurchase(packageId, postId, creatorUserId, creatorUsername) {
-  const currentUser = auth.currentUser;
-  if (!currentUser) {
-    alert("Please log in to send rewards");
-    return;
-  }
-
-  if (currentUser.uid === creatorUserId) {
-    alert("You cannot send rewards to yourself!");
-    return;
-  }
-
-  const packageData = REWARD_PACKAGES[packageId];
-  if (!packageData) {
-    alert("Invalid reward package");
-    return;
-  }
-
-  // Show loading state
-  const btn = event.target;
-  const originalText = btn.textContent;
-  btn.textContent = "Processing...";
-  btn.disabled = true;
-
-  try {
-    // In production, you would call your backend to create a Stripe checkout session
-    // For now, we'll simulate the payment process
+// Test light up button - lights up random rewards
+document.getElementById("testLightUpBtn")?.addEventListener("click", async () => {
+  const rewardBoxes = document.querySelectorAll(".reward-box");
+  const randomBox = rewardBoxes[Math.floor(Math.random() * rewardBoxes.length)];
+  
+  // Animate the box
+  randomBox.classList.add("lit");
+  
+  // Play light-up sound effect (if you add one)
+  playLightUpEffect(randomBox);
+  
+  // Update count
+  const countEl = randomBox.querySelector(".reward-count");
+  const currentCount = parseInt(countEl.textContent) || 0;
+  countEl.textContent = currentCount + 1;
+  
+  // Save to Firebase
+  const rewardType = randomBox.getAttribute("data-reward");
+  if (auth.currentUser) {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userDoc = await getDoc(userRef);
+    const rewards = userDoc.data()?.rewards || {};
+    rewards[rewardType] = (rewards[rewardType] || 0) + 1;
     
-    // TODO: Replace with actual Stripe Checkout Session creation
-    // const response = await fetch('YOUR_BACKEND_URL/create-checkout-session', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     packageId,
-    //     postId,
-    //     creatorUserId,
-    //     senderId: currentUser.uid,
-    //   })
-    // });
-    // const session = await response.json();
-    // await stripe.redirectToCheckout({ sessionId: session.id });
-
-    // TEMPORARY: Simulate successful payment for development
-    const confirmed = confirm(
-      `Send ${packageData.description} for $${(packageData.price / 100).toFixed(2)}?\n\n` +
-      `Creator ${creatorUsername} will receive $${(packageData.creatorPayout / 100).toFixed(2)}\n\n` +
-      `(This is a DEMO - real payments via Stripe coming soon!)`
-    );
-
-    if (confirmed) {
-      await recordRewardTransaction(packageId, postId, creatorUserId, currentUser.uid, packageData);
-      alert(`🎁 Reward sent to ${creatorUsername}!`);
-      
-      // Close modal
-      document.getElementById("rewardModal").style.display = "none";
-    }
-
-  } catch (error) {
-    console.error("Error processing reward:", error);
-    alert("Error processing reward. Please try again.");
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
+    await updateDoc(userRef, { rewards });
+    updateProgress(rewards);
   }
-}
+});
 
-async function recordRewardTransaction(packageId, postId, creatorUserId, senderId, packageData) {
-  const timestamp = serverTimestamp();
-
-  // Update post rewards count
-  const postRef = doc(db, "posts", postId);
-  const postDoc = await getDoc(postRef);
-  const currentRewards = postDoc.data()?.rewards || {};
-
-  const updatedRewards = { ...currentRewards };
-  Object.entries(packageData.rewards).forEach(([rewardType, count]) => {
-    updatedRewards[rewardType] = (updatedRewards[rewardType] || 0) + count;
-  });
-
-  await updateDoc(postRef, {
-    rewards: updatedRewards
-  });
-
-  // Update creator's rewards data
-  const creatorRef = doc(db, "users", creatorUserId);
-  const creatorDoc = await getDoc(creatorRef);
+function playLightUpEffect(box) {
+  // Add pulsing animation
+  box.style.animation = "none";
+  setTimeout(() => {
+    box.style.animation = "";
+  }, 10);
   
-  if (!creatorDoc.exists()) {
-    throw new Error("Creator not found");
-  }
-
-  const creatorData = creatorDoc.data();
-  const creatorRewards = creatorData.rewards || {
-    house: 0,
-    car: 0,
-    truck: 0,
-    miniVan: 0,
-    puppy: 0,
-    cat: 0,
-    grass: 0,
-    jet: 0,
-    totalEarned: 0,
-    pendingPayout: 0,
-    lifetimeEarnings: 0
-  };
-
-  // Update reward counts
-  Object.entries(packageData.rewards).forEach(([rewardType, count]) => {
-    creatorRewards[rewardType] = (creatorRewards[rewardType] || 0) + count;
-  });
-
-  // Update earnings
-  const payoutAmount = packageData.creatorPayout / 100; // Convert cents to dollars
-  creatorRewards.totalEarned += payoutAmount;
-  creatorRewards.pendingPayout += payoutAmount;
-  creatorRewards.lifetimeEarnings += payoutAmount;
-
-  await updateDoc(creatorRef, {
-    rewards: creatorRewards,
-    lastRewardReceivedAt: timestamp
-  });
-
-  // Update sender's supporter data
-  const senderRef = doc(db, "users", senderId);
-  const senderDoc = await getDoc(senderRef);
-  
-  if (senderDoc.exists()) {
-    const senderData = senderDoc.data();
-    const supporterStats = senderData.supporterStats || {
-      totalRewardsSent: 0,
-      totalSpent: 0,
-      creatorsSupported: []
+  // Create particle effect
+  for (let i = 0; i < 5; i++) {
+    const particle = document.createElement("div");
+    particle.style.position = "absolute";
+    particle.style.width = "10px";
+    particle.style.height = "10px";
+    particle.style.background = "#00fffc";
+    particle.style.borderRadius = "50%";
+    particle.style.pointerEvents = "none";
+    particle.style.boxShadow = "0 0 10px #00fffc";
+    
+    const rect = box.getBoundingClientRect();
+    particle.style.left = (rect.left + rect.width / 2) + "px";
+    particle.style.top = (rect.top + rect.height / 2) + "px";
+    particle.style.zIndex = "9999";
+    
+    document.body.appendChild(particle);
+    
+    // Animate particle
+    const angle = (Math.PI * 2 * i) / 5;
+    const distance = 100;
+    const duration = 1000;
+    
+    particle.animate([
+      { transform: "translate(0, 0) scale(1)", opacity: 1 },
+      { 
+        transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, 
+        opacity: 0 
+      }
+    ], {
+      duration: duration,
+      easing: "ease-out"
+    }).onfinish = () => {
+      particle.remove();
     };
-
-    supporterStats.totalRewardsSent += Object.values(packageData.rewards).reduce((sum, count) => sum + count, 0);
-    supporterStats.totalSpent += packageData.price / 100;
-    
-    if (!supporterStats.creatorsSupported.includes(creatorUserId)) {
-      supporterStats.creatorsSupported.push(creatorUserId);
-    }
-
-    await updateDoc(senderRef, {
-      supporterStats: supporterStats,
-      lastRewardSentAt: timestamp
-    });
   }
-
-  // TODO: In production, also record transaction in a separate 'transactions' collection
-  // for detailed history and tax reporting
 }
 
-console.log("🎁 Rewards system initialized");
+function updateProgress(rewards) {
+  const litRewards = Object.values(rewards).filter(count => count > 0).length;
+  const percentage = Math.round((litRewards / TOTAL_REWARDS) * 100);
+  
+  document.getElementById("progressPercent").textContent = percentage + "%";
+  document.getElementById("progressBar").style.width = percentage + "%";
+  
+  // Check if complete
+  if (litRewards === TOTAL_REWARDS) {
+    showCompletionMessage();
+  }
+}
+
+function showCompletionMessage() {
+  const message = document.getElementById("completionMessage");
+  message.classList.add("active");
+  
+  // Create fireworks effect
+  createFireworks();
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    message.classList.remove("active");
+  }, 5000);
+}
+
+function createFireworks() {
+  const colors = ["#00fffc", "#fc00ff", "#fffc00", "#ff0000", "#00ff00"];
+  const fireworksContainer = document.querySelector(".fireworks");
+  
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const firework = document.createElement("div");
+      firework.style.position = "absolute";
+      firework.style.width = "5px";
+      firework.style.height = "5px";
+      firework.style.borderRadius = "50%";
+      firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+      firework.style.boxShadow = `0 0 10px ${colors[Math.floor(Math.random() * colors.length)]}`;
+      firework.style.left = Math.random() * 100 + "%";
+      firework.style.top = Math.random() * 100 + "%";
+      
+      fireworksContainer.appendChild(firework);
+      
+      firework.animate([
+        { transform: "scale(0)", opacity: 1 },
+        { transform: "scale(20)", opacity: 0 }
+      ], {
+        duration: 1000 + Math.random() * 1000,
+        easing: "ease-out"
+      }).onfinish = () => {
+        firework.remove();
+      };
+    }, i * 50);
+  }
+}
+
+async function loadRewards() {
+  if (!auth.currentUser) return;
+  
+  const userRef = doc(db, "users", auth.currentUser.uid);
+  
+  // Real-time listener
+  onSnapshot(userRef, (docSnap) => {
+    if (!docSnap.exists()) return;
+    
+    const rewards = docSnap.data()?.rewards || {};
+    
+    // Update all reward boxes
+    document.querySelectorAll(".reward-box").forEach(box => {
+      const rewardType = box.getAttribute("data-reward");
+      const count = rewards[rewardType] || 0;
+      
+      box.querySelector(".reward-count").textContent = count;
+      
+      if (count > 0) {
+        box.classList.add("lit");
+      } else {
+        box.classList.remove("lit");
+      }
+    });
+    
+    updateProgress(rewards);
+  });
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadRewards();
+  }
+});
+
+// Click on reward boxes to see animation
+document.querySelectorAll(".reward-box").forEach(box => {
+  box.addEventListener("click", () => {
+    if (box.classList.contains("lit")) {
+      playLightUpEffect(box);
+    }
+  });
+});

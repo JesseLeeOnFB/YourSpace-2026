@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - YourSpace</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">🌐 YourSpace Admin</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">Feed</button>
+      <button id="profileNavBtn">Profile</button>
+      <button id="messagesNavBtn">Messages</button>
+      <button id="dashboardNavBtn">📊 Dashboard</button>
+      <button id="adminNavBtn">👑 Admin</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <main class="admin-container">
+    <h1>👑 Admin Panel</h1>
+    <p class="admin-welcome">Welcome, <span id="adminName">Admin</span></p>
+
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="users">Users</button>
+      <button class="tab-btn" data-tab="reports">Reports</button>
+      <button class="tab-btn" data-tab="posts">Posts</button>
+    </div>
+
+    <div class="tab-content active" id="overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-number" id="totalPosts">0</div>
+          <div class="stat-label">Total Posts</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-number" id="totalReports">0</div>
+          <div class="stat-label">Pending Reports</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-number" id="activeToday">0</div>
+          <div class="stat-label">Active Today</div>
+        </div>
+      </div>
+
+      <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        <div id="recentActivityList"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="users">
+      <h3>User Management</h3>
+      <div class="search-bar-container">
+        <input type="text" id="userSearch" placeholder="Search users...">
+      </div>
+      <div id="usersList"></div>
+    </div>
+
+    <div class="tab-content" id="reports">
+      <h3>Reported Content</h3>
+      <div id="reportsList"></div>
+    </div>
+
+    <div class="tab-content" id="posts">
+      <h3>All Posts</h3>
+      <div class="admin-controls">
+        <button id="refreshPostsBtn">🔄 Refresh</button>
+        <select id="postFilter">
+          <option value="all">All Posts</option>
+          <option value="pinned">Pinned Only</option>
+          <option value="flagged">Flagged Only</option>
+        </select>
+      </div>
+      <div id="adminPostsList"></div>
+    </div>
+  </main>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

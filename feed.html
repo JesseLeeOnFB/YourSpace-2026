@@ -18,16 +18,32 @@
       <button id="feedNavBtn">Feed</button>
       <button id="profileNavBtn">Profile</button>
       <button id="messagesNavBtn">Messages</button>
+      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
       <button id="contactNavBtn">Contact</button>
       <button id="logoutBtn">Logout</button>
     </div>
   </nav>
+
+  <div id="notificationPermissionModal" class="modal">
+    <div class="modal-content">
+      <h3>🔔 Enable Notifications?</h3>
+      <p>Get notified when someone likes or comments on your posts!</p>
+      <div class="permission-buttons">
+        <button id="enableNotificationsBtn" class="enable-btn">✅ Enable Notifications</button>
+        <button id="disableNotificationsBtn" class="disable-btn">❌ Not Now</button>
+      </div>
+      <p class="permission-note">You can change this later in your profile settings.</p>
+    </div>
+  </div>
 
   <main class="feed-container">
     <div class="search-container">
       <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
       <div id="searchResults" class="search-results"></div>
     </div>
+
+    <div id="trendingPostContainer"></div>
 
     <section class="new-post">
       <h2>Create Post</h2>

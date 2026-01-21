@@ -1,313 +1,443 @@
-// admin.js - Admin Panel
+// admin.js - COMPLETE WITH FIXED NAVIGATION
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
 import {
-  getFirestore, collection, getDocs, doc, getDoc, deleteDoc, updateDoc, query, where, orderBy, limit
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+getFirestore, collection, doc, getDoc, getDocs, deleteDoc, updateDoc, query, where, orderBy
+} from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
+import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
+authDomain: “yourspace-2026.firebaseapp.com”,
+projectId: “yourspace-2026”,
+storageBucket: “yourspace-2026.firebasestorage.app”,
+messagingSenderId: “72667267302”,
+appId: “1:72667267302:web:2bed5f543e05d49ca8fb27”
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAILS = [
-  "skeeterjeeter8@gmail.com",
-  "daniellehunt01@gmail.com"
-];
+const ADMIN_EMAILS = [“skeeterjeeter8@gmail.com”, “daniellehunt01@gmail.com”];
 
 function isAdmin(email) {
-  return ADMIN_EMAILS.includes(email.toLowerCase());
+return ADMIN_EMAILS.includes(email?.toLowerCase());
 }
 
-// Navigation
-document.getElementById("feedNavBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION HANDLERS - FIXED
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “feed.html”;
 });
 
-document.getElementById("profileNavBtn")?.addEventListener("click", () => {
-  window.location.href = "profile.html";
+document.getElementById(“profileNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “profile.html”;
 });
 
-document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
-  window.location.href = "messages.html";
+document.getElementById(“messagesNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “messages.html”;
 });
 
-document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
-  window.location.href = "notifications.html";
+document.getElementById(“notificationsNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “notifications.html”;
 });
 
-document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
-  window.location.href = "dashboard.html";
+document.getElementById(“dashboardNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “dashboard.html”;
 });
 
-document.getElementById("adminNavBtn")?.addEventListener("click", () => {
-  window.location.href = "admin.html";
+document.getElementById(“adminNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “admin.html”;
 });
 
-document.getElementById("contactNavBtn")?.addEventListener("click", () => {
-  window.location.href = "contact.html";
+document.getElementById(“contactNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “contact.html”;
 });
 
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "login.html";
+document.getElementById(“logoutBtn”)?.addEventListener(“click”, async () => {
+await signOut(auth);
+window.location.href = “login.html”;
 });
 
 // Hamburger menu
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-if (hamburger) {
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
-}
+const hamburger = document.getElementById(“hamburger”);
+const navLinks = document.getElementById(“navLinks”);
 
-// Tab switching
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const tabName = btn.getAttribute("data-tab");
-    
-    // Remove active class from all tabs and contents
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    
-    // Add active class to clicked tab and corresponding content
-    btn.classList.add("active");
-    document.getElementById(tabName).classList.add("active");
-  });
+if (hamburger && navLinks) {
+hamburger.addEventListener(“click”, () => {
+hamburger.classList.toggle(“active”);
+navLinks.classList.toggle(“active”);
 });
 
-async function loadOverview() {
-  // Total users
-  const usersSnapshot = await getDocs(collection(db, "users"));
-  document.getElementById("totalUsers").textContent = usersSnapshot.size;
-  
-  // Total posts
-  const postsSnapshot = await getDocs(collection(db, "posts"));
-  document.getElementById("totalPosts").textContent = postsSnapshot.size;
-  
-  // Total reports
-  const reportsSnapshot = await getDocs(collection(db, "reports"));
-  document.getElementById("totalReports").textContent = reportsSnapshot.size;
-  
-  // Active today (users who logged in today)
-  const today = new Date().toDateString();
-  let activeToday = 0;
-  usersSnapshot.forEach(docSnap => {
-    const user = docSnap.data();
-    if (user.lastLoginDate === today) {
-      activeToday++;
-    }
-  });
-  document.getElementById("activeToday").textContent = activeToday;
-  
-  // Recent activity
-  const recentActivityList = document.getElementById("recentActivityList");
-  recentActivityList.innerHTML = "";
-  
-  const recentPosts = [];
-  postsSnapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    if (post.createdAt) {
-      recentPosts.push({ ...post, id: docSnap.id });
-    }
-  });
-  
-  recentPosts.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-  recentPosts.slice(0, 10).forEach(post => {
-    const activityEl = document.createElement("div");
-    activityEl.className = "activity-item";
-    const time = new Date(post.createdAt.toMillis()).toLocaleString();
-    activityEl.textContent = `${post.username} posted: "${post.text?.substring(0, 50)}..." (${time})`;
-    recentActivityList.appendChild(activityEl);
-  });
+navLinks.querySelectorAll(“button”).forEach(button => {
+button.addEventListener(“click”, () => {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
+});
+});
+
+document.addEventListener(“click”, (e) => {
+if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
 }
+});
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+
+document.querySelectorAll(”.admin-tab”).forEach(tab => {
+tab.addEventListener(“click”, () => {
+const tabName = tab.dataset.tab;
+
+```
+// Update active tab
+document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
+tab.classList.add("active");
+
+// Update active panel
+document.querySelectorAll(".admin-panel").forEach(p => p.classList.remove("active"));
+document.getElementById(`${tabName}-panel`).classList.add("active");
+
+// Load data for the selected tab
+if (tabName === "users") loadUsers();
+if (tabName === "posts") loadPosts();
+if (tabName === "reports") loadReports();
+if (tabName === "contact") loadContactSubmissions();
+```
+
+});
+});
+
+// ═══════════════════════════════════════════════════════════
+// LOAD OVERVIEW STATS
+// ═══════════════════════════════════════════════════════════
+
+async function loadOverview() {
+try {
+// Count users
+const usersSnapshot = await getDocs(collection(db, “users”));
+document.getElementById(“totalUsers”).textContent = usersSnapshot.size;
+
+```
+// Count posts
+const postsSnapshot = await getDocs(collection(db, "posts"));
+document.getElementById("totalPosts").textContent = postsSnapshot.size;
+
+// Count gifts
+const giftsSnapshot = await getDocs(collection(db, "gifts"));
+document.getElementById("totalGifts").textContent = giftsSnapshot.size;
+
+// Calculate total revenue
+let totalRevenue = 0;
+giftsSnapshot.forEach(doc => {
+  totalRevenue += doc.data().amount || 0;
+});
+document.getElementById("totalRevenue").textContent = `$${totalRevenue.toFixed(2)}`;
+
+// Count pending reports
+const reportsQuery = query(collection(db, "reports"), where("status", "==", "pending"));
+const reportsSnapshot = await getDocs(reportsQuery);
+document.getElementById("pendingReports").textContent = reportsSnapshot.size;
+```
+
+} catch (error) {
+console.error(“Error loading overview:”, error);
+}
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD USERS
+// ═══════════════════════════════════════════════════════════
 
 async function loadUsers() {
-  const usersSnapshot = await getDocs(collection(db, "users"));
-  const usersList = document.getElementById("usersList");
-  usersList.innerHTML = "";
-  
-  usersSnapshot.forEach(docSnap => {
-    const user = docSnap.data();
-    const userEl = document.createElement("div");
-    userEl.className = "user-item";
-    userEl.innerHTML = `
-      <div>
-        <strong>${user.username || "Unknown"}</strong>
-        <div style="font-size: 0.9rem; color: #aaa;">${user.email || docSnap.id}</div>
-      </div>
-      <div class="action-buttons">
-        <button class="delete-btn" onclick="deleteUser('${docSnap.id}')">Delete User</button>
-      </div>
-    `;
-    usersList.appendChild(userEl);
-  });
+const tbody = document.getElementById(“usersTableBody”);
+tbody.innerHTML = “<tr><td colspan='5' style='text-align:center;color:#666;padding:2rem;'>Loading…</td></tr>”;
+
+try {
+const usersSnapshot = await getDocs(collection(db, “users”));
+tbody.innerHTML = “”;
+
+```
+if (usersSnapshot.empty) {
+  tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;color:#666;padding:2rem;'>No users found</td></tr>";
+  return;
 }
+
+for (const userDoc of usersSnapshot.docs) {
+  const user = userDoc.data();
+  const userId = userDoc.id;
+  
+  // Count user's posts
+  const postsQuery = query(collection(db, "posts"), where("userId", "==", userId));
+  const postsSnapshot = await getDocs(postsQuery);
+  
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${user.username || "N/A"}</td>
+    <td>${user.email || "N/A"}</td>
+    <td>${user.createdAt ? new Date(user.createdAt.toMillis()).toLocaleDateString() : "N/A"}</td>
+    <td>${postsSnapshot.size}</td>
+    <td>
+      <button class="action-btn btn-delete" onclick="deleteUser('${userId}')">🗑️ Delete</button>
+    </td>
+  `;
+  tbody.appendChild(row);
+}
+```
+
+} catch (error) {
+console.error(“Error loading users:”, error);
+tbody.innerHTML = “<tr><td colspan='5' style='text-align:center;color:red;padding:2rem;'>Error loading users</td></tr>”;
+}
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD POSTS
+// ═══════════════════════════════════════════════════════════
+
+async function loadPosts() {
+const tbody = document.getElementById(“postsTableBody”);
+tbody.innerHTML = “<tr><td colspan='5' style='text-align:center;color:#666;padding:2rem;'>Loading…</td></tr>”;
+
+try {
+const postsSnapshot = await getDocs(query(collection(db, “posts”), orderBy(“createdAt”, “desc”)));
+tbody.innerHTML = “”;
+
+```
+if (postsSnapshot.empty) {
+  tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;color:#666;padding:2rem;'>No posts found</td></tr>";
+  return;
+}
+
+postsSnapshot.forEach(postDoc => {
+  const post = postDoc.data();
+  const postId = postDoc.id;
+  
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${post.username || "Anonymous"}</td>
+    <td>${(post.text || "").substring(0, 50)}${post.text?.length > 50 ? "..." : ""}</td>
+    <td>${post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleDateString() : "N/A"}</td>
+    <td>${(post.likedBy || []).length}</td>
+    <td>
+      <button class="action-btn btn-delete" onclick="deletePost('${postId}')">🗑️ Delete</button>
+      ${post.pinned ? 
+        `<button class="action-btn" style="background:#666;" onclick="unpinPost('${postId}')">📍 Unpin</button>` :
+        `<button class="action-btn btn-approve" onclick="pinPost('${postId}')">📌 Pin</button>`
+      }
+    </td>
+  `;
+  tbody.appendChild(row);
+});
+```
+
+} catch (error) {
+console.error(“Error loading posts:”, error);
+tbody.innerHTML = “<tr><td colspan='5' style='text-align:center;color:red;padding:2rem;'>Error loading posts</td></tr>”;
+}
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD REPORTS
+// ═══════════════════════════════════════════════════════════
 
 async function loadReports() {
-  const reportsSnapshot = await getDocs(collection(db, "reports"));
-  const reportsList = document.getElementById("reportsList");
-  reportsList.innerHTML = "";
-  
-  if (reportsSnapshot.empty) {
-    reportsList.innerHTML = "<p style='text-align:center; color:#aaa; padding:2rem;'>No reports yet!</p>";
-    return;
-  }
-  
-  for (const docSnap of reportsSnapshot.docs) {
-    const report = docSnap.data();
-    const reportEl = document.createElement("div");
-    reportEl.className = "report-item";
-    
-    // Get reporter name
-    const reporterDoc = await getDoc(doc(db, "users", report.reporterId));
-    const reporterName = reporterDoc.data()?.username || "Unknown";
-    
-    reportEl.innerHTML = `
-      <div>
-        <strong>Report by ${reporterName}</strong>
-        <div style="margin: 0.5rem 0;">Reason: ${report.reason}</div>
-        <div style="font-size: 0.9rem; color: #aaa;">Post ID: ${report.postId}</div>
-      </div>
-      <div class="action-buttons">
-        <button class="approve-btn" onclick="deleteReport('${docSnap.id}')">Dismiss</button>
-        <button class="delete-btn" onclick="deleteReportedPost('${report.postId}', '${docSnap.id}')">Delete Post</button>
-      </div>
-    `;
-    reportsList.appendChild(reportEl);
-  }
+const tbody = document.getElementById(“reportsTableBody”);
+tbody.innerHTML = “<tr><td colspan='6' style='text-align:center;color:#666;padding:2rem;'>Loading…</td></tr>”;
+
+try {
+const reportsSnapshot = await getDocs(query(collection(db, “reports”), orderBy(“createdAt”, “desc”)));
+tbody.innerHTML = “”;
+
+```
+if (reportsSnapshot.empty) {
+  tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#666;padding:2rem;'>No reports found</td></tr>";
+  return;
 }
 
-async function loadAdminPosts() {
-  const postsSnapshot = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc")));
-  const adminPostsList = document.getElementById("adminPostsList");
-  adminPostsList.innerHTML = "";
+reportsSnapshot.forEach(reportDoc => {
+  const report = reportDoc.data();
+  const reportId = reportDoc.id;
   
-  postsSnapshot.forEach(docSnap => {
-    const post = docSnap.data();
-    const postEl = document.createElement("div");
-    postEl.className = "admin-post-item";
-    postEl.innerHTML = `
-      <div>
-        <strong>${post.username}</strong>
-        <div>${post.text?.substring(0, 100) || "Post with media"}...</div>
-        <div style="font-size: 0.9rem; color: #aaa; margin-top: 0.3rem;">
-          👍 ${(post.likedBy || []).length} | 🖕 ${(post.dislikedBy || []).length} | ${post.pinned ? "📌 Pinned" : ""}
-        </div>
-      </div>
-      <div class="action-buttons">
-        ${post.pinned ? 
-          `<button class="approve-btn" onclick="unpinPost('${docSnap.id}')">Unpin</button>` : 
-          `<button class="approve-btn" onclick="pinPost('${docSnap.id}')">Pin</button>`
-        }
-        <button class="delete-btn" onclick="deleteAdminPost('${docSnap.id}')">Delete</button>
-      </div>
-    `;
-    adminPostsList.appendChild(postEl);
-  });
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${report.contentType || "N/A"}</td>
+    <td>${report.reason || "N/A"}</td>
+    <td>${report.reporterEmail || "Anonymous"}</td>
+    <td>${report.createdAt ? new Date(report.createdAt.toMillis()).toLocaleDateString() : "N/A"}</td>
+    <td><span style="color:${report.status === 'pending' ? 'orange' : '#00ff00'};">${report.status || "pending"}</span></td>
+    <td>
+      ${report.status === 'pending' ? `<button class="action-btn btn-approve" onclick="resolveReport('${reportId}')">✅ Resolve</button>` : ""}
+      <button class="action-btn btn-delete" onclick="deleteReport('${reportId}')">🗑️ Delete</button>
+    </td>
+  `;
+  tbody.appendChild(row);
+});
+```
+
+} catch (error) {
+console.error(“Error loading reports:”, error);
+tbody.innerHTML = “<tr><td colspan='6' style='text-align:center;color:red;padding:2rem;'>Error loading reports</td></tr>”;
+}
 }
 
-// Global functions for buttons
+// ═══════════════════════════════════════════════════════════
+// LOAD CONTACT SUBMISSIONS
+// ═══════════════════════════════════════════════════════════
+
+async function loadContactSubmissions() {
+const tbody = document.getElementById(“contactTableBody”);
+tbody.innerHTML = “<tr><td colspan='6' style='text-align:center;color:#666;padding:2rem;'>Loading…</td></tr>”;
+
+try {
+const contactSnapshot = await getDocs(query(collection(db, “contactSubmissions”), orderBy(“createdAt”, “desc”)));
+tbody.innerHTML = “”;
+
+```
+if (contactSnapshot.empty) {
+  tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:#666;padding:2rem;'>No contact submissions</td></tr>";
+  return;
+}
+
+contactSnapshot.forEach(contactDoc => {
+  const contact = contactDoc.data();
+  const contactId = contactDoc.id;
+  
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${contact.name || "N/A"}</td>
+    <td>${contact.email || "N/A"}</td>
+    <td>${contact.subject || "N/A"}</td>
+    <td>${(contact.message || "").substring(0, 50)}...</td>
+    <td>${contact.createdAt ? new Date(contact.createdAt.toMillis()).toLocaleDateString() : "N/A"}</td>
+    <td>
+      <button class="action-btn btn-delete" onclick="deleteContact('${contactId}')">🗑️ Delete</button>
+    </td>
+  `;
+  tbody.appendChild(row);
+});
+```
+
+} catch (error) {
+console.error(“Error loading contact submissions:”, error);
+tbody.innerHTML = “<tr><td colspan='6' style='text-align:center;color:red;padding:2rem;'>Error loading submissions</td></tr>”;
+}
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTION FUNCTIONS (accessible globally)
+// ═══════════════════════════════════════════════════════════
+
 window.deleteUser = async (userId) => {
-  if (confirm("Delete this user? This will NOT delete their posts.")) {
-    try {
-      await deleteDoc(doc(db, "users", userId));
-      alert("User deleted");
-      loadUsers();
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
-  }
+if (!confirm(“Delete this user? This will also delete all their posts.”)) return;
+try {
+await deleteDoc(doc(db, “users”, userId));
+loadUsers();
+loadOverview();
+} catch (error) {
+alert(“Error deleting user: “ + error.message);
+}
 };
 
-window.deleteReport = async (reportId) => {
-  try {
-    await deleteDoc(doc(db, "reports", reportId));
-    loadReports();
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
-};
-
-window.deleteReportedPost = async (postId, reportId) => {
-  if (confirm("Delete this reported post?")) {
-    try {
-      await deleteDoc(doc(db, "posts", postId));
-      await deleteDoc(doc(db, "reports", reportId));
-      alert("Post deleted");
-      loadReports();
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
-  }
-};
-
-window.deleteAdminPost = async (postId) => {
-  if (confirm("Delete this post?")) {
-    try {
-      await deleteDoc(doc(db, "posts", postId));
-      loadAdminPosts();
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
-  }
+window.deletePost = async (postId) => {
+if (!confirm(“Delete this post?”)) return;
+try {
+await deleteDoc(doc(db, “posts”, postId));
+loadPosts();
+loadOverview();
+} catch (error) {
+alert(“Error deleting post: “ + error.message);
+}
 };
 
 window.pinPost = async (postId) => {
-  try {
-    await updateDoc(doc(db, "posts", postId), { pinned: true });
-    loadAdminPosts();
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
+try {
+await updateDoc(doc(db, “posts”, postId), { pinned: true });
+loadPosts();
+} catch (error) {
+alert(“Error pinning post: “ + error.message);
+}
 };
 
 window.unpinPost = async (postId) => {
-  try {
-    await updateDoc(doc(db, "posts", postId), { pinned: false });
-    loadAdminPosts();
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
+try {
+await updateDoc(doc(db, “posts”, postId), { pinned: false });
+loadPosts();
+} catch (error) {
+alert(“Error unpinning post: “ + error.message);
+}
 };
 
-// Refresh button
-document.getElementById("refreshPostsBtn")?.addEventListener("click", () => {
-  loadAdminPosts();
+window.resolveReport = async (reportId) => {
+try {
+await updateDoc(doc(db, “reports”, reportId), { status: “resolved” });
+loadReports();
+loadOverview();
+} catch (error) {
+alert(“Error resolving report: “ + error.message);
+}
+};
+
+window.deleteReport = async (reportId) => {
+if (!confirm(“Delete this report?”)) return;
+try {
+await deleteDoc(doc(db, “reports”, reportId));
+loadReports();
+loadOverview();
+} catch (error) {
+alert(“Error deleting report: “ + error.message);
+}
+};
+
+window.deleteContact = async (contactId) => {
+if (!confirm(“Delete this contact submission?”)) return;
+try {
+await deleteDoc(doc(db, “contactSubmissions”, contactId));
+loadContactSubmissions();
+} catch (error) {
+alert(“Error deleting contact: “ + error.message);
+}
+};
+
+// ═══════════════════════════════════════════════════════════
+// SEARCH FUNCTIONALITY
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById(“userSearch”)?.addEventListener(“input”, (e) => {
+const searchTerm = e.target.value.toLowerCase();
+const rows = document.querySelectorAll(”#usersTableBody tr”);
+rows.forEach(row => {
+const text = row.textContent.toLowerCase();
+row.style.display = text.includes(searchTerm) ? “” : “none”;
+});
 });
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-  
-  // Check if user is admin
-  if (!isAdmin(user.email)) {
-    alert("Access denied. Admin only.");
-    window.location.href = "feed.html";
-    return;
-  }
-  
-  // Load admin name
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  const userData = userDoc.data();
-  document.getElementById("adminName").textContent = userData?.username || user.email.split("@")[0];
-  
-  // Load all sections
-  await loadOverview();
-  await loadUsers();
-  await loadReports();
-  await loadAdminPosts();
+document.getElementById(“postSearch”)?.addEventListener(“input”, (e) => {
+const searchTerm = e.target.value.toLowerCase();
+const rows = document.querySelectorAll(”#postsTableBody tr”);
+rows.forEach(row => {
+const text = row.textContent.toLowerCase();
+row.style.display = text.includes(searchTerm) ? “” : “none”;
+});
+});
+
+// ═══════════════════════════════════════════════════════════
+// AUTH & INITIALIZATION
+// ═══════════════════════════════════════════════════════════
+
+auth.onAuthStateChanged((user) => {
+if (!user) {
+window.location.href = “login.html”;
+} else if (!isAdmin(user.email)) {
+alert(“⛔ Access Denied: Admin privileges required”);
+window.location.href = “feed.html”;
+} else {
+loadOverview();
+}
 });

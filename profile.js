@@ -54,7 +54,6 @@ onAuthStateChanged(auth, user => {
 
 async function initProfile() {
   await loadProfile();
-  await displayLoginStreak();
   setupThemeControls();
   setupMusicPlayer();
   setupTopFriends();
@@ -567,123 +566,7 @@ document.querySelectorAll(".close-modal").forEach(btn => {
   };
 });
 
-// EMERGENCY RESET BUTTON - Restore to default
-document.getElementById("emergencyResetBtn")?.addEventListener("click", async () => {
-  if (!confirm("⚠️ EMERGENCY RESET ⚠️\n\nThis will:\n- Reset your theme to default\n- Remove all custom HTML/CSS\n- Keep your username, bio, and photos\n\nAre you sure?")) {
-    return;
-  }
-  
-  if (!confirm("This action cannot be undone. Continue?")) {
-    return;
-  }
-  
-  try {
-    const userId = auth.currentUser.uid;
-    await updateDoc(doc(db, "users", userId), {
-      theme: "default-theme",
-      customHtml: "",
-      music: ["", "", "", ""],
-      autoplay: false
-    });
-    
-    // Remove custom styles
-    const customStyles = document.getElementById("customProfileStyles");
-    if (customStyles) {
-      customStyles.remove();
-    }
-    
-    // Reset body theme
-    document.body.className = "default-theme";
-    
-    alert("✅ Profile reset to default! The page will reload.");
-    location.reload();
-  } catch (err) {
-    alert("Error resetting profile: " + err.message);
-  }
-});
-
-// LOGIN STREAK DISPLAY
-async function displayLoginStreak() {
-  if (!isOwnProfile) return;
-  
-  try {
-    const userDoc = await getDoc(doc(db, "users", viewingUserId));
-    if (!userDoc.exists()) return;
-    
-    const data = userDoc.data();
-    const streak = data.loginStreak || 0;
-    const longestStreak = data.longestStreak || 0;
-    
-    if (streak > 0) {
-      const streakContainer = document.getElementById("streakContainer");
-      const streakNumber = document.getElementById("streakNumber");
-      const badgeContainer = document.getElementById("badgeContainer");
-      
-      streakContainer.style.display = "block";
-      streakNumber.textContent = streak;
-      
-      // Add badges based on milestones
-      badgeContainer.innerHTML = "";
-      
-      if (streak >= 7) {
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = "🏆 Week Warrior";
-        badgeContainer.appendChild(badge);
-      }
-      
-      if (streak >= 30) {
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = "💪 Month Master";
-        badgeContainer.appendChild(badge);
-      }
-      
-      if (longestStreak > streak) {
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = `🥇 Best: ${longestStreak} days`;
-        badgeContainer.appendChild(badge);
-      }
-      
-      if (streak >= 100) {
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = "👑 Century Club";
-        badgeContainer.appendChild(badge);
-      }
-    }
-  } catch (err) {
-    console.error("Error displaying login streak:", err);
-  }
-}
-
-// Call this after loading profile
-async function initProfile() {
-  await loadProfile();
-  await displayLoginStreak();
-  setupThemeControls();
-  setupMusicPlayer();
-  setupTopFriends();
-  setupCommentsWall();
-  setupProfilePictureUpload();
-  setupEditProfile();
-  setupCustomHtml();
-  
-  if (!isOwnProfile) {
-    document.getElementById("editProfileBtn").style.display = "none";
-    document.getElementById("sendMessageBtn").style.display = "inline-block";
-    document.getElementById("customHtmlSection").style.display = "none";
-    document.getElementById("searchFriendBtn").style.display = "none";
-    document.getElementById("searchFriendInput").style.display = "none";
-    document.getElementById("themeSelect").disabled = true;
-    document.getElementById("applyThemeBtn").disabled = true;
-    document.querySelectorAll(".music-input").forEach(input => input.disabled = true);
-    document.querySelectorAll(".add-music-btn").forEach(btn => btn.disabled = true);
-  }
-}
-
-// LOGIN STREAK DISPLAY FUNCTION
+// LOGIN STREAK DISPLAY - Added safely
 async function displayLoginStreak() {
   if (!isOwnProfile) {
     const streakContainer = document.getElementById("streakContainer");
@@ -708,7 +591,6 @@ async function displayLoginStreak() {
       streakContainer.style.display = "block";
       streakNumber.textContent = streak;
       
-      // Add badges
       const badgeContainer = document.getElementById("badgeContainer");
       if (badgeContainer) {
         badgeContainer.innerHTML = "";
@@ -747,4 +629,47 @@ async function displayLoginStreak() {
   }
 }
 
-// Call displayLoginStreak in the initProfile function
+// Call streak display after profile loads
+if (document.getElementById("streakContainer")) {
+  setTimeout(() => {
+    if (auth.currentUser) {
+      displayLoginStreak();
+    }
+  }, 1000);
+}
+
+// EMERGENCY RESET BUTTON - Added safely
+const emergencyResetBtn = document.getElementById("emergencyResetBtn");
+if (emergencyResetBtn) {
+  emergencyResetBtn.addEventListener("click", async () => {
+    if (!confirm("⚠️ EMERGENCY RESET ⚠️\n\nThis will:\n- Reset your theme to default\n- Remove all custom HTML/CSS\n- Keep your username, bio, and photos\n\nAre you sure?")) {
+      return;
+    }
+    
+    if (!confirm("This action cannot be undone. Continue?")) {
+      return;
+    }
+    
+    try {
+      const userId = auth.currentUser.uid;
+      await updateDoc(doc(db, "users", userId), {
+        theme: "default-theme",
+        customHtml: "",
+        music: ["", "", "", ""],
+        autoplay: false
+      });
+      
+      const customStyles = document.getElementById("customProfileStyles");
+      if (customStyles) {
+        customStyles.remove();
+      }
+      
+      document.body.className = "default-theme";
+      
+      alert("✅ Profile reset to default! The page will reload.");
+      location.reload();
+    } catch (err) {
+      alert("Error resetting profile: " + err.message);
+    }
+  });
+}

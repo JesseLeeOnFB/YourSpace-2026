@@ -2,8 +2,8 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, doc, deleteDoc, getDoc, getDocs,
-  updateDoc, query, where, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
+  getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -80,6 +80,68 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
 });
+
+// HAMBURGER MENU
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+if (hamburger && navLinks) {
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    navLinks.classList.toggle("active");
+  });
+}
+
+// SEARCH FUNCTIONALITY  
+const searchBar = document.getElementById("searchBar");
+const searchResults = document.getElementById("searchResults");
+if (searchBar && searchResults) {
+  searchBar.addEventListener("input", async (e) => {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+      searchResults.style.display = "none";
+      searchResults.innerHTML = "";
+      return;
+    }
+    
+    try {
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      const matchedUsers = [];
+      
+      usersSnapshot.forEach((docSnap) => {
+        const userData = docSnap.data();
+        const username = userData.username || "";
+        if (username.toLowerCase().includes(searchTerm)) {
+          matchedUsers.push({
+            id: docSnap.id,
+            username: username
+          });
+        }
+      });
+      
+      if (matchedUsers.length > 0) {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = matchedUsers.map(user => `
+          <div class="search-result-item" data-user-id="${user.id}">
+            <strong>${user.username}</strong>
+          </div>
+        `).join("");
+        
+        searchResults.querySelectorAll(".search-result-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const userId = item.getAttribute("data-user-id");
+            window.location.href = `profile.html?userId=${userId}`;
+          });
+        });
+      } else {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = "<div class='no-results'>No users found</div>";
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+    }
+  });
+}
 
 async function renderPost(post, postId) {
   const isOwner = post.userId === auth.currentUser.uid;
@@ -468,187 +530,3 @@ auth.onAuthStateChanged((user) => {
   if (!user) window.location.href = "login.html";
   else loadPosts();
 });
-
-// HAMBURGER MENU TOGGLE
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-
-if (hamburger) {
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
-}
-
-// SEARCH FUNCTIONALITY
-const searchBar = document.getElementById("searchBar");
-const searchResults = document.getElementById("searchResults");
-
-if (searchBar) {
-  searchBar.addEventListener("input", async (e) => {
-    const searchTerm = e.target.value.trim().toLowerCase();
-    
-    if (!searchTerm) {
-      searchResults.style.display = "none";
-      searchResults.innerHTML = "";
-      return;
-    }
-    
-    try {
-      const usersSnapshot = await getDocs(collection(db, "users"));
-      const matchedUsers = [];
-      
-      usersSnapshot.forEach((doc) => {
-        const userData = doc.data();
-        const username = userData.username || "";
-        if (username.toLowerCase().includes(searchTerm)) {
-          matchedUsers.push({
-            id: doc.id,
-            username: username,
-            photoURL: userData.photoURL || "default-avatar.png"
-          });
-        }
-      });
-      
-      if (matchedUsers.length > 0) {
-        searchResults.style.display = "block";
-        searchResults.innerHTML = matchedUsers.map(user => `
-          <div class="search-result-item" data-user-id="${user.id}">
-            <strong>${user.username}</strong>
-          </div>
-        `).join("");
-        
-        // Add click handlers
-        searchResults.querySelectorAll(".search-result-item").forEach(item => {
-          item.addEventListener("click", () => {
-            const userId = item.getAttribute("data-user-id");
-            window.location.href = `profile.html?userId=${userId}`;
-          });
-        });
-      } else {
-        searchResults.style.display = "block";
-        searchResults.innerHTML = "<div class='no-results'>No users found</div>";
-      }
-    } catch (err) {
-      console.error("Search error:", err);
-    }
-  });
-}
-
-// NOTIFICATIONS SYSTEM
-const notifBtn = document.getElementById("notificationsBtn");
-const notifModal = document.getElementById("notificationsModal");
-const closeNotifModal = document.getElementById("closeNotifModal");
-const notifCount = document.getElementById("notifCount");
-const notificationsList = document.getElementById("notificationsList");
-
-if (notifBtn && notifModal) {
-  notifBtn.addEventListener("click", () => {
-    notifModal.style.display = "flex";
-    loadNotifications();
-  });
-  
-  closeNotifModal.addEventListener("click", () => {
-    notifModal.style.display = "none";
-  });
-  
-  window.addEventListener("click", (e) => {
-    if (e.target === notifModal) {
-      notifModal.style.display = "none";
-    }
-  });
-}
-
-async function loadNotifications() {
-  if (!auth.currentUser) return;
-  
-  try {
-    const notifQuery = query(
-      collection(db, "notifications"),
-      where("userId", "==", auth.currentUser.uid),
-      orderBy("timestamp", "desc")
-    );
-    
-    const snapshot = await getDocs(notifQuery);
-    
-    if (snapshot.empty) {
-      notificationsList.innerHTML = "<div class='no-notifs'>No notifications yet</div>";
-      return;
-    }
-    
-    notificationsList.innerHTML = "";
-    snapshot.forEach((doc) => {
-      const notif = doc.data();
-      const notifEl = document.createElement("div");
-      notifEl.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
-      
-      let message = "";
-      if (notif.type === "like") {
-        message = `<strong>${notif.fromUsername}</strong> liked your post`;
-      } else if (notif.type === "comment") {
-        message = `<strong>${notif.fromUsername}</strong> commented on your post`;
-      }
-      
-      const time = notif.timestamp ? new Date(notif.timestamp.toMillis()).toLocaleString() : "just now";
-      
-      notifEl.innerHTML = `
-        <div class="notif-content">
-          <p>${message}</p>
-          <small>${time}</small>
-        </div>
-        <button class="mark-read-btn" data-id="${doc.id}">${notif.read ? 'Mark Unread' : 'Mark Read'}</button>
-      `;
-      
-      // Mark as read
-      notifEl.querySelector(".mark-read-btn").addEventListener("click", async (e) => {
-        e.stopPropagation();
-        await updateDoc(doc(db, "notifications", doc.id), {
-          read: !notif.read
-        });
-        loadNotifications();
-        updateNotifCount();
-      });
-      
-      // Click to go to post
-      notifEl.addEventListener("click", () => {
-        if (notif.postId) {
-          window.location.href = `feed.html#${notif.postId}`;
-        }
-      });
-      
-      notificationsList.appendChild(notifEl);
-    });
-  } catch (err) {
-    console.error("Error loading notifications:", err);
-    notificationsList.innerHTML = "<div class='no-notifs'>Error loading notifications</div>";
-  }
-}
-
-async function updateNotifCount() {
-  if (!auth.currentUser) return;
-  
-  try {
-    const notifQuery = query(
-      collection(db, "notifications"),
-      where("userId", "==", auth.currentUser.uid),
-      where("read", "==", false)
-    );
-    
-    const snapshot = await getDocs(notifQuery);
-    const count = snapshot.size;
-    
-    if (count > 0) {
-      notifCount.textContent = count;
-      notifCount.style.display = "inline";
-    } else {
-      notifCount.style.display = "none";
-    }
-  } catch (err) {
-    console.error("Error updating notif count:", err);
-  }
-}
-
-// Update notification count on load
-if (auth.currentUser) {
-  updateNotifCount();
-}

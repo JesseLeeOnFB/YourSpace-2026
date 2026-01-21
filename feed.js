@@ -541,13 +541,22 @@ document.getElementById("disableNotificationsBtn")?.addEventListener("click", as
   }
 });
 
-// SEARCH BAR WITH PROFILE PICTURES
+
+// SEARCH BAR WITH PROFILE PICTURES AND CLEAR BUTTON
 const searchBar = document.getElementById("searchBar");
 const searchResults = document.getElementById("searchResults");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
 
 if (searchBar && searchResults) {
   searchBar.addEventListener("input", async (e) => {
     const searchTerm = e.target.value.trim().toLowerCase();
+    
+    // Show/hide clear button
+    if (searchTerm && clearSearchBtn) {
+      clearSearchBtn.style.display = "flex";
+    } else if (clearSearchBtn) {
+      clearSearchBtn.style.display = "none";
+    }
     
     if (!searchTerm) {
       searchResults.style.display = "none";
@@ -595,10 +604,42 @@ if (searchBar && searchResults) {
     }
   });
   
+  // Clear button functionality
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", () => {
+      searchBar.value = "";
+      clearSearchBtn.style.display = "none";
+      searchResults.style.display = "none";
+      searchResults.innerHTML = "";
+      searchBar.focus();
+    });
+  }
+  
   // Close search results when clicking outside
   document.addEventListener("click", (e) => {
-    if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
+    if (!searchBar.contains(e.target) && !searchResults.contains(e.target) && !clearSearchBtn.contains(e.target)) {
       searchResults.style.display = "none";
     }
+  });
+}
+
+// CLEAR SEARCH BUTTON
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+if (searchBar && clearSearchBtn) {
+  searchBar.addEventListener("input", (e) => {
+    if (e.target.value.trim()) {
+      clearSearchBtn.style.display = "block";
+    } else {
+      clearSearchBtn.style.display = "none";
+    }
+  });
+  
+  clearSearchBtn.addEventListener("click", () => {
+    searchBar.value = "";
+    searchResults.style.display = "none";
+    searchResults.innerHTML = "";
+    clearSearchBtn.style.display = "none";
+    searchBar.focus();
   });
 }

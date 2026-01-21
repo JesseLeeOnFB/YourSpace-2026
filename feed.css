@@ -625,3 +625,78 @@ body {
   color: #65676b;
   font-size: 0.95rem;
 }
+
+/* CLEAR SEARCH BUTTON */
+.search-container {
+  position: relative;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e4e6eb;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #65676b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.clear-search-btn:hover {
+  background: #d0d2d6;
+  color: #1c1e21;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* CLEAR SEARCH BUTTON */
+.search-container {
+  position: relative;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #65676b;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  z-index: 10;
+  transition: color 0.2s;
+}
+
+.clear-search-btn:hover {
+  color: #1c1e21;
+}
+
+/* HIDE HAMBURGER ON DESKTOP */
+.hamburger {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex !important;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+  
+  .nav-links.active {
+    display: flex;
+  }
+}

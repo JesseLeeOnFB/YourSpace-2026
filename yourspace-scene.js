@@ -1,4 +1,4 @@
-// yourspace-scene.js - Build Your Visual Space
+// yourspace-scene.js - Build Your Visual Space - FULLY FIXED
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
@@ -29,6 +29,8 @@ document.getElementById("backToDashboard").addEventListener("click", () => {
 // Generate stars
 function createStars() {
   const starsContainer = document.getElementById("stars");
+  if (!starsContainer) return;
+  
   for (let i = 0; i < 100; i++) {
     const star = document.createElement("div");
     star.style.position = "absolute";
@@ -58,26 +60,25 @@ createStars();
 
 // Unlock reward in scene
 function unlockReward(rewardName) {
+  console.log("Unlocking reward:", rewardName);
+  
   const element = document.getElementById(rewardName);
   if (element) {
     element.classList.add("unlocked");
+    console.log("Added unlocked class to element:", rewardName);
+  } else {
+    console.error("Element not found:", rewardName);
   }
   
   // Update checklist
   const checklistItem = document.querySelector(`.reward-item[data-reward="${rewardName}"]`);
   if (checklistItem) {
     checklistItem.classList.add("unlocked");
-    checklistItem.querySelector(".reward-status").textContent = "✅";
+    const statusEl = checklistItem.querySelector(".reward-status");
+    if (statusEl) {
+      statusEl.textContent = "✅";
+    }
   }
-  
-  // Play sound effect (if you add one)
-  playUnlockSound();
-}
-
-function playUnlockSound() {
-  // Optional: Add a sound effect here
-  // const audio = new Audio('/unlock-sound.mp3');
-  // audio.play();
 }
 
 // Load user's unlocked rewards
@@ -86,17 +87,18 @@ async function loadUserRewards() {
   
   const userRef = doc(db, "users", auth.currentUser.uid);
   
+  // Use onSnapshot for real-time updates
   onSnapshot(userRef, (docSnap) => {
     if (!docSnap.exists()) return;
     
     const data = docSnap.data();
     const unlockedRewards = data.unlockedRewards || [];
     
-    // Unlock each reward in order
-    unlockedRewards.forEach(reward => {
-      setTimeout(() => {
-        unlockReward(reward);
-      }, UNLOCK_ORDER.indexOf(reward) * 500); // Stagger animations
+    console.log("Loading rewards from Firebase:", unlockedRewards);
+    
+    // Unlock each reward
+    unlockedRewards.forEach((reward) => {
+      unlockReward(reward);
     });
     
     // Update payout timer
@@ -130,7 +132,7 @@ function updatePayoutTimer(lastReset) {
   document.getElementById("payoutTimer").textContent = `${days}d ${hours}h`;
 }
 
-// Test unlock button (for demo purposes)
+// Test unlock button - FIXED TO PROPERLY UNLOCK EACH REWARD
 document.getElementById("testUnlock").addEventListener("click", async () => {
   if (!auth.currentUser) return;
   
@@ -144,18 +146,22 @@ document.getElementById("testUnlock").addEventListener("click", async () => {
   
   if (nextReward) {
     const newUnlocked = [...unlockedRewards, nextReward];
+    
+    // Update Firebase
     await updateDoc(userRef, {
       unlockedRewards: newUnlocked
     });
     
+    // Immediately unlock visually (don't wait for onSnapshot)
     unlockReward(nextReward);
+    
     alert(`✨ Unlocked: ${nextReward.toUpperCase()}!`);
   } else {
     alert("🎉 All rewards unlocked! Scene complete!");
   }
 });
 
-// Reset scene (for admin/testing or after payout)
+// Reset scene
 document.getElementById("resetScene").addEventListener("click", async () => {
   if (!confirm("Reset your entire scene? This will lock all rewards.")) return;
   if (!confirm("Are you absolutely sure? This cannot be undone.")) return;
@@ -176,11 +182,13 @@ document.getElementById("resetScene").addEventListener("click", async () => {
   // Reset checklist
   document.querySelectorAll(".reward-item").forEach(el => {
     el.classList.remove("unlocked");
-    el.querySelector(".reward-status").textContent = "🔒";
+    const statusEl = el.querySelector(".reward-status");
+    if (statusEl) {
+      statusEl.textContent = "🔒";
+    }
   });
   
   alert("🔄 Scene reset! Earn rewards to build it again.");
-  location.reload();
 });
 
 // Auto-update timer every minute

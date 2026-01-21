@@ -8,13 +8,21 @@
 </head>
 <body>
   <nav class="navbar">
-    <button id="feedNavBtn">Feed</button>
-    <button id="profileNavBtn">Profile</button>
-    <button id="messagesNavBtn">Messages</button>
-    <button id="dashboardNavBtn" style="display:none;">Dashboard</button>
-    <button id="adminNavBtn" style="display:none;">Admin</button>
-    <button id="contactNavBtn">Contact</button>
-    <button id="logoutBtn">Logout</button>
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
   </nav>
 
   <main class="feed-container">

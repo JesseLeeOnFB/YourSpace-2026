@@ -1086,3 +1086,307 @@ body.light-theme button {
 .comment-author {
   color: inherit !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE THEME FIXES - READABILITY & RESPONSIVENESS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Ensure animated-rainbow actually animates */
+body.animated-rainbow {
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db, #ff0080) !important;
+  background-size: 400% 400% !important;
+  animation: rainbow 15s ease infinite !important;
+}
+
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Profile info container readability - ALL THEMES */
+.profile-info,
+.profile-header,
+.profile-card,
+.bio-section,
+.location-section {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Light themes need dark containers */
+body.default-theme .profile-info,
+body.default-theme .profile-header,
+body.default-theme .profile-card,
+body.light-theme .profile-info,
+body.light-theme .profile-header,
+body.light-theme .profile-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1c1e21 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Profile text always readable */
+.profile-info h1,
+.profile-info h2,
+.profile-info p,
+.profile-info span,
+.profile-header h1,
+.profile-header h2,
+.profile-header p,
+.profile-card h1,
+.profile-card h2,
+.profile-card p {
+  color: inherit !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive theme backgrounds - show full image/animation */
+body {
+  min-height: 100vh;
+  background-attachment: fixed !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+/* Themed backgrounds (butterflies, beach, mountains, etc.) */
+body.cats-paradise {
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 10% 20%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 80% 30%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 50% 60%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 20% 70%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 70% 80%,
+    linear-gradient(135deg, #ffeef8 0%, #ffe4f3 50%, #ffd4ea 100%);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 80px 80px, 80px 80px, 80px 80px, 60px 60px, 60px 60px, cover;
+  background-attachment: fixed;
+  animation: butterflies 20s ease-in-out infinite;
+}
+
+@keyframes butterflies {
+  0%, 100% {
+    background-position: 10% 20%, 80% 30%, 50% 60%, 20% 70%, 70% 80%, center;
+  }
+  50% {
+    background-position: 15% 25%, 75% 35%, 55% 55%, 25% 65%, 65% 75%, center;
+  }
+}
+
+/* Mobile optimizations - ensure full backgrounds visible */
+@media (max-width: 768px) {
+  body {
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  
+  body.cats-paradise {
+    background-size: 60px 60px, 60px 60px, 60px 60px, 40px 40px, 40px 40px, cover;
+  }
+  
+  /* Ensure profile containers are still readable on mobile */
+  .profile-info,
+  .profile-header,
+  .profile-card {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+  
+  body.default-theme .profile-info,
+  body.default-theme .profile-header,
+  body.light-theme .profile-info,
+  body.light-theme .profile-header {
+    background: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+/* Ensure all gradient themes animate properly */
+body[class*="-gradient"] {
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Card containers on themed backgrounds */
+.card {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.default-theme .card,
+body.light-theme .card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Text in cards always readable */
+.card h1,
+.card h2,
+.card h3,
+.card p,
+.card span,
+.card label {
+  color: inherit !important;
+}
+
+/* Input fields readable on all themes */
+input,
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: inherit !important;
+  padding: 0.8rem !important;
+  border-radius: 8px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.default-theme input,
+body.default-theme textarea,
+body.default-theme select,
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1c1e21 !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+body.default-theme input::placeholder,
+body.default-theme textarea::placeholder,
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+/* UNIVERSAL NAVIGATION CSS - ADD TO ALL PAGE CSS FILES */
+.navbar {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-links button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+  
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 5rem 2rem 2rem;
+    gap: 1rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .nav-links.active {
+    right: 0;
+  }
+  
+  .nav-links button {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .navbar {
+    padding: 1rem 3rem;
+  }
+}

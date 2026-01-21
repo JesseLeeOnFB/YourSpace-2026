@@ -9,10 +9,21 @@
 </head>
 <body class="default-theme">
   <nav class="navbar">
-    <button id="homeBtn">Home</button>
-    <button id="profileBtn">My Profile</button>
-    <button id="messagesBtn">Messages</button>
-    <button id="logoutBtn">Logout</button>
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
   </nav>
 
   <section class="profile-main">
@@ -27,16 +38,7 @@
         <h2 id="displayName">Loading...</h2>
         <p id="location" class="location-text">📍 Location</p>
         <p id="bio" class="bio-text">Bio goes here...</p>
-        
-        <div class="streak-container" id="streakContainer" style="display:none;">
-          <span class="streak-flame">🔥</span>
-          <span class="streak-number" id="streakNumber">0</span>
-          <span class="streak-label">Day Login Streak!</span>
-          <div class="badge-container" id="badgeContainer"></div>
-        </div>
-        
         <button id="editProfileBtn">Edit Profile</button>
-        <button id="emergencyResetBtn" class="emergency-reset-btn">🔄 Emergency Reset Profile</button>
         <button id="sendMessageBtn" style="display:none;">Send Message</button>
       </div>
     </div>
@@ -181,8 +183,8 @@
     </div>
 
     <div class="custom-html-container card" id="customHtmlSection">
-      <h3>💻 Custom HTML/CSS - YourSpace Style</h3>
-      <p class="info-text">Just like the old YourSpace days! Your code injects directly into the page. Use &lt;style&gt; tags for CSS, add backgrounds, animations, GIFs, and completely customize your profile!</p>
+      <h3>💻 Custom HTML/CSS - MySpace Style</h3>
+      <p class="info-text">Just like the old MySpace days! Your code injects directly into the page. Use &lt;style&gt; tags for CSS, add backgrounds, animations, GIFs, and completely customize your profile!</p>
       <div class="example-box">
         <strong>🎨 Example - Animated Background:</strong>
         <pre>&lt;style&gt;

@@ -22,6 +22,15 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
+const ADMIN_EMAILS = [
+  "skeeterjeeter8@gmail.com",
+  "daniellehunt01@gmail.com"
+];
+
+function isAdmin(email) {
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 let currentUser;
 let viewingUserId;
 let isOwnProfile = true;
@@ -29,15 +38,37 @@ let isOwnProfile = true;
 const urlParams = new URLSearchParams(window.location.search);
 viewingUserId = urlParams.get('userId');
 
-document.getElementById("homeBtn").onclick = () => window.location.href = "feed.html";
-document.getElementById("profileBtn").onclick = () => window.location.href = "profile.html";
-document.getElementById("messagesBtn").onclick = () => window.location.href = "messages.html";
-document.getElementById("logoutBtn").onclick = async () => {
+// Universal navigation handlers
+document.getElementById("feedNavBtn")?.addEventListener("click", () => {
+  window.location.href = "feed.html";
+});
+
+document.getElementById("profileNavBtn")?.addEventListener("click", () => {
+  window.location.href = "profile.html";
+});
+
+document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
+  window.location.href = "messages.html";
+});
+
+document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
+  window.location.href = "dashboard.html";
+});
+
+document.getElementById("adminNavBtn")?.addEventListener("click", () => {
+  window.location.href = "admin.html";
+});
+
+document.getElementById("contactNavBtn")?.addEventListener("click", () => {
+  window.location.href = "contact.html";
+});
+
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await auth.signOut();
   window.location.href = "login.html";
-};
+});
 
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(auth, user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
@@ -47,21 +78,6 @@ onAuthStateChanged(auth, async user => {
       isOwnProfile = true;
     } else {
       isOwnProfile = (viewingUserId === user.uid);
-      
-      // Validate profile exists before loading
-      try {
-        const profileDoc = await getDoc(doc(db, "users", viewingUserId));
-        if (!profileDoc.exists()) {
-          alert("⚠️ This profile no longer exists or has been deleted.");
-          window.location.href = "feed.html";
-          return;
-        }
-      } catch (err) {
-        console.error("Error checking profile:", err);
-        alert("Error loading profile. Redirecting to feed.");
-        window.location.href = "feed.html";
-        return;
-      }
     }
     initProfile();
   }
@@ -581,3 +597,49 @@ document.querySelectorAll(".close-modal").forEach(btn => {
   };
 });
 
+// Hamburger menu functionality
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+
+if (hamburger && navLinks) {
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    navLinks.classList.toggle("active");
+  });
+  
+  navLinks.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", () => {
+      hamburger.classList.remove("active");
+      navLinks.classList.remove("active");
+    });
+  });
+  
+  document.addEventListener("click", (e) => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+      hamburger.classList.remove("active");
+      navLinks.classList.remove("active");
+    }
+  });
+}
+
+// Show/hide dashboard and admin buttons
+function initNavigation() {
+  if (auth.currentUser) {
+    const dashboardBtn = document.getElementById("dashboardNavBtn");
+    if (dashboardBtn) dashboardBtn.style.display = "inline-block";
+    
+    if (isAdmin(auth.currentUser.email)) {
+      const adminBtn = document.getElementById("adminNavBtn");
+      if (adminBtn) adminBtn.style.display = "inline-block";
+    }
+  }
+}
+
+// Call initNavigation when auth state changes
+const originalOnAuthStateChanged = auth.onAuthStateChanged;
+auth.onAuthStateChanged = function(callback) {
+  return originalOnAuthStateChanged.call(this, (user) => {
+    if (user) initNavigation();
+    callback(user);
+  });
+};

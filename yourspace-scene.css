@@ -418,15 +418,15 @@ body {
   right: 10px;
 }
 
-/* MINIVAN - ON THE GROUND, CENTER */
+/* MINIVAN - NEAR FRONT DOOR, CENTER AREA */
 .minivan {
   position: absolute;
   bottom: 0;
-  left: 65%;
+  left: 45%;
   transform: translateX(-50%);
   width: 90px;
   height: 45px;
-  z-index: 14;
+  z-index: 16;
   opacity: 0;
   transition: opacity 1s ease;
 }

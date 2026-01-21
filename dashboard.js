@@ -1,343 +1,233 @@
-// dashboard.js - Creator Dashboard
+// dashboard.js - COMPLETE WITH FIXED NAVIGATION
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
 import {
-  getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, limit
+} from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
+import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
+authDomain: “yourspace-2026.firebaseapp.com”,
+projectId: “yourspace-2026”,
+storageBucket: “yourspace-2026.firebasestorage.app”,
+messagingSenderId: “72667267302”,
+appId: “1:72667267302:web:2bed5f543e05d49ca8fb27”
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAILS = [
-  "skeeterjeeter8@gmail.com",
-  "daniellehunt01@gmail.com"
-];
+const ADMIN_EMAILS = [“skeeterjeeter8@gmail.com”, “daniellehunt01@gmail.com”];
 
 function isAdmin(email) {
-  return ADMIN_EMAILS.includes(email.toLowerCase());
+return ADMIN_EMAILS.includes(email?.toLowerCase());
 }
 
-// Navigation
-document.getElementById("feedNavBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
+// Navigation handlers
+document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “feed.html”;
 });
 
-document.getElementById("profileNavBtn")?.addEventListener("click", () => {
-  window.location.href = "profile.html";
+document.getElementById(“profileNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “profile.html”;
 });
 
-document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
-  window.location.href = "messages.html";
+document.getElementById(“messagesNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “messages.html”;
 });
 
-document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
-  window.location.href = "notifications.html";
+document.getElementById(“notificationsNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “notifications.html”;
 });
 
-document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
-  window.location.href = "dashboard.html";
+document.getElementById(“dashboardNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “dashboard.html”;
 });
 
-document.getElementById("adminNavBtn")?.addEventListener("click", () => {
-  window.location.href = "admin.html";
+document.getElementById(“adminNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “admin.html”;
 });
 
-document.getElementById("contactNavBtn")?.addEventListener("click", () => {
-  window.location.href = "contact.html";
+document.getElementById(“contactNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “contact.html”;
 });
 
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "login.html";
+document.getElementById(“logoutBtn”)?.addEventListener(“click”, async () => {
+await signOut(auth);
+window.location.href = “login.html”;
 });
 
 // Hamburger menu
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-if (hamburger) {
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
+const hamburger = document.getElementById(“hamburger”);
+const navLinks = document.getElementById(“navLinks”);
+
+if (hamburger && navLinks) {
+hamburger.addEventListener(“click”, () => {
+hamburger.classList.toggle(“active”);
+navLinks.classList.toggle(“active”);
+});
+
+navLinks.querySelectorAll(“button”).forEach(button => {
+button.addEventListener(“click”, () => {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
+});
+});
+
+document.addEventListener(“click”, (e) => {
+if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
+}
+});
 }
 
-// ═══════════════════════════════════════════════════════════
-// PAYOUT TRACKING SYSTEM
-// ═══════════════════════════════════════════════════════════
+// Load dashboard data
+async function loadDashboard(userId) {
+try {
+const userRef = doc(db, “users”, userId);
+const userDoc = await getDoc(userRef);
 
-async function loadPayoutTracking(userId, userData) {
-  try {
-    // Get all gifts received by this user
-    const rewardsQuery = query(collection(db, "users", userId, "rewards"), orderBy("createdAt", "desc"));
-    const rewardsSnapshot = await getDocs(rewardsQuery);
-    
-    let pendingAmount = 0;
-    let totalGifts = 0;
-    let totalEarnings = userData?.totalEarnings || 0;
-    
-    rewardsSnapshot.forEach((doc) => {
-      const reward = doc.data();
-      totalGifts++;
-      
-      // Check if this gift has been paid out
-      const giftPaidOut = reward.paidOut || false;
-      if (!giftPaidOut) {
-        pendingAmount += reward.price || 0;
-      }
-    });
-    
-    // Update UI
-    document.getElementById("pendingPayout").textContent = `$${pendingAmount.toFixed(2)}`;
-    document.getElementById("totalGiftsReceived").textContent = totalGifts;
-    document.getElementById("totalEarned").textContent = `$${totalEarnings.toFixed(2)}`;
-    
-    // Calculate next payout date (14-day cycles)
-    const lastPayoutDate = userData?.lastPayoutDate || null;
-    const nextPayoutInfo = calculateNextPayout(lastPayoutDate);
-    
-    document.getElementById("nextPayoutDate").textContent = nextPayoutInfo.dateString;
-    document.getElementById("payoutCountdown").textContent = nextPayoutInfo.countdown;
-    
-    // Check Stripe verification status
-    const stripeVerified = userData?.stripeVerified || false;
-    const stripeTaxComplete = userData?.stripeTaxComplete || false;
-    
-    if (!stripeVerified || !stripeTaxComplete) {
-      document.getElementById("stripeSetup").style.display = "block";
-      document.getElementById("stripeVerifiedStatus").innerHTML = stripeVerified 
-        ? "✅ Stripe account connected" 
-        : "❌ Stripe account not connected";
-      document.getElementById("stripeTaxStatus").innerHTML = stripeTaxComplete 
-        ? "✅ Tax information completed" 
-        : "❌ Tax information incomplete";
-      
-      document.getElementById("payoutStatus").innerHTML = `
-        <div class="status-indicator warning"></div>
-        <span>⚠️ Complete Stripe setup to receive payouts</span>
-      `;
-    } else if (pendingAmount === 0) {
-      document.getElementById("payoutStatus").innerHTML = `
-        <div class="status-indicator"></div>
-        <span>💭 No pending payouts - start earning gifts!</span>
-      `;
-    } else if (pendingAmount < 10) {
-      document.getElementById("payoutStatus").innerHTML = `
-        <div class="status-indicator"></div>
-        <span>📊 Minimum payout: $10.00 (You have $${pendingAmount.toFixed(2)})</span>
-      `;
-    } else {
-      document.getElementById("payoutStatus").innerHTML = `
-        <div class="status-indicator active"></div>
-        <span>✅ Payout ready! Will be processed ${nextPayoutInfo.dateString}</span>
-      `;
-    }
-    
-    // Load payout history
-    await loadPayoutHistory(userId);
-    
-  } catch (err) {
-    console.error("Error loading payout tracking:", err);
-  }
+```
+if (!userDoc.exists()) {
+  console.error("User document not found");
+  return;
 }
 
-function calculateNextPayout(lastPayoutDate) {
-  const PAYOUT_CYCLE_DAYS = 14;
-  
-  let nextPayoutDate;
-  
-  if (lastPayoutDate) {
-    // Parse last payout date and add 14 days
-    const lastDate = new Date(lastPayoutDate);
-    nextPayoutDate = new Date(lastDate.getTime() + (PAYOUT_CYCLE_DAYS * 24 * 60 * 60 * 1000));
-  } else {
-    // If no previous payout, set to 14 days from now
-    nextPayoutDate = new Date();
-    nextPayoutDate.setDate(nextPayoutDate.getDate() + PAYOUT_CYCLE_DAYS);
-  }
-  
-  // Calculate days until payout
+const userData = userDoc.data();
+const totalEarnings = userData.totalEarnings || 0;
+const stripeVerified = userData.stripeVerified || false;
+const stripeTaxComplete = userData.stripeTaxComplete || false;
+
+// Update earnings display
+document.getElementById("totalEarnings").textContent = `$${totalEarnings.toFixed(2)}`;
+document.getElementById("pendingPayout").textContent = `$${totalEarnings.toFixed(2)}`;
+
+// Get gift count
+const giftsQuery = query(
+  collection(db, "gifts"),
+  where("toUserId", "==", userId)
+);
+const giftsSnapshot = await getDocs(giftsQuery);
+document.getElementById("totalGifts").textContent = giftsSnapshot.size;
+
+// Calculate days until payout
+const lastPayoutDate = userData.lastPayoutDate;
+let daysUntilPayout = 14;
+
+if (lastPayoutDate) {
+  const lastPayout = new Date(lastPayoutDate.toMillis());
   const now = new Date();
-  const diffTime = nextPayoutDate - now;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  let countdown;
-  if (diffDays <= 0) {
-    countdown = "Processing soon!";
-  } else if (diffDays === 1) {
-    countdown = "Tomorrow!";
-  } else if (diffDays <= 7) {
-    countdown = `In ${diffDays} days`;
-  } else {
-    countdown = `In ${diffDays} days`;
-  }
-  
-  const dateString = nextPayoutDate.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-  
-  return { dateString, countdown, daysUntil: diffDays };
+  const daysSinceLastPayout = Math.floor((now - lastPayout) / (1000 * 60 * 60 * 24));
+  daysUntilPayout = Math.max(0, 14 - daysSinceLastPayout);
 }
 
-async function loadPayoutHistory(userId) {
-  try {
-    const payoutsQuery = query(
-      collection(db, "users", userId, "payouts"),
-      orderBy("createdAt", "desc"),
-      limit(10)
-    );
-    const payoutsSnapshot = await getDocs(payoutsQuery);
-    
-    const historyList = document.getElementById("payoutHistoryList");
-    
-    if (payoutsSnapshot.empty) {
-      historyList.innerHTML = "<p style='text-align: center; color: #65676b; padding: 2rem;'>No payout history yet</p>";
-      return;
-    }
-    
-    historyList.innerHTML = "";
-    
-    payoutsSnapshot.forEach((doc) => {
-      const payout = doc.data();
-      const date = payout.createdAt ? new Date(payout.createdAt.toMillis()).toLocaleDateString() : "Unknown";
-      const status = payout.status || "completed";
-      const statusEmoji = status === "completed" ? "✅" : status === "pending" ? "⏳" : "❌";
-      
-      const item = document.createElement("div");
-      item.className = "payout-history-item";
-      item.innerHTML = `
-        <div class="payout-history-info">
-          <strong>$${payout.amount.toFixed(2)}</strong>
-          <span>${date}</span>
-        </div>
-        <div class="payout-history-status ${status}">
-          ${statusEmoji} ${status.charAt(0).toUpperCase() + status.slice(1)}
-        </div>
-      `;
-      historyList.appendChild(item);
-    });
-    
-  } catch (err) {
-    console.error("Error loading payout history:", err);
-  }
+document.getElementById("daysUntilPayout").textContent = daysUntilPayout;
+
+// Show/hide Stripe setup
+if (stripeVerified && stripeTaxComplete) {
+  document.getElementById("stripeNotVerified").style.display = "none";
+  document.getElementById("stripeVerified").style.display = "block";
+  
+  // Calculate next payout date
+  const nextPayoutDate = new Date();
+  nextPayoutDate.setDate(nextPayoutDate.getDate() + daysUntilPayout);
+  document.getElementById("nextPayoutDate").textContent = nextPayoutDate.toLocaleDateString();
+  document.getElementById("nextPayoutAmount").textContent = `$${totalEarnings.toFixed(2)}`;
+} else {
+  document.getElementById("stripeNotVerified").style.display = "block";
+  document.getElementById("stripeVerified").style.display = "none";
 }
 
-async function loadDashboard() {
-  if (!auth.currentUser) return;
-  
-  const userId = auth.currentUser.uid;
-  
-  // Load user data
-  const userDoc = await getDoc(doc(db, "users", userId));
-  const userData = userDoc.data();
-  
-  document.getElementById("creatorName").textContent = userData?.username || auth.currentUser.email.split("@")[0];
-  document.getElementById("loginStreak").textContent = userData?.loginStreak || 0;
-  
-  // Load posts stats
-  const postsQuery = query(collection(db, "posts"), where("userId", "==", userId));
-  const postsSnapshot = await getDocs(postsQuery);
-  
-  let totalLikes = 0;
-  let totalComments = 0;
-  const posts = [];
-  
-  for (const docSnap of postsSnapshot.docs) {
-    const post = docSnap.data();
-    posts.push({ id: docSnap.id, ...post });
-    totalLikes += (post.likedBy || []).length;
-    
-    // Count comments
-    const commentsQuery = query(collection(db, "posts", docSnap.id, "comments"));
-    const commentsSnapshot = await getDocs(commentsQuery);
-    totalComments += commentsSnapshot.size;
-  }
-  
-  document.getElementById("totalPosts").textContent = postsSnapshot.size;
-  document.getElementById("totalLikes").textContent = totalLikes;
-  document.getElementById("totalComments").textContent = totalComments;
-  
-  // 💰 LOAD PAYOUT TRACKING
-  await loadPayoutTracking(userId, userData);
-  
-  // Load rewards
-  const rewards = userData?.rewards || {};
-  document.getElementById("houseCount").textContent = rewards.house || 0;
-  document.getElementById("carCount").textContent = rewards.car || 0;
-  document.getElementById("truckCount").textContent = rewards.truck || 0;
-  document.getElementById("petCount").textContent = rewards.pet || 0;
-  document.getElementById("diamondCount").textContent = rewards.diamond || 0;
-  document.getElementById("crownCount").textContent = rewards.crown || 0;
-  
-  // Show top posts
-  posts.sort((a, b) => ((b.likedBy || []).length) - ((a.likedBy || []).length));
-  const topPosts = posts.slice(0, 5);
-  
-  const topPostsList = document.getElementById("topPostsList");
-  topPostsList.innerHTML = "";
-  
-  if (topPosts.length === 0) {
-    topPostsList.innerHTML = "<p style='text-align:center; color:#65676b;'>No posts yet. Create your first post!</p>";
-  } else {
-    topPosts.forEach(post => {
-      const postEl = document.createElement("div");
-      postEl.className = "top-post-item";
-      postEl.innerHTML = `
-        <div class="top-post-text">${post.text?.substring(0, 100) || 'Post with media'}...</div>
-        <div class="top-post-stats">
-          <span>👍 ${(post.likedBy || []).length}</span>
-          <span>💬 ${post.commentCount || 0}</span>
-        </div>
-      `;
-      topPostsList.appendChild(postEl);
-    });
-  }
-  
-  // Engagement bars (last 7 days)
-  const maxValue = Math.max(totalLikes, totalComments, 0);
-  const likesPercent = maxValue > 0 ? (totalLikes / maxValue) * 100 : 0;
-  const commentsPercent = maxValue > 0 ? (totalComments / maxValue) * 100 : 0;
-  
-  document.getElementById("likesBar").style.width = likesPercent + "%";
-  document.getElementById("commentsBar").style.width = commentsPercent + "%";
-  document.getElementById("sharesBar").style.width = "0%";
-  
-  document.getElementById("likesValue").textContent = totalLikes;
-  document.getElementById("commentsValue").textContent = totalComments;
-  document.getElementById("sharesValue").textContent = 0;
-  
-  // Add reward click animations
-  document.querySelectorAll(".reward-item").forEach(item => {
-    item.addEventListener("click", () => {
-      item.classList.add("active");
-      setTimeout(() => {
-        item.classList.remove("active");
-      }, 1000);
-    });
-  });
+// Load recent gifts
+await loadRecentGifts(userId);
+```
+
+} catch (error) {
+console.error(“Error loading dashboard:”, error);
+alert(“Error loading dashboard data”);
+}
 }
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    // Show admin button if user is admin
-    if (isAdmin(user.email)) {
-      document.getElementById("adminNavBtn").style.display = "inline-block";
-    }
-    
-    await loadDashboard();
-  }
+// Load recent gifts
+async function loadRecentGifts(userId) {
+try {
+const giftsQuery = query(
+collection(db, “gifts”),
+where(“toUserId”, “==”, userId),
+orderBy(“createdAt”, “desc”),
+limit(10)
+);
+
+```
+const giftsSnapshot = await getDocs(giftsQuery);
+const recentGiftsList = document.getElementById("recentGiftsList");
+
+if (giftsSnapshot.empty) {
+  recentGiftsList.innerHTML = "<p style='color:#666;text-align:center;padding:2rem;'>No gifts received yet</p>";
+  return;
+}
+
+recentGiftsList.innerHTML = "";
+
+for (const giftDoc of giftsSnapshot.docs) {
+  const gift = giftDoc.data();
+  const fromUserDoc = await getDoc(doc(db, "users", gift.fromUserId));
+  const fromUsername = fromUserDoc.exists() ? fromUserDoc.data().username : "Anonymous";
+  
+  const giftEl = document.createElement("div");
+  giftEl.style.cssText = "padding:1rem;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center;";
+  
+  const giftIcons = {
+    rose: "🌹",
+    coffee: "☕",
+    bear: "🧸",
+    cake: "🍰",
+    diamond: "💎",
+    yacht: "🛥️"
+  };
+  
+  const time = gift.createdAt ? new Date(gift.createdAt.toMillis()).toLocaleDateString() : "Recently";
+  
+  giftEl.innerHTML = `
+    <div>
+      <span style="font-size:1.5rem;margin-right:0.5rem;">${giftIcons[gift.giftType] || "🎁"}</span>
+      <strong>${fromUsername}</strong>
+      <span style="color:#666;margin-left:0.5rem;">${time}</span>
+    </div>
+    <div style="color:#00ff00;font-weight:bold;">+$${gift.amount.toFixed(2)}</div>
+  `;
+  
+  recentGiftsList.appendChild(giftEl);
+}
+```
+
+} catch (error) {
+console.error(“Error loading gifts:”, error);
+}
+}
+
+// Stripe setup button
+document.getElementById(“stripeSetupBtn”)?.addEventListener(“click”, () => {
+alert(“🔒 Stripe integration coming soon! This will redirect you to complete Stripe Connect onboarding and tax information.”);
+});
+
+// Auth state
+auth.onAuthStateChanged((user) => {
+if (!user) {
+window.location.href = “login.html”;
+} else {
+// Show admin button if user is admin
+if (isAdmin(user.email)) {
+const adminBtn = document.getElementById(“adminNavBtn”);
+if (adminBtn) adminBtn.style.display = “inline-block”;
+}
+
+```
+loadDashboard(user.uid);
+```
+
+}
 });

@@ -68,6 +68,168 @@ if (hamburger) {
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// PAYOUT TRACKING SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+async function loadPayoutTracking(userId, userData) {
+  try {
+    // Get all gifts received by this user
+    const rewardsQuery = query(collection(db, "users", userId, "rewards"), orderBy("createdAt", "desc"));
+    const rewardsSnapshot = await getDocs(rewardsQuery);
+    
+    let pendingAmount = 0;
+    let totalGifts = 0;
+    let totalEarnings = userData?.totalEarnings || 0;
+    
+    rewardsSnapshot.forEach((doc) => {
+      const reward = doc.data();
+      totalGifts++;
+      
+      // Check if this gift has been paid out
+      const giftPaidOut = reward.paidOut || false;
+      if (!giftPaidOut) {
+        pendingAmount += reward.price || 0;
+      }
+    });
+    
+    // Update UI
+    document.getElementById("pendingPayout").textContent = `$${pendingAmount.toFixed(2)}`;
+    document.getElementById("totalGiftsReceived").textContent = totalGifts;
+    document.getElementById("totalEarned").textContent = `$${totalEarnings.toFixed(2)}`;
+    
+    // Calculate next payout date (14-day cycles)
+    const lastPayoutDate = userData?.lastPayoutDate || null;
+    const nextPayoutInfo = calculateNextPayout(lastPayoutDate);
+    
+    document.getElementById("nextPayoutDate").textContent = nextPayoutInfo.dateString;
+    document.getElementById("payoutCountdown").textContent = nextPayoutInfo.countdown;
+    
+    // Check Stripe verification status
+    const stripeVerified = userData?.stripeVerified || false;
+    const stripeTaxComplete = userData?.stripeTaxComplete || false;
+    
+    if (!stripeVerified || !stripeTaxComplete) {
+      document.getElementById("stripeSetup").style.display = "block";
+      document.getElementById("stripeVerifiedStatus").innerHTML = stripeVerified 
+        ? "✅ Stripe account connected" 
+        : "❌ Stripe account not connected";
+      document.getElementById("stripeTaxStatus").innerHTML = stripeTaxComplete 
+        ? "✅ Tax information completed" 
+        : "❌ Tax information incomplete";
+      
+      document.getElementById("payoutStatus").innerHTML = `
+        <div class="status-indicator warning"></div>
+        <span>⚠️ Complete Stripe setup to receive payouts</span>
+      `;
+    } else if (pendingAmount === 0) {
+      document.getElementById("payoutStatus").innerHTML = `
+        <div class="status-indicator"></div>
+        <span>💭 No pending payouts - start earning gifts!</span>
+      `;
+    } else if (pendingAmount < 10) {
+      document.getElementById("payoutStatus").innerHTML = `
+        <div class="status-indicator"></div>
+        <span>📊 Minimum payout: $10.00 (You have $${pendingAmount.toFixed(2)})</span>
+      `;
+    } else {
+      document.getElementById("payoutStatus").innerHTML = `
+        <div class="status-indicator active"></div>
+        <span>✅ Payout ready! Will be processed ${nextPayoutInfo.dateString}</span>
+      `;
+    }
+    
+    // Load payout history
+    await loadPayoutHistory(userId);
+    
+  } catch (err) {
+    console.error("Error loading payout tracking:", err);
+  }
+}
+
+function calculateNextPayout(lastPayoutDate) {
+  const PAYOUT_CYCLE_DAYS = 14;
+  
+  let nextPayoutDate;
+  
+  if (lastPayoutDate) {
+    // Parse last payout date and add 14 days
+    const lastDate = new Date(lastPayoutDate);
+    nextPayoutDate = new Date(lastDate.getTime() + (PAYOUT_CYCLE_DAYS * 24 * 60 * 60 * 1000));
+  } else {
+    // If no previous payout, set to 14 days from now
+    nextPayoutDate = new Date();
+    nextPayoutDate.setDate(nextPayoutDate.getDate() + PAYOUT_CYCLE_DAYS);
+  }
+  
+  // Calculate days until payout
+  const now = new Date();
+  const diffTime = nextPayoutDate - now;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  let countdown;
+  if (diffDays <= 0) {
+    countdown = "Processing soon!";
+  } else if (diffDays === 1) {
+    countdown = "Tomorrow!";
+  } else if (diffDays <= 7) {
+    countdown = `In ${diffDays} days`;
+  } else {
+    countdown = `In ${diffDays} days`;
+  }
+  
+  const dateString = nextPayoutDate.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  
+  return { dateString, countdown, daysUntil: diffDays };
+}
+
+async function loadPayoutHistory(userId) {
+  try {
+    const payoutsQuery = query(
+      collection(db, "users", userId, "payouts"),
+      orderBy("createdAt", "desc"),
+      limit(10)
+    );
+    const payoutsSnapshot = await getDocs(payoutsQuery);
+    
+    const historyList = document.getElementById("payoutHistoryList");
+    
+    if (payoutsSnapshot.empty) {
+      historyList.innerHTML = "<p style='text-align: center; color: #65676b; padding: 2rem;'>No payout history yet</p>";
+      return;
+    }
+    
+    historyList.innerHTML = "";
+    
+    payoutsSnapshot.forEach((doc) => {
+      const payout = doc.data();
+      const date = payout.createdAt ? new Date(payout.createdAt.toMillis()).toLocaleDateString() : "Unknown";
+      const status = payout.status || "completed";
+      const statusEmoji = status === "completed" ? "✅" : status === "pending" ? "⏳" : "❌";
+      
+      const item = document.createElement("div");
+      item.className = "payout-history-item";
+      item.innerHTML = `
+        <div class="payout-history-info">
+          <strong>$${payout.amount.toFixed(2)}</strong>
+          <span>${date}</span>
+        </div>
+        <div class="payout-history-status ${status}">
+          ${statusEmoji} ${status.charAt(0).toUpperCase() + status.slice(1)}
+        </div>
+      `;
+      historyList.appendChild(item);
+    });
+    
+  } catch (err) {
+    console.error("Error loading payout history:", err);
+  }
+}
+
 async function loadDashboard() {
   if (!auth.currentUser) return;
   
@@ -102,6 +264,9 @@ async function loadDashboard() {
   document.getElementById("totalPosts").textContent = postsSnapshot.size;
   document.getElementById("totalLikes").textContent = totalLikes;
   document.getElementById("totalComments").textContent = totalComments;
+  
+  // 💰 LOAD PAYOUT TRACKING
+  await loadPayoutTracking(userId, userData);
   
   // Load rewards
   const rewards = userData?.rewards || {};

@@ -540,3 +540,65 @@ document.getElementById("disableNotificationsBtn")?.addEventListener("click", as
     console.error("Error disabling notifications:", err);
   }
 });
+
+// SEARCH BAR WITH PROFILE PICTURES
+const searchBar = document.getElementById("searchBar");
+const searchResults = document.getElementById("searchResults");
+
+if (searchBar && searchResults) {
+  searchBar.addEventListener("input", async (e) => {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+      searchResults.style.display = "none";
+      searchResults.innerHTML = "";
+      return;
+    }
+    
+    try {
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      const matchedUsers = [];
+      
+      usersSnapshot.forEach((docSnap) => {
+        const userData = docSnap.data();
+        const username = userData.username || "";
+        if (username.toLowerCase().includes(searchTerm)) {
+          matchedUsers.push({
+            id: docSnap.id,
+            username: username,
+            photoURL: userData.photoURL || "https://via.placeholder.com/50"
+          });
+        }
+      });
+      
+      if (matchedUsers.length > 0) {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = matchedUsers.map(user => `
+          <div class="search-result-item" data-user-id="${user.id}">
+            <img src="${user.photoURL}" alt="${user.username}" class="search-result-avatar">
+            <strong class="search-result-username">${user.username}</strong>
+          </div>
+        `).join("");
+        
+        searchResults.querySelectorAll(".search-result-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const userId = item.getAttribute("data-user-id");
+            window.location.href = `profile.html?userId=${userId}`;
+          });
+        });
+      } else {
+        searchResults.style.display = "block";
+        searchResults.innerHTML = "<div class='no-results'>No users found</div>";
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+    }
+  });
+  
+  // Close search results when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.style.display = "none";
+    }
+  });
+}

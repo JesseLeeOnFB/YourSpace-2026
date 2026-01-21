@@ -37,7 +37,7 @@ document.getElementById("logoutBtn").onclick = async () => {
   window.location.href = "login.html";
 };
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
@@ -47,6 +47,21 @@ onAuthStateChanged(auth, user => {
       isOwnProfile = true;
     } else {
       isOwnProfile = (viewingUserId === user.uid);
+      
+      // Validate profile exists before loading
+      try {
+        const profileDoc = await getDoc(doc(db, "users", viewingUserId));
+        if (!profileDoc.exists()) {
+          alert("⚠️ This profile no longer exists or has been deleted.");
+          window.location.href = "feed.html";
+          return;
+        }
+      } catch (err) {
+        console.error("Error checking profile:", err);
+        alert("Error loading profile. Redirecting to feed.");
+        window.location.href = "feed.html";
+        return;
+      }
     }
     initProfile();
   }
@@ -566,110 +581,3 @@ document.querySelectorAll(".close-modal").forEach(btn => {
   };
 });
 
-// LOGIN STREAK DISPLAY - Added safely
-async function displayLoginStreak() {
-  if (!isOwnProfile) {
-    const streakContainer = document.getElementById("streakContainer");
-    if (streakContainer) {
-      streakContainer.style.display = "none";
-    }
-    return;
-  }
-  
-  try {
-    const userDoc = await getDoc(doc(db, "users", viewingUserId));
-    if (!userDoc.exists()) return;
-    
-    const data = userDoc.data();
-    const streak = data.loginStreak || 0;
-    const longestStreak = data.longestStreak || 0;
-    
-    const streakContainer = document.getElementById("streakContainer");
-    const streakNumber = document.getElementById("streakNumber");
-    
-    if (streak > 0 && streakContainer && streakNumber) {
-      streakContainer.style.display = "block";
-      streakNumber.textContent = streak;
-      
-      const badgeContainer = document.getElementById("badgeContainer");
-      if (badgeContainer) {
-        badgeContainer.innerHTML = "";
-        
-        if (streak >= 7) {
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = "🏆 Week Warrior";
-          badgeContainer.appendChild(badge);
-        }
-        
-        if (streak >= 30) {
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = "💪 Month Master";
-          badgeContainer.appendChild(badge);
-        }
-        
-        if (streak >= 100) {
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = "👑 Century Club";
-          badgeContainer.appendChild(badge);
-        }
-        
-        if (longestStreak > streak) {
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = `🥇 Best: ${longestStreak} days`;
-          badgeContainer.appendChild(badge);
-        }
-      }
-    }
-  } catch (err) {
-    console.error("Error displaying login streak:", err);
-  }
-}
-
-// Call streak display after profile loads
-if (document.getElementById("streakContainer")) {
-  setTimeout(() => {
-    if (auth.currentUser) {
-      displayLoginStreak();
-    }
-  }, 1000);
-}
-
-// EMERGENCY RESET BUTTON - Added safely
-const emergencyResetBtn = document.getElementById("emergencyResetBtn");
-if (emergencyResetBtn) {
-  emergencyResetBtn.addEventListener("click", async () => {
-    if (!confirm("⚠️ EMERGENCY RESET ⚠️\n\nThis will:\n- Reset your theme to default\n- Remove all custom HTML/CSS\n- Keep your username, bio, and photos\n\nAre you sure?")) {
-      return;
-    }
-    
-    if (!confirm("This action cannot be undone. Continue?")) {
-      return;
-    }
-    
-    try {
-      const userId = auth.currentUser.uid;
-      await updateDoc(doc(db, "users", userId), {
-        theme: "default-theme",
-        customHtml: "",
-        music: ["", "", "", ""],
-        autoplay: false
-      });
-      
-      const customStyles = document.getElementById("customProfileStyles");
-      if (customStyles) {
-        customStyles.remove();
-      }
-      
-      document.body.className = "default-theme";
-      
-      alert("✅ Profile reset to default! The page will reload.");
-      location.reload();
-    } catch (err) {
-      alert("Error resetting profile: " + err.message);
-    }
-  });
-}

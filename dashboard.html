@@ -56,20 +56,24 @@
     </div>
 
     <div class="rewards-section">
-      <h2>🎁 Your Rewards</h2>
-      <p style="margin-bottom: 1rem; color: #65676b;">Earn rewards by staying active on YourSpace!</p>
-      <button onclick="window.location.href='rewards.html'" style="
+      <h2>🎁 Build Your Space</h2>
+      <p style="margin-bottom: 1rem; color: #65676b;">Earn rewards and watch your world come to life!</p>
+      <button onclick="window.location.href='yourspace-scene.html'" style="
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 1rem 2rem;
+        padding: 1.5rem 2.5rem;
         border: none;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
+        border-radius: 16px;
+        font-size: 1.3rem;
+        font-weight: 700;
         cursor: pointer;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      ">🏆 View Rewards Collection →</button>
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        transition: all 0.3s;
+        width: 100%;
+      " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 12px 35px rgba(102, 126, 234, 0.7)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.5)';">
+        🏗️ Build Your Space →
+      </button>
       
       <div class="rewards-grid" id="rewardsGrid">
         <div class="reward-item" data-reward="house">

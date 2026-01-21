@@ -1,0 +1,722 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+.scene-container {
+  min-height: 100vh;
+  background: #000;
+  position: relative;
+}
+
+.header-controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.1);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.payout-timer {
+  background: rgba(255,0,0,0.2);
+  border: 2px solid #ff0066;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: right;
+}
+
+.timer-label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.timer-countdown {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ff0066;
+}
+
+.scene-title {
+  text-align: center;
+  padding: 60px 20px 20px;
+  position: relative;
+  z-index: 100;
+}
+
+.glitch-text {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 5px;
+  position: relative;
+  text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+  animation: textGlow 2s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+  }
+  50% {
+    text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+  }
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
+.canvas-container {
+  width: 100%;
+  height: 600px;
+  position: relative;
+  margin: 20px auto;
+  max-width: 1200px;
+  background: linear-gradient(to bottom, #001a33 0%, #000 100%);
+  border: 3px solid #00ffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,255,255,0.3);
+}
+
+/* SKY WITH STARS */
+.sky-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to bottom, #001a33 0%, #003366 100%);
+  z-index: 1;
+}
+
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* GROUND */
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: #1a1a1a;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.ground.unlocked {
+  opacity: 1;
+}
+
+/* GRASS */
+.grass {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #2d5016 0%, #1a3a0f 100%);
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.grass.unlocked {
+  opacity: 1;
+  animation: grassGrow 2s ease-out;
+}
+
+@keyframes grassGrow {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* HOUSE */
+.house {
+  position: absolute;
+  bottom: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 180px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.house.unlocked {
+  opacity: 1;
+  animation: houseRise 2s ease-out;
+}
+
+@keyframes houseRise {
+  from {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.house-roof {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  width: 0;
+  height: 0;
+  border-left: 90px solid transparent;
+  border-right: 90px solid transparent;
+  border-bottom: 60px solid #8b4513;
+  filter: drop-shadow(0 0 10px rgba(255,200,0,0.5));
+}
+
+.house-body {
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  width: 180px;
+  height: 120px;
+  background: linear-gradient(to bottom, #d2691e 0%, #a0522d 100%);
+  border: 2px solid #654321;
+  box-shadow: 0 0 20px rgba(255,200,0,0.3);
+}
+
+.house-door {
+  position: absolute;
+  bottom: 0;
+  left: 70px;
+  width: 40px;
+  height: 60px;
+  background: #4a2511;
+  border: 2px solid #2f1a0c;
+}
+
+.house-window {
+  position: absolute;
+  top: 80px;
+  width: 30px;
+  height: 30px;
+  background: #87ceeb;
+  border: 2px solid #4682b4;
+  box-shadow: 0 0 15px rgba(255,255,0,0.6);
+}
+
+.window-left {
+  left: 30px;
+}
+
+.window-right {
+  right: 30px;
+}
+
+/* DRIVEWAY */
+.driveway {
+  position: absolute;
+  bottom: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 80px;
+  background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.driveway.unlocked {
+  opacity: 1;
+  animation: drivewaybuild 1.5s ease-out;
+}
+
+@keyframes drivewayBuild {
+  from {
+    width: 0;
+  }
+  to {
+    width: 150px;
+  }
+}
+
+/* CAR */
+.car {
+  position: absolute;
+  bottom: 42%;
+  left: 30%;
+  width: 80px;
+  height: 40px;
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.car.unlocked {
+  opacity: 1;
+  animation: carDriveIn 2s ease-out;
+}
+
+@keyframes carDriveIn {
+  from {
+    transform: translateX(-300px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.car-body {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 60px;
+  height: 20px;
+  background: linear-gradient(to bottom, #ff0000 0%, #cc0000 100%);
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 0 0 15px rgba(255,0,0,0.6);
+}
+
+.car-window {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 30px;
+  height: 12px;
+  background: #87ceeb;
+  border-radius: 4px 4px 0 0;
+}
+
+.car-wheel {
+  position: absolute;
+  bottom: 5px;
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a;
+  border: 2px solid #4a4a4a;
+  border-radius: 50%;
+}
+
+.wheel-front {
+  right: 10px;
+}
+
+.wheel-back {
+  left: 10px;
+}
+
+/* TRUCK */
+.truck {
+  position: absolute;
+  bottom: 42%;
+  right: 25%;
+  width: 100px;
+  height: 50px;
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.truck.unlocked {
+  opacity: 1;
+  animation: truckDriveIn 2.5s ease-out;
+}
+
+@keyframes truckDriveIn {
+  from {
+    transform: translateX(400px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.truck-cab {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(to bottom, #0066cc 0%, #004499 100%);
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 0 15px rgba(0,102,204,0.6);
+}
+
+.truck-bed {
+  position: absolute;
+  bottom: 12px;
+  left: 40px;
+  width: 50px;
+  height: 25px;
+  background: #4a4a4a;
+  border: 2px solid #2a2a2a;
+}
+
+.truck-wheel {
+  position: absolute;
+  bottom: 5px;
+  width: 15px;
+  height: 15px;
+  background: #1a1a1a;
+  border: 2px solid #4a4a4a;
+  border-radius: 50%;
+}
+
+.wheel-1 {
+  left: 10px;
+}
+
+.wheel-2 {
+  left: 45px;
+}
+
+.wheel-3 {
+  right: 10px;
+}
+
+/* MINIVAN */
+.minivan {
+  position: absolute;
+  bottom: 42%;
+  left: 45%;
+  width: 90px;
+  height: 45px;
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.minivan.unlocked {
+  opacity: 1;
+  animation: minivanDriveIn 2.2s ease-out;
+}
+
+@keyframes minivanDriveIn {
+  from {
+    transform: translateX(-350px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.minivan-body {
+  position: absolute;
+  bottom: 12px;
+  left: 5px;
+  width: 80px;
+  height: 28px;
+  background: linear-gradient(to bottom, #228b22 0%, #1a6b1a 100%);
+  border-radius: 12px 12px 4px 4px;
+  box-shadow: 0 0 15px rgba(34,139,34,0.6);
+}
+
+.minivan-windows {
+  position: absolute;
+  bottom: 30px;
+  left: 15px;
+  width: 50px;
+  height: 12px;
+  background: #87ceeb;
+  border-radius: 6px 6px 0 0;
+}
+
+.minivan-wheel {
+  position: absolute;
+  bottom: 7px;
+  width: 13px;
+  height: 13px;
+  background: #1a1a1a;
+  border: 2px solid #4a4a4a;
+  border-radius: 50%;
+}
+
+/* TREES */
+.tree {
+  position: absolute;
+  bottom: 40%;
+  width: 60px;
+  height: 100px;
+  z-index: 8;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.tree.unlocked {
+  opacity: 1;
+  animation: treeGrow 2s ease-out;
+}
+
+@keyframes treeGrow {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.tree-left {
+  left: 10%;
+}
+
+.tree-right {
+  right: 10%;
+}
+
+.tree-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  width: 20px;
+  height: 40px;
+  background: #654321;
+  border-radius: 4px;
+}
+
+.tree-leaves {
+  position: absolute;
+  bottom: 30px;
+  left: 5px;
+  width: 50px;
+  height: 70px;
+  background: linear-gradient(to bottom, #228b22 0%, #1a6b1a 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(34,139,34,0.5);
+}
+
+/* PRIVATE JET */
+.jet {
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  width: 150px;
+  height: 60px;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.jet.unlocked {
+  opacity: 1;
+  animation: jetFlyIn 3s ease-out;
+}
+
+@keyframes jetFlyIn {
+  from {
+    transform: translateX(500px) translateY(-100px) rotate(15deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.jet-body {
+  position: absolute;
+  bottom: 20px;
+  left: 30px;
+  width: 100px;
+  height: 25px;
+  background: linear-gradient(to right, #ffffff 0%, #e0e0e0 100%);
+  border-radius: 50px 10px 10px 50px;
+  box-shadow: 0 0 30px rgba(255,255,255,0.8);
+}
+
+.jet-wing {
+  position: absolute;
+  bottom: 15px;
+  left: 60px;
+  width: 80px;
+  height: 5px;
+  background: linear-gradient(to right, #d0d0d0 0%, #a0a0a0 100%);
+  border-radius: 2px;
+}
+
+.jet-tail {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 20px solid #c0c0c0;
+}
+
+.jet-window {
+  position: absolute;
+  bottom: 28px;
+  left: 80px;
+  width: 12px;
+  height: 8px;
+  background: #87ceeb;
+  border-radius: 4px;
+  box-shadow: 0 0 5px rgba(135,206,235,0.8);
+}
+
+.jet-engine {
+  position: absolute;
+  bottom: 18px;
+  left: 100px;
+  width: 20px;
+  height: 12px;
+  background: #606060;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255,100,0,0.6);
+}
+
+/* REWARDS CHECKLIST */
+.rewards-checklist {
+  max-width: 600px;
+  margin: 40px auto;
+  background: rgba(0,255,255,0.05);
+  border: 2px solid #00ffff;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.rewards-checklist h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #00ffff;
+  font-size: 1.5rem;
+}
+
+.reward-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.reward-item.unlocked {
+  background: rgba(0,255,0,0.2);
+  border-color: #00ff00;
+  box-shadow: 0 0 15px rgba(0,255,0,0.3);
+}
+
+.reward-icon {
+  font-size: 1.5rem;
+}
+
+.reward-name {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.reward-status {
+  font-size: 1.2rem;
+}
+
+.reward-item.unlocked .reward-status {
+  content: "✅";
+}
+
+/* TEST CONTROLS */
+.test-controls {
+  text-align: center;
+  margin: 40px 0;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.test-btn {
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #00ffff 0%, #0099cc 100%);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0,255,255,0.3);
+}
+
+.test-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(0,255,255,0.5);
+}
+
+.test-btn.danger {
+  background: linear-gradient(135deg, #ff0066 0%, #cc0033 100%);
+  color: #fff;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .glitch-text {
+    font-size: 2rem;
+  }
+  
+  .canvas-container {
+    height: 400px;
+  }
+  
+  .header-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .reward-list {
+    grid-template-columns: 1fr;
+  }
+}

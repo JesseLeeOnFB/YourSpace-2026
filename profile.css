@@ -1,18 +1,4 @@
-/* CRITICAL OVERFLOW PROTECTION */
-.card, .profile-main, .profile-info-box, .theme-container, 
-.custom-html-container, .music-player, .top10-container, .wall-container,
-.wall-comment, .bio-text, .location-text, h1, h2, h3, p, div {
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  word-break: break-word !important;
-  max-width: 100% !important;
-}
-
-body {
-  overflow-x: hidden !important;
-}
-
-/* profile.css – 50+ PRESET THEMES + YourSpace-style custom HTML injection */
+/* profile.css – 50+ PRESET THEMES + MySpace-style custom HTML injection */
 
 :root {
   --primary: #1a1a1a;
@@ -854,130 +840,249 @@ label {
   .card { padding: 1.5rem; }
   #profilePic { width: 140px; height: 140px; }
 }
+/* DYNAMIC TEXT COLOR FIXES FOR ALL THEMES */
 
-/* LOGIN STREAK DISPLAY */
-.streak-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  color: white;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-  animation: streakGlow 2s ease-in-out infinite;
+/* Dark/Neon themes - force white/bright text */
+body.dark-theme,
+body.neon-theme,
+body.neon-pink,
+body.neon-green,
+body.cyberpunk,
+body.synthwave,
+body.animated-rainbow,
+body.blue-gradient,
+body.red-gradient,
+body.purple-gradient,
+body.orange-gradient,
+body.ocean-gradient,
+body.sunset-gradient,
+body.forest-gradient {
+  color: #ffffff !important;
 }
 
-@keyframes streakGlow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(102, 126, 234, 0.9);
-  }
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme p,
+body.dark-theme label,
+body.dark-theme span,
+body.neon-theme h1,
+body.neon-theme h2,
+body.neon-theme h3,
+body.neon-theme p,
+body.neon-theme label,
+body.neon-theme span,
+body.neon-pink h1,
+body.neon-pink h2,
+body.neon-pink h3,
+body.neon-pink p,
+body.neon-pink label,
+body.neon-pink span,
+body.neon-green h1,
+body.neon-green h2,
+body.neon-green h3,
+body.neon-green p,
+body.neon-green label,
+body.neon-green span,
+body.cyberpunk h1,
+body.cyberpunk h2,
+body.cyberpunk h3,
+body.cyberpunk p,
+body.cyberpunk label,
+body.cyberpunk span,
+body.synthwave h1,
+body.synthwave h2,
+body.synthwave h3,
+body.synthwave p,
+body.synthwave label,
+body.synthwave span,
+body.animated-rainbow h1,
+body.animated-rainbow h2,
+body.animated-rainbow h3,
+body.animated-rainbow p,
+body.animated-rainbow label,
+body.animated-rainbow span,
+body.blue-gradient h1,
+body.blue-gradient h2,
+body.blue-gradient h3,
+body.blue-gradient p,
+body.blue-gradient label,
+body.blue-gradient span,
+body.red-gradient h1,
+body.red-gradient h2,
+body.red-gradient h3,
+body.red-gradient p,
+body.red-gradient label,
+body.red-gradient span,
+body.purple-gradient h1,
+body.purple-gradient h2,
+body.purple-gradient h3,
+body.purple-gradient p,
+body.purple-gradient label,
+body.purple-gradient span,
+body.orange-gradient h1,
+body.orange-gradient h2,
+body.orange-gradient h3,
+body.orange-gradient p,
+body.orange-gradient label,
+body.orange-gradient span,
+body.ocean-gradient h1,
+body.ocean-gradient h2,
+body.ocean-gradient h3,
+body.ocean-gradient p,
+body.ocean-gradient label,
+body.ocean-gradient span,
+body.sunset-gradient h1,
+body.sunset-gradient h2,
+body.sunset-gradient h3,
+body.sunset-gradient p,
+body.sunset-gradient label,
+body.sunset-gradient span,
+body.forest-gradient h1,
+body.forest-gradient h2,
+body.forest-gradient h3,
+body.forest-gradient p,
+body.forest-gradient label,
+body.forest-gradient span {
+  color: #ffffff !important;
 }
 
-.streak-flame {
-  font-size: 3rem;
-  display: block;
-  animation: flameFlicker 1.5s ease-in-out infinite;
+/* Light themes - force dark text */
+body.default-theme,
+body.light-theme,
+body.green-gradient,
+body.pink-gradient,
+body.vaporwave,
+body.cats-paradise {
+  color: #1c1e21 !important;
 }
 
-@keyframes flameFlicker {
-  0%, 100% {
-    transform: scale(1) rotate(-3deg);
-  }
-  50% {
-    transform: scale(1.1) rotate(3deg);
-  }
+body.default-theme h1,
+body.default-theme h2,
+body.default-theme h3,
+body.default-theme p,
+body.default-theme label,
+body.default-theme span,
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme p,
+body.light-theme label,
+body.light-theme span,
+body.green-gradient h1,
+body.green-gradient h2,
+body.green-gradient h3,
+body.green-gradient p,
+body.green-gradient label,
+body.green-gradient span,
+body.pink-gradient h1,
+body.pink-gradient h2,
+body.pink-gradient h3,
+body.pink-gradient p,
+body.pink-gradient label,
+body.pink-gradient span,
+body.vaporwave h1,
+body.vaporwave h2,
+body.vaporwave h3,
+body.vaporwave p,
+body.vaporwave label,
+body.vaporwave span,
+body.cats-paradise h1,
+body.cats-paradise h2,
+body.cats-paradise h3,
+body.cats-paradise p,
+body.cats-paradise label,
+body.cats-paradise span {
+  color: #1c1e21 !important;
 }
 
-.streak-number {
-  font-size: 3.5rem;
-  font-weight: 700;
-  display: block;
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-  animation: streakPulse 1.5s ease-in-out infinite;
+/* Card text colors */
+body.dark-theme .card,
+body.neon-theme .card,
+body.neon-pink .card,
+body.neon-green .card,
+body.cyberpunk .card,
+body.synthwave .card,
+body.animated-rainbow .card {
+  color: #ffffff !important;
 }
 
-@keyframes streakPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+body.default-theme .card,
+body.light-theme .card,
+body.vaporwave .card,
+body.cats-paradise .card {
+  color: #1c1e21 !important;
 }
 
-.streak-label {
-  font-size: 1.3rem;
-  margin-top: 0.5rem;
-  opacity: 0.95;
-  font-weight: 500;
+/* Input text colors */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select,
+body.neon-theme input,
+body.neon-theme textarea,
+body.neon-theme select,
+body.neon-pink input,
+body.neon-pink textarea,
+body.neon-pink select,
+body.neon-green input,
+body.neon-green textarea,
+body.neon-green select,
+body.cyberpunk input,
+body.cyberpunk textarea,
+body.cyberpunk select,
+body.synthwave input,
+body.synthwave textarea,
+body.synthwave select {
+  color: #ffffff !important;
 }
 
-.badge-container {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+body.default-theme input,
+body.default-theme textarea,
+body.default-theme select,
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  color: #1c1e21 !important;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: rgba(255,255,255,0.25);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.3);
-  animation: badgeAppear 0.5s ease-out;
+/* Button text */
+body button,
+body.dark-theme button,
+body.light-theme button {
+  color: inherit;
 }
 
-@keyframes badgeAppear {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Navbar text - always ensure visibility */
+.navbar button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
 }
 
-/* EMERGENCY RESET BUTTON */
-.emergency-reset-btn {
-  background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%) !important;
-  color: white !important;
-  font-weight: 700 !important;
-  font-size: 1.1rem !important;
-  padding: 1rem 2rem !important;
-  border: 3px solid #ff3838 !important;
-  border-radius: 12px !important;
-  cursor: pointer !important;
-  margin: 1rem 0 !important;
-  width: 100% !important;
-  text-align: center !important;
-  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4) !important;
-  transition: all 0.3s ease !important;
-  animation: emergencyPulse 2s infinite !important;
+.navbar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.emergency-reset-btn:hover {
-  background: linear-gradient(135deg, #ff3838 0%, #ff5252 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6) !important;
+/* Post content text */
+.post-card {
+  color: inherit !important;
 }
 
-@keyframes emergencyPulse {
-  0%, 100% {
-    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
-  }
-  50% {
-    box-shadow: 0 4px 25px rgba(255, 71, 87, 0.8);
-  }
+.post-card .post-text,
+.post-card .post-username,
+.post-card .post-time {
+  color: inherit !important;
 }
 
-#resetThemeBtn {
-  background: #ff6b6b !important;
-  color: white !important;
-  font-weight: 600 !important;
-  border: 2px solid #ff5252 !important;
-  margin-top: 0.5rem !important;
+/* Comment text */
+.comment,
+.comment-text,
+.comment-author {
+  color: inherit !important;
 }

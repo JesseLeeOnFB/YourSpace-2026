@@ -2,8 +2,8 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, doc, deleteDoc, getDoc, getDocs,
-  updateDoc, query, where, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
+  getFirestore, collection, addDoc, doc, deleteDoc, getDoc,
+  updateDoc, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
@@ -476,170 +476,16 @@ auth.onAuthStateChanged((user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    // Show dashboard button for all users
+    // Show dashboard for all users
     const dashboardBtn = document.getElementById("dashboardNavBtn");
-    if (dashboardBtn) {
-      dashboardBtn.style.display = "inline-block";
-    }
+    if (dashboardBtn) dashboardBtn.style.display = "inline-block";
     
-    // Show admin button only for Jesse & Danielle
+    // Show admin button only for admins
     if (isAdmin(user.email)) {
       const adminBtn = document.getElementById("adminNavBtn");
-      if (adminBtn) {
-        adminBtn.style.display = "inline-block";
-      }
+      if (adminBtn) adminBtn.style.display = "inline-block";
     }
     
     loadPosts();
-    checkNotificationPermission();
   }
 });
-
-// NOTIFICATION PERMISSION SYSTEM
-async function checkNotificationPermission() {
-  if (!auth.currentUser) return;
-  
-  try {
-    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-    const userData = userDoc.data();
-    
-    // If user hasn't chosen yet, show modal
-    if (userData && userData.notificationsEnabled === undefined) {
-      const modal = document.getElementById("notificationPermissionModal");
-      if (modal) {
-        modal.classList.add("active");
-      }
-    }
-  } catch (err) {
-    console.error("Error checking notification permission:", err);
-  }
-}
-
-// Enable notifications button
-document.getElementById("enableNotificationsBtn")?.addEventListener("click", async () => {
-  try {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      notificationsEnabled: true
-    });
-    document.getElementById("notificationPermissionModal").classList.remove("active");
-    alert("✅ Notifications enabled! You'll be notified of likes and comments.");
-  } catch (err) {
-    console.error("Error enabling notifications:", err);
-    alert("Error enabling notifications. Please try again.");
-  }
-});
-
-// Disable notifications button
-document.getElementById("disableNotificationsBtn")?.addEventListener("click", async () => {
-  try {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      notificationsEnabled: false
-    });
-    document.getElementById("notificationPermissionModal").classList.remove("active");
-  } catch (err) {
-    console.error("Error disabling notifications:", err);
-  }
-});
-
-
-// SEARCH BAR WITH PROFILE PICTURES AND CLEAR BUTTON
-const searchBar = document.getElementById("searchBar");
-const searchResults = document.getElementById("searchResults");
-const clearSearchBtn = document.getElementById("clearSearchBtn");
-
-if (searchBar && searchResults) {
-  searchBar.addEventListener("input", async (e) => {
-    const searchTerm = e.target.value.trim().toLowerCase();
-    
-    // Show/hide clear button
-    if (searchTerm && clearSearchBtn) {
-      clearSearchBtn.style.display = "flex";
-    } else if (clearSearchBtn) {
-      clearSearchBtn.style.display = "none";
-    }
-    
-    if (!searchTerm) {
-      searchResults.style.display = "none";
-      searchResults.innerHTML = "";
-      return;
-    }
-    
-    try {
-      const usersSnapshot = await getDocs(collection(db, "users"));
-      const matchedUsers = [];
-      
-      usersSnapshot.forEach((docSnap) => {
-        const userData = docSnap.data();
-        const username = userData.username || "";
-        if (username.toLowerCase().includes(searchTerm)) {
-          matchedUsers.push({
-            id: docSnap.id,
-            username: username,
-            photoURL: userData.photoURL || "https://via.placeholder.com/50"
-          });
-        }
-      });
-      
-      if (matchedUsers.length > 0) {
-        searchResults.style.display = "block";
-        searchResults.innerHTML = matchedUsers.map(user => `
-          <div class="search-result-item" data-user-id="${user.id}">
-            <img src="${user.photoURL}" alt="${user.username}" class="search-result-avatar">
-            <strong class="search-result-username">${user.username}</strong>
-          </div>
-        `).join("");
-        
-        searchResults.querySelectorAll(".search-result-item").forEach(item => {
-          item.addEventListener("click", () => {
-            const userId = item.getAttribute("data-user-id");
-            window.location.href = `profile.html?userId=${userId}`;
-          });
-        });
-      } else {
-        searchResults.style.display = "block";
-        searchResults.innerHTML = "<div class='no-results'>No users found</div>";
-      }
-    } catch (err) {
-      console.error("Search error:", err);
-    }
-  });
-  
-  // Clear button functionality
-  if (clearSearchBtn) {
-    clearSearchBtn.addEventListener("click", () => {
-      searchBar.value = "";
-      clearSearchBtn.style.display = "none";
-      searchResults.style.display = "none";
-      searchResults.innerHTML = "";
-      searchBar.focus();
-    });
-  }
-  
-  // Close search results when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!searchBar.contains(e.target) && !searchResults.contains(e.target) && !clearSearchBtn.contains(e.target)) {
-      searchResults.style.display = "none";
-    }
-  });
-}
-
-// CLEAR SEARCH BUTTON
-const clearSearchBtn = document.getElementById("clearSearchBtn");
-
-if (searchBar && clearSearchBtn) {
-  searchBar.addEventListener("input", (e) => {
-    if (e.target.value.trim()) {
-      clearSearchBtn.style.display = "block";
-    } else {
-      clearSearchBtn.style.display = "none";
-    }
-  });
-  
-  clearSearchBtn.addEventListener("click", () => {
-    searchBar.value = "";
-    searchResults.style.display = "none";
-    searchResults.innerHTML = "";
-    clearSearchBtn.style.display = "none";
-    searchBar.focus();
-  });
-}

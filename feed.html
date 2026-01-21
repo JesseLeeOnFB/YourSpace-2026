@@ -1,58 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Feed - YourSpace</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourSpace – Feed</title>
   <link rel="stylesheet" href="feed.css">
 </head>
 <body>
   <nav class="navbar">
-    <div class="nav-brand">🌐 YourSpace</div>
-    <button class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <div class="nav-links" id="navLinks">
-      <button id="feedNavBtn">📰 Feed</button>
-      <button id="profileNavBtn">👤 Profile</button>
-      <button id="messagesNavBtn">💬 Messages</button>
-      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
-      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
-      <button id="contactNavBtn">📞 Contact</button>
-      <button id="logoutBtn">🚪 Logout</button>
-    </div>
+    <button id="feedNavBtn">Feed</button>
+    <button id="profileNavBtn">Profile</button>
+    <button id="messagesNavBtn">Messages</button>
+    <button id="dashboardNavBtn" style="display:none;">Dashboard</button>
+    <button id="adminNavBtn" style="display:none;">Admin</button>
+    <button id="contactNavBtn">Contact</button>
+    <button id="logoutBtn">Logout</button>
   </nav>
 
   <main class="feed-container">
-    <div class="search-container">
-      <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
-      <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
-      <div id="searchResults" class="search-results"></div>
-    </div>
+    <h1>Global Feed</h1>
 
     <section class="new-post">
-      <h2>Create Post</h2>
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
-      <input type="file" id="postFileInput" accept="image/*,video/*">
+      <input type="file" id="postFileInput" accept="image/*,video/*" />
       <button id="postBtn">Post</button>
     </section>
 
     <section id="postsContainer"></section>
   </main>
-
-  <div id="notificationPermissionModal" class="modal">
-    <div class="modal-content">
-      <h3>🔔 Enable Notifications?</h3>
-      <p>Get notified when someone likes or comments on your posts!</p>
-      <div class="permission-buttons">
-        <button id="enableNotificationsBtn" class="enable-btn">✅ Enable Notifications</button>
-        <button id="disableNotificationsBtn" class="disable-btn">❌ Not Now</button>
-      </div>
-      <p class="permission-note">You can change this later in your profile settings.</p>
-    </div>
-  </div>
 
   <script type="module" src="feed.js"></script>
 </body>

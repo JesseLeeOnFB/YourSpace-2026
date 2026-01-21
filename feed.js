@@ -217,6 +217,7 @@ async function renderPost(post, postId) {
       <button class="like-btn ${userLiked ? 'active' : ''}" data-id="${postId}">👍 ${likedBy.length}</button>
       <button class="dislike-btn ${userDisliked ? 'active' : ''}" data-id="${postId}">🖕 ${dislikedBy.length}</button>
       <button class="comment-toggle" data-id="${postId}">💬</button>
+      ${!isOwner ? `<button class="gift-btn" data-id="${postId}" data-userid="${post.userId}">🎁 Send Gift</button>` : ""}
       <button class="share-btn" data-id="${postId}">🔗</button>
       ${!isOwner ? `<button class="report-post-btn" data-id="${postId}" data-type="post">🚨 Report</button>` : ""}
       ${isOwner ? `<button class="edit-btn" data-id="${postId}">✏️ Edit</button>` : ""}
@@ -285,6 +286,30 @@ async function renderPost(post, postId) {
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#${postId}`);
     alert("Post link copied!");
   };
+
+  // GIFT BUTTON (Send gift to post creator)
+  const giftBtn = postEl.querySelector(".gift-btn");
+  if (giftBtn) {
+    giftBtn.onclick = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      haptic("medium");
+      
+      const recipientUserId = giftBtn.dataset.userid;
+      
+      // Check if recipient has completed Stripe tax requirements
+      const recipientDoc = await getDoc(doc(db, "users", recipientUserId));
+      const recipientData = recipientDoc.data();
+      
+      if (!recipientData.stripeVerified || !recipientData.stripeTaxComplete) {
+        alert("⚠️ This user hasn't completed their payment setup yet. Gifts can only be sent to verified creators who have completed tax requirements. Your gift would be lost otherwise!");
+        return;
+      }
+      
+      // Show gift selection dialog
+      showGiftDialog(postId, recipientUserId, post.username);
+    };
+  }
 
   // EDIT BUTTON (Post owner only)
   const editBtn = postEl.querySelector(".edit-btn");
@@ -610,7 +635,7 @@ function loadPosts() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// HOURLY TRENDING TOP POST CALCULATION
+// HOURLY TRENDING TOP POST CALCULATION (WITH GIFTS!)
 // ═══════════════════════════════════════════════════════════
 async function calculateTrendingPost(snapshot) {
   try {
@@ -619,7 +644,7 @@ async function calculateTrendingPost(snapshot) {
     let maxEngagement = -1;
     
     // Calculate engagement score for each post from the last hour
-    snapshot.forEach((docSnap) => {
+    for (const docSnap of snapshot.docs) {
       const post = docSnap.data();
       const postTime = post.createdAt?.toMillis() || 0;
       
@@ -629,16 +654,25 @@ async function calculateTrendingPost(snapshot) {
         const dislikes = (post.dislikedBy || []).length;
         const comments = post.commentCount || 0;
         
-        // Engagement score: likes + dislikes + (comments * 2)
-        // Comments weighted more to encourage discussion
-        const engagement = likes + dislikes + (comments * 2);
+        // Get total gifts received for this post
+        let totalGifts = 0;
+        try {
+          const giftsSnapshot = await getDocs(collection(db, "posts", docSnap.id, "gifts"));
+          totalGifts = giftsSnapshot.size;
+        } catch (err) {
+          console.log("No gifts for post:", docSnap.id);
+        }
+        
+        // Enhanced engagement score: likes + dislikes + (comments * 2) + (gifts * 5)
+        // Gifts weighted 5x because they're paid and show strong support!
+        const engagement = likes + dislikes + (comments * 2) + (totalGifts * 5);
         
         if (engagement > maxEngagement) {
           maxEngagement = engagement;
-          topPost = { id: docSnap.id, engagement };
+          topPost = { id: docSnap.id, engagement, gifts: totalGifts };
         }
       }
-    });
+    }
     
     // Clear all trending flags first
     const clearPromises = [];
@@ -659,6 +693,113 @@ async function calculateTrendingPost(snapshot) {
     
   } catch (err) {
     console.error("Error calculating trending post:", err);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// GIFT SENDING SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+const GIFT_TYPES = {
+  coffee: { name: "☕ Coffee", price: 3, icon: "☕" },
+  pizza: { name: "🍕 Pizza", price: 5, icon: "🍕" },
+  flower: { name: "🌹 Flower", price: 10, icon: "🌹" },
+  house: { name: "🏠 House", price: 50, icon: "🏠" },
+  car: { name: "🚗 Car", price: 100, icon: "🚗" },
+  jet: { name: "✈️ Private Jet", price: 500, icon: "✈️" }
+};
+
+function showGiftDialog(postId, recipientUserId, recipientUsername) {
+  const dialog = document.createElement("div");
+  dialog.className = "gift-dialog-overlay";
+  
+  const giftsHtml = Object.keys(GIFT_TYPES).map(key => {
+    const gift = GIFT_TYPES[key];
+    return `
+      <button class="gift-option" data-type="${key}" data-price="${gift.price}">
+        <span class="gift-icon">${gift.icon}</span>
+        <span class="gift-name">${gift.name}</span>
+        <span class="gift-price">$${gift.price}</span>
+      </button>
+    `;
+  }).join("");
+  
+  dialog.innerHTML = `
+    <div class="gift-dialog">
+      <h3>🎁 Send a Gift to ${recipientUsername}</h3>
+      <p class="gift-subtitle">Choose a gift to show your support!</p>
+      <div class="gift-options">
+        ${giftsHtml}
+      </div>
+      <button class="gift-cancel-btn">Cancel</button>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  // Handle gift selection
+  dialog.querySelectorAll(".gift-option").forEach(btn => {
+    btn.onclick = async () => {
+      const giftType = btn.dataset.type;
+      const price = parseFloat(btn.dataset.price);
+      
+      if (confirm(`Send ${GIFT_TYPES[giftType].name} for $${price}?`)) {
+        await sendGift(postId, recipientUserId, giftType, price);
+        document.body.removeChild(dialog);
+      }
+    };
+  });
+  
+  dialog.querySelector(".gift-cancel-btn").onclick = () => {
+    document.body.removeChild(dialog);
+  };
+  
+  dialog.onclick = (e) => {
+    if (e.target === dialog) {
+      document.body.removeChild(dialog);
+    }
+  };
+}
+
+async function sendGift(postId, recipientUserId, giftType, price) {
+  try {
+    const senderDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+    const senderData = senderDoc.data();
+    
+    // Record gift in post's gifts subcollection
+    await addDoc(collection(db, "posts", postId, "gifts"), {
+      senderId: auth.currentUser.uid,
+      senderName: senderData?.username || auth.currentUser.email.split("@")[0],
+      recipientId: recipientUserId,
+      giftType: giftType,
+      price: price,
+      createdAt: serverTimestamp()
+    });
+    
+    // Record gift in recipient's rewards
+    await addDoc(collection(db, "users", recipientUserId, "rewards"), {
+      senderId: auth.currentUser.uid,
+      senderName: senderData?.username || auth.currentUser.email.split("@")[0],
+      postId: postId,
+      giftType: giftType,
+      price: price,
+      createdAt: serverTimestamp()
+    });
+    
+    // Update recipient's total earnings
+    const recipientRef = doc(db, "users", recipientUserId);
+    const recipientDoc = await getDoc(recipientRef);
+    const currentEarnings = recipientDoc.data().totalEarnings || 0;
+    await updateDoc(recipientRef, {
+      totalEarnings: currentEarnings + price
+    });
+    
+    alert(`🎁 Gift sent successfully! ${GIFT_TYPES[giftType].icon} ${GIFT_TYPES[giftType].name}`);
+    haptic("success");
+    
+  } catch (err) {
+    console.error("Error sending gift:", err);
+    alert("Error sending gift. Please try again.");
   }
 }
 

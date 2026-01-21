@@ -106,6 +106,101 @@ async function initProfile() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// PROFILE BADGES & ACHIEVEMENTS SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+async function calculateAndDisplayBadges(userId) {
+  try {
+    const badges = [];
+    
+    // Get user data
+    const userDoc = await getDoc(doc(db, "users", userId));
+    const userData = userDoc.data();
+    
+    // Get user's posts count
+    const postsSnapshot = await getDocs(query(collection(db, "posts"), where("userId", "==", userId)));
+    const postCount = postsSnapshot.size;
+    
+    // Get total gifts received
+    let totalGifts = 0;
+    try {
+      const rewardsSnapshot = await getDocs(collection(db, "users", userId, "rewards"));
+      totalGifts = rewardsSnapshot.size;
+    } catch (err) {
+      console.log("No rewards yet");
+    }
+    
+    // Get login streak
+    const loginStreak = userData?.loginStreak || 0;
+    
+    // Get total earnings
+    const totalEarnings = userData?.totalEarnings || 0;
+    
+    // BADGE CRITERIA
+    if (postCount >= 1) badges.push({ icon: "📝", name: "First Post", description: "Posted your first content!" });
+    if (postCount >= 10) badges.push({ icon: "✍️", name: "Active Poster", description: "Created 10 posts" });
+    if (postCount >= 50) badges.push({ icon: "🏆", name: "Content Creator", description: "50+ posts created!" });
+    if (postCount >= 100) badges.push({ icon: "🌟", name: "Prolific Creator", description: "100+ posts! Amazing!" });
+    
+    if (totalGifts >= 1) badges.push({ icon: "🎁", name: "First Gift", description: "Received your first gift!" });
+    if (totalGifts >= 5) badges.push({ icon: "💝", name: "Gift Collector", description: "5 gifts received" });
+    if (totalGifts >= 20) badges.push({ icon: "👑", name: "Gift Royalty", description: "20+ gifts received!" });
+    
+    if (loginStreak >= 3) badges.push({ icon: "🔥", name: "3-Day Streak", description: "3 consecutive logins" });
+    if (loginStreak >= 7) badges.push({ icon: "⚡", name: "Week Warrior", description: "7-day login streak!" });
+    if (loginStreak >= 14) badges.push({ icon: "💪", name: "Two Week Champion", description: "14-day streak!" });
+    if (loginStreak >= 30) badges.push({ icon: "🏅", name: "Monthly Master", description: "30-day streak! Legendary!" });
+    
+    if (totalEarnings >= 10) badges.push({ icon: "💰", name: "First Earnings", description: "$10+ earned" });
+    if (totalEarnings >= 50) badges.push({ icon: "💵", name: "Rising Star", description: "$50+ earned" });
+    if (totalEarnings >= 100) badges.push({ icon: "💸", name: "Money Maker", description: "$100+ earned!" });
+    if (totalEarnings >= 500) badges.push({ icon: "🤑", name: "Top Earner", description: "$500+ earned! Elite!" });
+    
+    // Display badges
+    displayBadges(badges);
+    
+  } catch (err) {
+    console.error("Error calculating badges:", err);
+  }
+}
+
+function displayBadges(badges) {
+  let badgeContainer = document.getElementById("badgeContainer");
+  
+  if (!badgeContainer) {
+    // Create badge container if it doesn't exist
+    badgeContainer = document.createElement("div");
+    badgeContainer.id = "badgeContainer";
+    badgeContainer.className = "badge-container card";
+    
+    // Insert after bio section
+    const bioSection = document.querySelector(".bio-section");
+    if (bioSection) {
+      bioSection.after(badgeContainer);
+    }
+  }
+  
+  if (badges.length === 0) {
+    badgeContainer.innerHTML = "<h3>🏆 Badges</h3><p style='text-align:center;color:#65676b;padding:1rem;'>No badges yet. Keep posting, earning gifts, and logging in daily!</p>";
+    return;
+  }
+  
+  const badgesHtml = badges.map(badge => `
+    <div class="badge-item" title="${badge.description}">
+      <span class="badge-icon">${badge.icon}</span>
+      <span class="badge-name">${badge.name}</span>
+    </div>
+  `).join("");
+  
+  badgeContainer.innerHTML = `
+    <h3>🏆 Badges (${badges.length})</h3>
+    <div class="badges-grid">
+      ${badgesHtml}
+    </div>
+  `;
+}
+
 async function loadProfile() {
   const userDoc = await getDoc(doc(db, "users", viewingUserId));
   if (!userDoc.exists()) {
@@ -167,6 +262,9 @@ async function loadProfile() {
   if (data.topFriends) {
     renderTopFriends(data.topFriends);
   }
+
+  // Load and display badges
+  await calculateAndDisplayBadges(viewingUserId);
 
   loadComments();
 }

@@ -1,244 +1,206 @@
-// notifications.js - Notifications Page
+// notifications.js - Complete working version
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
 import {
-  getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, onSnapshot
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, getDocs
+} from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
+import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+apiKey: “AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8”,
+authDomain: “yourspace-2026.firebaseapp.com”,
+projectId: “yourspace-2026”,
+storageBucket: “yourspace-2026.firebasestorage.app”,
+messagingSenderId: “72667267302”,
+appId: “1:72667267302:web:2bed5f543e05d49ca8fb27”
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
-
-function isAdmin(email) {
-  return ADMIN_EMAILS.includes(email.toLowerCase());
-}
+const ADMIN_EMAILS = [“skeeterjeeter8@gmail.com”, “daniellehunt01@gmail.com”];
 
 // Navigation
-document.getElementById("feedNavBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
+document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “feed.html”;
 });
 
-document.getElementById("profileNavBtn")?.addEventListener("click", () => {
-  window.location.href = "profile.html";
+document.getElementById(“profileNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “profile.html”;
 });
 
-document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
-  window.location.href = "messages.html";
+document.getElementById(“messagesNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “messages.html”;
 });
 
-document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
-  window.location.href = "notifications.html";
+document.getElementById(“notificationsNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “notifications.html”;
 });
 
-document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
-  window.location.href = "dashboard.html";
+document.getElementById(“dashboardNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “dashboard.html”;
 });
 
-document.getElementById("adminNavBtn")?.addEventListener("click", () => {
-  window.location.href = "admin.html";
+document.getElementById(“adminNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “admin.html”;
 });
 
-document.getElementById("contactNavBtn")?.addEventListener("click", () => {
-  window.location.href = "contact.html";
+document.getElementById(“contactNavBtn”)?.addEventListener(“click”, () => {
+window.location.href = “contact.html”;
 });
 
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
+document.getElementById(“logoutBtn”)?.addEventListener(“click”, async () => {
+await signOut(auth);
+window.location.href = “login.html”;
 });
 
 // Hamburger menu
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-if (hamburger) {
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
-}
+const hamburger = document.getElementById(“hamburger”);
+const navLinks = document.getElementById(“navLinks”);
 
-// Current filter
-let currentFilter = "all";
-
-// Tab switching
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentFilter = btn.dataset.tab;
-    loadNotifications();
-  });
+if (hamburger && navLinks) {
+hamburger.addEventListener(“click”, () => {
+hamburger.classList.toggle(“active”);
+navLinks.classList.toggle(“active”);
 });
 
-// Mark all as read
-document.getElementById("markAllReadBtn").addEventListener("click", async () => {
-  if (!auth.currentUser) return;
-  
-  try {
-    const notificationsQuery = query(
-      collection(db, "users", auth.currentUser.uid, "notifications"),
-      where("read", "==", false)
-    );
-    const snapshot = await getDocs(notificationsQuery);
-    
-    const promises = [];
-    snapshot.forEach((docSnap) => {
-      promises.push(updateDoc(docSnap.ref, { read: true }));
-    });
-    
-    await Promise.all(promises);
-    loadNotifications();
-  } catch (err) {
-    console.error("Error marking all read:", err);
-  }
+navLinks.querySelectorAll(“button”).forEach(button => {
+button.addEventListener(“click”, () => {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
+});
 });
 
-async function loadNotifications() {
-  if (!auth.currentUser) return;
-  
-  const notificationsList = document.getElementById("notificationsList");
-  
-  try {
-    let q = query(
-      collection(db, "users", auth.currentUser.uid, "notifications"),
-      orderBy("createdAt", "desc")
-    );
-    
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.empty) {
-      notificationsList.innerHTML = '<p class="empty-state">No notifications yet. Start engaging with posts!</p>';
-      return;
-    }
-    
-    notificationsList.innerHTML = "";
-    
-    snapshot.forEach((docSnap) => {
-      const notif = docSnap.data();
-      
-      // Filter by type
-      if (currentFilter !== "all") {
-        if (currentFilter === "likes" && notif.type !== "like") return;
-        if (currentFilter === "comments" && notif.type !== "comment") return;
-        if (currentFilter === "gifts" && notif.type !== "gift") return;
-      }
-      
-      renderNotification(notif, docSnap.id);
-    });
-    
-  } catch (err) {
-    console.error("Error loading notifications:", err);
-    notificationsList.innerHTML = '<p class="empty-state">Error loading notifications</p>';
-  }
+document.addEventListener(“click”, (e) => {
+if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+hamburger.classList.remove(“active”);
+navLinks.classList.remove(“active”);
+}
+});
 }
 
-function renderNotification(notif, notifId) {
-  const notificationsList = document.getElementById("notificationsList");
-  
-  const item = document.createElement("div");
-  item.className = `notification-item ${!notif.read ? 'unread' : ''}`;
-  
-  let iconClass = "like";
-  let iconEmoji = "👍";
-  if (notif.type === "comment") {
-    iconClass = "comment";
-    iconEmoji = "💬";
-  } else if (notif.type === "gift") {
-    iconClass = "gift";
-    iconEmoji = "🎁";
-  } else if (notif.type === "dislike") {
-    iconClass = "like";
-    iconEmoji = "🖕";
-  }
-  
-  const time = notif.createdAt ? timeAgo(notif.createdAt.toMillis()) : "just now";
-  
-  item.innerHTML = `
-    <div class="notification-icon ${iconClass}">
-      ${iconEmoji}
+// Load notifications
+function loadNotifications(userId) {
+const notificationsRef = collection(db, “users”, userId, “notifications”);
+const q = query(notificationsRef, orderBy(“createdAt”, “desc”));
+
+onSnapshot(q, (snapshot) => {
+const notificationsList = document.getElementById(“notificationsList”);
+notificationsList.innerHTML = “”;
+
+```
+if (snapshot.empty) {
+  notificationsList.innerHTML = `
+    <div class="no-notifications">
+      <div class="no-notifications-icon">🔔</div>
+      <p>No notifications yet</p>
     </div>
+  `;
+  return;
+}
+
+snapshot.forEach((docSnap) => {
+  const notification = docSnap.data();
+  const notifId = docSnap.id;
+  
+  const notifEl = document.createElement("div");
+  notifEl.className = `notification-item ${!notification.read ? 'unread' : ''}`;
+  
+  const iconMap = {
+    like: "❤️",
+    comment: "💬",
+    gift: "🎁",
+    follow: "👤",
+    mention: "🏷️"
+  };
+  
+  const icon = iconMap[notification.type] || "🔔";
+  const timeAgo = getTimeAgo(notification.createdAt);
+  
+  notifEl.innerHTML = `
+    <div class="notification-icon">${icon}</div>
+    <img src="${notification.fromUserPhoto || 'https://via.placeholder.com/50'}" 
+         alt="${notification.fromUsername}" 
+         class="notification-avatar" />
     <div class="notification-content">
-      <p class="notification-text">
-        <strong>${notif.senderName || "Someone"}</strong> ${notif.message || "interacted with your post"}
-      </p>
-      <p class="notification-time">${time}</p>
-    </div>
-    <div class="notification-actions">
-      ${!notif.read ? '<div class="read-indicator"></div>' : ''}
-      <button class="delete-notif-btn" data-id="${notifId}">🗑️</button>
+      <div class="notification-text">
+        <strong>${notification.fromUsername || 'Someone'}</strong> ${notification.text || 'interacted with your post'}
+      </div>
+      <div class="notification-time">${timeAgo}</div>
     </div>
   `;
   
-  // Mark as read when clicked
-  item.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("delete-notif-btn")) return;
-    
-    if (!notif.read) {
-      await updateDoc(doc(db, "users", auth.currentUser.uid, "notifications", notifId), {
+  // Click to mark as read and navigate
+  notifEl.addEventListener("click", async () => {
+    if (!notification.read) {
+      await updateDoc(doc(db, "users", userId, "notifications", notifId), {
         read: true
       });
-      item.classList.remove("unread");
-      item.querySelector(".read-indicator")?.remove();
     }
     
-    // Navigate to post if postId exists
-    if (notif.postId) {
-      window.location.href = `feed.html#${notif.postId}`;
+    // Navigate based on type
+    if (notification.postId) {
+      window.location.href = `feed.html#post-${notification.postId}`;
+    } else if (notification.fromUserId) {
+      window.location.href = `profile.html?uid=${notification.fromUserId}`;
     }
   });
   
-  // Delete button
-  item.querySelector(".delete-notif-btn").addEventListener("click", async (e) => {
-    e.stopPropagation();
-    if (confirm("Delete this notification?")) {
-      await deleteDoc(doc(db, "users", auth.currentUser.uid, "notifications", notifId));
-      item.remove();
-    }
-  });
-  
-  notificationsList.appendChild(item);
+  notificationsList.appendChild(notifEl);
+});
+```
+
+});
 }
 
-function timeAgo(timestamp) {
-  const now = Date.now();
-  const diffMs = now - timestamp;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-  
-  if (diffMins < 1) return "just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return `${Math.floor(diffDays / 7)}w ago`;
+// Mark all as read
+document.getElementById(“markAllReadBtn”)?.addEventListener(“click”, async () => {
+const userId = auth.currentUser.uid;
+const notificationsRef = collection(db, “users”, userId, “notifications”);
+const snapshot = await getDocs(notificationsRef);
+
+const updatePromises = [];
+snapshot.forEach((docSnap) => {
+if (!docSnap.data().read) {
+updatePromises.push(
+updateDoc(doc(db, “users”, userId, “notifications”, docSnap.id), {
+read: true
+})
+);
+}
+});
+
+await Promise.all(updatePromises);
+alert(“All notifications marked as read!”);
+});
+
+// Helper function
+function getTimeAgo(timestamp) {
+if (!timestamp) return “just now”;
+
+const now = new Date();
+const then = timestamp.toMillis ? new Date(timestamp.toMillis()) : new Date(timestamp);
+const diffMs = now - then;
+const diffMins = Math.floor(diffMs / 60000);
+const diffHours = Math.floor(diffMs / 3600000);
+const diffDays = Math.floor(diffMs / 86400000);
+
+if (diffMins < 1) return “just now”;
+if (diffMins < 60) return `${diffMins}m ago`;
+if (diffHours < 24) return `${diffHours}h ago`;
+if (diffDays < 7) return `${diffDays}d ago`;
+return then.toLocaleDateString();
 }
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    // Show dashboard for all users
-    const dashboardBtn = document.getElementById("dashboardNavBtn");
-    if (dashboardBtn) dashboardBtn.style.display = "inline-block";
-    
-    // Show admin button only for admins
-    if (isAdmin(user.email)) {
-      const adminBtn = document.getElementById("adminNavBtn");
-      if (adminBtn) adminBtn.style.display = "inline-block";
-    }
-    
-    loadNotifications();
-  }
+// Auth
+auth.onAuthStateChanged((user) => {
+if (!user) {
+window.location.href = “login.html”;
+} else {
+if (ADMIN_EMAILS.includes(user.email?.toLowerCase())) {
+document.getElementById(“adminNavBtn”).style.display = “inline-block”;
+}
+loadNotifications(user.uid);
+}
 });

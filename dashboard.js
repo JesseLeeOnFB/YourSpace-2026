@@ -1,8 +1,8 @@
-// dashboard.js - COMPLETE WITH FIXED NAVIGATION
+// dashboard.js - Complete with payment setup
 
 import { initializeApp } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js”;
 import {
-getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, limit
+getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, limit, updateDoc
 } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js”;
 import { getAuth, signOut } from “https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js”;
 
@@ -25,7 +25,7 @@ function isAdmin(email) {
 return ADMIN_EMAILS.includes(email?.toLowerCase());
 }
 
-// Navigation handlers
+// Navigation
 document.getElementById(“feedNavBtn”)?.addEventListener(“click”, () => {
 window.location.href = “feed.html”;
 });
@@ -84,7 +84,67 @@ navLinks.classList.remove(“active”);
 });
 }
 
-// Load dashboard data
+// Save payment info
+document.getElementById(“savePaymentInfoBtn”)?.addEventListener(“click”, async () => {
+const fullName = document.getElementById(“stripeFullName”).value.trim();
+const email = document.getElementById(“stripeEmail”).value.trim();
+const paypal = document.getElementById(“stripePaypal”).value.trim();
+const taxId = document.getElementById(“stripeTaxId”).value.trim();
+
+if (!fullName || !email || !paypal) {
+alert(“Please fill in all required fields (Name, Email, PayPal/Venmo)”);
+return;
+}
+
+if (!email.includes(”@”)) {
+alert(“Please enter a valid email address”);
+return;
+}
+
+try {
+const userRef = doc(db, “users”, auth.currentUser.uid);
+await updateDoc(userRef, {
+paymentInfo: {
+fullName,
+email,
+paypal,
+taxId,
+setupAt: new Date()
+},
+stripeVerified: true,
+stripeTaxComplete: taxId ? true : false
+});
+
+```
+alert("✅ Payment information saved successfully!");
+loadDashboard(auth.currentUser.uid);
+```
+
+} catch (error) {
+console.error(“Error saving payment info:”, error);
+alert(“Error saving payment info: “ + error.message);
+}
+});
+
+// Update payment info
+document.getElementById(“updatePaymentInfoBtn”)?.addEventListener(“click”, () => {
+document.getElementById(“stripeSetup”).style.display = “none”;
+document.getElementById(“stripeNotSetup”).style.display = “block”;
+
+// Load existing info
+const userRef = doc(db, “users”, auth.currentUser.uid);
+getDoc(userRef).then(userDoc => {
+const paymentInfo = userDoc.data()?.paymentInfo;
+if (paymentInfo) {
+document.getElementById(“stripeFullName”).value = paymentInfo.fullName || “”;
+document.getElementById(“stripeEmail”).value = paymentInfo.email || “”;
+document.getElementById(“stripePaypal”).value = paymentInfo.paypal || “”;
+document.getElementById(“stripeTaxId”).value = paymentInfo.taxId || “”;
+}
+});
+});
+
+// Load dashboard
 async function loadDashboard(userId) {
 try {
 const userRef = doc(db, “users”, userId);
@@ -99,9 +159,9 @@ if (!userDoc.exists()) {
 const userData = userDoc.data();
 const totalEarnings = userData.totalEarnings || 0;
 const stripeVerified = userData.stripeVerified || false;
-const stripeTaxComplete = userData.stripeTaxComplete || false;
+const paymentInfo = userData.paymentInfo;
 
-// Update earnings display
+// Update earnings
 document.getElementById("totalEarnings").textContent = `$${totalEarnings.toFixed(2)}`;
 document.getElementById("pendingPayout").textContent = `$${totalEarnings.toFixed(2)}`;
 
@@ -126,10 +186,12 @@ if (lastPayoutDate) {
 
 document.getElementById("daysUntilPayout").textContent = daysUntilPayout;
 
-// Show/hide Stripe setup
-if (stripeVerified && stripeTaxComplete) {
-  document.getElementById("stripeNotVerified").style.display = "none";
-  document.getElementById("stripeVerified").style.display = "block";
+// Show payment setup or info
+if (stripeVerified && paymentInfo) {
+  document.getElementById("stripeNotSetup").style.display = "none";
+  document.getElementById("stripeSetup").style.display = "block";
+  
+  document.getElementById("paymentEmail").textContent = paymentInfo.email || "-";
   
   // Calculate next payout date
   const nextPayoutDate = new Date();
@@ -137,8 +199,8 @@ if (stripeVerified && stripeTaxComplete) {
   document.getElementById("nextPayoutDate").textContent = nextPayoutDate.toLocaleDateString();
   document.getElementById("nextPayoutAmount").textContent = `$${totalEarnings.toFixed(2)}`;
 } else {
-  document.getElementById("stripeNotVerified").style.display = "block";
-  document.getElementById("stripeVerified").style.display = "none";
+  document.getElementById("stripeNotSetup").style.display = "block";
+  document.getElementById("stripeSetup").style.display = "none";
 }
 
 // Load recent gifts
@@ -147,7 +209,7 @@ await loadRecentGifts(userId);
 
 } catch (error) {
 console.error(“Error loading dashboard:”, error);
-alert(“Error loading dashboard data”);
+alert(“Error loading dashboard: “ + error.message);
 }
 }
 
@@ -209,25 +271,15 @@ console.error(“Error loading gifts:”, error);
 }
 }
 
-// Stripe setup button
-document.getElementById(“stripeSetupBtn”)?.addEventListener(“click”, () => {
-alert(“🔒 Stripe integration coming soon! This will redirect you to complete Stripe Connect onboarding and tax information.”);
-});
-
-// Auth state
+// Auth
 auth.onAuthStateChanged((user) => {
 if (!user) {
 window.location.href = “login.html”;
 } else {
-// Show admin button if user is admin
 if (isAdmin(user.email)) {
 const adminBtn = document.getElementById(“adminNavBtn”);
 if (adminBtn) adminBtn.style.display = “inline-block”;
 }
-
-```
 loadDashboard(user.uid);
-```
-
 }
 });

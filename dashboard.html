@@ -139,6 +139,35 @@
   margin-bottom: 1.5rem;
   color: orange;
 }
+
+.stripe-form {
+  background: #0a0a0a;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.stripe-form input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.stripe-form input:focus {
+  outline: none;
+  border-color: #00ff00;
+}
+
+.stripe-form label {
+  color: #999;
+  display: block;
+  margin-bottom: 0.5rem;
+}
 ```
 
   </style>
@@ -201,24 +230,46 @@
 <div class="payout-section">
   <h2>💳 Payout Information</h2>
   
-  <div id="stripeNotVerified" style="display:none;">
+  <div id="stripeNotSetup">
     <div class="warning-box">
-      ⚠️ <strong>Setup Required:</strong> You need to complete Stripe verification and tax information to receive payouts.
+      ⚠️ <strong>Setup Required:</strong> Add your payment information to receive earnings.
     </div>
-    <button class="stripe-setup-btn" id="stripeSetupBtn">
-      <span>🔒</span> Complete Stripe Setup
-    </button>
+    
+    <div class="stripe-form">
+      <h3 style="color:#00ff00;margin-bottom:1rem;">Enter Payment Info</h3>
+      
+      <label>Full Name</label>
+      <input type="text" id="stripeFullName" placeholder="John Doe" />
+      
+      <label>Email for Payouts</label>
+      <input type="email" id="stripeEmail" placeholder="you@example.com" />
+      
+      <label>PayPal Email (or Venmo username)</label>
+      <input type="text" id="stripePaypal" placeholder="paypal@example.com or @venmo" />
+      
+      <label>Tax ID (SSN or EIN) - Optional</label>
+      <input type="text" id="stripeTaxId" placeholder="XXX-XX-XXXX (for tax reporting)" />
+      
+      <button class="stripe-setup-btn" id="savePaymentInfoBtn">
+        <span>💾</span> Save Payment Information
+      </button>
+    </div>
   </div>
   
-  <div id="stripeVerified" style="display:none;">
+  <div id="stripeSetup" style="display:none;">
     <div class="verified-badge">
-      ✅ Stripe Verified & Ready for Payouts
+      ✅ Payment Info Saved - Ready for Payouts!
     </div>
     
     <div class="payout-info" style="margin-top:1.5rem;">
       <div class="payout-item">
+        <label>Payment Email</label>
+        <div class="value" id="paymentEmail">-</div>
+      </div>
+      
+      <div class="payout-item">
         <label>Next Payout Date</label>
-        <div class="value" id="nextPayoutDate">Loading...</div>
+        <div class="value" id="nextPayoutDate">-</div>
       </div>
       
       <div class="payout-item">
@@ -228,24 +279,23 @@
       
       <div class="payout-item">
         <label>Payout Method</label>
-        <div class="value">Stripe</div>
-      </div>
-      
-      <div class="payout-item">
-        <label>Payout Frequency</label>
-        <div class="value">Every 14 Days</div>
+        <div class="value">Manual Transfer</div>
       </div>
     </div>
     
     <div style="margin-top:1.5rem;padding:1rem;background:#0a0a0a;border-radius:8px;">
       <h3 style="color:#00ff00;margin-bottom:0.5rem;">💡 How Payouts Work</h3>
       <ul style="color:#999;line-height:1.8;">
-        <li>Payouts are processed every 14 days automatically</li>
+        <li>Payouts processed every 14 days to your PayPal/Venmo</li>
         <li>Minimum payout amount: $10.00</li>
-        <li>Stripe fees: 2.9% + $0.30 per transaction</li>
-        <li>Funds typically arrive in 2-3 business days</li>
+        <li>Earnings from gifts sent to your account</li>
+        <li>Contact support if payout doesn't arrive within 3 business days</li>
       </ul>
     </div>
+
+    <button class="stripe-setup-btn" id="updatePaymentInfoBtn" style="margin-top:1rem;background:#666;">
+      <span>✏️</span> Update Payment Info
+    </button>
   </div>
 </div>
 

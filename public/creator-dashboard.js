@@ -3,6 +3,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs, limit, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -16,6 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const functions = getFunctions(app);
 
 // Navigation
 document.getElementById("feedBtn").onclick = () => window.location.href = "feed.html";
@@ -72,11 +74,82 @@ async function loadDashboard(userId) {
       document.getElementById("grassCount").textContent = rewards.grass || 0;
       document.getElementById("jetCount").textContent = rewards.jet || 0;
 
-      // ... rest of your existing loadDashboard code (next payout calc, recent gifts, etc.)
+      // Load recent rewards
+      const recentRewardsList = document.getElementById("recentRewardsList");
+      recentRewardsList.innerHTML = "";
+      const rewardsQuery = query(collection(db, "rewards"), where("toUserId", "==", userId), orderBy("createdAt", "desc"), limit(10));
+      const rewardsSnapshot = await getDocs(rewardsQuery);
+      if (rewardsSnapshot.empty) {
+        recentRewardsList.innerHTML = "<p class='no-rewards'>No rewards received yet</p>";
+      } else {
+        rewardsSnapshot.forEach((doc) => {
+          const reward = doc.data();
+          const item = document.createElement("div");
+          item.className = "reward-history-item";
+          item.innerHTML = `
+            <div class="reward-history-info">
+              <span class="reward-history-icon">${getRewardIcon(reward.type)}</span>
+              <strong>$${reward.amount.toFixed(2)}</strong>
+            </div>
+            <span class="reward-history-time">${new Date(reward.createdAt.toMillis()).toLocaleString()}</span>
+          `;
+          recentRewardsList.appendChild(item);
+        });
+      }
+      checkStripeConnection(userId);
     }
   } catch (error) {
     console.error("Error loading dashboard:", error);
   }
 }
 
-// ... rest of your file remains unchanged
+// Stripe setup
+async function checkStripeConnection(userId) {
+  try {
+    const checkConnectStatus = httpsCallable(functions, 'checkConnectStatus');
+    const result = await checkConnectStatus();
+    const status = result.data.status;
+    const stripeStatus = document.getElementById("stripeStatus");
+    const stripeBtn = document.getElementById("stripeConnectBtn");
+
+    if (status === "active") {
+      stripeStatus.textContent = "Connected";
+      stripeStatus.className = "setup-status connected";
+      stripeBtn.disabled = true;
+      stripeBtn.textContent = "Connected";
+    } else {
+      stripeStatus.textContent = "Not connected";
+      stripeStatus.className = "setup-status not-connected";
+      stripeBtn.onclick = async () => {
+        try {
+          const createConnectAccount = httpsCallable(functions, 'createConnectAccount');
+          const result = await createConnectAccount({ email: auth.currentUser.email });
+          window.location.href = result.data.url;
+        } catch (error) {
+          alert("Error starting Stripe setup: " + error.message);
+        }
+      };
+    }
+  } catch (error) {
+    console.error("Error checking Stripe status:", error);
+  }
+}
+
+function getRewardIcon(rewardType) {
+  const icons = {
+    house: "🏠",
+    car: "🚗",
+    truck: "🚚",
+    minivan: "🚐",
+    puppy: "🐶",
+    cat: "🐱",
+    grass: "🌱",
+    jet: "✈️"
+  };
+  return icons[rewardType] || "🎁";
+}
+
+// Download tax forms button
+document.getElementById("downloadTaxBtn").onclick = () => {
+  alert("Tax forms will be available through your Stripe dashboard after your first payout. Stripe automatically handles 1099 generation and IRS filing.");
+};

@@ -46,36 +46,34 @@
       </div>
     </div>
 
-    <div class="messages-main">
-      <!-- Empty State -->
-      <div id="emptyState" class="empty-state">
-        <h2>💬 Your Messages</h2>
-        <p>Search for a user to start a conversation</p>
+    <!-- Empty State -->
+    <div id="emptyState">
+      <h2>Start a Conversation</h2>
+      <p>Search for a user to start a conversation</p>
+    </div>
+
+    <!-- Active Chat -->
+    <div id="chatSection" style="display:none;">
+      <div class="chat-header">
+        <div class="chat-user-info">
+          <img id="chatUserAvatar" src="default-avatar.png" alt="Avatar">
+          <div>
+            <h3 id="chatWith">Username</h3>
+            <span class="status">Active</span>
+          </div>
+        </div>
+        <button id="closeChatBtn">✕</button>
       </div>
 
-      <!-- Active Chat -->
-      <div id="chatSection" style="display:none;">
-        <div class="chat-header">
-          <div class="chat-user-info">
-            <img id="chatUserAvatar" src="default-avatar.png" alt="Avatar">
-            <div>
-              <h3 id="chatWith">Username</h3>
-              <span class="status">Active</span>
-            </div>
-          </div>
-          <button id="closeChatBtn">✕</button>
-        </div>
+      <div id="chatMessages" class="chat-messages"></div>
 
-        <div id="chatMessages" class="chat-messages"></div>
-
-        <div class="message-input-section">
-          <div class="message-actions">
-            <button id="selectAllBtn" title="Select All">☑️</button>
-            <button id="deleteSelectedBtn" title="Delete Selected" style="display:none;">🗑️</button>
-          </div>
-          <textarea id="messageInput" placeholder="Type a message..." rows="2"></textarea>
-          <button id="sendMessageBtn">Send</button>
+      <div class="message-input-section">
+        <div class="message-actions">
+          <button id="selectAllBtn" title="Select All">☑️</button>
+          <button id="deleteSelectedBtn" title="Delete Selected" style="display:none;">🗑️</button>
         </div>
+        <textarea id="messageInput" placeholder="Type a message..." rows="2"></textarea>
+        <button id="sendMessageBtn">Send</button>
       </div>
     </div>
   </div>

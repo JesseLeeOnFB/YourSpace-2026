@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator Dashboard - YourSpace</title>
+  <link rel="stylesheet" href="creator-dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <button id="feedBtn">Feed</button>
+    <button id="profileBtn">Profile</button>
+    <button id="dashboardBtn" class="active">Dashboard</button>
+    <button id="messagesBtn">Messages</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1>💰 Creator Dashboard</h1>
+      <p class="subtitle">Track your earnings and rewards</p>
+    </header>
+
+    <!-- EARNINGS SUMMARY -->
+    <section class="earnings-summary">
+      <div class="summary-card">
+        <div class="card-icon">💵</div>
+        <h3>Total Earned</h3>
+        <p class="amount" id="totalEarned">$0.00</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon">⏳</div>
+        <h3>Pending Payout</h3>
+        <p class="amount" id="pendingPayout">$0.00</p>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon">🏦</div>
+        <h3>Next Payout</h3>
+        <p class="next-payout" id="nextPayout">Not scheduled</p>
+        <p class="payout-note">Minimum $25 threshold</p>
+      </div>
+    </section>
+
+    <!-- REWARD MAP / TROPHY SCREEN -->
+    <section class="reward-map">
+      <h2>🏆 Your Reward Collection</h2>
+      <p class="map-subtitle">Watch your virtual portfolio grow!</p>
+
+      <div class="rewards-grid">
+        <div class="reward-display">
+          <div class="reward-icon-large">🏠</div>
+          <h3>Houses</h3>
+          <p class="reward-count" id="houseCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🚗</div>
+          <h3>Cars</h3>
+          <p class="reward-count" id="carCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🚚</div>
+          <h3>Trucks</h3>
+          <p class="reward-count" id="truckCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🚐</div>
+          <h3>Mini Vans</h3>
+          <p class="reward-count" id="minivanCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🐶</div>
+          <h3>Puppies</h3>
+          <p class="reward-count" id="puppyCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🐱</div>
+          <h3>Cats</h3>
+          <p class="reward-count" id="catCount">0</p>
+        </div>
+
+        <div class="reward-display">
+          <div class="reward-icon-large">🌱</div>
+          <h3>Grass</h3>
+          <p class="reward-count" id="grassCount">0</p>
+        </div>
+
+        <div class="reward-display ultimate-reward">
+          <div class="reward-icon-large">✈️</div>
+          <h3>Private Jets</h3>
+          <p class="reward-count" id="jetCount">0</p>
+          <span class="ultimate-label">🏆 ULTIMATE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAYOUT HISTORY -->
+    <section class="payout-history">
+      <h2>📊 Payout History</h2>
+      <div class="history-container" id="payoutHistory">
+        <p class="no-history">No payouts yet. Keep creating!</p>
+      </div>
+    </section>
+
+    <!-- RECENT REWARDS -->
+    <section class="recent-rewards">
+      <h2>🎁 Recent Rewards Received</h2>
+      <div class="rewards-list" id="recentRewardsList">
+        <p class="no-rewards">No rewards received yet</p>
+      </div>
+    </section>
+
+    <!-- STRIPE CONNECT SETUP -->
+    <section class="stripe-setup">
+      <h2>💳 Payment Setup</h2>
+      <div class="setup-card">
+        <div class="setup-icon">🔗</div>
+        <h3>Connect Stripe Account</h3>
+        <p>Set up automatic payouts with Stripe Connect. Required to receive earnings.</p>
+        <button id="stripeConnectBtn" class="stripe-btn">Connect Stripe</button>
+        <p class="setup-status" id="stripeStatus">Not connected</p>
+      </div>
+    </section>
+
+    <!-- TAX INFO -->
+    <section class="tax-info">
+      <h2>📋 Tax Information</h2>
+      <div class="info-card">
+        <p><strong>Important:</strong> YourSpace uses Stripe Connect to handle creator payouts and tax reporting.</p>
+        <ul>
+          <li>Stripe automatically generates 1099-K/1099-NEC forms for U.S. creators</li>
+          <li>Forms are filed with the IRS on your behalf</li>
+          <li>You'll provide tax info (SSN/EIN) through Stripe during setup</li>
+          <li>Download tax documents directly from your Stripe dashboard</li>
+        </ul>
+        <button id="downloadTaxBtn" class="download-btn" disabled>Download Tax Forms (Available after payout)</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="creator-dashboard.js"></script>
+</body>
+</html>

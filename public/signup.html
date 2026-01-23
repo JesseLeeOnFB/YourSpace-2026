@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - YourSpace</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 { color: #333; text-align: center; margin-bottom: 2rem; }
+    input {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .checkbox-group {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #fef5f7;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: #f5576c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #error { color: red; text-align: center; margin-top: 1rem; }
+    .link { text-align: center; margin-top: 1rem; }
+    .link a { color: #f5576c; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌐 Join YourSpace</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password (6+ chars)">
+    <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="terms"> I agree to Terms & Conditions</label>
+    </div>
+    <button onclick="doSignup()">Create Account</button>
+    <div id="error"></div>
+    <div class="link"><a href="login.html">Already have account? Login</a></div>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    const app = initializeApp({
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    window.doSignup = async function() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      const terms = document.getElementById("terms").checked;
+      const error = document.getElementById("error");
+      error.textContent = "";
+      if (!email || !password) {
+        error.textContent = "Enter email and password";
+        return;
+      }
+      if (!terms) {
+        error.textContent = "Accept terms to continue";
+        return;
+      }
+      if (password !== confirm) {
+        error.textContent = "Passwords don't match";
+        return;
+      }
+      if (password.length < 6) {
+        error.textContent = "Password must be 6+ characters";
+        return;
+      }
+      try {
+        error.textContent = "Creating account...";
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", cred.user.uid), {
+          email: email,
+          username: email.split("@")[0],
+          photoURL: "default-avatar.png",
+          bio: "",
+          location: "",
+          theme: "default-theme",
+          music: ["","","",""],
+          autoplay: true,
+          topFriends: [],
+          customHtml: "",
+          savedPosts: [],
+          loginStreak: 1,
+          longestStreak: 1,
+          lastLoginDate: Date.now(),
+          createdAt: serverTimestamp()
+        });
+        error.textContent = "Success! Redirecting...";
+        setTimeout(() => location.href = "feed.html", 500);
+      } catch (e) {
+        error.textContent = e.message;
+      }
+    };
+  </script>
+</body>
+</html>

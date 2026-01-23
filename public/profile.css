@@ -1,0 +1,1676 @@
+/* profile.css – 50+ PRESET THEMES + YourSpace custom HTML injection */
+
+:root {
+  --primary: #1a1a1a;
+  --accent: #007bff;
+  --light-bg: #f0f4f8;
+  --card-bg: #ffffff;
+  --text: #333;
+  --text-light: #666;
+  --border: #ddd;
+  --shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  transition: all 0.5s ease;
+  min-height: 100vh;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BASIC THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.default-theme {
+  background: linear-gradient(135deg, #f0f4f8 0%, #e0e8f0 100%);
+  color: #333;
+}
+
+body.dark-theme {
+  background: #0a0a0a;
+  color: #e8e8e8;
+}
+
+body.dark-theme .card { background: #1a1a1a; border: 1px solid #333; color: #e8e8e8; }
+body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background: #2a2a2a; color: #e8e8e8; border-color: #444; }
+
+body.light-theme {
+  background: #ffffff;
+  color: #222;
+}
+
+body.light-theme .card { background: #f8f9fa; border: 1px solid #e0e0e0; }
+
+/* ═══════════════════════════════════════════════════════════
+   GRADIENT THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.blue-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+body.red-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+body.green-gradient { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+body.purple-gradient { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: white; }
+body.orange-gradient { background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%); color: white; }
+body.pink-gradient { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
+body.ocean-gradient { background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%); color: white; }
+body.sunset-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+body.forest-gradient { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); color: white; }
+
+body.animated-rainbow {
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db, #ff0080);
+  background-size: 400% 400%;
+  animation: rainbow 15s ease infinite;
+  color: white;
+}
+
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[class*="gradient"] .card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: inherit;
+}
+
+[class*="gradient"] input, [class*="gradient"] textarea, [class*="gradient"] select {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+[class*="gradient"] input::placeholder, [class*="gradient"] textarea::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEON & VIBRANT THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.neon-theme { background: #000; color: #0ff; }
+body.neon-theme .card { background: rgba(0, 20, 20, 0.9); border: 2px solid #0ff; box-shadow: 0 0 20px #0ff; color: #0ff; }
+
+body.neon-pink { background: #000; color: #ff00ff; }
+body.neon-pink .card { background: rgba(20, 0, 20, 0.9); border: 2px solid #ff00ff; box-shadow: 0 0 20px #ff00ff; color: #ff00ff; }
+
+body.neon-green { background: #000; color: #39ff14; }
+body.neon-green .card { background: rgba(0, 20, 0, 0.9); border: 2px solid #39ff14; box-shadow: 0 0 20px #39ff14; color: #39ff14; }
+
+body.cyberpunk {
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  color: #00ffff;
+}
+body.cyberpunk .card { background: rgba(0,0,0,0.7); border: 2px solid #ff00ff; box-shadow: 0 0 15px #00ffff; color: #00ffff; }
+
+body.vaporwave {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
+  color: white;
+}
+body.vaporwave .card { background: rgba(255,255,255,0.1); border: 2px solid #00ffff; backdrop-filter: blur(10px); }
+
+body.synthwave {
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+  color: white;
+}
+body.synthwave .card { background: rgba(0,0,0,0.6); border: 2px solid #fc00ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   NATURE & ANIMALS
+   ═══════════════════════════════════════════════════════════ */
+
+body.cats-paradise {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1920') center/cover;
+  color: white;
+}
+body.cats-paradise .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.dogs-world {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920') center/cover;
+  color: white;
+}
+body.dogs-world .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.butterflies {
+  background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)),
+              url('https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=1920') center/cover;
+  color: #333;
+}
+body.butterflies .card { background: rgba(255,255,255,0.95); }
+
+body.ocean-life {
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+              url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.ocean-life .card { background: rgba(0,100,150,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.forest-path {
+  background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920') center/cover;
+  color: white;
+}
+body.forest-path .card { background: rgba(34,139,34,0.85); color: white; }
+
+body.mountain-view {
+  background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920') center/cover;
+  color: white;
+}
+body.mountain-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(5px); }
+
+body.sakura-blossom {
+  background: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920') center/cover;
+  color: #333;
+}
+body.sakura-blossom .card { background: rgba(255,192,203,0.9); }
+
+body.tropical-beach {
+  background: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.tropical-beach .card { background: rgba(0,150,200,0.8); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   HOLIDAYS & SEASONS
+   ═══════════════════════════════════════════════════════════ */
+
+body.christmas {
+  background: linear-gradient(135deg, #c31432 0%, #240b36 100%),
+              repeating-linear-gradient(45deg, transparent, transparent 50px, rgba(255,255,255,.1) 50px, rgba(255,255,255,.1) 100px);
+  color: white;
+}
+body.christmas .card { background: rgba(139,0,0,0.8); color: white; border: 2px solid gold; }
+
+body.halloween {
+  background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+  color: #ff6600;
+}
+body.halloween .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 2px solid #ff6600; }
+
+body.valentines {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  color: white;
+}
+body.valentines .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid #ff1493; }
+
+body.easter {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.easter .card { background: rgba(255,255,255,0.9); border: 2px dashed #ff69b4; }
+
+body.autumn-leaves {
+  background: url('https://images.unsplash.com/photo-1511497584788-876760111969?w=1920') center/cover;
+  color: white;
+}
+body.autumn-leaves .card { background: rgba(139,69,19,0.85); color: white; }
+
+body.winter-snow {
+  background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+  color: #333;
+}
+body.winter-snow .card { background: rgba(255,255,255,0.95); box-shadow: 0 0 20px rgba(200,220,255,0.5); }
+
+body.spring-flowers {
+  background: url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1920') center/cover;
+  color: #333;
+}
+body.spring-flowers .card { background: rgba(255,255,255,0.95); }
+
+body.summer-vibes {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.summer-vibes .card { background: rgba(255,255,255,0.9); border: 2px solid #ffa500; }
+
+/* ═══════════════════════════════════════════════════════════
+   AESTHETIC & EMO
+   ═══════════════════════════════════════════════════════════ */
+
+body.emo-black {
+  background: #000;
+  color: #ff0000;
+}
+body.emo-black .card { background: #1a1a1a; border: 2px solid #ff0000; color: white; }
+
+body.emo-red {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: #ff0000;
+}
+body.emo-red .card { background: rgba(0,0,0,0.9); border: 3px solid #ff0000; color: #ff0000; }
+
+body.gothic {
+  background: linear-gradient(135deg, #2c003e 0%, #000000 100%);
+  color: #9932cc;
+}
+body.gothic .card { background: rgba(0,0,0,0.95); border: 2px solid #9932cc; color: #dda0dd; }
+
+body.grunge {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              repeating-linear-gradient(90deg, #2a2a2a, #1a1a1a 2px, #2a2a2a 4px);
+  color: #888;
+}
+body.grunge .card { background: rgba(40,40,40,0.9); color: #ccc; border: 1px solid #666; }
+
+body.pastel-goth {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
+  color: #333;
+}
+body.pastel-goth .card { background: rgba(0,0,0,0.7); color: #ff6ec4; border: 2px solid #7873f5; }
+
+body.vintage-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #8b4513;
+  font-family: 'Georgia', serif;
+}
+body.vintage-aesthetic .card { background: rgba(255,248,220,0.95); border: 3px double #8b4513; }
+
+body.soft-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.soft-aesthetic .card { background: rgba(255,255,255,0.9); border-radius: 20px; }
+
+body.y2k {
+  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%);
+  color: #333;
+  animation: rainbow 10s ease infinite;
+}
+body.y2k .card { background: rgba(255,255,255,0.95); border: 3px solid #ff00ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   CARS & RACING
+   ═══════════════════════════════════════════════════════════ */
+
+body.racing-stripes {
+  background: 
+    repeating-linear-gradient(90deg, #000 0px, #000 40px, #ff0000 40px, #ff0000 80px),
+    linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+  color: white;
+}
+body.racing-stripes .card { background: rgba(0,0,0,0.9); border: 2px solid #ff0000; color: white; }
+
+body.jdm-style {
+  background: linear-gradient(135deg, #000000 0%, #ff0000 100%);
+  color: white;
+}
+body.jdm-style .card { background: rgba(0,0,0,0.85); border: 2px solid #ff0000; }
+
+body.muscle-cars {
+  background: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920') center/cover;
+  color: white;
+}
+body.muscle-cars .card { background: rgba(0,0,0,0.8); color: white; }
+
+body.neon-garage {
+  background: #0a0a0a;
+  color: #00ff00;
+}
+body.neon-garage .card { background: rgba(0,0,0,0.95); border: 2px solid #00ff00; box-shadow: 0 0 20px #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPACE & SCI-FI
+   ═══════════════════════════════════════════════════════════ */
+
+body.galaxy {
+  background: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.galaxy .card { background: rgba(25,25,112,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.nebula {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+}
+body.nebula .card { background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+
+body.stars {
+  background: #000 url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.stars .card { background: rgba(0,0,50,0.8); color: white; }
+
+body.matrix {
+  background: #000;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.matrix .card { background: rgba(0,20,0,0.95); border: 1px solid #00ff00; color: #00ff00; }
+
+body.alien {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: #00ff00;
+}
+body.alien .card { background: rgba(0,0,0,0.8); border: 2px solid #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   MUSIC & ART
+   ═══════════════════════════════════════════════════════════ */
+
+body.vinyl-records {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1458560871784-56d23406c091?w=1920') center/cover;
+  color: white;
+}
+body.vinyl-records .card { background: rgba(0,0,0,0.85); color: white; }
+
+body.graffiti {
+  background: url('https://images.unsplash.com/photo-1561677843-39dee7a319ca?w=1920') center/cover;
+  color: white;
+}
+body.graffiti .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.concert {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920') center/cover;
+  color: white;
+}
+body.concert .card { background: rgba(0,0,0,0.75); color: white; }
+
+body.paint-splash {
+  background: linear-gradient(135deg, #ff0080 0%, #ff8c00 25%, #40e0d0 50%, #9370db 75%, #ff0080 100%);
+  color: white;
+}
+body.paint-splash .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid white; }
+
+/* ═══════════════════════════════════════════════════════════
+   FOOD & DRINK
+   ═══════════════════════════════════════════════════════════ */
+
+body.coffee-vibes {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920') center/cover;
+  color: white;
+}
+body.coffee-vibes .card { background: rgba(101,67,33,0.9); color: white; }
+
+body.candy-land {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 50%, #ffeaa7 100%);
+  color: #333;
+}
+body.candy-land .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 25px; }
+
+body.pizza-party {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1920') center/cover;
+  color: white;
+}
+body.pizza-party .card { background: rgba(255,100,0,0.85); color: white; border: 3px solid #ffeb3b; }
+
+body.sushi-night {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+}
+body.sushi-night .card { background: rgba(44,62,80,0.9); color: white; border: 2px solid #e74c3c; }
+
+/* ═══════════════════════════════════════════════════════════
+   GAMING & GEEK
+   ═══════════════════════════════════════════════════════════ */
+
+body.retro-gaming {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, rgba(255,0,0,0.1) 0px, transparent 1px, transparent 2px, rgba(255,0,0,0.1) 3px),
+    repeating-linear-gradient(90deg, rgba(0,255,0,0.1) 0px, transparent 1px, transparent 2px, rgba(0,255,0,0.1) 3px);
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.retro-gaming .card { background: rgba(0,0,0,0.95); border: 3px solid #00ff00; color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+
+body.pixel-art {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, #111 0px, #111 4px, #000 4px, #000 8px),
+    repeating-linear-gradient(90deg, #111 0px, #111 4px, #000 4px, #000 8px);
+  color: #ff00ff;
+}
+body.pixel-art .card { background: rgba(0,0,0,0.9); border: 4px solid #ff00ff; color: #00ffff; }
+
+body.arcade {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: #ffff00;
+  animation: rainbow 8s ease infinite;
+}
+body.arcade .card { background: rgba(0,0,0,0.85); border: 3px solid #ffff00; color: #ffff00; box-shadow: 0 0 30px #ff00ff; }
+
+body.anime-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.anime-aesthetic .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 20px; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPORTS & FITNESS
+   ═══════════════════════════════════════════════════════════ */
+
+body.basketball {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1920') center/cover;
+  color: white;
+}
+body.basketball .card { background: rgba(255,87,34,0.9); color: white; border: 3px solid #fff; }
+
+body.soccer-field {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1920') center/cover;
+  color: white;
+}
+body.soccer-field .card { background: rgba(34,139,34,0.9); color: white; border: 2px solid white; }
+
+body.gym-life {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #e74c3c;
+}
+body.gym-life .card { background: rgba(0,0,0,0.85); color: white; border: 3px solid #e74c3c; }
+
+body.skateboard {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=1920') center/cover;
+  color: white;
+}
+body.skateboard .card { background: rgba(0,0,0,0.85); color: white; border: 3px dashed #ffeb3b; }
+
+/* ═══════════════════════════════════════════════════════════
+   CITY & URBAN
+   ═══════════════════════════════════════════════════════════ */
+
+body.new-york {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1920') center/cover;
+  color: white;
+}
+body.new-york .card { background: rgba(0,0,0,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.tokyo-lights {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920') center/cover;
+  color: white;
+}
+body.tokyo-lights .card { background: rgba(255,0,100,0.7); color: white; border: 2px solid #00ffff; }
+
+body.street-art {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=1920') center/cover;
+  color: white;
+}
+body.street-art .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.rooftop-view {
+  background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920') center/cover;
+  color: white;
+}
+body.rooftop-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(8px); }
+
+/* ═══════════════════════════════════════════════════════════
+   FANTASY & MAGIC
+   ═══════════════════════════════════════════════════════════ */
+
+body.unicorn-dreams {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 25%, #ff9a9e 50%, #fecfef 75%, #feada6 100%);
+  color: #333;
+  animation: rainbow 12s ease infinite;
+}
+body.unicorn-dreams .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 30px; box-shadow: 0 0 30px rgba(255,110,196,0.5); }
+
+body.dragon-lair {
+  background: linear-gradient(135deg, #2c003e 0%, #8e0e00 50%, #1f1c18 100%);
+  color: #ff6600;
+}
+body.dragon-lair .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 3px solid #ff0000; box-shadow: 0 0 20px #ff0000; }
+
+body.fairy-forest {
+  background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+              url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1920') center/cover;
+  color: #fff;
+}
+body.fairy-forest .card { background: rgba(144,238,144,0.85); color: #333; border: 2px solid #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+
+body.wizard-castle {
+  background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 50%, #c471ed 100%);
+  color: white;
+}
+body.wizard-castle .card { background: rgba(44,62,80,0.9); color: white; border: 3px solid #c471ed; box-shadow: 0 0 25px #c471ed; }
+
+/* ═══════════════════════════════════════════════════════════
+   BASE LAYOUT
+   ═══════════════════════════════════════════════════════════ */
+
+.navbar {
+  background: var(--primary);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar button {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.navbar button:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.profile-main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.profile-top {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.pfp-container {
+  flex: 0 0 200px;
+  text-align: center;
+}
+
+#profilePic {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--accent);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.profile-info-box {
+  flex: 1;
+  min-width: 350px;
+}
+
+.profile-info-box h2 {
+  margin: 0 0 1rem 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 650px;
+  color: #333;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Custom HTML Preview - Shows confirmation */
+#customHtmlPreview {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 2px dashed #28a745;
+  border-radius: 12px;
+  min-height: 60px;
+  text-align: center;
+  background: rgba(40, 167, 69, 0.05);
+}
+
+#customHtmlPreview:empty {
+  display: none;
+}
+
+/* Custom styles injected by users appear here */
+#customProfileStyles {
+  display: none; /* Hidden container, styles apply globally */
+}
+
+.example-box {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--accent);
+}
+
+.example-box pre {
+  margin: 0.5rem 0 0 0;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.music-slot {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.music-slot input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.top-friends-list {
+  min-height: 250px;
+  margin-top: 1.5rem;
+}
+
+.top-friend {
+  background: rgba(0,123,255,0.08);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  cursor: move;
+}
+
+.top-friend .rank {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent);
+  width: 50px;
+}
+
+.friend-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+}
+
+.friend-name {
+  flex: 1;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.15rem;
+}
+
+#searchResults {
+  margin: 1.5rem 0;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+}
+
+#wallCommentsContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: 10px;
+}
+
+.wall-comment {
+  background: rgba(255,255,255,0.9);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 10px;
+  position: relative;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.comment-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+.delete-wall-comment {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: transparent;
+  color: #ff4444;
+  padding: 0.4rem 0.7rem;
+}
+
+@media (max-width: 768px) {
+  .profile-main { padding: 0 1rem; }
+  .profile-top { flex-direction: column; align-items: center; gap: 2rem; }
+  .card { padding: 1.5rem; }
+  #profilePic { width: 140px; height: 140px; }
+}
+/* DYNAMIC TEXT COLOR FIXES FOR ALL THEMES */
+
+/* Dark/Neon themes - force white/bright text */
+body.dark-theme,
+body.neon-theme,
+body.neon-pink,
+body.neon-green,
+body.cyberpunk,
+body.synthwave,
+body.animated-rainbow,
+body.blue-gradient,
+body.red-gradient,
+body.purple-gradient,
+body.orange-gradient,
+body.ocean-gradient,
+body.sunset-gradient,
+body.forest-gradient {
+  color: #ffffff !important;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme p,
+body.dark-theme label,
+body.dark-theme span,
+body.neon-theme h1,
+body.neon-theme h2,
+body.neon-theme h3,
+body.neon-theme p,
+body.neon-theme label,
+body.neon-theme span,
+body.neon-pink h1,
+body.neon-pink h2,
+body.neon-pink h3,
+body.neon-pink p,
+body.neon-pink label,
+body.neon-pink span,
+body.neon-green h1,
+body.neon-green h2,
+body.neon-green h3,
+body.neon-green p,
+body.neon-green label,
+body.neon-green span,
+body.cyberpunk h1,
+body.cyberpunk h2,
+body.cyberpunk h3,
+body.cyberpunk p,
+body.cyberpunk label,
+body.cyberpunk span,
+body.synthwave h1,
+body.synthwave h2,
+body.synthwave h3,
+body.synthwave p,
+body.synthwave label,
+body.synthwave span,
+body.animated-rainbow h1,
+body.animated-rainbow h2,
+body.animated-rainbow h3,
+body.animated-rainbow p,
+body.animated-rainbow label,
+body.animated-rainbow span,
+body.blue-gradient h1,
+body.blue-gradient h2,
+body.blue-gradient h3,
+body.blue-gradient p,
+body.blue-gradient label,
+body.blue-gradient span,
+body.red-gradient h1,
+body.red-gradient h2,
+body.red-gradient h3,
+body.red-gradient p,
+body.red-gradient label,
+body.red-gradient span,
+body.purple-gradient h1,
+body.purple-gradient h2,
+body.purple-gradient h3,
+body.purple-gradient p,
+body.purple-gradient label,
+body.purple-gradient span,
+body.orange-gradient h1,
+body.orange-gradient h2,
+body.orange-gradient h3,
+body.orange-gradient p,
+body.orange-gradient label,
+body.orange-gradient span,
+body.ocean-gradient h1,
+body.ocean-gradient h2,
+body.ocean-gradient h3,
+body.ocean-gradient p,
+body.ocean-gradient label,
+body.ocean-gradient span,
+body.sunset-gradient h1,
+body.sunset-gradient h2,
+body.sunset-gradient h3,
+body.sunset-gradient p,
+body.sunset-gradient label,
+body.sunset-gradient span,
+body.forest-gradient h1,
+body.forest-gradient h2,
+body.forest-gradient h3,
+body.forest-gradient p,
+body.forest-gradient label,
+body.forest-gradient span {
+  color: #ffffff !important;
+}
+
+/* Light themes - force dark text */
+body.default-theme,
+body.light-theme,
+body.green-gradient,
+body.pink-gradient,
+body.vaporwave,
+body.cats-paradise {
+  color: #1c1e21 !important;
+}
+
+body.default-theme h1,
+body.default-theme h2,
+body.default-theme h3,
+body.default-theme p,
+body.default-theme label,
+body.default-theme span,
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme p,
+body.light-theme label,
+body.light-theme span,
+body.green-gradient h1,
+body.green-gradient h2,
+body.green-gradient h3,
+body.green-gradient p,
+body.green-gradient label,
+body.green-gradient span,
+body.pink-gradient h1,
+body.pink-gradient h2,
+body.pink-gradient h3,
+body.pink-gradient p,
+body.pink-gradient label,
+body.pink-gradient span,
+body.vaporwave h1,
+body.vaporwave h2,
+body.vaporwave h3,
+body.vaporwave p,
+body.vaporwave label,
+body.vaporwave span,
+body.cats-paradise h1,
+body.cats-paradise h2,
+body.cats-paradise h3,
+body.cats-paradise p,
+body.cats-paradise label,
+body.cats-paradise span {
+  color: #1c1e21 !important;
+}
+
+/* Card text colors */
+body.dark-theme .card,
+body.neon-theme .card,
+body.neon-pink .card,
+body.neon-green .card,
+body.cyberpunk .card,
+body.synthwave .card,
+body.animated-rainbow .card {
+  color: #ffffff !important;
+}
+
+body.default-theme .card,
+body.light-theme .card,
+body.vaporwave .card,
+body.cats-paradise .card {
+  color: #1c1e21 !important;
+}
+
+/* Input text colors */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select,
+body.neon-theme input,
+body.neon-theme textarea,
+body.neon-theme select,
+body.neon-pink input,
+body.neon-pink textarea,
+body.neon-pink select,
+body.neon-green input,
+body.neon-green textarea,
+body.neon-green select,
+body.cyberpunk input,
+body.cyberpunk textarea,
+body.cyberpunk select,
+body.synthwave input,
+body.synthwave textarea,
+body.synthwave select {
+  color: #ffffff !important;
+}
+
+body.default-theme input,
+body.default-theme textarea,
+body.default-theme select,
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  color: #1c1e21 !important;
+}
+
+/* Button text */
+body button,
+body.dark-theme button,
+body.light-theme button {
+  color: inherit;
+}
+
+/* Navbar text - always ensure visibility */
+.navbar button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.navbar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Post content text */
+.post-card {
+  color: inherit !important;
+}
+
+.post-card .post-text,
+.post-card .post-username,
+.post-card .post-time {
+  color: inherit !important;
+}
+
+/* Comment text */
+.comment,
+.comment-text,
+.comment-author {
+  color: inherit !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE THEME FIXES - READABILITY & RESPONSIVENESS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Ensure animated-rainbow actually animates */
+body.animated-rainbow {
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db, #ff0080) !important;
+  background-size: 400% 400% !important;
+  animation: rainbow 15s ease infinite !important;
+}
+
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Profile info container readability - ALL THEMES */
+.profile-info,
+.profile-header,
+.profile-card,
+.bio-section,
+.location-section {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Light themes need dark containers */
+body.default-theme .profile-info,
+body.default-theme .profile-header,
+body.default-theme .profile-card,
+body.light-theme .profile-info,
+body.light-theme .profile-header,
+body.light-theme .profile-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1c1e21 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Profile text always readable */
+.profile-info h1,
+.profile-info h2,
+.profile-info p,
+.profile-info span,
+.profile-header h1,
+.profile-header h2,
+.profile-header p,
+.profile-card h1,
+.profile-card h2,
+.profile-card p {
+  color: inherit !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive theme backgrounds - show full image/animation */
+body {
+  min-height: 100vh;
+  background-attachment: fixed !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+/* Themed backgrounds (butterflies, beach, mountains, etc.) */
+body.cats-paradise {
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 10% 20%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 80% 30%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 50% 60%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 20% 70%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 70% 80%,
+    linear-gradient(135deg, #ffeef8 0%, #ffe4f3 50%, #ffd4ea 100%);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 80px 80px, 80px 80px, 80px 80px, 60px 60px, 60px 60px, cover;
+  background-attachment: fixed;
+  animation: butterflies 20s ease-in-out infinite;
+}
+
+@keyframes butterflies {
+  0%, 100% {
+    background-position: 10% 20%, 80% 30%, 50% 60%, 20% 70%, 70% 80%, center;
+  }
+  50% {
+    background-position: 15% 25%, 75% 35%, 55% 55%, 25% 65%, 65% 75%, center;
+  }
+}
+
+/* Mobile optimizations - ensure full backgrounds visible */
+@media (max-width: 768px) {
+  body {
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  
+  body.cats-paradise {
+    background-size: 60px 60px, 60px 60px, 60px 60px, 40px 40px, 40px 40px, cover;
+  }
+  
+  /* Ensure profile containers are still readable on mobile */
+  .profile-info,
+  .profile-header,
+  .profile-card {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+  
+  body.default-theme .profile-info,
+  body.default-theme .profile-header,
+  body.light-theme .profile-info,
+  body.light-theme .profile-header {
+    background: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+/* Ensure all gradient themes animate properly */
+body[class*="-gradient"] {
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Card containers on themed backgrounds */
+.card {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.default-theme .card,
+body.light-theme .card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Text in cards always readable */
+.card h1,
+.card h2,
+.card h3,
+.card p,
+.card span,
+.card label {
+  color: inherit !important;
+}
+
+/* Input fields readable on all themes */
+input,
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: inherit !important;
+  padding: 0.8rem !important;
+  border-radius: 8px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.default-theme input,
+body.default-theme textarea,
+body.default-theme select,
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1c1e21 !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+body.default-theme input::placeholder,
+body.default-theme textarea::placeholder,
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+/* UNIVERSAL NAVIGATION CSS - ADD TO ALL PAGE CSS FILES */
+.navbar {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-links button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+  
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 5rem 2rem 2rem;
+    gap: 1rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .nav-links.active {
+    right: 0;
+  }
+  
+  .nav-links button {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .navbar {
+    padding: 1rem 3rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE TEXT VISIBILITY FIX - MAXIMUM READABILITY
+   ═══════════════════════════════════════════════════════════ */
+
+/* Username text - ALWAYS READABLE */
+#displayName,
+.profile-info-box h2,
+.username-text {
+  color: #ffffff !important;
+  text-shadow: 
+    2px 2px 8px rgba(0, 0, 0, 0.9),
+    -1px -1px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.7) !important;
+  font-weight: 700 !important;
+  font-size: 2rem !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6)) !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 12px !important;
+  display: inline-block !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Bio text - ALWAYS READABLE */
+#bio,
+.bio-text,
+.profile-info-box .bio {
+  color: #ffffff !important;
+  text-shadow: 
+    1px 1px 6px rgba(0, 0, 0, 0.9),
+    -1px -1px 3px rgba(0, 0, 0, 0.8) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)) !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 10px !important;
+  margin: 0.5rem 0 !important;
+  font-weight: 500 !important;
+}
+
+/* Location text - ALWAYS READABLE */
+#location,
+.location-text,
+.profile-info-box .location {
+  color: #ffffff !important;
+  text-shadow: 
+    1px 1px 6px rgba(0, 0, 0, 0.9),
+    -1px -1px 3px rgba(0, 0, 0, 0.8) !important;
+  font-size: 1rem !important;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)) !important;
+  padding: 0.8rem 1.2rem !important;
+  border-radius: 10px !important;
+  margin: 0.5rem 0 !important;
+  font-weight: 500 !important;
+}
+
+/* Profile info box - DARK CONTAINER */
+.profile-info-box {
+  background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 20px !important;
+  padding: 2rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Light themes - dark text on light background */
+body.default-theme #displayName,
+body.default-theme .profile-info-box h2,
+body.light-theme #displayName,
+body.light-theme .profile-info-box h2 {
+  color: #1c1e21 !important;
+  text-shadow: 
+    1px 1px 3px rgba(255, 255, 255, 0.8),
+    0 0 10px rgba(255, 255, 255, 0.5) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)) !important;
+}
+
+body.default-theme #bio,
+body.default-theme .bio-text,
+body.light-theme #bio,
+body.light-theme .bio-text {
+  color: #1c1e21 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8)) !important;
+}
+
+body.default-theme #location,
+body.default-theme .location-text,
+body.light-theme #location,
+body.light-theme .location-text {
+  color: #1c1e21 !important;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8)) !important;
+}
+
+body.default-theme .profile-info-box,
+body.light-theme .profile-info-box {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)) !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mobile - even stronger contrast */
+@media (max-width: 768px) {
+  #displayName,
+  .profile-info-box h2 {
+    background: rgba(0, 0, 0, 0.95) !important;
+    padding: 1.2rem !important;
+  }
+  
+  #bio,
+  .bio-text {
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 1rem !important;
+  }
+  
+  #location,
+  .location-text {
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 0.8rem !important;
+  }
+  
+  .profile-info-box {
+    background: rgba(0, 0, 0, 0.92) !important;
+    backdrop-filter: blur(25px) !important;
+  }
+  
+  body.default-theme .profile-info-box,
+  body.light-theme .profile-info-box {
+    background: rgba(255, 255, 255, 0.98) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX THEMES THAT SHOW SOLID WHITE INSTEAD OF INTENDED APPEARANCE
+   ═══════════════════════════════════════════════════════════ */
+
+/* Ensure all themes have their proper backgrounds */
+body.default-theme {
+  background: #f0f2f5 !important;
+}
+
+body.light-theme {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+}
+
+body.green-gradient {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.pink-gradient {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.vaporwave {
+  background: 
+    linear-gradient(135deg, #ff6ec7 0%, #7873f5 50%, #4facfe 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      transparent 2px,
+      transparent 4px,
+      rgba(255, 255, 255, 0.1) 6px
+    ) !important;
+  background-size: 400% 400%, 100% 100% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+body.cats-paradise {
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 10% 20%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 80% 30%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🦋</text></svg>') 50% 60%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 20% 70%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌸</text></svg>') 70% 80%,
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40">🌺</text></svg>') 40% 85%,
+    linear-gradient(135deg, #ffeef8 0%, #ffe4f3 50%, #ffd4ea 100%) !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-size: 80px 80px, 80px 80px, 80px 80px, 60px 60px, 60px 60px, 60px 60px, cover !important;
+  background-position: 10% 20%, 80% 30%, 50% 60%, 20% 70%, 70% 80%, 40% 85%, center !important;
+  background-attachment: fixed !important;
+  animation: butterflies 20s ease-in-out infinite !important;
+}
+
+/* Ensure all gradient themes animate */
+body[class*="gradient"]:not(.animated-rainbow) {
+  background-size: 400% 400% !important;
+  animation: gradientShift 15s ease infinite !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROFILE BADGES & ACHIEVEMENTS
+   ═══════════════════════════════════════════════════════════ */
+
+.badge-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge-container h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  color: var(--text-primary, #e4e6eb);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: help;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.badge-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.25);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
+}
+
+.badge-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+.badge-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #e4e6eb);
+  line-height: 1.3;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .badges-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.6rem;
+  }
+  
+  .badge-item {
+    padding: 0.8rem;
+  }
+  
+  .badge-icon {
+    font-size: 2rem;
+  }
+  
+  .badge-name {
+    font-size: 0.75rem;
+  }
+}

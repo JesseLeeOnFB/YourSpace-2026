@@ -1,4 +1,4 @@
-// messages.js – COMPLETELY FIXED - User search WILL work with profile preview
+// messages.js – COMPLETELY FIXED - User search WILL work with profile preview + fuzzy fallback
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -115,22 +115,38 @@ async function loadConversations() {
   });
 }
 
+// Fixed search with fuzzy fallback
 searchUserBtn.addEventListener("click", async () => {
   const searchTerm = searchUserInput.value.trim().toLowerCase();
   if (!searchTerm) return alert("Enter a username to search!");
 
   try {
+    // Exact match on lowercase
     const usersQuery = query(collection(db, "users"), where("usernameLower", "==", searchTerm));
-    const usersSnapshot = await getDocs(usersQuery);
+    let usersSnapshot = await getDocs(usersQuery);
+
+    if (usersSnapshot.empty) {
+      // Fuzzy fallback: load all users and filter client-side
+      console.log("No exact match - using fuzzy search");
+      const allUsers = await getDocs(collection(db, "users"));
+      const fuzzyMatched = [];
+      allUsers.forEach((d) => {
+        const u = d.data();
+        if ((u.usernameLower || "").includes(searchTerm)) {
+          fuzzyMatched.push(d);
+        }
+      });
+      usersSnapshot = { docs: fuzzyMatched };
+    }
 
     searchResults.innerHTML = "";
 
-    if (usersSnapshot.empty) {
+    if (usersSnapshot.docs.length === 0) {
       searchResults.innerHTML = "<p class='no-results'>No users found</p>";
       return;
     }
 
-    usersSnapshot.forEach((docSnap) => {
+    usersSnapshot.docs.forEach((docSnap) => {
       const user = docSnap.data();
       const resultItem = document.createElement("div");
       resultItem.className = "search-result-item";

@@ -1,156 +1,19 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Creator Dashboard - YourSpace</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    .dashboard-container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-```
-.dashboard-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.dashboard-header h1 {
-  color: #00ff00;
-  margin-bottom: 0.5rem;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: transform 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  border-color: #00ff00;
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #00ff00;
-  margin: 0.5rem 0;
-}
-
-.stat-label {
-  color: #999;
-  font-size: 0.9rem;
-}
-
-.payout-section {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-}
-
-.payout-section h2 {
-  color: #00ff00;
-  margin-bottom: 1rem;
-}
-
-.payout-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.payout-item {
-  background: #0a0a0a;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #222;
-}
-
-.payout-item label {
-  color: #666;
-  font-size: 0.85rem;
-  display: block;
-  margin-bottom: 0.25rem;
-}
-
-.payout-item .value {
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.stripe-setup-btn {
-  background: linear-gradient(135deg, #635bff 0%, #4f46e5 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.stripe-setup-btn:hover {
-  transform: translateY(-2px);
-}
-
-.verified-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #00ff00;
-  color: #000;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: bold;
-}
-
-.warning-box {
-  background: rgba(255, 165, 0, 0.1);
-  border: 1px solid orange;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  color: orange;
-}
-```
-
-  </style>
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-  <!-- Navigation -->
-  <nav>
-    <div class="hamburger" id="hamburger">
+  <nav class="navbar">
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
       <span></span>
       <span></span>
       <span></span>
-    </div>
+    </button>
     <div class="nav-links" id="navLinks">
       <button id="feedNavBtn">📰 Feed</button>
       <button id="profileNavBtn">👤 Profile</button>
@@ -163,104 +26,199 @@
     </div>
   </nav>
 
-  <div class="dashboard-container">
-    <div class="dashboard-header">
-      <h1>💰 Creator Dashboard</h1>
-      <p style="color:#999;">Track your earnings and manage payouts</p>
-    </div>
+  <main class="dashboard-container">
+    <h1>📊 Creator Dashboard</h1>
+    <p class="welcome-text">Welcome back, <span id="creatorName">Creator</span>! Here's your performance.</p>
 
-```
-<!-- Stats Grid -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon">💵</div>
-    <div class="stat-value" id="totalEarnings">$0.00</div>
-    <div class="stat-label">Total Earnings</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon">💸</div>
-    <div class="stat-value" id="pendingPayout">$0.00</div>
-    <div class="stat-label">Pending Payout</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon">🎁</div>
-    <div class="stat-value" id="totalGifts">0</div>
-    <div class="stat-label">Gifts Received</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-icon">📅</div>
-    <div class="stat-value" id="daysUntilPayout">14</div>
-    <div class="stat-label">Days Until Payout</div>
-  </div>
-</div>
-
-<!-- Payout Section -->
-<div class="payout-section">
-  <h2>💳 Payout Information</h2>
-  
-  <div id="stripeNotVerified" style="display:none;">
-    <div class="warning-box">
-      ⚠️ <strong>Setup Required:</strong> You need to complete Stripe verification and tax information to receive payouts.
-    </div>
-    <button class="stripe-setup-btn" id="stripeSetupBtn">
-      <span>🔒</span> Complete Stripe Setup
-    </button>
-  </div>
-  
-  <div id="stripeVerified" style="display:none;">
-    <div class="verified-badge">
-      ✅ Stripe Verified & Ready for Payouts
-    </div>
-    
-    <div class="payout-info" style="margin-top:1.5rem;">
-      <div class="payout-item">
-        <label>Next Payout Date</label>
-        <div class="value" id="nextPayoutDate">Loading...</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-number" id="totalPosts">0</div>
+        <div class="stat-label">Total Posts</div>
       </div>
       
-      <div class="payout-item">
-        <label>Next Payout Amount</label>
-        <div class="value" id="nextPayoutAmount">$0.00</div>
+      <div class="stat-card">
+        <div class="stat-icon">👍</div>
+        <div class="stat-number" id="totalLikes">0</div>
+        <div class="stat-label">Total Likes</div>
       </div>
       
-      <div class="payout-item">
-        <label>Payout Method</label>
-        <div class="value">Stripe</div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-number" id="totalComments">0</div>
+        <div class="stat-label">Total Comments</div>
       </div>
       
-      <div class="payout-item">
-        <label>Payout Frequency</label>
-        <div class="value">Every 14 Days</div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-number" id="loginStreak">0</div>
+        <div class="stat-label">Login Streak</div>
       </div>
     </div>
-    
-    <div style="margin-top:1.5rem;padding:1rem;background:#0a0a0a;border-radius:8px;">
-      <h3 style="color:#00ff00;margin-bottom:0.5rem;">💡 How Payouts Work</h3>
-      <ul style="color:#999;line-height:1.8;">
-        <li>Payouts are processed every 14 days automatically</li>
-        <li>Minimum payout amount: $10.00</li>
-        <li>Stripe fees: 2.9% + $0.30 per transaction</li>
-        <li>Funds typically arrive in 2-3 business days</li>
-      </ul>
+
+    <!-- PAYOUT TRACKING SECTION -->
+    <div class="payout-section">
+      <h2>💰 Earnings & Payouts</h2>
+      
+      <div class="payout-grid">
+        <div class="payout-card primary">
+          <div class="payout-header">
+            <span class="payout-icon">💵</span>
+            <span class="payout-title">Pending Payout</span>
+          </div>
+          <div class="payout-amount" id="pendingPayout">$0.00</div>
+          <div class="payout-subtitle">Available for withdrawal</div>
+        </div>
+        
+        <div class="payout-card">
+          <div class="payout-header">
+            <span class="payout-icon">📅</span>
+            <span class="payout-title">Next Payout</span>
+          </div>
+          <div class="payout-date" id="nextPayoutDate">Calculating...</div>
+          <div class="payout-countdown" id="payoutCountdown">--</div>
+        </div>
+        
+        <div class="payout-card">
+          <div class="payout-header">
+            <span class="payout-icon">🎁</span>
+            <span class="payout-title">Total Gifts</span>
+          </div>
+          <div class="payout-amount" id="totalGiftsReceived">0</div>
+          <div class="payout-subtitle">All-time received</div>
+        </div>
+        
+        <div class="payout-card">
+          <div class="payout-header">
+            <span class="payout-icon">💸</span>
+            <span class="payout-title">Total Earned</span>
+          </div>
+          <div class="payout-amount" id="totalEarned">$0.00</div>
+          <div class="payout-subtitle">Lifetime earnings</div>
+        </div>
+      </div>
+      
+      <div class="payout-status" id="payoutStatus">
+        <div class="status-indicator"></div>
+        <span id="statusText">Checking payout status...</span>
+      </div>
+      
+      <div class="stripe-setup" id="stripeSetup" style="display: none;">
+        <div class="alert-box warning">
+          <strong>⚠️ Payment Setup Required</strong>
+          <p>Complete your Stripe verification to receive payouts:</p>
+          <ul>
+            <li id="stripeVerifiedStatus">✓ Stripe account connected</li>
+            <li id="stripeTaxStatus">✓ Tax information completed</li>
+          </ul>
+          <button class="setup-stripe-btn" onclick="window.location.href='stripe-setup.html'">
+            Complete Setup →
+          </button>
+        </div>
+      </div>
+      
+      <div class="payout-history">
+        <h3>📜 Recent Payout History</h3>
+        <div id="payoutHistoryList" class="payout-list">
+          <p style="text-align: center; color: #65676b; padding: 2rem;">No payout history yet</p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- Recent Gifts -->
-<div class="payout-section">
-  <h2>🎁 Recent Gifts</h2>
-  <div id="recentGiftsList">
-    <p style="color:#666;text-align:center;padding:2rem;">No gifts received yet</p>
-  </div>
-</div>
-```
+    <div class="rewards-section">
+      <h2>🎁 Build Your Space</h2>
+      <p style="margin-bottom: 1rem; color: #65676b;">Earn rewards and watch your world come to life!</p>
+      <button onclick="window.location.href='yourspace-scene.html'" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 2.5rem;
+        border: none;
+        border-radius: 16px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        transition: all 0.3s;
+        width: 100%;
+      " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 12px 35px rgba(102, 126, 234, 0.7)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.5)';">
+        🏗️ Build Your Space →
+      </button>
+      
+      <div class="rewards-grid" id="rewardsGrid">
+        <div class="reward-item" data-reward="house">
+          <div class="reward-icon">🏠</div>
+          <div class="reward-name">Houses</div>
+          <div class="reward-count" id="houseCount">0</div>
+        </div>
+        
+        <div class="reward-item" data-reward="car">
+          <div class="reward-icon">🚗</div>
+          <div class="reward-name">Cars</div>
+          <div class="reward-count" id="carCount">0</div>
+        </div>
+        
+        <div class="reward-item" data-reward="truck">
+          <div class="reward-icon">🚚</div>
+          <div class="reward-name">Trucks</div>
+          <div class="reward-count" id="truckCount">0</div>
+        </div>
+        
+        <div class="reward-item" data-reward="pet">
+          <div class="reward-icon">🐶</div>
+          <div class="reward-name">Pets</div>
+          <div class="reward-count" id="petCount">0</div>
+        </div>
+        
+        <div class="reward-item" data-reward="diamond">
+          <div class="reward-icon">💎</div>
+          <div class="reward-name">Diamonds</div>
+          <div class="reward-count" id="diamondCount">0</div>
+        </div>
+        
+        <div class="reward-item" data-reward="crown">
+          <div class="reward-icon">👑</div>
+          <div class="reward-name">Crowns</div>
+          <div class="reward-count" id="crownCount">0</div>
+        </div>
+      </div>
+    </div>
 
-  </div>
+    <div class="top-posts-section">
+      <h2>🔥 Your Top Posts</h2>
+      <div id="topPostsList"></div>
+    </div>
+
+    <div class="engagement-section">
+      <h2>📈 Engagement This Week</h2>
+      <div class="engagement-stats">
+        <div class="engagement-bar">
+          <div class="bar-label">Likes</div>
+          <div class="bar-container">
+            <div class="bar-fill" id="likesBar" style="width: 0%"></div>
+          </div>
+          <div class="bar-value" id="likesValue">0</div>
+        </div>
+        
+        <div class="engagement-bar">
+          <div class="bar-label">Comments</div>
+          <div class="bar-container">
+            <div class="bar-fill" id="commentsBar" style="width: 0%"></div>
+          </div>
+          <div class="bar-value" id="commentsValue">0</div>
+        </div>
+        
+        <div class="engagement-bar">
+          <div class="bar-label">Shares</div>
+          <div class="bar-container">
+            <div class="bar-fill" id="sharesBar" style="width: 0%"></div>
+          </div>
+          <div class="bar-value" id="sharesValue">0</div>
+        </div>
+      </div>
+    </div>
+  </main>
 
   <script type="module" src="dashboard.js"></script>
-
 </body>
 </html>

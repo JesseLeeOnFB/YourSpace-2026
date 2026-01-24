@@ -1,10 +1,10 @@
-// dashboard.js - Creator Dashboard
+// dashboard.js - COMPLETE WORKING VERSION
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, query, where, getDocs, doc, getDoc, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -19,66 +19,176 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAILS = [
-  "skeeterjeeter8@gmail.com",
-  "daniellehunt01@gmail.com"
-];
+const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
 function isAdmin(email) {
-  return ADMIN_EMAILS.includes(email.toLowerCase());
-}
-
-// Navigation
-document.getElementById("feedNavBtn")?.addEventListener("click", () => {
-  window.location.href = "feed.html";
-});
-
-document.getElementById("profileNavBtn")?.addEventListener("click", () => {
-  window.location.href = "profile.html";
-});
-
-document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
-  window.location.href = "messages.html";
-});
-
-document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
-  window.location.href = "notifications.html";
-});
-
-document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
-  window.location.href = "dashboard.html";
-});
-
-document.getElementById("adminNavBtn")?.addEventListener("click", () => {
-  window.location.href = "admin.html";
-});
-
-document.getElementById("contactNavBtn")?.addEventListener("click", () => {
-  window.location.href = "contact.html";
-});
-
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "login.html";
-});
-
-// Hamburger menu
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-if (hamburger) {
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
+  return ADMIN_EMAILS.includes(email?.toLowerCase());
 }
 
 // ═══════════════════════════════════════════════════════════
-// PAYOUT TRACKING SYSTEM
+// NAVIGATION - Universal across all pages
+// ═══════════════════════════════════════════════════════════
+
+function initNavigation() {
+  document.getElementById("feedNavBtn")?.addEventListener("click", () => {
+    window.location.href = "feed.html";
+  });
+
+  document.getElementById("profileNavBtn")?.addEventListener("click", () => {
+    window.location.href = "profile.html";
+  });
+
+  document.getElementById("messagesNavBtn")?.addEventListener("click", () => {
+    window.location.href = "messages.html";
+  });
+
+  document.getElementById("notificationsNavBtn")?.addEventListener("click", () => {
+    window.location.href = "notifications.html";
+  });
+
+  document.getElementById("dashboardNavBtn")?.addEventListener("click", () => {
+    window.location.href = "dashboard.html";
+  });
+
+  document.getElementById("adminNavBtn")?.addEventListener("click", () => {
+    window.location.href = "admin.html";
+  });
+
+  document.getElementById("contactNavBtn")?.addEventListener("click", () => {
+    window.location.href = "contact.html";
+  });
+
+  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "login.html";
+  });
+
+  // Hamburger menu
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("navLinks");
+
+  if (hamburger && navLinks) {
+    hamburger.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      hamburger.classList.toggle("active");
+      navLinks.classList.toggle("active");
+    });
+
+    navLinks.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        hamburger.classList.remove("active");
+        navLinks.classList.remove("active");
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+        hamburger.classList.remove("active");
+        navLinks.classList.remove("active");
+      }
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STRIPE ONBOARDING - Creator Payment Setup
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById("setupStripeBtn")?.addEventListener("click", async () => {
+  try {
+    const btn = document.getElementById("setupStripeBtn");
+    btn.disabled = true;
+    btn.textContent = "Creating setup link...";
+    
+    console.log('Starting Stripe onboarding...');
+    
+    const response = await fetch('https://us-central1-yourspace-2026.cloudfunctions.net/createStripeOnboarding', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: auth.currentUser.uid,
+        email: auth.currentUser.email,
+        refreshUrl: `${window.location.origin}/dashboard.html`,
+        returnUrl: `${window.location.origin}/dashboard.html?stripe=complete`
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to create onboarding session');
+    }
+    
+    console.log('Redirecting to Stripe:', data.url);
+    
+    // Redirect to Stripe onboarding
+    window.location.href = data.url;
+    
+  } catch (err) {
+    console.error("Error starting Stripe setup:", err);
+    alert(`Error: ${err.message}\n\nPlease try again or contact support.`);
+    
+    const btn = document.getElementById("setupStripeBtn");
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Complete Setup →";
+    }
+  }
+});
+
+// Check for Stripe onboarding completion
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const stripeStatus = urlParams.get('stripe');
+  
+  if (stripeStatus === 'complete') {
+    showStripeSuccessMessage();
+    
+    // Clean up URL
+    window.history.replaceState({}, document.title, '/dashboard.html');
+    
+    // Refresh user data
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  }
+});
+
+function showStripeSuccessMessage() {
+  const successDiv = document.createElement('div');
+  successDiv.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #00ff88 0%, #00d9ff 100%);
+    color: #000;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+    z-index: 10000;
+    font-weight: 700;
+    font-size: 1.1rem;
+    animation: slideDown 0.3s ease;
+  `;
+  successDiv.textContent = '✅ Stripe setup complete! You can now receive payments.';
+  
+  document.body.appendChild(successDiv);
+  
+  setTimeout(() => {
+    successDiv.remove();
+  }, 5000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PAYOUT TRACKING
 // ═══════════════════════════════════════════════════════════
 
 async function loadPayoutTracking(userId, userData) {
   try {
-    // Get all gifts received by this user
     const rewardsQuery = query(collection(db, "users", userId, "rewards"), orderBy("createdAt", "desc"));
     const rewardsSnapshot = await getDocs(rewardsQuery);
     
@@ -90,26 +200,22 @@ async function loadPayoutTracking(userId, userData) {
       const reward = doc.data();
       totalGifts++;
       
-      // Check if this gift has been paid out
       const giftPaidOut = reward.paidOut || false;
       if (!giftPaidOut) {
-        pendingAmount += reward.price || 0;
+        pendingAmount += reward.amount || 0;
       }
     });
     
-    // Update UI
     document.getElementById("pendingPayout").textContent = `$${pendingAmount.toFixed(2)}`;
     document.getElementById("totalGiftsReceived").textContent = totalGifts;
     document.getElementById("totalEarned").textContent = `$${totalEarnings.toFixed(2)}`;
     
-    // Calculate next payout date (14-day cycles)
     const lastPayoutDate = userData?.lastPayoutDate || null;
     const nextPayoutInfo = calculateNextPayout(lastPayoutDate);
     
     document.getElementById("nextPayoutDate").textContent = nextPayoutInfo.dateString;
     document.getElementById("payoutCountdown").textContent = nextPayoutInfo.countdown;
     
-    // Check Stripe verification status
     const stripeVerified = userData?.stripeVerified || false;
     const stripeTaxComplete = userData?.stripeTaxComplete || false;
     
@@ -143,7 +249,6 @@ async function loadPayoutTracking(userId, userData) {
       `;
     }
     
-    // Load payout history
     await loadPayoutHistory(userId);
     
   } catch (err) {
@@ -157,16 +262,13 @@ function calculateNextPayout(lastPayoutDate) {
   let nextPayoutDate;
   
   if (lastPayoutDate) {
-    // Parse last payout date and add 14 days
     const lastDate = new Date(lastPayoutDate);
     nextPayoutDate = new Date(lastDate.getTime() + (PAYOUT_CYCLE_DAYS * 24 * 60 * 60 * 1000));
   } else {
-    // If no previous payout, set to 14 days from now
     nextPayoutDate = new Date();
     nextPayoutDate.setDate(nextPayoutDate.getDate() + PAYOUT_CYCLE_DAYS);
   }
   
-  // Calculate days until payout
   const now = new Date();
   const diffTime = nextPayoutDate - now;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -176,8 +278,6 @@ function calculateNextPayout(lastPayoutDate) {
     countdown = "Processing soon!";
   } else if (diffDays === 1) {
     countdown = "Tomorrow!";
-  } else if (diffDays <= 7) {
-    countdown = `In ${diffDays} days`;
   } else {
     countdown = `In ${diffDays} days`;
   }
@@ -234,19 +334,21 @@ async function loadPayoutHistory(userId) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// LOAD DASHBOARD DATA
+// ═══════════════════════════════════════════════════════════
+
 async function loadDashboard() {
   if (!auth.currentUser) return;
   
   const userId = auth.currentUser.uid;
   
-  // Load user data
   const userDoc = await getDoc(doc(db, "users", userId));
   const userData = userDoc.data();
   
   document.getElementById("creatorName").textContent = userData?.username || auth.currentUser.email.split("@")[0];
   document.getElementById("loginStreak").textContent = userData?.loginStreak || 0;
   
-  // Load posts stats
   const postsQuery = query(collection(db, "posts"), where("userId", "==", userId));
   const postsSnapshot = await getDocs(postsQuery);
   
@@ -259,7 +361,6 @@ async function loadDashboard() {
     posts.push({ id: docSnap.id, ...post });
     totalLikes += (post.likedBy || []).length;
     
-    // Count comments
     const commentsQuery = query(collection(db, "posts", docSnap.id, "comments"));
     const commentsSnapshot = await getDocs(commentsQuery);
     totalComments += commentsSnapshot.size;
@@ -269,10 +370,8 @@ async function loadDashboard() {
   document.getElementById("totalLikes").textContent = totalLikes;
   document.getElementById("totalComments").textContent = totalComments;
   
-  // 💰 LOAD PAYOUT TRACKING
   await loadPayoutTracking(userId, userData);
   
-  // Load rewards
   const rewards = userData?.rewards || {};
   document.getElementById("houseCount").textContent = rewards.house || 0;
   document.getElementById("carCount").textContent = rewards.car || 0;
@@ -281,7 +380,6 @@ async function loadDashboard() {
   document.getElementById("diamondCount").textContent = rewards.diamond || 0;
   document.getElementById("crownCount").textContent = rewards.crown || 0;
   
-  // Show top posts
   posts.sort((a, b) => ((b.likedBy || []).length) - ((a.likedBy || []).length));
   const topPosts = posts.slice(0, 5);
   
@@ -305,10 +403,9 @@ async function loadDashboard() {
     });
   }
   
-  // Engagement bars (last 7 days)
-  const maxValue = Math.max(totalLikes, totalComments, 0);
-  const likesPercent = maxValue > 0 ? (totalLikes / maxValue) * 100 : 0;
-  const commentsPercent = maxValue > 0 ? (totalComments / maxValue) * 100 : 0;
+  const maxValue = Math.max(totalLikes, totalComments, 1);
+  const likesPercent = (totalLikes / maxValue) * 100;
+  const commentsPercent = (totalComments / maxValue) * 100;
   
   document.getElementById("likesBar").style.width = likesPercent + "%";
   document.getElementById("commentsBar").style.width = commentsPercent + "%";
@@ -317,27 +414,22 @@ async function loadDashboard() {
   document.getElementById("likesValue").textContent = totalLikes;
   document.getElementById("commentsValue").textContent = totalComments;
   document.getElementById("sharesValue").textContent = 0;
-  
-  // Add reward click animations
-  document.querySelectorAll(".reward-item").forEach(item => {
-    item.addEventListener("click", () => {
-      item.classList.add("active");
-      setTimeout(() => {
-        item.classList.remove("active");
-      }, 1000);
-    });
-  });
 }
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    // Show admin button if user is admin
     if (isAdmin(user.email)) {
-      document.getElementById("adminNavBtn").style.display = "inline-block";
+      const adminBtn = document.getElementById("adminNavBtn");
+      if (adminBtn) adminBtn.style.display = "inline-block";
     }
     
+    initNavigation();
     await loadDashboard();
   }
 });

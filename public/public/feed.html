@@ -2,27 +2,560 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>YourSpace – Feed</title>
-  <link rel="stylesheet" href="feed.css">
+  <style>
+    /* COMPLETE FEED STYLING - ALL FEATURES VISIBLE */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #f0f4f8;
+      color: #222;
+      overflow-x: hidden;
+    }
+
+    /* NAVIGATION */
+    .navbar {
+      background: rgba(0, 0, 0, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      padding: 1rem 1.5rem !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 9999 !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .nav-brand {
+      font-size: 1.3rem !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+      z-index: 10001 !important;
+    }
+
+    .hamburger {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 5px !important;
+      background: none !important;
+      border: none !important;
+      padding: 1rem !important;
+      cursor: pointer !important;
+      z-index: 10001 !important;
+    }
+
+    .hamburger span {
+      width: 28px !important;
+      height: 3px !important;
+      background: #fff !important;
+      border-radius: 3px !important;
+      transition: all 0.3s !important;
+    }
+
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(9px, 9px) !important; }
+    .hamburger.active span:nth-child(2) { opacity: 0 !important; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(9px, -9px) !important; }
+
+    .nav-links {
+      position: fixed !important;
+      top: 0 !important;
+      right: -100% !important;
+      width: 85% !important;
+      max-width: 320px !important;
+      height: 100vh !important;
+      background: rgba(0, 0, 0, 0.98) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 6rem 2rem 2rem !important;
+      gap: 1.2rem !important;
+      transition: right 0.3s ease !important;
+      box-shadow: -5px 0 20px rgba(0, 0, 0, 0.7) !important;
+      z-index: 10000 !important;
+      overflow-y: auto !important;
+    }
+
+    .nav-links.active { right: 0 !important; }
+
+    .nav-links button {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: #fff !important;
+      padding: 1.2rem 1.5rem !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      font-size: 1.1rem !important;
+      width: 100% !important;
+      text-align: left !important;
+      transition: all 0.2s !important;
+    }
+
+    .nav-links button:active {
+      background: rgba(255, 255, 255, 0.3) !important;
+      transform: scale(0.98) !important;
+    }
+
+    /* FEED */
+    .feed-container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #1c1e21;
+    }
+
+    /* SEARCH */
+    .search-container {
+      position: relative;
+      margin: 1.5rem 0;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 1rem 3rem 1rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #e4e6eb;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #65676b;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 0.5rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #e4e6eb;
+    }
+
+    .search-result-item:hover { background: #f0f2f5; }
+
+    .search-result-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .search-result-username {
+      font-weight: 600;
+      color: #1c1e21;
+    }
+
+    /* NEW POST */
+    .new-post {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .new-post textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 0.8rem;
+    }
+
+    .new-post button {
+      width: 100%;
+      padding: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* POSTS */
+    .post-card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .post-header strong {
+      font-size: 1rem;
+      color: #1c1e21;
+      cursor: pointer;
+    }
+
+    .post-header strong:hover {
+      text-decoration: underline;
+    }
+
+    .post-card > p {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .post-media {
+      display: block;
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    /* ACTIONS - GIFT BUTTON ALWAYS VISIBLE */
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e4e6eb;
+    }
+
+    .actions button {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    /* GIFT BUTTON - MOST IMPORTANT - ALWAYS VISIBLE */
+    .gift-btn {
+      background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%) !important;
+      color: white !important;
+      border: none !important;
+      box-shadow: 0 2px 8px rgba(255, 0, 110, 0.3) !important;
+    }
+
+    .gift-btn:active {
+      transform: scale(0.95) !important;
+    }
+
+    .like-btn.active { background: rgba(0, 123, 255, 0.2); color: #007bff; }
+    .dislike-btn.active { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
+
+    /* COMMENTS - THREADED */
+    .comments-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e4e6eb;
+    }
+
+    .comment {
+      background: #f5f7fa;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-left: 3px solid #007bff;
+    }
+
+    .comment strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .comment p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.8rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #e4e6eb;
+    }
+
+    .reply-btn, .delete-comment {
+      background: rgba(0, 123, 255, 0.1);
+      border: 1px solid rgba(0, 123, 255, 0.3);
+      color: #007bff;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .delete-comment {
+      background: rgba(255, 0, 0, 0.1);
+      border-color: rgba(255, 0, 0, 0.3);
+      color: #ff4444;
+    }
+
+    /* REPLY FORM */
+    .reply-form {
+      display: none;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin: 1rem 0 0 1rem;
+      padding: 1rem;
+      background: rgba(0, 123, 255, 0.05);
+      border-radius: 10px;
+      border-left: 3px solid #007bff;
+    }
+
+    .reply-form.active { display: flex; }
+
+    .reply-input {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 2px solid #e4e6eb;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .reply-submit-btn, .reply-cancel-btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .reply-submit-btn { background: #007bff; color: white; }
+    .reply-cancel-btn { background: #6c757d; color: white; }
+
+    /* NESTED REPLIES */
+    .replies-container {
+      margin-left: 1.5rem;
+      margin-top: 1rem;
+      border-left: 3px solid #e0e0e0;
+      padding-left: 1rem;
+    }
+
+    .reply {
+      background: #fff;
+      border-radius: 10px;
+      padding: 0.8rem;
+      margin-bottom: 0.6rem;
+      border: 1px solid #e4e6eb;
+      position: relative;
+    }
+
+    .reply strong {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: #007bff;
+    }
+
+    .delete-reply {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #ff4444;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* COMMENT FORM */
+    .comment-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .comment-input {
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      font-size: 0.95rem;
+    }
+
+    .comment-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* GIFT DIALOG */
+    .gift-dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+
+    .gift-dialog {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .gift-dialog h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    .gift-subtitle {
+      text-align: center;
+      color: #b0b3b8;
+      margin-bottom: 1.5rem;
+    }
+
+    .gift-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .gift-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .gift-option:active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #00d9ff;
+      transform: scale(1.05);
+    }
+
+    .gift-icon { font-size: 3rem; }
+    .gift-name { font-weight: 600; color: #fff; }
+    .gift-price { font-size: 1.1rem; font-weight: 700; color: #00ff88; }
+
+    .gift-cancel-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* DESKTOP */
+    @media (min-width: 769px) {
+      .hamburger { display: none !important; }
+      .nav-links {
+        position: relative !important;
+        right: auto !important;
+        width: auto !important;
+        height: auto !important;
+        flex-direction: row !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      .nav-links button {
+        width: auto !important;
+        padding: 0.8rem 1.5rem !important;
+      }
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-brand">🌐 YourSpace</div>
-    <button class="hamburger" id="hamburger">
+    
+    <button class="hamburger" id="hamburger" type="button">
       <span></span>
       <span></span>
       <span></span>
     </button>
+    
     <div class="nav-links" id="navLinks">
-      <button id="feedNavBtn">📰 Feed</button>
-      <button id="profileNavBtn">👤 Profile</button>
-      <button id="messagesNavBtn">💬 Messages</button>
-      <button id="notificationsNavBtn">🔔 Notifications</button>
-      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
-      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
-      <button id="contactNavBtn">📞 Contact</button>
-      <button id="logoutBtn">🚪 Logout</button>
+      <button id="feedNavBtn" type="button">📰 Feed</button>
+      <button id="profileNavBtn" type="button">👤 Profile</button>
+      <button id="messagesNavBtn" type="button">💬 Messages</button>
+      <button id="notificationsNavBtn" type="button">🔔 Notifications</button>
+      <button id="dashboardNavBtn" type="button">📊 Dashboard</button>
+      <button id="adminNavBtn" type="button" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn" type="button">📞 Contact</button>
+      <button id="logoutBtn" type="button">🚪 Logout</button>
     </div>
   </nav>
 
@@ -31,14 +564,14 @@
 
     <div class="search-container">
       <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
-      <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
+      <button id="clearSearchBtn" class="clear-search-btn" type="button" style="display:none;">✕</button>
       <div id="searchResults" class="search-results"></div>
     </div>
 
     <section class="new-post">
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
       <input type="file" id="postFileInput" accept="image/*,video/*" />
-      <button id="postBtn">Post</button>
+      <button id="postBtn" type="button">Post</button>
     </section>
 
     <section id="postsContainer"></section>
@@ -47,19 +580,3 @@
   <script type="module" src="feed.js"></script>
 </body>
 </html>
-
-<!-- NOTIFICATION CENTER -->
-<div id="notificationCenter" class="notification-center">
-  <button id="notificationBtn" class="notification-btn">
-    🔔 <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
-  </button>
-  <div id="notificationDropdown" class="notification-dropdown" style="display:none;">
-    <div class="notification-header">
-      <h3>Notifications</h3>
-      <button id="markAllRead">Mark all read</button>
-    </div>
-    <div id="notificationList" class="notification-list">
-      <p class="no-notifications">No new notifications</p>
-    </div>
-  </div>
-</div>

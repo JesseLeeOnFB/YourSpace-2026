@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Stripe Setup</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 40px; text-align: center; }
+    h1 { color: #333; }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #6772e5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:disabled { background-color: #aaa; cursor: not-allowed; }
+    #status { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Connect Your Stripe Account</h1>
+  <p>Set up Stripe to start receiving payouts for YourSpace gifts.</p>
+
+  <button id="connectBtn">Connect with Stripe</button>
+  <div id="status"></div>
+
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const statusDiv = document.getElementById('status');
+
+    connectBtn.addEventListener('click', async () => {
+      statusDiv.textContent = "Redirecting to Stripe...";
+      connectBtn.disabled = true;
+
+      try {
+        // Call your Firebase function to create a Stripe Connect account link
+        const response = await fetch('/__/functions/createConnectAccount'); // This is your Firebase function URL
+        const data = await response.json();
+
+        if (data.url) {
+          // Redirect user to Stripe onboarding
+          window.location.href = data.url;
+        } else {
+          statusDiv.textContent = "Failed to create Stripe account link. Try again.";
+          connectBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "Error connecting to Stripe. Check console.";
+        connectBtn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

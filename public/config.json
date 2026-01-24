@@ -1,0 +1,14 @@
+[36m[1mi [22m[39m This command retrieves your Runtime Config values (accessed via [1mfunctions.config()[22m) and exports them as a Secret Manager secret.
+
+[36m[1mi [22m[39m Fetching your existing functions.config() from [1myourspace-2026[22m...
+[32m[1m+ [22m[39m Fetched your existing functions.config().
+
+[36m[1mi [22m[39m [1mConfiguration to be exported:[22m
+{
+  "stripe": {
+    "secret": "******"
+  }
+}
+
+[34m?[39m [1mWhat would you like to name the new secret for your configuration?[22m
+[2m(FUNCTIONS_CONFIG_EXPORT)[22m[1A[96G

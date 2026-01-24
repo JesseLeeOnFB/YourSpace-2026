@@ -1,0 +1,68 @@
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE NAVIGATION FIX - ADD TO YOUR CSS FILES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Hamburger Menu Styles */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  .navbar {
+    position: relative;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+  }
+
+  .nav-toggle {
+    display: block;
+    order: 1;
+  }
+
+  .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .navbar button {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.5rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .navbar button:hover {
+    background: rgba(255,255,255,0.2);
+  }
+}
+
+/* Desktop - show all buttons */
+@media (min-width: 769px) {
+  .nav-menu {
+    display: flex !important;
+    flex-direction: row;
+    gap: 1rem;
+  }
+}

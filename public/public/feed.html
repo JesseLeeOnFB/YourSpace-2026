@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YourSpace – Feed</title>
+  <link rel="stylesheet" href="feed.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="notificationsNavBtn">🔔 Notifications</button>
+      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <main class="feed-container">
+    <h1>Global Feed</h1>
+
+    <div class="search-container">
+      <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
+      <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <section class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFileInput" accept="image/*,video/*" />
+      <button id="postBtn">Post</button>
+    </section>
+
+    <section id="postsContainer"></section>
+  </main>
+
+  <script type="module" src="feed.js"></script>
+</body>
+</html>
+
+<!-- NOTIFICATION CENTER -->
+<div id="notificationCenter" class="notification-center">
+  <button id="notificationBtn" class="notification-btn">
+    🔔 <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
+  </button>
+  <div id="notificationDropdown" class="notification-dropdown" style="display:none;">
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <button id="markAllRead">Mark all read</button>
+    </div>
+    <div id="notificationList" class="notification-list">
+      <p class="no-notifications">No new notifications</p>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,5 @@
 {
   "projects": {
     "default": "yourspace-2026"
-  },
-  "targets": {},
-  "etags": {}
+  }
 }

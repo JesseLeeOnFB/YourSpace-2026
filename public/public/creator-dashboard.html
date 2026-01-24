@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator Dashboard - YourSpace</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  color: #00ff00;
+  margin-bottom: 0.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: #00ff00;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ff00;
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.payout-section {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.payout-section h2 {
+  color: #00ff00;
+  margin-bottom: 1rem;
+}
+
+.payout-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.payout-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.payout-item label {
+  color: #999;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.payout-item .value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.payout-status {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #0a0a0a;
+  border-radius: 8px;
+  text-align: center;
+  color: #00ff00;
+  font-weight: 600;
+}
+
+.stripe-setup-btn {
+  background: #00ff00;
+  color: #000;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s;
+  display: block;
+  width: 100%;
+}
+
+.stripe-setup-btn:hover {
+  background: #00cc00;
+}
+
+.payout-history {
+  margin-top: 2rem;
+}
+
+.payout-history h3 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.payout-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.payout-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.2s ease;
+}
+
+.payout-history-item:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.payout-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.payout-history-info strong {
+  font-size: 1.2rem;
+  color: #00ff88;
+}
+
+.payout-history-info span {
+  font-size: 0.85rem;
+  color: #65676b;
+}
+
+.payout-history-status {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.payout-history-status.completed {
+  background: rgba(0,255,136,0.2);
+  color: #00ff88;
+}
+
+.payout-history-status.pending {
+  background: rgba(255,170,0,0.2);
+  color: #ffaa00;
+}
+
+.payout-history-status.failed {
+  background: rgba(255,0,0,0.2);
+  color: #ff4444;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .payout-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .payout-amount {
+    font-size: 2rem;
+  }
+  
+  .payout-date {
+    font-size: 1.2rem;
+  }
+  
+  .payout-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1>Creator Dashboard</h1>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🎁</div>
+        <p class="stat-value" id="giftCount">0</p>
+        <p class="stat-label">Gifts Received</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <p class="stat-value" id="totalEarnings">$0.00</p>
+        <p class="stat-label">Total Earnings</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏦</div>
+        <p class="stat-value" id="lastPayoutAmount">$0.00</p>
+        <p class="stat-label">Last Payout</p>
+      </div>
+    </div>
+
+    <div class="payout-section">
+      <h2>Next Payout</h2>
+      <div class="payout-info">
+        <div class="payout-item">
+          <label>Current Balance</label>
+          <div class="value" id="currentBalance">$0.00</div>
+        </div>
+        <div class="payout-item">
+          <label>Next Payout Date</label>
+          <div class="value" id="nextPayoutDate">Loading...</div>
+        </div>
+        <div class="payout-item">
+          <label>Next Payout Amount</label>
+          <div class="value" id="nextPayoutAmount">$0.00</div>
+        </div>
+        <div class="payout-item">
+          <label>Payout Method</label>
+          <div class="value">Stripe</div>
+        </div>
+        <div class="payout-item">
+          <label>Payout Frequency</label>
+          <div class="value">Every 14 Days</div>
+        </div>
+      </div>
+      
+      <div style="margin-top:1.5rem;padding:1rem;background:#0a0a0a;border-radius:8px;">
+        <h3 style="color:#00ff00;margin-bottom:0.5rem;">💡 How Payouts Work</h3>
+        <ul style="color:#999;line-height:1.8;">
+          <li>Payouts are processed every 14 days automatically</li>
+          <li>Minimum payout amount: $10.00</li>
+          <li>Stripe fees: 2.9% + $0.30 per transaction</li>
+          <li>Funds typically arrive in 2-3 business days</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="payout-section">
+      <h2>🎁 Recent Gifts</h2>
+      <div id="recentGiftsList">
+        <p style="color:#666;text-align:center;padding:2rem;">No gifts received yet</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+
+</body>
+</html>

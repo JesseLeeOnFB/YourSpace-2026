@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Profile</title>
+  <link rel="stylesheet" href="profile.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body class="default-theme">
+  <nav class="navbar">
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="notificationsNavBtn">🔔 Notifications</button>
+      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <section class="profile-main">
+    <div class="profile-top">
+      <div class="pfp-container">
+        <img id="profilePic" src="default-avatar.png" alt="Profile Picture">
+        <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+        <button id="changePfpBtn">Change Picture</button>
+      </div>
+
+      <div class="profile-info-box">
+        <h2 id="displayName">Loading...</h2>
+        <p id="location" class="location-text">📍 Location</p>
+        <p id="bio" class="bio-text">Bio goes here...</p>
+        <button id="editProfileBtn">Edit Profile</button>
+        <button id="sendMessageBtn" style="display:none;">Send Message</button>
+      </div>
+    </div>
+
+    <div id="editProfileModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Edit Profile</h3>
+        <label>Username:</label>
+        <input type="text" id="usernameInput" placeholder="Username">
+        <label>Location:</label>
+        <input type="text" id="locationInput" placeholder="Location">
+        <label>Bio:</label>
+        <textarea id="bioInput" placeholder="Bio" rows="4"></textarea>
+        <button id="saveProfileBtn">Save Changes</button>
+      </div>
+    </div>
+
+    <div class="theme-container card">
+      <h3>🎨 Customize Theme</h3>
+      <select id="themeSelect">
+        <optgroup label="Basic Themes">
+          <option value="default-theme">Default</option>
+          <option value="dark-theme">Dark Mode</option>
+          <option value="light-theme">Light & Clean</option>
+        </optgroup>
+        
+        <optgroup label="Gradient Themes">
+          <option value="blue-gradient">Blue Gradient</option>
+          <option value="red-gradient">Red Gradient</option>
+          <option value="green-gradient">Green Gradient</option>
+          <option value="purple-gradient">Purple Gradient</option>
+          <option value="orange-gradient">Orange Sunset</option>
+          <option value="pink-gradient">Pink Dreams</option>
+          <option value="animated-rainbow">Animated Rainbow</option>
+          <option value="ocean-gradient">Ocean Waves</option>
+          <option value="sunset-gradient">Sunset Sky</option>
+          <option value="forest-gradient">Forest Green</option>
+        </optgroup>
+
+        <optgroup label="Neon & Vibrant">
+          <option value="neon-theme">Neon Cyan</option>
+          <option value="neon-pink">Neon Pink</option>
+          <option value="neon-green">Neon Green</option>
+          <option value="cyberpunk">Cyberpunk</option>
+          <option value="vaporwave">Vaporwave</option>
+          <option value="synthwave">Synthwave</option>
+        </optgroup>
+
+        <optgroup label="Nature & Animals">
+          <option value="cats-paradise">Cats Paradise</option>
+          <option value="dogs-world">Dogs World</option>
+          <option value="butterflies">Butterflies</option>
+          <option value="ocean-life">Ocean Life</option>
+          <option value="forest-path">Forest Path</option>
+          <option value="mountain-view">Mountain View</option>
+          <option value="sakura-blossom">Sakura Blossom</option>
+          <option value="tropical-beach">Tropical Beach</option>
+        </optgroup>
+
+        <optgroup label="Holidays & Seasons">
+          <option value="christmas">Christmas</option>
+          <option value="halloween">Halloween</option>
+          <option value="valentines">Valentine's Day</option>
+          <option value="easter">Easter</option>
+          <option value="autumn-leaves">Autumn Leaves</option>
+          <option value="winter-snow">Winter Snow</option>
+          <option value="spring-flowers">Spring Flowers</option>
+          <option value="summer-vibes">Summer Vibes</option>
+        </optgroup>
+
+        <optgroup label="Aesthetic & Emo">
+          <option value="emo-black">Emo Black</option>
+          <option value="emo-red">Emo Red & Black</option>
+          <option value="gothic">Gothic</option>
+          <option value="grunge">Grunge</option>
+          <option value="pastel-goth">Pastel Goth</option>
+          <option value="vintage-aesthetic">Vintage Aesthetic</option>
+          <option value="soft-aesthetic">Soft Aesthetic</option>
+          <option value="y2k">Y2K Throwback</option>
+        </optgroup>
+
+        <optgroup label="Cars & Racing">
+          <option value="racing-stripes">Racing Stripes</option>
+          <option value="jdm-style">JDM Style</option>
+          <option value="muscle-cars">Muscle Cars</option>
+          <option value="neon-garage">Neon Garage</option>
+        </optgroup>
+
+        <optgroup label="Space & Sci-Fi">
+          <option value="galaxy">Galaxy</option>
+          <option value="nebula">Nebula</option>
+          <option value="stars">Starry Night</option>
+          <option value="matrix">Matrix Code</option>
+          <option value="alien">Alien World</option>
+        </optgroup>
+
+        <optgroup label="Music & Art">
+          <option value="vinyl-records">Vinyl Records</option>
+          <option value="graffiti">Graffiti Wall</option>
+          <option value="concert">Concert Lights</option>
+          <option value="paint-splash">Paint Splash</option>
+        </optgroup>
+
+        <optgroup label="Food & Drink">
+          <option value="coffee-vibes">Coffee Vibes</option>
+          <option value="candy-land">Candy Land</option>
+          <option value="pizza-party">Pizza Party</option>
+          <option value="sushi-night">Sushi Night</option>
+        </optgroup>
+
+        <optgroup label="Gaming & Geek">
+          <option value="retro-gaming">Retro Gaming</option>
+          <option value="pixel-art">Pixel Art</option>
+          <option value="arcade">Arcade Neon</option>
+          <option value="anime-aesthetic">Anime Aesthetic</option>
+        </optgroup>
+
+        <optgroup label="Sports & Fitness">
+          <option value="basketball">Basketball Court</option>
+          <option value="soccer-field">Soccer Field</option>
+          <option value="gym-life">Gym Life</option>
+          <option value="skateboard">Skateboard Park</option>
+        </optgroup>
+
+        <optgroup label="City & Urban">
+          <option value="new-york">New York Nights</option>
+          <option value="tokyo-lights">Tokyo Lights</option>
+          <option value="street-art">Street Art</option>
+          <option value="rooftop-view">Rooftop View</option>
+        </optgroup>
+
+        <optgroup label="Fantasy & Magic">
+          <option value="unicorn-dreams">Unicorn Dreams</option>
+          <option value="dragon-lair">Dragon Lair</option>
+          <option value="fairy-forest">Fairy Forest</option>
+          <option value="wizard-castle">Wizard Castle</option>
+        </optgroup>
+      </select>
+      <button id="applyThemeBtn">Apply Theme</button>
+      <button id="resetThemeBtn">Reset to Default</button>
+    </div>
+
+    <div class="custom-html-container card" id="customHtmlSection">
+      <h3>💻 Custom HTML/CSS - YourSpace Style</h3>
+      <p class="info-text">Customize your space! Your code injects directly into the page. Use &lt;style&gt; tags for CSS, add backgrounds, animations, GIFs, and completely customize your profile!</p>
+      <div class="example-box">
+        <strong>🎨 Example - Animated Background:</strong>
+        <pre>&lt;style&gt;
+body {
+  background: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGpsYm91/giphy.gif');
+  background-attachment: fixed;
+  background-size: cover;
+}
+.card {
+  background: rgba(255,255,255,0.95) !important;
+  border: 3px solid #ff00ff !important;
+  box-shadow: 0 0 20px #ff00ff !important;
+}
+&lt;/style&gt;</pre>
+      </div>
+      <div class="example-box">
+        <strong>✨ Example - Custom Colors & Fonts:</strong>
+        <pre>&lt;style&gt;
+body {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  font-family: 'Comic Sans MS', cursive;
+}
+.card {
+  background: rgba(0,0,0,0.8) !important;
+  color: #00ffff !important;
+  border-radius: 30px !important;
+}
+h2, h3 {
+  color: #ff00ff !important;
+  text-shadow: 0 0 10px #ff00ff;
+}
+&lt;/style&gt;</pre>
+      </div>
+      <textarea id="customHtmlInput" placeholder="Paste your HTML/CSS code here... (tip: use !important to override default styles)" rows="10"></textarea>
+      <button id="saveCustomHtmlBtn">💾 Save & Apply to Page</button>
+      <button id="clearCustomHtmlBtn">🗑️ Clear & Reset</button>
+      <div id="customHtmlPreview"></div>
+    </div>
+
+    <div class="music-player card">
+      <h3>🎵 Music Player</h3>
+      <div class="music-controls">
+        <label>
+          <input type="checkbox" id="autoplayToggle" checked> Autoplay
+        </label>
+      </div>
+      <div id="musicSlotsContainer">
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="YouTube/Spotify/SoundCloud link" data-slot="0">
+          <button class="add-music-btn" data-slot="0">Add</button>
+          <button class="remove-music-btn" data-slot="0" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 2" data-slot="1">
+          <button class="add-music-btn" data-slot="1">Add</button>
+          <button class="remove-music-btn" data-slot="1" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 3" data-slot="2">
+          <button class="add-music-btn" data-slot="2">Add</button>
+          <button class="remove-music-btn" data-slot="2" style="display:none;">Remove</button>
+        </div>
+        <div class="music-slot">
+          <input type="text" class="music-input" placeholder="Song 4" data-slot="3">
+          <button class="add-music-btn" data-slot="3">Add</button>
+          <button class="remove-music-btn" data-slot="3" style="display:none;">Remove</button>
+        </div>
+      </div>
+      <div id="musicPlayerContainer"></div>
+    </div>
+
+    <div class="top10-container card">
+      <h3>👥 Top 10 Friends</h3>
+      <input type="text" id="searchFriendInput" placeholder="Search username to add...">
+      <button id="searchFriendBtn">Search</button>
+      <div id="searchResults"></div>
+      <div id="topFriendsContainer" class="top-friends-list"></div>
+    </div>
+
+    <div class="wall-container card">
+      <h3>💬 Comments Wall</h3>
+      <div id="wallCommentsContainer"></div>
+      <textarea id="commentInput" placeholder="Leave a comment..." rows="3"></textarea>
+      <button id="addCommentBtn">Post Comment</button>
+    </div>
+  </section>
+
+  <script type="module" src="profile.js"></script>
+</body>
+</html>

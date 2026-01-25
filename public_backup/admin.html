@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - YourSpace</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+```
+.admin-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border-radius: 12px;
+  border: 2px solid #00ff00;
+}
+
+.admin-header h1 {
+  color: #00ff00;
+  margin-bottom: 0.5rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  padding: 1rem 2rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.admin-tab:hover {
+  border-color: #00ff00;
+  background: #2a2a2a;
+}
+
+.admin-tab.active {
+  background: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+}
+
+.admin-panel {
+  display: none;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.admin-panel.active {
+  display: block;
+}
+
+.admin-panel h2 {
+  color: #00ff00;
+  margin-bottom: 1.5rem;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: #0a0a0a;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #222;
+  text-align: center;
+}
+
+.stat-box .value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ff00;
+  margin: 0.5rem 0;
+}
+
+.stat-box .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.data-table th {
+  background: #0a0a0a;
+  color: #00ff00;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #333;
+}
+
+.data-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #222;
+  color: #fff;
+}
+
+.data-table tr:hover {
+  background: #1a1a1a;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: #ff0000;
+  color: white;
+}
+
+.btn-approve {
+  background: #00ff00;
+  color: #000;
+}
+
+.btn-ban {
+  background: #ff6600;
+  color: white;
+}
+
+.search-box {
+  width: 100%;
+  padding: 1rem;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: #00ff00;
+}
+```
+
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="notificationsNavBtn">🔔 Notifications</button>
+      <button id="dashboardNavBtn">📊 Dashboard</button>
+      <button id="adminNavBtn">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>👑 Admin Control Panel</h1>
+      <p style="color:#999;">Manage YourSpace Platform</p>
+    </div>
+
+```
+<!-- Admin Tabs -->
+<div class="admin-tabs">
+  <div class="admin-tab active" data-tab="overview">📊 Overview</div>
+  <div class="admin-tab" data-tab="users">👥 Users</div>
+  <div class="admin-tab" data-tab="posts">📝 Posts</div>
+  <div class="admin-tab" data-tab="reports">🚨 Reports</div>
+  <div class="admin-tab" data-tab="contact">📧 Contact</div>
+</div>
+
+<!-- Overview Panel -->
+<div class="admin-panel active" id="overview-panel">
+  <h2>Platform Overview</h2>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="label">Total Users</div>
+      <div class="value" id="totalUsers">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Total Posts</div>
+      <div class="value" id="totalPosts">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Total Gifts</div>
+      <div class="value" id="totalGifts">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Pending Reports</div>
+      <div class="value" id="pendingReports">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Total Revenue</div>
+      <div class="value" id="totalRevenue">$0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Users Panel -->
+<div class="admin-panel" id="users-panel">
+  <h2>User Management</h2>
+  <input type="text" class="search-box" id="userSearch" placeholder="Search users by username or email..." />
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Joined</th>
+        <th>Posts</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="usersTableBody">
+      <tr><td colspan="5" style="text-align:center;color:#666;padding:2rem;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Posts Panel -->
+<div class="admin-panel" id="posts-panel">
+  <h2>Post Management</h2>
+  <input type="text" class="search-box" id="postSearch" placeholder="Search posts..." />
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Content</th>
+        <th>Posted</th>
+        <th>Likes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="postsTableBody">
+      <tr><td colspan="5" style="text-align:center;color:#666;padding:2rem;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Reports Panel -->
+<div class="admin-panel" id="reports-panel">
+  <h2>Content Reports</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Reason</th>
+        <th>Reporter</th>
+        <th>Reported</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="reportsTableBody">
+      <tr><td colspan="6" style="text-align:center;color:#666;padding:2rem;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Contact Panel -->
+<div class="admin-panel" id="contact-panel">
+  <h2>Contact Submissions</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Subject</th>
+        <th>Message</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="contactTableBody">
+      <tr><td colspan="6" style="text-align:center;color:#666;padding:2rem;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+  </div>
+
+  <script type="module" src="admin.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourSpace Feed</title>
+  <link rel="stylesheet" href="feed.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <button class="navBtn" data-target="index.html">Home</button>
+    <button class="navBtn" data-target="profile.html">Profile</button>
+    <button class="navBtn" data-target="feed.html">Feed</button>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <!-- Search Bar -->
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="Search users...">
+    <span id="clearSearchBtn">×</span>
+  </div>
+
+  <!-- Feed Container -->
+  <div id="feedContainer"></div>
+
+  <script src="feed.js"></script>
+</body>
+</html>

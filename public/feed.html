@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourSpace Feed</title>
-  <link rel="stylesheet" href="feed.css">
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-
-  <!-- Stripe -->
-  <script src="https://js.stripe.com/v3/"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourSpace Feed</title>
+<link rel="stylesheet" href="feed.css">
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
+  <nav>
     <button class="navBtn" data-target="index.html">Home</button>
     <button class="navBtn" data-target="profile.html">Profile</button>
     <button class="navBtn" data-target="feed.html">Feed</button>
     <button onclick="firebase.auth().signOut()">Logout</button>
   </nav>
 
-  <!-- Search -->
-  <div class="search-wrapper">
-    <input type="text" id="searchInput" placeholder="Search users...">
-    <span id="clearBtn">×</span>
+  <!-- Post Creation -->
+  <div class="post-create">
+    <textarea id="postInput" placeholder="What's on your mind?"></textarea>
+    <button id="postBtn">Post</button>
   </div>
 
-  <!-- Feed Container -->
-  <div id="feedContainer" class="feed-container"></div>
+  <!-- Search Bar -->
+  <div id="searchWrapper" class="search-container">
+    <input type="text" id="searchInput" placeholder="Search users...">
+    <span id="clearBtn" style="cursor:pointer;margin-left:5px;">×</span>
+  </div>
 
-  <!-- Feed JS -->
+  <!-- Posts Container -->
+  <div id="feedContainer"></div>
+
   <script src="feed.js"></script>
 </body>
 </html>

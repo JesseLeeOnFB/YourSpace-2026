@@ -1,86 +1,81 @@
-/* Reset & Body */
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  margin: 0;
+  background: #f5f5f5;
 }
 
-/* Navigation */
 .nav-bar {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: #242424;
-  padding: 10px 0;
+  background: #24292e;
+  padding: 10px;
 }
 
 .nav-bar button {
   color: #fff;
-  background: none;
+  background: #24292e;
   border: none;
-  font-size: 16px;
+  margin-right: 10px;
+  padding: 8px 12px;
   cursor: pointer;
 }
 
 .nav-bar button:hover {
-  text-decoration: underline;
+  background: #444;
 }
 
-/* Search Bar */
-.search-wrapper {
+.search-container {
   display: flex;
   justify-content: center;
-  margin: 15px 0;
+  margin: 20px;
 }
 
 #searchInput {
   width: 80%;
-  max-width: 400px;
-  padding: 8px;
+  padding: 10px;
   font-size: 16px;
-  border-radius: 4px;
+  border-radius: 5px 0 0 5px;
   border: 1px solid #ccc;
 }
 
-#clearSearchBtn {
+#clearBtn {
+  padding: 10px;
+  background: #ccc;
+  border-radius: 0 5px 5px 0;
   cursor: pointer;
-  margin-left: 8px;
-  font-size: 18px;
   user-select: none;
 }
 
-/* Feed Posts */
-#feedContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 50px;
+.feed-container {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .feed-post {
-  width: 90%;
-  max-width: 600px;
   background: #fff;
+  margin: 10px 0;
   padding: 15px;
-  margin-bottom: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
 .feed-post p {
   margin: 5px 0;
 }
 
-.feed-post button {
+.giftBtn {
   margin-top: 10px;
-  padding: 6px 12px;
+  padding: 8px 12px;
+  background: #1da1f2;
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  background-color: #007bff;
-  color: white;
 }
 
-.feed-post button:hover {
-  background-color: #0056b3;
+.giftBtn:hover {
+  background: #0d95e8;
+}
+.gifted {
+  background: #ffeb3b !important;
+  color: #000 !important;
 }

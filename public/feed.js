@@ -26,71 +26,91 @@ clearBtn.addEventListener("click", () => {
 
 // -----------------------
 // Load feed posts
-async function loadFeed() {
+const loadFeed = async () => {
   feedContainer.innerHTML = "<p>Loading...</p>";
+
   let query = db.collection("posts").orderBy("timestamp", "desc");
-
   const searchValue = searchInput.value.trim();
-  if(searchValue) query = query.where("usernameLower", "==", searchValue.toLowerCase());
-
-  const snapshot = await query.get();
-  feedContainer.innerHTML = "";
-
-  if(snapshot.empty) {
-    feedContainer.innerHTML = "<p>No posts found.</p>";
-    return;
+  if (searchValue) {
+    query = query.where("usernameLower", "==", searchValue.toLowerCase());
   }
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const username = data.username || "Anonymous";
-    const text = data.text || "";
+  try {
+    const snapshot = await query.get();
+    feedContainer.innerHTML = "";
 
-    const postDiv = document.createElement("div");
-    postDiv.classList.add("feed-post");
-    postDiv.innerHTML = `
-      <p><strong>${username}</strong></p>
-      <p>${text}</p>
-      <button class="giftBtn" data-postid="${doc.id}" data-username="${username}">Send Gift</button>
-    `;
-    feedContainer.appendChild(postDiv);
-  });
+    if (snapshot.empty) {
+      feedContainer.innerHTML = "<p>No posts found.</p>";
+      return;
+    }
 
-  // Gift button events
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const postDiv = document.createElement("div");
+      postDiv.classList.add("feed-post");
+
+      let postHTML = `<p><strong>${data.username || "Anonymous"}</strong></p>
+                      <p>${data.text || ""}</p>`;
+
+      if(data.imageURL) {
+        postHTML += `<img src="${data.imageURL}" alt="Post image">`;
+      }
+
+      postHTML += `<button class="giftBtn" data-postid="${doc.id}" data-username="${data.username}">Send Gift</button>`;
+
+      postDiv.innerHTML = postHTML;
+      feedContainer.appendChild(postDiv);
+    });
+
+    attachGiftButtons();
+  } catch (err) {
+    console.error(err);
+    feedContainer.innerHTML = "<p>Error loading posts.</p>";
+  }
+};
+
+// Attach Stripe checkout to buttons
+const attachGiftButtons = () => {
   document.querySelectorAll(".giftBtn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const postId = btn.dataset.postid;
       const recipient = btn.dataset.username;
-
       try {
         const res = await fetch("/createCheckoutSession", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ postId, recipient })
         });
+
+        if(!res.ok) throw new Error("Server error");
+
         const session = await res.json();
         const stripe = Stripe("pk_live_51SsCC2DYg2OK71XSVGO4dsgGVtpUO1XcrgJp1pP5K0fTDVkDaunVwNzhH5ORf8QRJBMA9WDq9FY0Z6SrTWkSPvr100nhHBuJNM");
         await stripe.redirectToCheckout({ sessionId: session.id });
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         alert("Error creating checkout session.");
       }
     });
   });
-}
+};
 
-// Search input
+// Search
 searchInput.addEventListener("input", loadFeed);
 
-// Navigation
+// Navbar
 document.querySelectorAll(".navBtn").forEach(btn => {
   btn.addEventListener("click", e => {
-    window.location.href = e.target.dataset.target;
+    const target = e.target.dataset.target;
+    window.location.href = target;
   });
 });
 
 // Auth + initial load
 auth.onAuthStateChanged(user => {
-  if(!user) window.location.href = "login.html";
-  else loadFeed();
+  if(!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  loadFeed();
 });

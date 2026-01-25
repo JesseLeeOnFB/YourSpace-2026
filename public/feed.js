@@ -1,265 +1,170 @@
-// feed.js — FULL FINAL WORKING VERSION (YourSpace)
+// ============================================
+// YourSpace Feed JS
+// ============================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, doc, deleteDoc, getDoc, getDocs,
-  updateDoc, query, orderBy, where, onSnapshot,
-  serverTimestamp, arrayUnion, arrayRemove
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import { auth, db, storage } from "./firebase.js"; // Make sure your Firebase config is imported
 
-/* ───────────────── FIREBASE INIT ───────────────── */
+// ============================================
+// GLOBAL VARIABLES
+// ============================================
+let currentUser = null;
+let postsContainer = document.getElementById("postsContainer");
+let giftDialog = document.getElementById("giftDialog");
+let giftOptions = document.getElementById("giftOptions");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-
-/* ───────────────── GLOBALS ───────────────── */
-
-const ADMIN_EMAILS = [
-  "skeeterjeeter8@gmail.com",
-  "daniellehunt01@gmail.com"
-];
-
-const postsContainer = document.getElementById("postsContainer");
-const postBtn = document.getElementById("postBtn");
-const postText = document.getElementById("postText");
-const postFileInput = document.getElementById("postFileInput");
-
-/* ───────────────── HELPERS ───────────────── */
-
-function isAdmin(email) {
-  return ADMIN_EMAILS.includes(email?.toLowerCase());
-}
-
-function haptic(ms = 15) {
-  navigator.vibrate?.(ms);
-}
-
-/* ───────────────── RATE LIMIT ───────────────── */
-
-const postTimestamps = [];
-function checkRateLimit() {
-  const now = Date.now();
-  while (postTimestamps.length && now - postTimestamps[0] > 120000) {
-    postTimestamps.shift();
+// ============================================
+// AUTH STATE
+// ============================================
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
   }
-  if (postTimestamps.length >= 5) {
-    alert("⏱️ Slow down — 5 posts per 2 minutes.");
-    return false;
-  }
-  postTimestamps.push(now);
-  return true;
-}
-
-/* ───────────────── CONTENT FILTER ───────────────── */
-
-const BLOCKED = [
-  "nigger","nigga","faggot","retard","kys","kill myself","suicide",
-  "kill you","bomb","rape","shoot you"
-];
-
-function blocked(text) {
-  if (!text) return false;
-  return BLOCKED.some(w => text.toLowerCase().includes(w));
-}
-
-/* ───────────────── CREATE POST ───────────────── */
-
-postBtn?.addEventListener("click", async () => {
-  if (!checkRateLimit()) return;
-
-  const text = postText.value.trim();
-  const file = postFileInput.files[0];
-  if (!text && !file) return alert("Post cannot be empty");
-  if (blocked(text)) return alert("Blocked content detected");
-
-  const user = auth.currentUser;
-  if (!user) return;
-
-  let mediaURL = "";
-  let mediaType = "";
-
-  if (file) {
-    mediaType = file.type.startsWith("video") ? "video" : "image";
-    const r = ref(storage, `posts/${user.uid}/${Date.now()}_${file.name}`);
-    await uploadBytes(r, file);
-    mediaURL = await getDownloadURL(r);
-  }
-
-  const uDoc = await getDoc(doc(db, "users", user.uid));
-  const username = uDoc.data()?.username || user.email.split("@")[0];
-
-  await addDoc(collection(db, "posts"), {
-    userId: user.uid,
-    username,
-    text,
-    mediaURL,
-    mediaType,
-    likedBy: [],
-    dislikedBy: [],
-    pinned: false,
-    trending: false,
-    createdAt: serverTimestamp()
-  });
-
-  postText.value = "";
-  postFileInput.value = "";
-  haptic();
+  currentUser = user;
+  loadPosts();
 });
 
-/* ───────────────── RENDER POST ───────────────── */
+// ============================================
+// NAVIGATION BUTTONS
+// ============================================
+document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
+document.getElementById("profileNavBtn").onclick = () => window.location.href = "profile.html";
+document.getElementById("messagesNavBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("notificationsNavBtn").onclick = () => window.location.href = "notifications.html";
+document.getElementById("dashboardNavBtn").onclick = () => window.location.href = "dashboard.html";
+document.getElementById("adminNavBtn").onclick = () => window.location.href = "admin.html";
+document.getElementById("contactNavBtn").onclick = () => window.location.href = "contact.html";
+document.getElementById("logoutBtn").onclick = () => auth.signOut();
 
-async function renderPost(post, postId) {
-  const user = auth.currentUser;
-  const isOwner = post.userId === user.uid;
+// Hamburger menu toggle
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+hamburger.addEventListener("click", () => {
+  hamburger.classList.toggle("active");
+  navLinks.classList.toggle("active");
+});
 
-  const el = document.createElement("div");
-  el.className = "post-card";
-  el.id = `post-${postId}`;
+// ============================================
+// NEW POST
+// ============================================
+document.getElementById("postBtn").addEventListener("click", async () => {
+  const text = document.getElementById("postText").value.trim();
+  const fileInput = document.getElementById("postFileInput");
+  let fileURL = null;
 
-  el.innerHTML = `
-    ${post.pinned ? `<div class="pin-badge">📌 Pinned</div>` : ""}
-    ${post.trending ? `<div class="trend-badge">🔥 Trending</div>` : ""}
-    <strong>${post.username}</strong>
-    <small>${post.createdAt?.toDate?.().toLocaleString() || "now"}</small>
-    <p>${post.text || ""}</p>
-    ${post.mediaURL ? (
-      post.mediaType === "video"
-        ? `<video controls src="${post.mediaURL}" class="post-media"></video>`
-        : `<img src="${post.mediaURL}" class="post-media" />`
-    ) : ""}
-    <div class="actions">
-      <button class="like">👍 ${post.likedBy?.length || 0}</button>
-      <button class="dislike">🖕 ${post.dislikedBy?.length || 0}</button>
-      <button class="comment-toggle">💬</button>
-      <button class="share">🔗</button>
-      ${!isOwner ? `<button class="gift">🎁</button>` : ""}
-      ${isOwner ? `<button class="delete">🗑️</button>` : ""}
-      ${isAdmin(user.email) && !post.pinned ? `<button class="pin">📌</button>` : ""}
-    </div>
-    <div class="comments"></div>
-    <div class="comment-form">
-      <input placeholder="Write a comment…" />
-      <button>Send</button>
-    </div>
-  `;
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const storageRef = storage.ref().child(`postImages/${Date.now()}_${file.name}`);
+    await storageRef.put(file);
+    fileURL = await storageRef.getDownloadURL();
+  }
 
-  /* ─── ACTIONS ─── */
-
-  el.querySelector(".like").onclick = async () => {
-    const r = doc(db, "posts", postId);
-    if (post.likedBy.includes(user.uid)) {
-      await updateDoc(r, { likedBy: arrayRemove(user.uid) });
-    } else {
-      await updateDoc(r, {
-        likedBy: arrayUnion(user.uid),
-        dislikedBy: arrayRemove(user.uid)
-      });
-    }
-  };
-
-  el.querySelector(".dislike").onclick = async () => {
-    const r = doc(db, "posts", postId);
-    if (post.dislikedBy.includes(user.uid)) {
-      await updateDoc(r, { dislikedBy: arrayRemove(user.uid) });
-    } else {
-      await updateDoc(r, {
-        dislikedBy: arrayUnion(user.uid),
-        likedBy: arrayRemove(user.uid)
-      });
-    }
-  };
-
-  el.querySelector(".share").onclick = () => {
-    navigator.clipboard.writeText(`${location.origin}/feed.html#post-${postId}`);
-    alert("Link copied");
-  };
-
-  el.querySelector(".delete")?.addEventListener("click", async () => {
-    if (confirm("Delete post?")) {
-      await deleteDoc(doc(db, "posts", postId));
-    }
-  });
-
-  el.querySelector(".pin")?.addEventListener("click", async () => {
-    await updateDoc(doc(db, "posts", postId), { pinned: true });
-  });
-
-  /* ─── COMMENTS ─── */
-
-  const commentsBox = el.querySelector(".comments");
-  const cQuery = query(
-    collection(db, "posts", postId, "comments"),
-    orderBy("createdAt", "asc")
-  );
-
-  onSnapshot(cQuery, snap => {
-    commentsBox.innerHTML = "";
-    snap.forEach(c => {
-      const d = c.data();
-      const cEl = document.createElement("div");
-      cEl.className = "comment";
-      cEl.innerHTML = `<strong>${d.username}</strong><p>${d.text}</p>`;
-      commentsBox.appendChild(cEl);
+  if (text || fileURL) {
+    await db.collection("posts").add({
+      userId: currentUser.uid,
+      userName: currentUser.displayName || "Anonymous",
+      text,
+      mediaURL: fileURL || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-  });
-
-  el.querySelector(".comment-form button").onclick = async () => {
-    const input = el.querySelector(".comment-form input");
-    if (!input.value) return;
-    const uDoc = await getDoc(doc(db, "users", user.uid));
-    await addDoc(collection(db, "posts", postId, "comments"), {
-      text: input.value,
-      username: uDoc.data()?.username || user.email.split("@")[0],
-      userId: user.uid,
-      createdAt: serverTimestamp()
-    });
-    input.value = "";
-  };
-
-  postsContainer.appendChild(el);
-}
-
-/* ───────────────── LOAD FEED ───────────────── */
-
-function loadPosts() {
-  const q = query(
-    collection(db, "posts"),
-    where("createdAt", "!=", null),
-    orderBy("createdAt", "desc")
-  );
-
-  onSnapshot(q, snap => {
-    postsContainer.innerHTML = "";
-    snap.forEach(d => renderPost(d.data(), d.id));
-  });
-}
-
-/* ───────────────── AUTH ───────────────── */
-
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    location.href = "login.html";
-  } else {
+    document.getElementById("postText").value = "";
+    fileInput.value = "";
     loadPosts();
   }
 });
 
-/* ───────────────── NAV / LOGOUT ───────────────── */
+// ============================================
+// LOAD POSTS
+// ============================================
+async function loadPosts() {
+  postsContainer.innerHTML = "";
+  const postsSnapshot = await db.collection("posts")
+    .orderBy("createdAt", "desc")
+    .get();
 
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await signOut(auth);
-  location.href = "login.html";
-});
+  postsSnapshot.forEach(doc => {
+    const post = doc.data();
+    const postId = doc.id;
+
+    const postCard = document.createElement("div");
+    postCard.className = "post-card";
+
+    // Post header
+    const header = document.createElement("div");
+    header.className = "post-header";
+    header.innerHTML = `<strong>${post.userName}</strong> <small>${post.createdAt?.toDate?.()?.toLocaleString() || ""}</small>`;
+    postCard.appendChild(header);
+
+    // Post content
+    if (post.text) {
+      const textEl = document.createElement("p");
+      textEl.textContent = post.text;
+      postCard.appendChild(textEl);
+    }
+
+    // Media
+    if (post.mediaURL) {
+      const mediaEl = post.mediaURL.endsWith(".mp4") 
+        ? document.createElement("video") 
+        : document.createElement("img");
+      mediaEl.src = post.mediaURL;
+      if(mediaEl.tagName === "VIDEO"){
+        mediaEl.controls = true;
+      }
+      mediaEl.className = "post-media";
+      postCard.appendChild(mediaEl);
+    }
+
+    // Post actions
+    const actions = document.createElement("div");
+    actions.className = "post-actions";
+
+    const giftBtn = document.createElement("button");
+    giftBtn.textContent = "🎁 Gift";
+    giftBtn.onclick = () => openGiftDialog(postId, post.userId);
+    actions.appendChild(giftBtn);
+
+    postCard.appendChild(actions);
+    postsContainer.appendChild(postCard);
+  });
+}
+
+// ============================================
+// GIFT MODAL
+// ============================================
+function openGiftDialog(postId, recipientId) {
+  giftDialog.style.display = "flex";
+  giftOptions.innerHTML = "";
+
+  // Example gifts
+  const gifts = [
+    { name: "💎 Diamond", amount: 2 },
+    { name: "🍫 Chocolate", amount: 1 },
+    { name: "🌹 Rose", amount: 1.5 }
+  ];
+
+  gifts.forEach(gift => {
+    const giftBtn = document.createElement("div");
+    giftBtn.className = "gift-option";
+    giftBtn.innerHTML = `<strong>${gift.name}</strong><small>$${gift.amount.toFixed(2)}</small>`;
+    giftBtn.onclick = async () => {
+      // Call backend webhook for Stripe checkout session
+      await fetch("/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          senderId: currentUser.uid,
+          recipientId,
+          giftName: gift.name,
+          giftAmount: gift.amount
+        })
+      }).then(res => res.json())
+        .then(data => window.location.href = data.checkoutURL);
+    };
+    giftOptions.appendChild(giftBtn);
+  });
+
+  document.getElementById("giftCancelBtn").onclick = () => {
+    giftDialog.style.display = "none";
+  };
+}

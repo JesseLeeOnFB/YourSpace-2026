@@ -5,29 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YourSpace Feed</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+  <!-- Stripe -->
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <!-- Navigation -->
   <nav>
-    <button onclick="goHome()">Home</button>
-    <button onclick="goProfile()">Profile</button>
-    <button onclick="goFeed()">Feed</button>
-    <button onclick="logout()">Logout</button>
+    <button class="navBtn" data-target="index.html">Home</button>
+    <button class="navBtn" data-target="profile.html">Profile</button>
+    <button class="navBtn" data-target="feed.html">Feed</button>
+    <button onclick="firebase.auth().signOut()">Logout</button>
   </nav>
 
   <!-- Search Bar -->
-  <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Search users...">
-    <button id="clearSearch" onclick="clearSearch()">✖</button>
+  <div id="searchWrapper" class="search-container">
+    <input type="text" id="searchInput" placeholder="Search users...">
+    <span id="clearBtn" style="cursor:pointer;margin-left:5px;">×</span>
   </div>
 
   <!-- Posts Container -->
-  <div id="postsContainer"></div>
+  <div id="feedContainer"></div>
 
   <script src="feed.js"></script>
 </body>

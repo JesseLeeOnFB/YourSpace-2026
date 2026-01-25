@@ -1,122 +1,144 @@
-// Initialize Firebase
+// =====================
+// Firebase & Stripe Setup
+// =====================
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+  measurementId: "G-FZ4GFXWGSS"
+};
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// Stripe instance
-const stripe = Stripe("sk_live_ _515sC02DYg20K7LXSw198h3UeMk8cR8U6heLO2c5twNBVnLc18RTmdiaFMF410dkyfHPdv63ixnKc270GL32s2vLp891VzZ105K");
+// Use Stripe publishable key in browser, secret key only on server
+const stripe = Stripe("pk_live_51SsCC2DYg2OK71XSVGO4dsgGVtpUO1XcrgJp1pP5K0fTDVkDaunVwNzhH5ORf8QRJBMA9WDq9FY0Z6SrTWkSPvr100nhHBuJNM"); // Replace with your publishable key
 
-// Global variables
+// =====================
+// Global Variables
+// =====================
 let currentUser = null;
+let allPosts = [];
 
-// ============================================
-// AUTH
-// ============================================
-auth.onAuthStateChanged(user => {
-  if (!user) return window.location.href = "login.html";
-  currentUser = user;
-  loadFeed();
-});
+// =====================
+// DOM Elements
+// =====================
+const postsContainer = document.getElementById("postsContainer");
+const searchBar = document.getElementById("searchBar");
+const clearSearchBtn = document.getElementById("clearSearch");
 
-// ============================================
-// NAVIGATION
-// ============================================
+// =====================
+// Navigation Functions
+// =====================
 function goHome() { window.location.href = "index.html"; }
 function goProfile() { window.location.href = "profile.html"; }
 function goFeed() { window.location.href = "feed.html"; }
+function logout() {
+  auth.signOut().then(() => window.location.href = "login.html");
+}
 
-// ============================================
-// SEARCH
-// ============================================
-const searchInput = document.getElementById("userSearch");
-const clearSearchBtn = document.getElementById("clearSearch");
+// =====================
+// Search Bar Functions
+// =====================
+searchBar.addEventListener("input", () => renderPosts(searchBar.value));
 
-searchInput.addEventListener("input", () => loadFeed(searchInput.value.trim()));
-clearSearchBtn.addEventListener("click", () => {
-  searchInput.value = "";
-  loadFeed();
+function clearSearch() {
+  searchBar.value = "";
+  renderPosts();
+}
+
+// =====================
+// Auth & Load Posts
+// =====================
+auth.onAuthStateChanged(async (user) => {
+  if (!user) return window.location.href = "login.html";
+  currentUser = user;
+  await loadPosts();
 });
 
-// ============================================
-// LOAD FEED
-// ============================================
-async function loadFeed(searchUsername = "") {
-  const feedContainer = document.getElementById("feedContainer");
-  feedContainer.innerHTML = "<p>Loading...</p>";
-
+async function loadPosts() {
   try {
-    let query = db.collection("posts").orderBy("timestamp", "desc");
-    if (searchUsername) {
-      query = db.collection("users")
-                .where("username", "==", searchUsername)
-                .limit(1)
-                .get()
-                .then(async userSnap => {
-                  if (userSnap.empty) return feedContainer.innerHTML = "<p>No user found</p>";
-                  const userId = userSnap.docs[0].id;
-                  const postsSnap = await db.collection("posts")
-                                           .where("userId", "==", userId)
-                                           .orderBy("timestamp", "desc")
-                                           .get();
-                  displayPosts(postsSnap);
-                });
-      return;
-    }
-
-    const snapshot = await query.get();
-    displayPosts(snapshot);
-
-  } catch (error) {
-    console.error("Feed load error:", error);
-    feedContainer.innerHTML = "<p>Error loading feed</p>";
+    const snapshot = await db.collection("posts").orderBy("timestamp", "desc").get();
+    allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderPosts();
+  } catch (err) {
+    console.error("Error loading posts:", err);
+    postsContainer.innerHTML = "<p>Error loading posts.</p>";
   }
 }
 
-// ============================================
-// DISPLAY POSTS
-// ============================================
-function displayPosts(snapshot) {
-  const feedContainer = document.getElementById("feedContainer");
-  if (snapshot.empty) {
-    feedContainer.innerHTML = "<p>No posts yet</p>";
+// =====================
+// Render Posts Function
+// =====================
+function renderPosts(filter = "") {
+  postsContainer.innerHTML = "";
+
+  const filteredPosts = allPosts.filter(post =>
+    post.username.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  if (filteredPosts.length === 0) {
+    postsContainer.innerHTML = "<p>No posts found.</p>";
     return;
   }
 
-  feedContainer.innerHTML = "";
-  snapshot.forEach(doc => {
-    const post = doc.data();
+  filteredPosts.forEach(post => {
     const postEl = document.createElement("div");
     postEl.className = "post";
 
     postEl.innerHTML = `
-      <p><strong>${post.username}</strong></p>
-      <p>${post.text}</p>
-      ${post.imageURL ? `<img src="${post.imageURL}" alt="Post Image">` : ""}
-      <button onclick="sendGift('${doc.id}', '${post.userId}', '${post.username}')">🎁 Send Gift</button>
+      <div class="post-header">
+        <strong>${post.username}</strong>
+      </div>
+      <div class="post-body">
+        <p>${post.content || ""}</p>
+        ${post.imageURL ? `<img src="${post.imageURL}" alt="Post Image" class="post-img"/>` : ""}
+      </div>
+      <div class="post-footer">
+        <button class="gift-btn" onclick="sendGift('${post.userId}')">🎁 Send Gift</button>
+      </div>
     `;
-
-    feedContainer.appendChild(postEl);
+    postsContainer.appendChild(postEl);
   });
 }
 
-// ============================================
-// SEND GIFT
-// ============================================
-async function sendGift(postId, recipientId, recipientUsername) {
-  const amount = 500; // example $5
-  try {
-    const sessionRes = await fetch("/create-stripe-session", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({amount, recipientId})
-    });
-    const session = await sessionRes.json();
-    const result = await stripe.redirectToCheckout({ sessionId: session.id });
+// =====================
+// Stripe Gift Checkout
+// =====================
+async function sendGift(recipientId) {
+  if (!currentUser) return alert("Please log in first.");
 
-    if (result.error) alert(result.error.message);
-  } catch (error) {
-    console.error("Gift error:", error);
-    alert("Failed to send gift.");
+  try {
+    const res = await fetch("https://us-central1-yourspace-2026.cloudfunctions.net/stripeWebhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ senderId: currentUser.uid, recipientId })
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      // Redirect user to Stripe Checkout
+      window.location.href = data.url;
+    } else {
+      console.error("Invalid Stripe response:", data);
+      alert("Error creating gift checkout session.");
+    }
+  } catch (err) {
+    console.error("Stripe gift error:", err);
+    alert("Payment error. Please try again.");
   }
+}
+
+// =====================
+// Responsive Enhancements
+// =====================
+// Focus search on mobile automatically
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+  searchBar.focus();
 }

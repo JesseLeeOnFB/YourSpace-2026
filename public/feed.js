@@ -1,170 +1,122 @@
-// ============================================
-// YourSpace Feed JS
-// ============================================
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-import { auth, db, storage } from "./firebase.js"; // Make sure your Firebase config is imported
+// Stripe instance
+const stripe = Stripe("sk_live_ _515sC02DYg20K7LXSw198h3UeMk8cR8U6heLO2c5twNBVnLc18RTmdiaFMF410dkyfHPdv63ixnKc270GL32s2vLp891VzZ105K");
 
-// ============================================
-// GLOBAL VARIABLES
-// ============================================
+// Global variables
 let currentUser = null;
-let postsContainer = document.getElementById("postsContainer");
-let giftDialog = document.getElementById("giftDialog");
-let giftOptions = document.getElementById("giftOptions");
 
 // ============================================
-// AUTH STATE
+// AUTH
 // ============================================
-auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
+auth.onAuthStateChanged(user => {
+  if (!user) return window.location.href = "login.html";
+  currentUser = user;
+  loadFeed();
+});
+
+// ============================================
+// NAVIGATION
+// ============================================
+function goHome() { window.location.href = "index.html"; }
+function goProfile() { window.location.href = "profile.html"; }
+function goFeed() { window.location.href = "feed.html"; }
+
+// ============================================
+// SEARCH
+// ============================================
+const searchInput = document.getElementById("userSearch");
+const clearSearchBtn = document.getElementById("clearSearch");
+
+searchInput.addEventListener("input", () => loadFeed(searchInput.value.trim()));
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  loadFeed();
+});
+
+// ============================================
+// LOAD FEED
+// ============================================
+async function loadFeed(searchUsername = "") {
+  const feedContainer = document.getElementById("feedContainer");
+  feedContainer.innerHTML = "<p>Loading...</p>";
+
+  try {
+    let query = db.collection("posts").orderBy("timestamp", "desc");
+    if (searchUsername) {
+      query = db.collection("users")
+                .where("username", "==", searchUsername)
+                .limit(1)
+                .get()
+                .then(async userSnap => {
+                  if (userSnap.empty) return feedContainer.innerHTML = "<p>No user found</p>";
+                  const userId = userSnap.docs[0].id;
+                  const postsSnap = await db.collection("posts")
+                                           .where("userId", "==", userId)
+                                           .orderBy("timestamp", "desc")
+                                           .get();
+                  displayPosts(postsSnap);
+                });
+      return;
+    }
+
+    const snapshot = await query.get();
+    displayPosts(snapshot);
+
+  } catch (error) {
+    console.error("Feed load error:", error);
+    feedContainer.innerHTML = "<p>Error loading feed</p>";
+  }
+}
+
+// ============================================
+// DISPLAY POSTS
+// ============================================
+function displayPosts(snapshot) {
+  const feedContainer = document.getElementById("feedContainer");
+  if (snapshot.empty) {
+    feedContainer.innerHTML = "<p>No posts yet</p>";
     return;
   }
-  currentUser = user;
-  loadPosts();
-});
 
-// ============================================
-// NAVIGATION BUTTONS
-// ============================================
-document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
-document.getElementById("profileNavBtn").onclick = () => window.location.href = "profile.html";
-document.getElementById("messagesNavBtn").onclick = () => window.location.href = "messages.html";
-document.getElementById("notificationsNavBtn").onclick = () => window.location.href = "notifications.html";
-document.getElementById("dashboardNavBtn").onclick = () => window.location.href = "dashboard.html";
-document.getElementById("adminNavBtn").onclick = () => window.location.href = "admin.html";
-document.getElementById("contactNavBtn").onclick = () => window.location.href = "contact.html";
-document.getElementById("logoutBtn").onclick = () => auth.signOut();
-
-// Hamburger menu toggle
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-hamburger.addEventListener("click", () => {
-  hamburger.classList.toggle("active");
-  navLinks.classList.toggle("active");
-});
-
-// ============================================
-// NEW POST
-// ============================================
-document.getElementById("postBtn").addEventListener("click", async () => {
-  const text = document.getElementById("postText").value.trim();
-  const fileInput = document.getElementById("postFileInput");
-  let fileURL = null;
-
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    const storageRef = storage.ref().child(`postImages/${Date.now()}_${file.name}`);
-    await storageRef.put(file);
-    fileURL = await storageRef.getDownloadURL();
-  }
-
-  if (text || fileURL) {
-    await db.collection("posts").add({
-      userId: currentUser.uid,
-      userName: currentUser.displayName || "Anonymous",
-      text,
-      mediaURL: fileURL || null,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    document.getElementById("postText").value = "";
-    fileInput.value = "";
-    loadPosts();
-  }
-});
-
-// ============================================
-// LOAD POSTS
-// ============================================
-async function loadPosts() {
-  postsContainer.innerHTML = "";
-  const postsSnapshot = await db.collection("posts")
-    .orderBy("createdAt", "desc")
-    .get();
-
-  postsSnapshot.forEach(doc => {
+  feedContainer.innerHTML = "";
+  snapshot.forEach(doc => {
     const post = doc.data();
-    const postId = doc.id;
+    const postEl = document.createElement("div");
+    postEl.className = "post";
 
-    const postCard = document.createElement("div");
-    postCard.className = "post-card";
+    postEl.innerHTML = `
+      <p><strong>${post.username}</strong></p>
+      <p>${post.text}</p>
+      ${post.imageURL ? `<img src="${post.imageURL}" alt="Post Image">` : ""}
+      <button onclick="sendGift('${doc.id}', '${post.userId}', '${post.username}')">🎁 Send Gift</button>
+    `;
 
-    // Post header
-    const header = document.createElement("div");
-    header.className = "post-header";
-    header.innerHTML = `<strong>${post.userName}</strong> <small>${post.createdAt?.toDate?.()?.toLocaleString() || ""}</small>`;
-    postCard.appendChild(header);
-
-    // Post content
-    if (post.text) {
-      const textEl = document.createElement("p");
-      textEl.textContent = post.text;
-      postCard.appendChild(textEl);
-    }
-
-    // Media
-    if (post.mediaURL) {
-      const mediaEl = post.mediaURL.endsWith(".mp4") 
-        ? document.createElement("video") 
-        : document.createElement("img");
-      mediaEl.src = post.mediaURL;
-      if(mediaEl.tagName === "VIDEO"){
-        mediaEl.controls = true;
-      }
-      mediaEl.className = "post-media";
-      postCard.appendChild(mediaEl);
-    }
-
-    // Post actions
-    const actions = document.createElement("div");
-    actions.className = "post-actions";
-
-    const giftBtn = document.createElement("button");
-    giftBtn.textContent = "🎁 Gift";
-    giftBtn.onclick = () => openGiftDialog(postId, post.userId);
-    actions.appendChild(giftBtn);
-
-    postCard.appendChild(actions);
-    postsContainer.appendChild(postCard);
+    feedContainer.appendChild(postEl);
   });
 }
 
 // ============================================
-// GIFT MODAL
+// SEND GIFT
 // ============================================
-function openGiftDialog(postId, recipientId) {
-  giftDialog.style.display = "flex";
-  giftOptions.innerHTML = "";
+async function sendGift(postId, recipientId, recipientUsername) {
+  const amount = 500; // example $5
+  try {
+    const sessionRes = await fetch("/create-stripe-session", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({amount, recipientId})
+    });
+    const session = await sessionRes.json();
+    const result = await stripe.redirectToCheckout({ sessionId: session.id });
 
-  // Example gifts
-  const gifts = [
-    { name: "💎 Diamond", amount: 2 },
-    { name: "🍫 Chocolate", amount: 1 },
-    { name: "🌹 Rose", amount: 1.5 }
-  ];
-
-  gifts.forEach(gift => {
-    const giftBtn = document.createElement("div");
-    giftBtn.className = "gift-option";
-    giftBtn.innerHTML = `<strong>${gift.name}</strong><small>$${gift.amount.toFixed(2)}</small>`;
-    giftBtn.onclick = async () => {
-      // Call backend webhook for Stripe checkout session
-      await fetch("/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          senderId: currentUser.uid,
-          recipientId,
-          giftName: gift.name,
-          giftAmount: gift.amount
-        })
-      }).then(res => res.json())
-        .then(data => window.location.href = data.checkoutURL);
-    };
-    giftOptions.appendChild(giftBtn);
-  });
-
-  document.getElementById("giftCancelBtn").onclick = () => {
-    giftDialog.style.display = "none";
-  };
+    if (result.error) alert(result.error.message);
+  } catch (error) {
+    console.error("Gift error:", error);
+    alert("Failed to send gift.");
+  }
 }

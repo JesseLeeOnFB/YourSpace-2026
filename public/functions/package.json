@@ -17,5 +17,8 @@
     "deploy": "firebase deploy --only functions"
   },
   "private": true,
-  "type": "commonjs"
+  "type": "commonjs",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

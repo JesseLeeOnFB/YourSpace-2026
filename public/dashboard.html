@@ -68,7 +68,6 @@
           </div>
           <div class="payout-amount" id="pendingPayout">$0.00</div>
           <div class="payout-subtitle">Available for withdrawal</div>
-          <!-- Added here – realtime balance display -->
           <div style="margin-top: 8px; font-size: 0.95rem; color: #4caf50; font-weight: 600;">
             Current Balance: <span id="payout-balance">$0.00</span>
           </div>
@@ -129,7 +128,6 @@
       </div>
     </div>
 
-    <!-- Rest of your content remains unchanged -->
     <div class="rewards-section">
       <h2>🎁 Build Your Space</h2>
       <p style="margin-bottom: 1rem; color: #65676b;">Earn rewards and watch your world come to life!</p>
@@ -224,6 +222,33 @@
     </div>
   </main>
 
-  <script type="module" src="dashboard.js"></script>
+  <!-- Firebase SDK - MUST LOAD FIRST -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <!-- Firebase Configuration -->
+  <script>
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27",
+      measurementId: "G-FZ4GFXWGSS"
+    };
+    
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    console.log("Firebase initialized in dashboard.html");
+  </script>
+
+  <!-- Your Dashboard Logic - LOADS AFTER FIREBASE -->
+  <script src="dashboard.js"></script>
 </body>
 </html>

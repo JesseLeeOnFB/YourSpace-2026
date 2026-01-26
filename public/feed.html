@@ -1,39 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YourSpace Feed</title>
-<link rel="stylesheet" href="feed.css">
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>YourSpace – Feed</title>
+  <link rel="stylesheet" href="feed.css">
 </head>
 <body>
-  <nav>
-    <button class="navBtn" data-target="index.html">Home</button>
-    <button class="navBtn" data-target="profile.html">Profile</button>
-    <button class="navBtn" data-target="feed.html">Feed</button>
-    <button onclick="firebase.auth().signOut()">Logout</button>
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <div class="nav-brand">🌐 YourSpace</div>
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button id="feedNavBtn">📰 Feed</button>
+      <button id="profileNavBtn">👤 Profile</button>
+      <button id="messagesNavBtn">💬 Messages</button>
+      <button id="notificationsNavBtn">🔔 Notifications</button>
+      <button id="dashboardNavBtn">📊 Dashboard</button>
+      <button id="adminNavBtn" style="display:none;">👑 Admin</button>
+      <button id="contactNavBtn">📞 Contact</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
   </nav>
 
-  <!-- Post Creation -->
-  <div class="post-create">
-    <textarea id="postInput" placeholder="What's on your mind?"></textarea>
-    <button id="postBtn">Post</button>
+  <!-- MAIN FEED -->
+  <main class="feed-container">
+    <h1>Global Feed</h1>
+
+    <!-- SEARCH BAR -->
+    <div class="search-container">
+      <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
+      <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- NEW POST -->
+    <section class="new-post">
+      <textarea id="postText" placeholder="What's on your mind?"></textarea>
+      <input type="file" id="postFileInput" accept="image/*,video/*" />
+      <button id="postBtn">Post</button>
+    </section>
+
+    <!-- POSTS CONTAINER -->
+    <section id="postsContainer">
+      <p style="text-align: center; color: #666;">Loading posts...</p>
+    </section>
+  </main>
+
+  <!-- GIFT DIALOG -->
+  <div id="giftDialog" class="gift-dialog-overlay" style="display:none;">
+    <div class="gift-dialog">
+      <h3>🎁 Send a Gift</h3>
+      <p class="gift-subtitle">Choose a gift to send to <span id="giftRecipientName"></span></p>
+      <div class="gift-options">
+        <div class="gift-option" data-gift="coffee" data-price="5">
+          <div class="gift-icon">☕</div>
+          <div class="gift-name">Coffee</div>
+          <div class="gift-price">$5.00</div>
+        </div>
+        <div class="gift-option" data-gift="pizza" data-price="10">
+          <div class="gift-icon">🍕</div>
+          <div class="gift-name">Pizza</div>
+          <div class="gift-price">$10.00</div>
+        </div>
+        <div class="gift-option" data-gift="diamond" data-price="25">
+          <div class="gift-icon">💎</div>
+          <div class="gift-name">Diamond</div>
+          <div class="gift-price">$25.00</div>
+        </div>
+        <div class="gift-option" data-gift="rocket" data-price="50">
+          <div class="gift-icon">🚀</div>
+          <div class="gift-name">Rocket</div>
+          <div class="gift-price">$50.00</div>
+        </div>
+      </div>
+      <button class="gift-cancel-btn" id="cancelGiftBtn">Cancel</button>
+    </div>
   </div>
 
-  <!-- Search Bar -->
-  <div id="searchWrapper" class="search-container">
-    <input type="text" id="searchInput" placeholder="Search users...">
-    <span id="clearBtn" style="cursor:pointer;margin-left:5px;">×</span>
-  </div>
-
-  <!-- Posts Container -->
-  <div id="feedContainer"></div>
-
+  <!-- Firebase & Stripe -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
   <script src="feed.js"></script>
 </body>
 </html>

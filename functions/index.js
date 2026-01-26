@@ -4,10 +4,14 @@
 // Supports Firebase Secrets and gift logic
 // ===============================
 
+// ===============================
+// YourSpace Firebase Functions
+// ===============================
+
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import { getFirestore, Timestamp, FieldValue } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";          // ← Changed to /v1
 import { defineSecret } from "firebase-functions/params";
 import Stripe from "stripe";
 

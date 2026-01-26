@@ -1,298 +1,133 @@
-const { onRequest } = require("firebase-functions/v2/https");
-const { onCall } = require("firebase-functions/v2/https");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
-const { defineSecret } = require("firebase-functions/params");
-const admin = require("firebase-admin");
-const stripeLib = require("stripe");
+// functions/index.js - Stripe Webhook Handler
+
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const Stripe = require('stripe');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Define secrets (resolved at runtime inside functions)
-const STRIPE_SECRET = defineSecret("STRIPE_SECRET");
-const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
+// Webhook signing secret
+const endpointSecret = 'whsec_YH6q46Ac0aJiYP5VXnb9VpwD0Z5J116e';
 
-// Gift payout amounts
-const CREATOR_PAYOUTS = {
-  rose: 0.12,
-  coffee: 0.29,
-  bear: 0.58,
-  cake: 0.86,
-  diamond: 2.88,
-  yacht: 5.75
-};
-
-// Stripe Webhook
-exports.stripeWebhook = onRequest({ cors: false }, async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).send("Method Not Allowed");
-  }
-
-  const stripe = stripeLib(STRIPE_SECRET.value(), {
-    apiVersion: "2025-12-15.clover"
-  });
-
-  const sig = req.headers["stripe-signature"];
-  const webhookSecret = STRIPE_WEBHOOK_SECRET.value();
-
+exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+  const sig = req.headers['stripe-signature'];
   let event;
+
   try {
-    event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
+    // Verify webhook signature
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
   } catch (err) {
-    console.error("Webhook signature verification failed:", err.message);
+    console.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === "payment_intent.succeeded") {
-    const paymentIntent = event.data.object;
-    const giftId = paymentIntent.metadata.giftId;
-
-    if (!giftId) {
-      console.log("No giftId in metadata");
-      return res.status(200).send("OK");
-    }
-
+  // Handle the checkout.session.completed event
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    
+    console.log('Payment successful for session:', session.id);
+    
     try {
-      const giftRef = db.collection("gifts").doc(giftId);
-      const giftDoc = await giftRef.get();
-
-      if (!giftDoc.exists) {
-        console.error("Gift not found:", giftId);
-        return res.status(404).send("Gift not found");
+      // Find the most recent pending gift (within last 10 minutes)
+      const tenMinutesAgo = admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() - 10 * 60 * 1000)
+      );
+      
+      const pendingGiftsSnapshot = await db.collection('pendingGifts')
+        .where('status', '==', 'pending')
+        .where('createdAt', '>=', tenMinutesAgo)
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+      
+      if (pendingGiftsSnapshot.empty) {
+        console.log('No pending gift found');
+        return res.json({ received: true, warning: 'No pending gift found' });
       }
-
-      const gift = giftDoc.data();
-      const creatorPayout = CREATOR_PAYOUTS[gift.giftType] || 0;
-
-      await giftRef.update({
-        status: "paid",
-        paidAt: admin.firestore.FieldValue.serverTimestamp(),
-        creatorPayout: creatorPayout,
-        stripePaymentIntent: paymentIntent.id
+      
+      const giftDoc = pendingGiftsSnapshot.docs[0];
+      const giftData = giftDoc.data();
+      
+      // Update pending gift status
+      await giftDoc.ref.update({
+        status: 'completed',
+        stripeSessionId: session.id,
+        completedAt: admin.firestore.FieldValue.serverTimestamp()
       });
-
-      const creatorRef = db.collection("users").doc(gift.toUserId);
-      await creatorRef.update({
-        totalEarnings: admin.firestore.FieldValue.increment(creatorPayout),
-        giftCount: admin.firestore.FieldValue.increment(1)
+      
+      // Create completed gift record
+      await db.collection('gifts').add({
+        senderId: giftData.senderId,
+        senderName: giftData.senderName,
+        recipientId: giftData.recipientId,
+        recipientName: giftData.recipientName,
+        postId: giftData.postId,
+        giftType: giftData.giftType,
+        status: 'delivered',
+        stripeSessionId: session.id,
+        createdAt: giftData.createdAt,
+        deliveredAt: admin.firestore.FieldValue.serverTimestamp()
       });
-
-      await db.collection("users").doc(gift.toUserId).collection("notifications").add({
-        type: "gift",
-        fromUserId: gift.fromUserId,
-        fromUsername: gift.fromUsername,
-        giftType: gift.giftType,
-        amount: creatorPayout,
-        postId: gift.postId,
+      
+      // Create notification for recipient
+      await db.collection('notifications').add({
+        userId: giftData.recipientId,
+        type: 'gift_received',
+        senderId: giftData.senderId,
+        senderName: giftData.senderName,
+        giftType: giftData.giftType,
+        postId: giftData.postId,
+        message: `${giftData.senderName} sent you a ${giftData.giftType}! 🎁`,
         read: false,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
-
-      console.log(`Gift processed: ${giftId}, Creator earns: $${creatorPayout}`);
+      
+      // Update recipient's gift count
+      const recipientRef = db.collection('users').doc(giftData.recipientId);
+      await recipientRef.update({
+        [`giftsReceived.${giftData.giftType}`]: admin.firestore.FieldValue.increment(1),
+        totalGiftsReceived: admin.firestore.FieldValue.increment(1)
+      });
+      
+      // Update sender's gift count
+      const senderRef = db.collection('users').doc(giftData.senderId);
+      await senderRef.update({
+        [`giftsSent.${giftData.giftType}`]: admin.firestore.FieldValue.increment(1),
+        totalGiftsSent: admin.firestore.FieldValue.increment(1)
+      });
+      
+      console.log('Gift successfully processed:', giftData.giftType);
+      
     } catch (error) {
-      console.error("Error processing gift:", error);
-      return res.status(500).send("Internal error");
+      console.error('Error processing gift:', error);
+      return res.status(500).json({ error: error.message });
     }
   }
 
-  res.status(200).send("OK");
+  res.json({ received: true });
 });
 
-// Scheduled payout processor
-exports.processPayouts = onSchedule(
-  {
-    schedule: "0 0 * * *",
-    timeZone: "America/New_York",
-    secrets: [STRIPE_SECRET]
-  },
-  async (event) => {
-    const stripe = stripeLib(STRIPE_SECRET.value(), {
-      apiVersion: "2025-12-15.clover"
+// Optional: Function to clean up old pending gifts (run daily)
+exports.cleanupPendingGifts = functions.pubsub
+  .schedule('every 24 hours')
+  .onRun(async (context) => {
+    const oneDayAgo = admin.firestore.Timestamp.fromDate(
+      new Date(Date.now() - 24 * 60 * 60 * 1000)
+    );
+    
+    const oldPending = await db.collection('pendingGifts')
+      .where('status', '==', 'pending')
+      .where('createdAt', '<', oneDayAgo)
+      .get();
+    
+    const batch = db.batch();
+    oldPending.forEach(doc => {
+      batch.update(doc.ref, { status: 'expired' });
     });
-
-    console.log("Running payout check…");
-
-    const now = new Date();
-    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-    try {
-      const usersSnapshot = await db.collection("users")
-        .where("totalEarnings", ">=", 10)
-        .get();
-
-      for (const userDoc of usersSnapshot.docs) {
-        const user = userDoc.data();
-        const userId = userDoc.id;
-
-        const lastPayout = user.lastPayoutDate?.toDate() || user.createdAt?.toDate() || new Date(0);
-
-        if (lastPayout > fourteenDaysAgo) {
-          console.log(`User ${userId} not ready for payout yet (last payout too recent)`);
-          continue;
-        }
-
-        if (!user.stripeAccountId) {
-          console.log(`User ${userId} has no Stripe account connected`);
-          continue;
-        }
-
-        const amount = user.totalEarnings;
-        if (amount < 10) continue;
-
-        try {
-          // CRITICAL CHECK: Verify transfers are enabled on the connected account
-          const account = await stripe.accounts.retrieve(user.stripeAccountId);
-
-          if (!account.capabilities?.transfers?.enabled || !account.payouts_enabled) {
-            console.log(
-              `Skipping payout for user ${userId} - transfers not enabled yet ` +
-              `(transfers: ${account.capabilities?.transfers?.status || 'unknown'}, ` +
-              `payouts_enabled: ${account.payouts_enabled})`
-            );
-            continue;
-          }
-
-          // Re-fetch fresh amount to avoid race conditions
-          const freshDoc = await userDoc.ref.get();
-          const freshAmount = freshDoc.data().totalEarnings;
-          if (freshAmount < 10) continue;
-
-          const transfer = await stripe.transfers.create({
-            amount: Math.round(freshAmount * 100),
-            currency: "usd",
-            destination: user.stripeAccountId,
-            description: `YourSpace Creator Payout - 14 day period`,
-            metadata: {
-              userId: userId,
-              payoutPeriod: `${fourteenDaysAgo.toISOString()} to ${now.toISOString()}`
-            }
-          });
-
-          await userDoc.ref.update({
-            totalEarnings: 0,
-            lastPayoutDate: admin.firestore.FieldValue.serverTimestamp(),
-            lastPayoutAmount: freshAmount,
-            lastPayoutTransferId: transfer.id
-          });
-
-          await db.collection("payouts").add({
-            userId: userId,
-            amount: freshAmount,
-            stripeTransferId: transfer.id,
-            status: "completed",
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-
-          await db.collection("users").doc(userId).collection("notifications").add({
-            type: "payout",
-            amount: freshAmount,
-            transferId: transfer.id,
-            message: `Payout of $${freshAmount.toFixed(2)} sent to your bank account!`,
-            read: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-
-          console.log(`Payout processed: User ${userId}, Amount $${freshAmount}, Transfer ID: ${transfer.id}`);
-        } catch (error) {
-          console.error(`Error processing payout for user ${userId}:`, error.message);
-          await db.collection("payouts").add({
-            userId: userId,
-            amount: amount,
-            status: "failed",
-            error: error.message,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-      }
-
-      console.log("Payout check complete");
-    } catch (error) {
-      console.error("Error in payout process:", error);
-    }
-  }
-);
-
-// Create Stripe Connect account
-exports.createConnectAccount = onCall(
-  { secrets: [STRIPE_SECRET] },
-  async (request) => {
-    if (!request.auth) {
-      throw new Error("User must be logged in");
-    }
-
-    const stripe = stripeLib(STRIPE_SECRET.value(), {
-      apiVersion: "2025-12-15.clover"
-    });
-
-    const userId = request.auth.uid;
-    const userEmail = request.data.email;
-
-    try {
-      const account = await stripe.accounts.create({
-        type: "express",
-        country: "US",
-        email: userEmail,
-        capabilities: {
-          transfers: { requested: true },
-          card_payments: { requested: true }
-        },
-        business_type: "individual"
-      });
-
-      await db.collection("users").doc(userId).update({
-        stripeAccountId: account.id,
-        stripeAccountCreatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      const accountLink = await stripe.accountLinks.create({
-        account: account.id,
-        refresh_url: `https://yourspacesocial.com/dashboard.html?refresh=true`,
-        return_url: `https://yourspacesocial.com/dashboard.html?setup=complete`,
-        type: "account_onboarding"
-      });
-
-      return { url: accountLink.url };
-    } catch (error) {
-      console.error("Error creating Stripe account:", error);
-      throw new Error(error.message);
-    }
-  }
-);
-
-// Check Connect status (updated to include transfersEnabled)
-exports.checkConnectStatus = onCall(
-  { secrets: [STRIPE_SECRET] },
-  async (request) => {
-    if (!request.auth) {
-      throw new Error("User must be logged in");
-    }
-
-    const stripe = stripeLib(STRIPE_SECRET.value(), {
-      apiVersion: "2025-12-15.clover"
-    });
-
-    const userId = request.auth.uid;
-
-    try {
-      const userDoc = await db.collection("users").doc(userId).get();
-      const stripeAccountId = userDoc.data()?.stripeAccountId;
-
-      if (!stripeAccountId) {
-        return { status: "not_created" };
-      }
-
-      const account = await stripe.accounts.retrieve(stripeAccountId);
-
-      return {
-        status: account.charges_enabled ? "active" : "incomplete",
-        accountId: stripeAccountId,
-        payoutsEnabled: account.payouts_enabled,
-        transfersEnabled: account.capabilities?.transfers?.enabled || false,
-        transfersStatus: account.capabilities?.transfers?.status || "unknown"
-      };
-    } catch (error) {
-      console.error("Error checking account status:", error);
-      throw new Error(error.message);
-    }
-  }
-);
+    
+    await batch.commit();
+    console.log(`Cleaned up ${oldPending.size} expired pending gifts`);
+  });

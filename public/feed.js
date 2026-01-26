@@ -1,4 +1,4 @@
-// feed.js - UPDATED WITH DIRECT STRIPE PAYMENT LINKS
+// feed.js - FIXED VERSION
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -55,12 +55,14 @@ hamburger.onclick = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// USER SEARCH
+// USER SEARCH - FIXED
 // ═══════════════════════════════════════════════════════════
 
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+let searchTimeout;
 
 searchBar.addEventListener('input', async (e) => {
   const searchTerm = e.target.value.trim().toLowerCase();
@@ -73,38 +75,46 @@ searchBar.addEventListener('input', async (e) => {
   
   clearSearchBtn.style.display = 'block';
   
-  try {
-    const usersSnapshot = await db.collection('users')
-      .where('usernameLower', '>=', searchTerm)
-      .where('usernameLower', '<=', searchTerm + '\uf8ff')
-      .limit(5)
-      .get();
-    
-    searchResults.innerHTML = '';
-    
-    if (usersSnapshot.empty) {
-      searchResults.innerHTML = '<p class="no-results">No users found</p>';
-    } else {
-      usersSnapshot.forEach(doc => {
-        const user = doc.data();
-        const item = document.createElement('div');
-        item.className = 'search-result-item';
-        item.innerHTML = `
-          <img src="${user.photoURL || 'default-avatar.png'}" class="search-result-avatar" alt="Avatar">
-          <span class="search-result-username">${user.username}</span>
-        `;
-        item.onclick = () => {
-          window.location.href = `profile.html?uid=${doc.id}`;
-        };
-        searchResults.appendChild(item);
-      });
+  // Debounce search
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    try {
+      // Search by username
+      const usersSnapshot = await db.collection('users')
+        .orderBy('username')
+        .startAt(searchTerm)
+        .endAt(searchTerm + '\uf8ff')
+        .limit(10)
+        .get();
+      
+      searchResults.innerHTML = '';
+      
+      if (usersSnapshot.empty) {
+        searchResults.innerHTML = '<p class="no-results">No users found</p>';
+      } else {
+        usersSnapshot.forEach(doc => {
+          const user = doc.data();
+          const item = document.createElement('div');
+          item.className = 'search-result-item';
+          item.innerHTML = `
+            <img src="${user.photoURL || 'https://via.placeholder.com/45'}" class="search-result-avatar" alt="Avatar">
+            <span class="search-result-username">@${user.username}</span>
+          `;
+          item.onclick = () => {
+            window.location.href = `profile.html?uid=${doc.id}`;
+          };
+          searchResults.appendChild(item);
+        });
+      }
+      
+      searchResults.style.display = 'block';
+      
+    } catch (error) {
+      console.error('Search error:', error);
+      searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
+      searchResults.style.display = 'block';
     }
-    
-    searchResults.style.display = 'block';
-    
-  } catch (error) {
-    console.error('Search error:', error);
-  }
+  }, 300);
 });
 
 clearSearchBtn.onclick = () => {
@@ -112,6 +122,13 @@ clearSearchBtn.onclick = () => {
   searchResults.style.display = 'none';
   clearSearchBtn.style.display = 'none';
 };
+
+// Close search when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-container')) {
+    searchResults.style.display = 'none';
+  }
+});
 
 // ═══════════════════════════════════════════════════════════
 // CREATE POST
@@ -257,62 +274,79 @@ function renderPost(post, postId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// POST ACTIONS
+// POST ACTIONS - FIXED LIKE/DISLIKE
 // ═══════════════════════════════════════════════════════════
 
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
   if (!postId) return;
   
+  const userId = auth.currentUser.uid;
+  
+  // LIKE - FIXED
   if (e.target.classList.contains('like-btn')) {
-    const postRef = db.collection('posts').doc(postId);
-    const postDoc = await postRef.get();
-    const post = postDoc.data();
-    const userId = auth.currentUser.uid;
-    
-    if (post.likedBy?.includes(userId)) {
-      await postRef.update({
-        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
-    } else {
-      await postRef.update({
-        likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
+    try {
+      const postRef = db.collection('posts').doc(postId);
+      const postDoc = await postRef.get();
+      const post = postDoc.data();
+      
+      if (post.likedBy?.includes(userId)) {
+        // Remove like
+        await postRef.update({
+          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      } else {
+        // Add like, remove dislike
+        await postRef.update({
+          likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      }
+      loadPosts();
+    } catch (error) {
+      console.error('Like error:', error);
     }
-    loadPosts();
   }
   
+  // DISLIKE - FIXED
   if (e.target.classList.contains('dislike-btn')) {
-    const postRef = db.collection('posts').doc(postId);
-    const postDoc = await postRef.get();
-    const post = postDoc.data();
-    const userId = auth.currentUser.uid;
-    
-    if (post.dislikedBy?.includes(userId)) {
-      await postRef.update({
-        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
-    } else {
-      await postRef.update({
-        dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
+    try {
+      const postRef = db.collection('posts').doc(postId);
+      const postDoc = await postRef.get();
+      const post = postDoc.data();
+      
+      if (post.dislikedBy?.includes(userId)) {
+        // Remove dislike
+        await postRef.update({
+          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      } else {
+        // Add dislike, remove like
+        await postRef.update({
+          dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      }
+      loadPosts();
+    } catch (error) {
+      console.error('Dislike error:', error);
     }
-    loadPosts();
   }
   
+  // COMMENT TOGGLE
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
     commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
   }
   
+  // SHARE
   if (e.target.classList.contains('share-btn')) {
     const url = `${window.location.origin}/feed.html#post-${postId}`;
     navigator.clipboard.writeText(url);
     alert('Link copied to clipboard!');
   }
   
+  // GIFT
   if (e.target.classList.contains('gift-btn')) {
     currentGiftPost = postId;
     currentGiftRecipient = e.target.dataset.recipient;
@@ -321,6 +355,7 @@ document.addEventListener('click', async (e) => {
     document.getElementById('giftDialog').style.display = 'flex';
   }
   
+  // DELETE
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
       await db.collection('posts').doc(postId).delete();
@@ -328,6 +363,7 @@ document.addEventListener('click', async (e) => {
     }
   }
   
+  // PIN (admin only)
   if (e.target.classList.contains('pin-btn')) {
     await db.collection('posts').doc(postId).update({
       pinned: true
@@ -335,6 +371,7 @@ document.addEventListener('click', async (e) => {
     loadPosts();
   }
   
+  // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
@@ -356,7 +393,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// COMMENTS
+// COMMENTS - THREAD STYLE
 // ═══════════════════════════════════════════════════════════
 
 async function loadComments(postId) {
@@ -371,24 +408,44 @@ async function loadComments(postId) {
     
     commentsList.innerHTML = '';
     
+    if (snapshot.empty) {
+      commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>';
+      return;
+    }
+    
     snapshot.forEach(doc => {
       const comment = doc.data();
       const commentDiv = document.createElement('div');
-      commentDiv.className = 'comment';
+      commentDiv.className = 'comment-thread';
+      
+      const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
+      const isOwner = comment.userId === auth.currentUser.uid;
+      
       commentDiv.innerHTML = `
-        <strong>${comment.username}</strong>
-        <p>${comment.text}</p>
-        ${comment.userId === auth.currentUser.uid ? `<button class="delete-comment" data-commentid="${doc.id}" data-postid="${postId}">×</button>` : ''}
+        <div class="comment-avatar">
+          <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
+        </div>
+        <div class="comment-content">
+          <div class="comment-header">
+            <strong class="comment-username">${comment.username}</strong>
+            <small class="comment-time">${timestamp}</small>
+          </div>
+          <p class="comment-text">${comment.text}</p>
+          ${isOwner ? `<button class="delete-comment" data-commentid="${doc.id}" data-postid="${postId}">Delete</button>` : ''}
+        </div>
       `;
       commentsList.appendChild(commentDiv);
     });
     
+    // Delete comment handler
     commentsList.querySelectorAll('.delete-comment').forEach(btn => {
       btn.onclick = async () => {
-        const commentId = btn.dataset.commentid;
-        const postId = btn.dataset.postid;
-        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-        loadComments(postId);
+        if (confirm('Delete this comment?')) {
+          const commentId = btn.dataset.commentid;
+          const postId = btn.dataset.postid;
+          await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+          loadComments(postId);
+        }
       };
     });
     
@@ -398,7 +455,7 @@ async function loadComments(postId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// GIFT DIALOG
+// GIFT DIALOG - FIXED PERMISSIONS
 // ═══════════════════════════════════════════════════════════
 
 document.getElementById('cancelGiftBtn').onclick = () => {
@@ -422,11 +479,11 @@ document.querySelectorAll('.gift-option').forEach(option => {
     
     document.getElementById('giftDialog').style.display = 'none';
     
-    // Store pending gift info in Firestore before redirecting to Stripe
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
       
+      // Create pending gift with timestamp
       await db.collection('pendingGifts').add({
         senderId: user.uid,
         senderName: username,
@@ -436,8 +493,11 @@ document.querySelectorAll('.gift-option').forEach(option => {
         postId: currentGiftPost,
         giftType: giftType,
         status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: firebase.firestore.Timestamp.now()
       });
+      
+      // Small delay to ensure Firestore write completes
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Redirect to Stripe payment link
       const paymentLink = GIFT_PAYMENT_LINKS[giftType];
@@ -449,7 +509,7 @@ document.querySelectorAll('.gift-option').forEach(option => {
       
     } catch (error) {
       console.error('Gift error:', error);
-      alert('Error: ' + error.message);
+      alert('Error sending gift: ' + error.message);
     }
   };
 });
@@ -459,7 +519,6 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('gift') === 'success') {
   setTimeout(() => {
     alert('🎁 Gift sent successfully! The recipient will be notified.');
-    // Clean URL
     window.history.replaceState({}, document.title, window.location.pathname);
   }, 500);
 } else if (urlParams.get('gift') === 'cancelled') {

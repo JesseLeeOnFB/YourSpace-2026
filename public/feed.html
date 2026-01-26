@@ -5,6 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>YourSpace – Feed</title>
   <link rel="stylesheet" href="feed.css">
+  <style>
+    /* Thread-style comments */
+    .comment-thread {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 3px solid #007bff;
+    }
+    
+    .comment-avatar {
+      flex-shrink: 0;
+    }
+    
+    .avatar-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    
+    .comment-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    
+    .comment-username {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1c1e21;
+    }
+    
+    .comment-time {
+      font-size: 0.8rem;
+      color: #65676b;
+    }
+    
+    .comment-text {
+      margin: 0;
+      line-height: 1.5;
+      color: #1c1e21;
+      word-wrap: break-word;
+    }
+    
+    .delete-comment {
+      background: rgba(255, 59, 48, 0.1);
+      border: 1px solid rgba(255, 59, 48, 0.3);
+      color: #ff3b30;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .delete-comment:hover {
+      background: rgba(255, 59, 48, 0.2);
+    }
+    
+    .no-comments {
+      text-align: center;
+      color: #65676b;
+      padding: 2rem;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
   <!-- NAVIGATION -->

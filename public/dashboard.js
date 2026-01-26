@@ -1,49 +1,72 @@
-// dashboard.js - Creator Dashboard Logic
-// Firebase already initialized in feed.js style – assuming same config
+// dashboard.js - Creator Dashboard Logic with Debug Logging
+console.log("Dashboard.js loaded");
+
+// Check if Firebase is loaded
+if (typeof firebase === 'undefined') {
+  console.error("Firebase not loaded! Make sure Firebase SDK is included before this script.");
+  alert("Firebase not loaded. Check console for errors.");
+}
 
 const db = firebase.firestore();
 const auth = firebase.auth();
+
+console.log("Firebase initialized:", { db, auth });
 
 // ────────────────────────────────────────────────
 // Wait for auth & load data
 // ────────────────────────────────────────────────
 auth.onAuthStateChanged(async (user) => {
+  console.log("Auth state changed:", user);
+  
   if (!user) {
+    console.log("No user logged in, redirecting to login");
     window.location.href = 'login.html';
     return;
   }
 
+  console.log("User logged in:", user.uid, user.email);
   document.getElementById('creatorName').textContent = user.displayName || user.email.split('@')[0];
 
   // ────────────────────────────────────────────────
   // Realtime user document listener
   // ────────────────────────────────────────────────
   const userRef = db.collection('users').doc(user.uid);
+  console.log("Setting up user document listener for:", user.uid);
+  
   userRef.onSnapshot(async (snap) => {
+    console.log("User snapshot received, exists:", snap.exists);
+    
     if (!snap.exists) {
       console.log("User document doesn't exist, creating with defaults...");
-      // Initialize user document with default values
-      await userRef.set({
-        totalPosts: 0,
-        totalLikes: 0,
-        totalComments: 0,
-        loginStreak: 0,
-        payoutBalance: 0,
-        totalGiftsReceived: 0,
-        totalEarned: 0,
-        rewards: {
-          house: 0,
-          car: 0,
-          truck: 0,
-          pet: 0,
-          diamond: 0,
-          crown: 0
-        },
-        lastPayoutDate: null,
-        stripeAccountId: null,
-        stripeAccountStatus: null,
-        stripeTaxInfoProvided: false
-      }, { merge: true });
+      try {
+        await userRef.set({
+          email: user.email,
+          displayName: user.displayName || user.email.split('@')[0],
+          totalPosts: 0,
+          totalLikes: 0,
+          totalComments: 0,
+          loginStreak: 0,
+          payoutBalance: 0,
+          totalGiftsReceived: 0,
+          totalEarned: 0,
+          rewards: {
+            house: 0,
+            car: 0,
+            truck: 0,
+            pet: 0,
+            diamond: 0,
+            crown: 0
+          },
+          lastPayoutDate: null,
+          stripeAccountId: null,
+          stripeAccountStatus: null,
+          stripeTaxInfoProvided: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        console.log("Default user document created");
+      } catch (err) {
+        console.error("Error creating user document:", err);
+      }
       return;
     }
 
@@ -51,29 +74,47 @@ auth.onAuthStateChanged(async (user) => {
     console.log("User data loaded:", data);
 
     // Basic stats
-    document.getElementById('totalPosts').textContent = data.totalPosts || 0;
-    document.getElementById('totalLikes').textContent = data.totalLikes || 0;
-    document.getElementById('totalComments').textContent = data.totalComments || 0;
-    document.getElementById('loginStreak').textContent = data.loginStreak || 0;
+    const totalPosts = data.totalPosts || 0;
+    const totalLikes = data.totalLikes || 0;
+    const totalComments = data.totalComments || 0;
+    const loginStreak = data.loginStreak || 0;
+    
+    console.log("Setting basic stats:", { totalPosts, totalLikes, totalComments, loginStreak });
+    
+    document.getElementById('totalPosts').textContent = totalPosts;
+    document.getElementById('totalLikes').textContent = totalLikes;
+    document.getElementById('totalComments').textContent = totalComments;
+    document.getElementById('loginStreak').textContent = loginStreak;
 
     // Payout section
-    const payoutBalance = (data.payoutBalance || 0) / 100; // cents → dollars
+    const payoutBalance = (data.payoutBalance || 0) / 100;
+    const totalGiftsReceived = data.totalGiftsReceived || 0;
+    const totalEarned = (data.totalEarned || 0) / 100;
+    
+    console.log("Setting payout data:", { payoutBalance, totalGiftsReceived, totalEarned });
+    
     document.getElementById('pendingPayout').textContent = `$${payoutBalance.toFixed(2)}`;
     
-    // Update the realtime balance display
     const balanceEl = document.getElementById('payout-balance');
     if (balanceEl) {
       balanceEl.textContent = `$${payoutBalance.toFixed(2)}`;
+    } else {
+      console.warn("payout-balance element not found");
     }
 
-    document.getElementById('totalGiftsReceived').textContent = data.totalGiftsReceived || 0;
-    const totalEarned = (data.totalEarned || 0) / 100;
+    document.getElementById('totalGiftsReceived').textContent = totalGiftsReceived;
     document.getElementById('totalEarned').textContent = `$${totalEarned.toFixed(2)}`;
 
     // Stripe Connect status
     const stripeSetup = document.getElementById('stripeSetup');
     const payoutStatus = document.getElementById('payoutStatus');
     const statusText = document.getElementById('statusText');
+    
+    console.log("Stripe status:", {
+      accountId: data.stripeAccountId,
+      accountStatus: data.stripeAccountStatus,
+      taxInfo: data.stripeTaxInfoProvided
+    });
     
     if (!data.stripeAccountId || data.stripeAccountStatus !== 'complete') {
       stripeSetup.style.display = 'block';
@@ -90,8 +131,10 @@ auth.onAuthStateChanged(async (user) => {
       statusText.textContent = 'Payment setup complete - ready to receive payouts';
     }
 
-    // Rewards (house, car, etc.)
+    // Rewards
     const rewards = data.rewards || {};
+    console.log("Setting rewards:", rewards);
+    
     document.getElementById('houseCount').textContent = rewards.house || 0;
     document.getElementById('carCount').textContent = rewards.car || 0;
     document.getElementById('truckCount').textContent = rewards.truck || 0;
@@ -100,59 +143,59 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById('crownCount').textContent = rewards.crown || 0;
 
     // Next payout countdown
+    console.log("Updating payout countdown with lastPayoutDate:", data.lastPayoutDate);
     updatePayoutCountdown(data.lastPayoutDate);
     
     // Load payout history
+    console.log("Loading payout history...");
     await loadPayoutHistory(user.uid);
   }, (err) => {
     console.error("Dashboard snapshot error:", err);
+    alert("Error loading dashboard: " + err.message);
   });
 
-  // Load top posts & weekly engagement (one-time on load)
+  // Load top posts & weekly engagement
+  console.log("Loading top posts and weekly engagement...");
   await loadTopPosts(user.uid);
   await loadWeeklyEngagement(user.uid);
 });
 
 // ────────────────────────────────────────────────
-// Next Payout Countdown (bi-weekly on Wed & Sun)
+// Next Payout Countdown
 // ────────────────────────────────────────────────
 function updatePayoutCountdown(lastPayoutTimestamp) {
+  console.log("Calculating payout countdown...");
   const now = new Date();
   let nextPayout = new Date(now);
   
-  // Bi-weekly payouts: Wednesday (day 3) and Sunday (day 0)
   const currentDay = now.getDay();
   let daysUntilNext;
   
   if (currentDay === 0) {
-    // It's Sunday - next payout is Wednesday
     daysUntilNext = 3;
   } else if (currentDay <= 3) {
-    // Monday, Tuesday, or Wednesday - next payout is this Wednesday
     daysUntilNext = 3 - currentDay;
-    if (daysUntilNext === 0) {
-      // It's Wednesday - check if payout time has passed (assuming noon cutoff)
-      if (now.getHours() >= 12) {
-        daysUntilNext = 4; // Next is Sunday
-      }
+    if (daysUntilNext === 0 && now.getHours() >= 12) {
+      daysUntilNext = 4;
     }
   } else {
-    // Thursday, Friday, or Saturday - next payout is Sunday
     daysUntilNext = 7 - currentDay;
   }
   
   nextPayout.setDate(now.getDate() + daysUntilNext);
-  nextPayout.setHours(12, 0, 0, 0); // Noon payout time
+  nextPayout.setHours(12, 0, 0, 0);
   
-  // Format the date
-  document.getElementById('nextPayoutDate').textContent = nextPayout.toLocaleDateString('en-US', {
+  const dateStr = nextPayout.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric'
   });
   
-  // Calculate days remaining
+  console.log("Next payout:", dateStr, "in", daysUntilNext, "days");
+  
+  document.getElementById('nextPayoutDate').textContent = dateStr;
+  
   const diffTime = nextPayout - now;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
@@ -172,12 +215,15 @@ function updatePayoutCountdown(lastPayoutTimestamp) {
 // Load Payout History
 // ────────────────────────────────────────────────
 async function loadPayoutHistory(uid) {
+  console.log("Loading payout history for user:", uid);
   try {
     const snapshot = await db.collection('payouts')
       .where('userId', '==', uid)
       .orderBy('payoutDate', 'desc')
       .limit(10)
       .get();
+    
+    console.log("Payout history loaded, count:", snapshot.size);
     
     const historyList = document.getElementById('payoutHistoryList');
     
@@ -190,6 +236,7 @@ async function loadPayoutHistory(uid) {
     
     snapshot.forEach(doc => {
       const payout = doc.data();
+      console.log("Payout record:", payout);
       const amount = (payout.amount || 0) / 100;
       const date = payout.payoutDate?.toDate();
       const status = payout.status || 'pending';
@@ -217,9 +264,10 @@ async function loadPayoutHistory(uid) {
 }
 
 // ────────────────────────────────────────────────
-// Top Posts (last 7 days, sorted by likes + comments)
+// Top Posts
 // ────────────────────────────────────────────────
 async function loadTopPosts(uid) {
+  console.log("Loading top posts for user:", uid);
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -228,8 +276,10 @@ async function loadTopPosts(uid) {
       .where('userId', '==', uid)
       .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(sevenDaysAgo))
       .orderBy('createdAt', 'desc')
-      .limit(20) // Get more posts to sort
+      .limit(20)
       .get();
+
+    console.log("Posts loaded, count:", snapshot.size);
 
     const list = document.getElementById('topPostsList');
     list.innerHTML = '';
@@ -246,9 +296,10 @@ async function loadTopPosts(uid) {
       posts.push({ id: doc.id, ...data, score });
     });
 
-    // Sort by score descending and take top 5
     posts.sort((a, b) => b.score - a.score);
     const topPosts = posts.slice(0, 5);
+    
+    console.log("Top posts:", topPosts.map(p => ({ id: p.id, score: p.score })));
 
     topPosts.forEach(post => {
       const item = document.createElement('div');
@@ -266,14 +317,15 @@ async function loadTopPosts(uid) {
   } catch (err) {
     console.error("Top posts error:", err);
     const list = document.getElementById('topPostsList');
-    list.innerHTML = '<p style="text-align:center;color:#f44336;padding:2rem;">Error loading posts</p>';
+    list.innerHTML = '<p style="text-align:center;color:#f44336;padding:2rem;">Error: ' + err.message + '</p>';
   }
 }
 
 // ────────────────────────────────────────────────
-// Weekly Engagement (last 7 days)
+// Weekly Engagement
 // ────────────────────────────────────────────────
 async function loadWeeklyEngagement(uid) {
+  console.log("Loading weekly engagement for user:", uid);
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -282,6 +334,8 @@ async function loadWeeklyEngagement(uid) {
       .where('userId', '==', uid)
       .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(sevenDaysAgo))
       .get();
+
+    console.log("Engagement posts loaded, count:", snapshot.size);
 
     let totalLikes = 0;
     let totalComments = 0;
@@ -294,8 +348,9 @@ async function loadWeeklyEngagement(uid) {
       totalShares += data.shares?.length || 0;
     });
 
-    // Update bars with dynamic max based on highest value
-    const maxValue = Math.max(totalLikes, totalComments, totalShares, 10); // At least 10 for scale
+    console.log("Engagement totals:", { totalLikes, totalComments, totalShares });
+
+    const maxValue = Math.max(totalLikes, totalComments, totalShares, 10);
     
     const likesPercent = (totalLikes / maxValue) * 100;
     const commentsPercent = (totalComments / maxValue) * 100;
@@ -317,6 +372,8 @@ async function loadWeeklyEngagement(uid) {
 // ────────────────────────────────────────────────
 // Navigation & Logout
 // ────────────────────────────────────────────────
+console.log("Setting up navigation listeners...");
+
 document.getElementById('feedNavBtn').onclick = () => window.location.href = 'feed.html';
 document.getElementById('profileNavBtn').onclick = () => window.location.href = 'profile.html';
 document.getElementById('messagesNavBtn').onclick = () => window.location.href = 'messages.html';
@@ -325,14 +382,16 @@ document.getElementById('dashboardNavBtn').onclick = () => window.location.href 
 document.getElementById('adminNavBtn').onclick = () => window.location.href = 'admin.html';
 document.getElementById('contactNavBtn').onclick = () => window.location.href = 'contact.html';
 document.getElementById('logoutBtn').onclick = async () => {
+  console.log("Logging out...");
   await auth.signOut();
   window.location.href = 'login.html';
 };
 
-// Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 hamburger.onclick = () => {
   hamburger.classList.toggle('active');
   navLinks.classList.toggle('active');
 };
+
+console.log("Dashboard.js initialization complete");

@@ -1,4 +1,4 @@
-// feed.js - COMPLETE WORKING VERSION WITH ALL FEATURES
+// feed.js - UPDATED WITH DIRECT STRIPE PAYMENT LINKS
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
@@ -13,9 +13,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
-const stripe = Stripe('pk_live_51SsCC2DYg2OK71XSVGO4dsgGVtpUO1XcrgJp1pP5K0fTDVkDaunVwNzhH5ORf8QRJBMA9WDq9FY0Z6SrTWkSPvr100nhHBuJNM');
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
+
+// Direct Stripe payment links
+const GIFT_PAYMENT_LINKS = {
+  coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
+  rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
+  teddybear: "https://buy.stripe.com/cNi7sL2iugQed6z6xX7bW02",
+  cake: "https://buy.stripe.com/14A5kD0am2Zo9UncWl7bW03",
+  diamond: "https://buy.stripe.com/aFa3cvcX8bvU2rVg8x7bW04",
+  yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05"
+};
 
 let currentGiftPost = null;
 let currentGiftRecipient = null;
@@ -130,7 +139,6 @@ postBtn.onclick = async () => {
     let mediaURL = '';
     let mediaType = '';
     
-    // Upload media if exists
     if (file) {
       mediaType = file.type.startsWith('video') ? 'video' : 'image';
       const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
@@ -138,11 +146,9 @@ postBtn.onclick = async () => {
       mediaURL = await storageRef.getDownloadURL();
     }
     
-    // Get username
     const userDoc = await db.collection('users').doc(user.uid).get();
     const username = userDoc.data()?.username || user.email.split('@')[0];
     
-    // Create post
     await db.collection('posts').add({
       userId: user.uid,
       username: username,
@@ -247,8 +253,6 @@ function renderPost(post, postId) {
   `;
   
   container.appendChild(postDiv);
-  
-  // Load comments for this post
   loadComments(postId);
 }
 
@@ -260,7 +264,6 @@ document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
   if (!postId) return;
   
-  // LIKE
   if (e.target.classList.contains('like-btn')) {
     const postRef = db.collection('posts').doc(postId);
     const postDoc = await postRef.get();
@@ -280,7 +283,6 @@ document.addEventListener('click', async (e) => {
     loadPosts();
   }
   
-  // DISLIKE
   if (e.target.classList.contains('dislike-btn')) {
     const postRef = db.collection('posts').doc(postId);
     const postDoc = await postRef.get();
@@ -300,20 +302,17 @@ document.addEventListener('click', async (e) => {
     loadPosts();
   }
   
-  // COMMENT TOGGLE
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
     commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
   }
   
-  // SHARE
   if (e.target.classList.contains('share-btn')) {
     const url = `${window.location.origin}/feed.html#post-${postId}`;
     navigator.clipboard.writeText(url);
     alert('Link copied to clipboard!');
   }
   
-  // GIFT
   if (e.target.classList.contains('gift-btn')) {
     currentGiftPost = postId;
     currentGiftRecipient = e.target.dataset.recipient;
@@ -322,7 +321,6 @@ document.addEventListener('click', async (e) => {
     document.getElementById('giftDialog').style.display = 'flex';
   }
   
-  // DELETE
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
       await db.collection('posts').doc(postId).delete();
@@ -330,7 +328,6 @@ document.addEventListener('click', async (e) => {
     }
   }
   
-  // PIN (admin only)
   if (e.target.classList.contains('pin-btn')) {
     await db.collection('posts').doc(postId).update({
       pinned: true
@@ -338,7 +335,6 @@ document.addEventListener('click', async (e) => {
     loadPosts();
   }
   
-  // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
@@ -387,7 +383,6 @@ async function loadComments(postId) {
       commentsList.appendChild(commentDiv);
     });
     
-    // Delete comment handler
     commentsList.querySelectorAll('.delete-comment').forEach(btn => {
       btn.onclick = async () => {
         const commentId = btn.dataset.commentid;
@@ -413,7 +408,6 @@ document.getElementById('cancelGiftBtn').onclick = () => {
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
     const giftType = option.dataset.gift;
-    const price = parseFloat(option.dataset.price);
     
     if (!currentGiftPost || !currentGiftRecipient) {
       alert('Error: Missing post or recipient information');
@@ -428,31 +422,29 @@ document.querySelectorAll('.gift-option').forEach(option => {
     
     document.getElementById('giftDialog').style.display = 'none';
     
+    // Store pending gift info in Firestore before redirecting to Stripe
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
       
-      const response = await fetch('https://us-central1-yourspace-2026.cloudfunctions.net/createCheckoutSession', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.uid,
-          senderName: username,
-          recipientId: currentGiftRecipient,
-          postId: currentGiftPost,
-          giftType: giftType,
-          amount: price,
-          successUrl: `${window.location.origin}/feed.html?gift=success`,
-          cancelUrl: `${window.location.origin}/feed.html?gift=cancelled`
-        })
+      await db.collection('pendingGifts').add({
+        senderId: user.uid,
+        senderName: username,
+        senderEmail: user.email,
+        recipientId: currentGiftRecipient,
+        recipientName: currentGiftUsername,
+        postId: currentGiftPost,
+        giftType: giftType,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      const data = await response.json();
-      
-      if (data.sessionId) {
-        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      // Redirect to Stripe payment link
+      const paymentLink = GIFT_PAYMENT_LINKS[giftType];
+      if (paymentLink) {
+        window.location.href = paymentLink;
       } else {
-        alert('Error: ' + (data.error || 'Unknown error'));
+        alert('Payment link not found for this gift');
       }
       
     } catch (error) {
@@ -462,6 +454,21 @@ document.querySelectorAll('.gift-option').forEach(option => {
   };
 });
 
+// Check for successful gift payment on page load
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('gift') === 'success') {
+  setTimeout(() => {
+    alert('🎁 Gift sent successfully! The recipient will be notified.');
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, 500);
+} else if (urlParams.get('gift') === 'cancelled') {
+  setTimeout(() => {
+    alert('Gift cancelled. No charges were made.');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, 500);
+}
+
 // ═══════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════
@@ -470,11 +477,9 @@ auth.onAuthStateChanged(user => {
   if (!user) {
     window.location.href = 'login.html';
   } else {
-    // Show admin button if admin
     if (ADMIN_EMAILS.includes(user.email)) {
       document.getElementById('adminNavBtn').style.display = 'inline-block';
     }
-    
     loadPosts();
   }
 });

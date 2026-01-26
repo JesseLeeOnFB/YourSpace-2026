@@ -26,68 +26,71 @@
       <button id="logoutBtn">🚪 Logout</button>
     </div>
   </nav>
-
   <!-- MAIN FEED -->
   <main class="feed-container">
     <h1>Global Feed</h1>
-
     <!-- SEARCH BAR -->
     <div class="search-container">
       <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
       <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
       <div id="searchResults" class="search-results"></div>
     </div>
-
     <!-- NEW POST -->
     <section class="new-post">
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
       <input type="file" id="postFileInput" accept="image/*,video/*" />
       <button id="postBtn">Post</button>
     </section>
-
     <!-- POSTS CONTAINER -->
     <section id="postsContainer">
       <p style="text-align: center; color: #666;">Loading posts...</p>
     </section>
   </main>
-
   <!-- GIFT DIALOG -->
   <div id="giftDialog" class="gift-dialog-overlay" style="display:none;">
     <div class="gift-dialog">
       <h3>🎁 Send a Gift</h3>
       <p class="gift-subtitle">Choose a gift to send to <span id="giftRecipientName"></span></p>
       <div class="gift-options">
-        <div class="gift-option" data-gift="coffee" data-price="5">
-          <div class="gift-icon">☕</div>
-          <div class="gift-name">Coffee</div>
+        <div class="gift-option" data-gift="rose">
+          <div class="gift-icon">🌹</div>
+          <div class="gift-name">Rose</div>
           <div class="gift-price">$5.00</div>
         </div>
-        <div class="gift-option" data-gift="pizza" data-price="10">
-          <div class="gift-icon">🍕</div>
-          <div class="gift-name">Pizza</div>
+        <div class="gift-option" data-gift="coffee">
+          <div class="gift-icon">☕</div>
+          <div class="gift-name">Coffee</div>
           <div class="gift-price">$10.00</div>
         </div>
-        <div class="gift-option" data-gift="diamond" data-price="25">
+        <div class="gift-option" data-gift="teddybear">
+          <div class="gift-icon">🧸</div>
+          <div class="gift-name">Teddy Bear</div>
+          <div class="gift-price">$15.00</div>
+        </div>
+        <div class="gift-option" data-gift="cake">
+          <div class="gift-icon">🎂</div>
+          <div class="gift-name">Cake</div>
+          <div class="gift-price">$20.00</div>
+        </div>
+        <div class="gift-option" data-gift="diamond">
           <div class="gift-icon">💎</div>
           <div class="gift-name">Diamond</div>
           <div class="gift-price">$25.00</div>
         </div>
-        <div class="gift-option" data-gift="rocket" data-price="50">
-          <div class="gift-icon">🚀</div>
-          <div class="gift-name">Rocket</div>
+        <div class="gift-option" data-gift="yacht">
+          <div class="gift-icon">🛥️</div>
+          <div class="gift-name">Yacht</div>
           <div class="gift-price">$50.00</div>
         </div>
       </div>
       <button class="gift-cancel-btn" id="cancelGiftBtn">Cancel</button>
     </div>
   </div>
-
-  <!-- Firebase & Stripe -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-  <script src="https://js.stripe.com/v3/"></script>
   <script src="feed.js"></script>
 </body>
 </html>

@@ -134,7 +134,100 @@ async function calculateAndDisplayBadges(userId) {
     } catch (err) {
       console.log("No rewards yet");
     }
+    // Add this to your profile.js or dashboard.js to display received gifts
+
+async function loadReceivedGifts(userId) {
+  const giftsContainer = document.getElementById('giftsContainer');
+  
+  try {
+    const giftsSnapshot = await db.collection('gifts')
+      .where('recipientId', '==', userId)
+      .orderBy('deliveredAt', 'desc')
+      .limit(20)
+      .get();
     
+    if (giftsSnapshot.empty) {
+      giftsContainer.innerHTML = '<p style="text-align:center;color:#666;">No gifts received yet</p>';
+      return;
+    }
+    
+    giftsContainer.innerHTML = '';
+    
+    // Gift emoji mapping
+    const giftEmojis = {
+      rose: '🌹',
+      coffee: '☕',
+      teddybear: '🧸',
+      cake: '🎂',
+      diamond: '💎',
+      yacht: '🛥️'
+    };
+    
+    giftsSnapshot.forEach(doc => {
+      const gift = doc.data();
+      const giftDiv = document.createElement('div');
+      giftDiv.className = 'gift-item';
+      giftDiv.innerHTML = `
+        <div class="gift-emoji">${giftEmojis[gift.giftType] || '🎁'}</div>
+        <div class="gift-details">
+          <strong>${gift.senderName}</strong> sent you a ${gift.giftType}
+          <br>
+          <small>${gift.deliveredAt ? gift.deliveredAt.toDate().toLocaleString() : 'Just now'}</small>
+        </div>
+      `;
+      giftsContainer.appendChild(giftDiv);
+    });
+    
+  } catch (error) {
+    console.error('Error loading gifts:', error);
+    giftsContainer.innerHTML = '<p style="text-align:center;color:red;">Error loading gifts</p>';
+  }
+}
+
+// Add CSS for gift display
+const giftStyles = `
+  .gift-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(131, 56, 236, 0.1));
+    border-radius: 12px;
+    margin-bottom: 0.8rem;
+    border: 2px solid rgba(255, 0, 110, 0.2);
+    transition: all 0.3s;
+  }
+  
+  .gift-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 0, 110, 0.3);
+  }
+  
+  .gift-emoji {
+    font-size: 3rem;
+    line-height: 1;
+  }
+  
+  .gift-details {
+    flex: 1;
+  }
+  
+  .gift-details strong {
+    font-size: 1.1rem;
+    color: #1c1e21;
+  }
+  
+  .gift-details small {
+    color: #65676b;
+    font-size: 0.85rem;
+  }
+`;
+
+// Inject styles
+const styleSheet = document.createElement('style');
+styleSheet.textContent = giftStyles;
+document.head.appendChild(styleSheet);
+
     // Get login streak
     const loginStreak = userData?.loginStreak || 0;
     

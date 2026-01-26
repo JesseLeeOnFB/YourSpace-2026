@@ -4,14 +4,10 @@
 // Supports Firebase Secrets and gift logic
 // ===============================
 
-// ===============================
-// YourSpace Firebase Functions
-// ===============================
-
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import { getFirestore, Timestamp, FieldValue } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
-import * as functions from "firebase-functions/v1";          // ← Changed to /v1
+import * as functions from "firebase-functions/v1"; // Required for runWith + v1 syntax compatibility
 import { defineSecret } from "firebase-functions/params";
 import Stripe from "stripe";
 
@@ -26,8 +22,9 @@ const auth = getAuth();
 
 // ===============================
 // Define Secrets (Firebase Secret Manager)
-// Set with: firebase functions:secrets:set STRIPE_KEY
-//           firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
+// Set with:
+//   firebase functions:secrets:set STRIPE_KEY
+//   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
 // ===============================
 const stripeKey = defineSecret("STRIPE_KEY");
 const webhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
@@ -63,14 +60,11 @@ export const stripeWebhook = functions
       console.log(`Invalid method: ${req.method}`);
       return res.status(405).send("Method Not Allowed");
     }
-
     const sig = req.headers["stripe-signature"];
     let event;
-
     try {
       // Use secrets from Secret Manager (process.env in runtime)
       let endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-
       // === TEMPORARY FOR LOCAL EMULATOR TESTING ===
       // Replace with the secret printed by `stripe listen`
       // Remove or comment out this block before deploying to production
@@ -79,67 +73,54 @@ export const stripeWebhook = functions
         console.log("[LOCAL] Using emulator webhook secret for signature verification");
       }
       // === END LOCAL OVERRIDE ===
-
       if (!endpointSecret) {
         throw new Error("Webhook secret not configured in Firebase secrets");
       }
-
       // Initialize Stripe inside handler (uses secret)
       const stripe = new Stripe(process.env.STRIPE_KEY || "", {
         apiVersion: "2024-06-20", // Latest stable version – update as needed
       });
-
       event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
     } catch (err) {
       console.error("Webhook signature verification failed:", err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-
     // Handle the event
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-
       // Idempotency check - prevent duplicate processing
       const existingGift = await db.collection("gifts")
         .where("stripeSessionId", "==", session.id)
         .limit(1)
         .get();
-
       if (!existingGift.empty) {
         console.log(`Already processed session ${session.id} - skipping`);
         return res.json({ received: true });
       }
-
       console.log("Processing checkout.session.completed:", session.id);
-
       try {
         // Find the most recent pending gift (within last 10 minutes)
         const tenMinutesAgo = Timestamp.fromDate(
           new Date(Date.now() - 10 * 60 * 1000)
         );
-
         const pendingGiftsSnapshot = await db.collection("pendingGifts")
           .where("status", "==", "pending")
           .where("createdAt", ">=", tenMinutesAgo)
           .orderBy("createdAt", "desc")
           .limit(1)
           .get();
-
         if (pendingGiftsSnapshot.empty) {
           console.log("No matching pending gift found for session:", session.id);
           return res.json({ received: true, warning: "No pending gift found" });
         }
-
         const giftDoc = pendingGiftsSnapshot.docs[0];
         const giftData = giftDoc.data();
-
         // Update pending gift status
         await giftDoc.ref.update({
           status: "completed",
           stripeSessionId: session.id,
           completedAt: Timestamp.now(),
         });
-
         // Create completed gift record
         await db.collection("gifts").add({
           senderId: giftData.senderId,
@@ -153,7 +134,40 @@ export const stripeWebhook = functions
           createdAt: giftData.createdAt,
           deliveredAt: Timestamp.now(),
         });
-
+        // ────────────────────────────────────────────────
+        // REVENUE SPLIT & PAYOUT BALANCE CREDIT LOGIC
+        // ────────────────────────────────────────────────
+        const fullAmountCents = session.amount_total; // Full price paid (in cents)
+        const giftType = giftData.giftType.toLowerCase();
+        // Platform keeps 60%
+        const platformKeepCents = Math.floor(fullAmountCents * 0.60);
+        // Recipient gets 20% for lower tiers, 40% for diamond/yacht
+        let recipientPercentage = 0.20; // Default for coffee, rose, teddybear, cake
+        if (giftType === "diamond" || giftType === "yacht") {
+          recipientPercentage = 0.40;
+        }
+        const recipientCreditCents = Math.floor(fullAmountCents * recipientPercentage);
+        // Credit recipient's payout balance (in cents)
+        const recipientRef = db.collection("users").doc(giftData.recipientId);
+        await recipientRef.update({
+          payoutBalance: FieldValue.increment(recipientCreditCents),
+          [`giftsReceived.${giftData.giftType}`]: FieldValue.increment(1),
+          totalGiftsReceived: FieldValue.increment(1),
+        });
+        // Update sender counts (no balance change for sender)
+        const senderRef = db.collection("users").doc(giftData.senderId);
+        await senderRef.update({
+          [`giftsSent.${giftData.giftType}`]: FieldValue.increment(1),
+          totalGiftsSent: FieldValue.increment(1),
+        });
+        // Log the split for tracking
+        console.log(
+          `Gift: ${giftData.giftType} | ` +
+          `Full: $${(fullAmountCents / 100).toFixed(2)} | ` +
+          `Platform keep (60%): $${(platformKeepCents / 100).toFixed(2)} | ` +
+          `Recipient credit (${recipientPercentage * 100}%): $${(recipientCreditCents / 100).toFixed(2)}`
+        );
+        // ────────────────────────────────────────────────
         // Create notification for recipient
         await db.collection("notifications").add({
           userId: giftData.recipientId,
@@ -166,21 +180,6 @@ export const stripeWebhook = functions
           read: false,
           createdAt: Timestamp.now(),
         });
-
-        // Update recipient's gift count
-        const recipientRef = db.collection("users").doc(giftData.recipientId);
-        await recipientRef.update({
-          [`giftsReceived.${giftData.giftType}`]: FieldValue.increment(1),
-          totalGiftsReceived: FieldValue.increment(1),
-        });
-
-        // Update sender's gift count
-        const senderRef = db.collection("users").doc(giftData.senderId);
-        await senderRef.update({
-          [`giftsSent.${giftData.giftType}`]: FieldValue.increment(1),
-          totalGiftsSent: FieldValue.increment(1),
-        });
-
         console.log("Gift successfully processed:", giftData.giftType);
       } catch (error) {
         console.error("Error processing gift:", error);
@@ -189,15 +188,12 @@ export const stripeWebhook = functions
     } else {
       console.log("Unhandled event type:", event.type);
     }
-
     // Always acknowledge to Stripe
     res.json({ received: true });
   });
-
 // ===============================
 // HTTPS Callable Functions
 // ===============================
-
 export const sendGift = functions.https.onCall(async (data, context) => {
   if (!context.auth) throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
   const { recipientId, giftId } = data;
@@ -211,7 +207,6 @@ export const sendGift = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError("internal", err.message);
   }
 });
-
 export const updateProfile = functions.https.onCall(async (data, context) => {
   if (!context.auth) throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
   const { displayName, photoURL } = data;

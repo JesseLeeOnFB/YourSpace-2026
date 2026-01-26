@@ -1,5 +1,4 @@
 // feed.js - FIXED VERSION
-
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -8,14 +7,11 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
-
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
-
 // Direct Stripe payment links
 const GIFT_PAYMENT_LINKS = {
   coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
@@ -25,15 +21,12 @@ const GIFT_PAYMENT_LINKS = {
   diamond: "https://buy.stripe.com/aFa3cvcX8bvU2rVg8x7bW04",
   yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05"
 };
-
 let currentGiftPost = null;
 let currentGiftRecipient = null;
 let currentGiftUsername = null;
-
 // ═══════════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
-
 document.getElementById('feedNavBtn').onclick = () => window.location.href = 'feed.html';
 document.getElementById('profileNavBtn').onclick = () => window.location.href = 'profile.html';
 document.getElementById('messagesNavBtn').onclick = () => window.location.href = 'messages.html';
@@ -45,7 +38,6 @@ document.getElementById('logoutBtn').onclick = async () => {
   await auth.signOut();
   window.location.href = 'login.html';
 };
-
 // Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
@@ -53,28 +45,24 @@ hamburger.onclick = () => {
   hamburger.classList.toggle('active');
   navLinks.classList.toggle('active');
 };
-
 // ═══════════════════════════════════════════════════════════
 // USER SEARCH - FIXED
 // ═══════════════════════════════════════════════════════════
-
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
-
 let searchTimeout;
-
 searchBar.addEventListener('input', async (e) => {
   const searchTerm = e.target.value.trim().toLowerCase();
-  
+ 
   if (searchTerm.length === 0) {
     searchResults.style.display = 'none';
     clearSearchBtn.style.display = 'none';
     return;
   }
-  
+ 
   clearSearchBtn.style.display = 'block';
-  
+ 
   // Debounce search
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
@@ -86,9 +74,9 @@ searchBar.addEventListener('input', async (e) => {
         .endAt(searchTerm + '\uf8ff')
         .limit(10)
         .get();
-      
+     
       searchResults.innerHTML = '';
-      
+     
       if (usersSnapshot.empty) {
         searchResults.innerHTML = '<p class="no-results">No users found</p>';
       } else {
@@ -106,9 +94,9 @@ searchBar.addEventListener('input', async (e) => {
           searchResults.appendChild(item);
         });
       }
-      
+     
       searchResults.style.display = 'block';
-      
+     
     } catch (error) {
       console.error('Search error:', error);
       searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
@@ -116,56 +104,51 @@ searchBar.addEventListener('input', async (e) => {
     }
   }, 300);
 });
-
 clearSearchBtn.onclick = () => {
   searchBar.value = '';
   searchResults.style.display = 'none';
   clearSearchBtn.style.display = 'none';
 };
-
 // Close search when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-container')) {
     searchResults.style.display = 'none';
   }
 });
-
 // ═══════════════════════════════════════════════════════════
 // CREATE POST
 // ═══════════════════════════════════════════════════════════
-
 const postBtn = document.getElementById('postBtn');
 const postText = document.getElementById('postText');
 const postFileInput = document.getElementById('postFileInput');
-
 postBtn.onclick = async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
-  
+ 
   if (!text && !file) {
     return alert('Post cannot be empty');
   }
-  
+ 
   const user = auth.currentUser;
   if (!user) return;
-  
+ 
   postBtn.disabled = true;
   postBtn.textContent = 'Posting...';
-  
+ 
   try {
     let mediaURL = '';
     let mediaType = '';
-    
+   
     if (file) {
       mediaType = file.type.startsWith('video') ? 'video' : 'image';
       const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
       await storageRef.put(file);
       mediaURL = await storageRef.getDownloadURL();
     }
-    
+   
     const userDoc = await db.collection('users').doc(user.uid).get();
     const username = userDoc.data()?.username || user.email.split('@')[0];
-    
+   
     await db.collection('posts').add({
       userId: user.uid,
       username: username,
@@ -177,14 +160,14 @@ postBtn.onclick = async () => {
       dislikedBy: [],
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    
+   
     postText.value = '';
     postFileInput.value = '';
     postBtn.textContent = 'Post';
     postBtn.disabled = false;
-    
+   
     loadPosts();
-    
+   
   } catch (error) {
     console.error('Post error:', error);
     alert('Error creating post: ' + error.message);
@@ -192,54 +175,51 @@ postBtn.onclick = async () => {
     postBtn.disabled = false;
   }
 };
-
 // ═══════════════════════════════════════════════════════════
 // LOAD POSTS
 // ═══════════════════════════════════════════════════════════
-
 async function loadPosts() {
   const container = document.getElementById('postsContainer');
   container.innerHTML = '<p style="text-align:center;color:#666;">Loading...</p>';
-  
+ 
   try {
     const snapshot = await db.collection('posts')
       .orderBy('createdAt', 'desc')
       .limit(50)
       .get();
-    
+   
     container.innerHTML = '';
-    
+   
     if (snapshot.empty) {
       container.innerHTML = '<p style="text-align:center;color:#666;">No posts yet. Be the first!</p>';
       return;
     }
-    
+   
     snapshot.forEach(doc => {
       renderPost(doc.data(), doc.id);
     });
-    
+   
   } catch (error) {
     console.error('Load posts error:', error);
     container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts</p>';
   }
 }
-
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
   const user = auth.currentUser;
   const isOwner = post.userId === user.uid;
   const isAdmin = ADMIN_EMAILS.includes(user.email);
-  
+ 
   const postDiv = document.createElement('div');
   postDiv.className = 'post-card';
   postDiv.id = `post-${postId}`;
-  
+ 
   const timestamp = post.createdAt ? post.createdAt.toDate().toLocaleString() : 'Just now';
   const likeCount = post.likedBy?.length || 0;
   const dislikeCount = post.dislikedBy?.length || 0;
   const isLiked = post.likedBy?.includes(user.uid);
   const isDisliked = post.dislikedBy?.includes(user.uid);
-  
+ 
   postDiv.innerHTML = `
     <div class="post-header">
       <strong style="cursor:pointer;" onclick="window.location.href='profile.html?uid=${post.userId}'">${post.username}</strong>
@@ -247,7 +227,7 @@ function renderPost(post, postId) {
     </div>
     <p>${post.text || ''}</p>
     ${post.mediaURL ? (
-      post.mediaType === 'video' 
+      post.mediaType === 'video'
         ? `<video controls src="${post.mediaURL}" class="post-media"></video>`
         : `<img src="${post.mediaURL}" class="post-media" />`
     ) : ''}
@@ -268,28 +248,26 @@ function renderPost(post, postId) {
       </div>
     </div>
   `;
-  
+ 
   container.appendChild(postDiv);
   loadComments(postId);
 }
-
 // ═══════════════════════════════════════════════════════════
 // POST ACTIONS - FIXED LIKE/DISLIKE
 // ═══════════════════════════════════════════════════════════
-
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
   if (!postId) return;
-  
+ 
   const userId = auth.currentUser.uid;
-  
+ 
   // LIKE - FIXED
   if (e.target.classList.contains('like-btn')) {
     try {
       const postRef = db.collection('posts').doc(postId);
       const postDoc = await postRef.get();
       const post = postDoc.data();
-      
+     
       if (post.likedBy?.includes(userId)) {
         // Remove like
         await postRef.update({
@@ -307,14 +285,14 @@ document.addEventListener('click', async (e) => {
       console.error('Like error:', error);
     }
   }
-  
+ 
   // DISLIKE - FIXED
   if (e.target.classList.contains('dislike-btn')) {
     try {
       const postRef = db.collection('posts').doc(postId);
       const postDoc = await postRef.get();
       const post = postDoc.data();
-      
+     
       if (post.dislikedBy?.includes(userId)) {
         // Remove dislike
         await postRef.update({
@@ -332,20 +310,20 @@ document.addEventListener('click', async (e) => {
       console.error('Dislike error:', error);
     }
   }
-  
+ 
   // COMMENT TOGGLE
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
     commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
   }
-  
+ 
   // SHARE
   if (e.target.classList.contains('share-btn')) {
     const url = `${window.location.origin}/feed.html#post-${postId}`;
     navigator.clipboard.writeText(url);
     alert('Link copied to clipboard!');
   }
-  
+ 
   // GIFT
   if (e.target.classList.contains('gift-btn')) {
     currentGiftPost = postId;
@@ -354,7 +332,7 @@ document.addEventListener('click', async (e) => {
     document.getElementById('giftRecipientName').textContent = currentGiftUsername;
     document.getElementById('giftDialog').style.display = 'flex';
   }
-  
+ 
   // DELETE
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
@@ -362,7 +340,7 @@ document.addEventListener('click', async (e) => {
       loadPosts();
     }
   }
-  
+ 
   // PIN (admin only)
   if (e.target.classList.contains('pin-btn')) {
     await db.collection('posts').doc(postId).update({
@@ -370,57 +348,55 @@ document.addEventListener('click', async (e) => {
     });
     loadPosts();
   }
-  
+ 
   // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
     if (!text) return;
-    
+   
     const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
     const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-    
+   
     await db.collection('posts').doc(postId).collection('comments').add({
       userId: auth.currentUser.uid,
       username: username,
       text: text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    
+   
     input.value = '';
     loadComments(postId);
   }
 });
-
 // ═══════════════════════════════════════════════════════════
 // COMMENTS - THREAD STYLE
 // ═══════════════════════════════════════════════════════════
-
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
   if (!commentsList) return;
-  
+ 
   try {
     const snapshot = await db.collection('posts').doc(postId)
       .collection('comments')
       .orderBy('createdAt', 'asc')
       .get();
-    
+   
     commentsList.innerHTML = '';
-    
+   
     if (snapshot.empty) {
       commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>';
       return;
     }
-    
+   
     snapshot.forEach(doc => {
       const comment = doc.data();
       const commentDiv = document.createElement('div');
       commentDiv.className = 'comment-thread';
-      
+     
       const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
       const isOwner = comment.userId === auth.currentUser.uid;
-      
+     
       commentDiv.innerHTML = `
         <div class="comment-avatar">
           <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
@@ -436,7 +412,7 @@ async function loadComments(postId) {
       `;
       commentsList.appendChild(commentDiv);
     });
-    
+   
     // Delete comment handler
     commentsList.querySelectorAll('.delete-comment').forEach(btn => {
       btn.onclick = async () => {
@@ -448,41 +424,38 @@ async function loadComments(postId) {
         }
       };
     });
-    
+   
   } catch (error) {
     console.error('Load comments error:', error);
   }
 }
-
 // ═══════════════════════════════════════════════════════════
 // GIFT DIALOG - FIXED PERMISSIONS
 // ═══════════════════════════════════════════════════════════
-
 document.getElementById('cancelGiftBtn').onclick = () => {
   document.getElementById('giftDialog').style.display = 'none';
 };
-
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
     const giftType = option.dataset.gift;
-    
+   
     if (!currentGiftPost || !currentGiftRecipient) {
       alert('Error: Missing post or recipient information');
       return;
     }
-    
+   
     const user = auth.currentUser;
     if (!user) {
       alert('You must be logged in');
       return;
     }
-    
+   
     document.getElementById('giftDialog').style.display = 'none';
-    
+   
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
-      
+     
       // Create pending gift with timestamp
       await db.collection('pendingGifts').add({
         senderId: user.uid,
@@ -495,10 +468,10 @@ document.querySelectorAll('.gift-option').forEach(option => {
         status: 'pending',
         createdAt: firebase.firestore.Timestamp.now()
       });
-      
+     
       // Small delay to ensure Firestore write completes
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+     
       // Redirect to Stripe payment link
       const paymentLink = GIFT_PAYMENT_LINKS[giftType];
       if (paymentLink) {
@@ -506,14 +479,13 @@ document.querySelectorAll('.gift-option').forEach(option => {
       } else {
         alert('Payment link not found for this gift');
       }
-      
+     
     } catch (error) {
       console.error('Gift error:', error);
       alert('Error sending gift: ' + error.message);
     }
   };
 });
-
 // Check for successful gift payment on page load
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('gift') === 'success') {
@@ -527,11 +499,9 @@ if (urlParams.get('gift') === 'success') {
     window.history.replaceState({}, document.title, window.location.pathname);
   }, 500);
 }
-
 // ═══════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════
-
 auth.onAuthStateChanged(user => {
   if (!user) {
     window.location.href = 'login.html';
@@ -540,5 +510,21 @@ auth.onAuthStateChanged(user => {
       document.getElementById('adminNavBtn').style.display = 'inline-block';
     }
     loadPosts();
+
+    // ────────────────────────────────────────────────
+    // Listen for payout balance updates
+    const userRef = db.collection('users').doc(user.uid);
+    userRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        const balance = (data.payoutBalance || 0) / 100; // cents → dollars
+        // Update UI element (add <span id="payout-balance"> in your HTML)
+        const balanceEl = document.getElementById('payout-balance');
+        if (balanceEl) {
+          balanceEl.textContent = `Payout Balance: $${balance.toFixed(2)}`;
+        }
+      }
+    });
+    // ────────────────────────────────────────────────
   }
 });

@@ -1,12 +1,4 @@
-// messages.js – COMPLETELY FIXED - User search WILL work with profile preview + fuzzy fallback
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getFirestore, collection, query, where, getDocs, addDoc, deleteDoc,
-  onSnapshot, orderBy, serverTimestamp, doc, setDoc, getDoc, updateDoc
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
+// messages.js – Using Firebase Compat SDK
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -16,9 +8,9 @@ const firebaseConfig = {
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 let currentChatUid = null;
 let currentChatUsername = null;
@@ -27,32 +19,28 @@ let selectedMessages = new Set();
 
 console.log("✅ Messages.js loaded");
 
-const searchUserInput = document.getElementById("searchUserInput");
-const searchUserBtn = document.getElementById("searchUserBtn");
-const searchResults = document.getElementById("searchResults");
-const conversationsList = document.getElementById("conversationsList");
-const emptyState = document.getElementById("emptyState");
-const chatSection = document.getElementById("chatSection");
-const chatWith = document.getElementById("chatWith");
-const chatUserAvatar = document.getElementById("chatUserAvatar");
-const chatMessages = document.getElementById("chatMessages");
-const messageInput = document.getElementById("messageInput");
-const sendMessageBtn = document.getElementById("sendMessageBtn");
-const closeChatBtn = document.getElementById("closeChatBtn");
-const selectAllBtn = document.getElementById("selectAllBtn");
-const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
-const notificationSound = document.getElementById("notificationSound");
-
 // Navigation
 document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("profileNavBtn").onclick = () => window.location.href = "profile.html";
 document.getElementById("messagesNavBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("dashboardNavBtn").onclick = () => window.location.href = "dashboard.html";
 document.getElementById("logoutBtn").onclick = async () => {
-  await signOut(auth);
+  await auth.signOut();
   window.location.href = "login.html";
 };
 
-onAuthStateChanged(auth, (user) => {
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+if (hamburger) {
+  hamburger.onclick = () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  };
+}
+
+// Auth check
+auth.onAuthStateChanged((user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
@@ -63,90 +51,100 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function requestNotificationPermission() {
-  if (Notification.permission !== "granted") {
+  if ('Notification' in window && Notification.permission !== "granted") {
     Notification.requestPermission();
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// LOAD CONVERSATIONS
+// ═══════════════════════════════════════════════════════════
 async function loadConversations() {
   const userId = auth.currentUser.uid;
-  const convosQuery = query(
-    collection(db, "conversations"),
-    where("participants", "array-contains", userId),
-    orderBy("lastMessageTime", "desc")
-  );
+  const conversationsList = document.getElementById("conversationsList");
+  
+  db.collection("conversations")
+    .where("participants", "array-contains", userId)
+    .orderBy("lastMessageTime", "desc")
+    .onSnapshot((snapshot) => {
+      conversationsList.innerHTML = "";
+      
+      if (snapshot.empty) {
+        conversationsList.innerHTML = "<p>No conversations yet. Search for users to start one!</p>";
+        return;
+      }
 
-  onSnapshot(convosQuery, (snapshot) => {
-    conversationsList.innerHTML = "";
-    if (snapshot.empty) {
-      conversationsList.innerHTML = "<p>No conversations yet. Search for users to start one!</p>";
-      return;
-    }
+      snapshot.forEach(async (docSnap) => {
+        const convo = docSnap.data();
+        const otherUid = convo.participants.find(uid => uid !== userId);
+        
+        const convoItem = document.createElement("div");
+        convoItem.className = "convo-item";
+        convoItem.dataset.uid = otherUid;
+        convoItem.innerHTML = `
+          <div class="convo-avatar" style="background-image: url('default-avatar.png');"></div>
+          <div class="convo-info">
+            <h4>Loading...</h4>
+            <p>${convo.lastMessage || "No messages yet"}</p>
+          </div>
+        `;
+        conversationsList.appendChild(convoItem);
 
-    snapshot.forEach((docSnap) => {
-      const convo = docSnap.data();
-      const otherUid = convo.participants.find(uid => uid !== userId);
-      const convoItem = document.createElement("div");
-      convoItem.className = "convo-item";
-      convoItem.dataset.uid = otherUid;
-      convoItem.innerHTML = `
-        <div class="convo-avatar"></div>
-        <div class="convo-info">
-          <h4>Loading...</h4>
-          <p>${convo.lastMessage || "No messages yet"}</p>
-        </div>
-      `;
-      conversationsList.appendChild(convoItem);
-
-      // Load other user's info
-      getDoc(doc(db, "users", otherUid)).then((userDoc) => {
-        if (userDoc.exists()) {
+        // Load other user's info
+        const userDoc = await db.collection('users').doc(otherUid).get();
+        if (userDoc.exists) {
           const u = userDoc.data();
           convoItem.querySelector(".convo-avatar").style.backgroundImage = `url(${u.photoURL || 'default-avatar.png'})`;
           convoItem.querySelector("h4").textContent = u.username || "Unknown";
         }
+        
+        // Click handler
+        convoItem.onclick = () => openChat(otherUid);
       });
     });
-
-    // Add click handlers
-    conversationsList.querySelectorAll(".convo-item").forEach(item => {
-      item.addEventListener("click", () => openChat(item.dataset.uid));
-    });
-  });
 }
 
-// Fixed search with fuzzy fallback
+// ═══════════════════════════════════════════════════════════
+// SEARCH USERS
+// ═══════════════════════════════════════════════════════════
+const searchUserInput = document.getElementById("searchUserInput");
+const searchUserBtn = document.getElementById("searchUserBtn");
+const searchResults = document.getElementById("searchResults");
+
 searchUserBtn.addEventListener("click", async () => {
   const searchTerm = searchUserInput.value.trim().toLowerCase();
-  if (!searchTerm) return alert("Enter a username to search!");
+  
+  if (!searchTerm) {
+    return alert("Enter a username to search!");
+  }
 
   try {
-    // Exact match on lowercase
-    const usersQuery = query(collection(db, "users"), where("usernameLower", "==", searchTerm));
-    let usersSnapshot = await getDocs(usersQuery);
+    console.log("Searching for:", searchTerm);
+    
+    // Try exact match first
+    let usersSnapshot = await db.collection("users")
+      .where("usernameLower", "==", searchTerm)
+      .get();
 
+    // If no exact match, try fuzzy search
     if (usersSnapshot.empty) {
-      // Fuzzy fallback: load all users and filter client-side
-      console.log("No exact match - using fuzzy search");
-      const allUsers = await getDocs(collection(db, "users"));
-      const fuzzyMatched = [];
-      allUsers.forEach((d) => {
-        const u = d.data();
-        if ((u.usernameLower || "").includes(searchTerm)) {
-          fuzzyMatched.push(d);
-        }
-      });
-      usersSnapshot = { docs: fuzzyMatched };
+      console.log("No exact match - trying fuzzy search");
+      usersSnapshot = await db.collection("users")
+        .orderBy("usernameLower")
+        .startAt(searchTerm)
+        .endAt(searchTerm + '\uf8ff')
+        .limit(10)
+        .get();
     }
 
     searchResults.innerHTML = "";
 
-    if (usersSnapshot.docs.length === 0) {
+    if (usersSnapshot.empty) {
       searchResults.innerHTML = "<p class='no-results'>No users found</p>";
       return;
     }
 
-    usersSnapshot.docs.forEach((docSnap) => {
+    usersSnapshot.forEach((docSnap) => {
       const user = docSnap.data();
       const resultItem = document.createElement("div");
       resultItem.className = "search-result-item";
@@ -154,35 +152,46 @@ searchUserBtn.addEventListener("click", async () => {
       resultItem.innerHTML = `
         <img src="${user.photoURL || 'default-avatar.png'}" class="search-avatar" alt="Avatar">
         <div class="search-info">
-          <h4>${user.username}</h4>
-          <p>@${user.username.toLowerCase()}</p>
+          <h4>${user.username || 'Unknown'}</h4>
+          <p>@${(user.username || '').toLowerCase()}</p>
         </div>
         <button class="start-chat-btn">Start Chat</button>
       `;
       searchResults.appendChild(resultItem);
     });
 
-    // Add start chat handlers
+    // Add click handlers
     searchResults.querySelectorAll(".start-chat-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const uid = e.target.closest(".search-result-item").dataset.uid;
         openChat(uid);
       });
     });
+    
   } catch (err) {
     console.error("Search error:", err);
-    alert("Error searching users");
+    alert("Error searching users: " + err.message);
   }
 });
 
+// ═══════════════════════════════════════════════════════════
+// OPEN CHAT
+// ═══════════════════════════════════════════════════════════
 async function openChat(otherUid) {
   if (!otherUid) return;
 
   currentChatUid = otherUid;
+  
+  const emptyState = document.getElementById("emptyState");
+  const chatSection = document.getElementById("chatSection");
+  const chatWith = document.getElementById("chatWith");
+  const chatUserAvatar = document.getElementById("chatUserAvatar");
+  const chatMessages = document.getElementById("chatMessages");
 
   // Load other user's info
-  const otherUserDoc = await getDoc(doc(db, "users", otherUid));
-  if (otherUserDoc.exists()) {
+  const otherUserDoc = await db.collection('users').doc(otherUid).get();
+  if (otherUserDoc.exists) {
     const u = otherUserDoc.data();
     currentChatUsername = u.username;
     chatWith.textContent = u.username;
@@ -195,71 +204,69 @@ async function openChat(otherUid) {
   const convoId = getConversationId(auth.currentUser.uid, otherUid);
 
   // Ensure conversation doc exists
-  const convoRef = doc(db, "conversations", convoId);
-  await setDoc(convoRef, {
+  const convoRef = db.collection("conversations").doc(convoId);
+  await convoRef.set({
     participants: [auth.currentUser.uid, otherUid],
-    lastMessageTime: serverTimestamp()
+    lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
   }, { merge: true });
 
   // Load messages
   if (unsubscribeChat) unsubscribeChat();
 
-  const messagesQuery = query(
-    collection(db, "conversations", convoId, "messages"),
-    orderBy("createdAt", "asc")
-  );
+  unsubscribeChat = db.collection("conversations")
+    .doc(convoId)
+    .collection("messages")
+    .orderBy("createdAt", "asc")
+    .onSnapshot((snapshot) => {
+      chatMessages.innerHTML = "";
 
-  unsubscribeChat = onSnapshot(messagesQuery, (snapshot) => {
-    chatMessages.innerHTML = "";
-    let isFirstLoad = true;
-    let lastMessageCount = snapshot.size;
+      snapshot.forEach((docSnap) => {
+        const msg = docSnap.data();
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "message";
+        msgDiv.dataset.id = docSnap.id;
+        
+        const isSent = msg.senderId === auth.currentUser.uid;
+        msgDiv.classList.add(isSent ? "sent" : "received");
 
-    snapshot.forEach((docSnap) => {
-      const msg = docSnap.data();
-      const msgDiv = document.createElement("div");
-      msgDiv.className = "message";
-      msgDiv.dataset.id = docSnap.id;
-      const isSent = msg.senderId === auth.currentUser.uid;
-      msgDiv.classList.add(isSent ? "sent" : "received");
+        const time = msg.createdAt 
+          ? new Date(msg.createdAt.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) 
+          : "";
 
-      const time = msg.createdAt ? new Date(msg.createdAt.toMillis()).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : "";
+        msgDiv.innerHTML = `
+          <input type="checkbox" class="message-checkbox" style="margin-right: 10px;">
+          <div class="message-content">
+            <p>${msg.text}</p>
+            <span class="message-time">${time}</span>
+          </div>
+        `;
 
-      msgDiv.innerHTML = `
-        <input type="checkbox" class="message-checkbox" style="margin-right: 10px;">
-        <div class="message-content">
-          <p>${msg.text}</p>
-          <span class="message-time">${time}</span>
-        </div>
-      `;
+        chatMessages.appendChild(msgDiv);
+      });
 
-      chatMessages.appendChild(msgDiv);
-    });
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    // Play sound for new messages
-    if (!isFirstLoad && snapshot.size > lastMessageCount) {
-      notificationSound.play().catch(err => console.log("Audio play error:", err));
-    }
-
-    isFirstLoad = false;
-    lastMessageCount = snapshot.size;
-
-    // Add checkbox handlers
-    chatMessages.querySelectorAll(".message-checkbox").forEach(checkbox => {
-      checkbox.addEventListener("change", (e) => {
-        const msgDiv = e.target.closest(".message");
-        const msgId = msgDiv.dataset.id;
-        toggleMessageSelection(msgId);
+      // Add checkbox handlers
+      chatMessages.querySelectorAll(".message-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", (e) => {
+          const msgDiv = e.target.closest(".message");
+          const msgId = msgDiv.dataset.id;
+          toggleMessageSelection(msgId);
+        });
       });
     });
-  });
 }
 
 function getConversationId(uid1, uid2) {
   return [uid1, uid2].sort().join("_");
 }
+
+// ═══════════════════════════════════════════════════════════
+// MESSAGE SELECTION & DELETION
+// ═══════════════════════════════════════════════════════════
+const selectAllBtn = document.getElementById("selectAllBtn");
+const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
 
 function toggleMessageSelection(msgId) {
   if (selectedMessages.has(msgId)) {
@@ -273,6 +280,7 @@ function toggleMessageSelection(msgId) {
 }
 
 selectAllBtn.addEventListener("click", () => {
+  const chatMessages = document.getElementById("chatMessages");
   const checkboxes = chatMessages.querySelectorAll(".message-checkbox");
   const allChecked = Array.from(checkboxes).every(cb => cb.checked);
 
@@ -280,6 +288,7 @@ selectAllBtn.addEventListener("click", () => {
     checkbox.checked = !allChecked;
     const msgDiv = checkbox.closest(".message");
     const msgId = msgDiv.dataset.id;
+    
     if (checkbox.checked) {
       selectedMessages.add(msgId);
     } else {
@@ -299,9 +308,13 @@ deleteSelectedBtn.addEventListener("click", async () => {
   const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
 
   try {
-    for (const msgId of selectedMessages) {
-      await deleteDoc(doc(db, "conversations", convoId, "messages", msgId));
-    }
+    const batch = db.batch();
+    selectedMessages.forEach(msgId => {
+      const msgRef = db.collection("conversations").doc(convoId).collection("messages").doc(msgId);
+      batch.delete(msgRef);
+    });
+    await batch.commit();
+    
     selectedMessages.clear();
     deleteSelectedBtn.style.display = "none";
   } catch (err) {
@@ -310,14 +323,24 @@ deleteSelectedBtn.addEventListener("click", async () => {
   }
 });
 
+// ═══════════════════════════════════════════════════════════
+// CLOSE CHAT
+// ═══════════════════════════════════════════════════════════
+const closeChatBtn = document.getElementById("closeChatBtn");
 closeChatBtn.addEventListener("click", () => {
-  chatSection.style.display = "none";
-  emptyState.style.display = "flex";
+  document.getElementById("chatSection").style.display = "none";
+  document.getElementById("emptyState").style.display = "flex";
   currentChatUid = null;
   if (unsubscribeChat) unsubscribeChat();
   selectedMessages.clear();
   deleteSelectedBtn.style.display = "none";
 });
+
+// ═══════════════════════════════════════════════════════════
+// SEND MESSAGE
+// ═══════════════════════════════════════════════════════════
+const messageInput = document.getElementById("messageInput");
+const sendMessageBtn = document.getElementById("sendMessageBtn");
 
 sendMessageBtn.addEventListener("click", async () => {
   await sendMessage();
@@ -337,15 +360,15 @@ async function sendMessage() {
   const convoId = getConversationId(auth.currentUser.uid, currentChatUid);
 
   try {
-    await addDoc(collection(db, "conversations", convoId, "messages"), {
-      text,
+    await db.collection("conversations").doc(convoId).collection("messages").add({
+      text: text,
       senderId: auth.currentUser.uid,
-      createdAt: serverTimestamp()
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    await updateDoc(doc(db, "conversations", convoId), {
+    await db.collection("conversations").doc(convoId).update({
       lastMessage: text.substring(0, 50),
-      lastMessageTime: serverTimestamp()
+      lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
     });
 
     messageInput.value = "";

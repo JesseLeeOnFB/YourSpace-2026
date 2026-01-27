@@ -1,4 +1,4 @@
-// feed.js - FIXED VERSION
+// feed.js - FIXED VERSION with working buttons and nested comments
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -7,11 +7,14 @@ const firebaseConfig = {
   messagingSenderId: "72667267302",
   appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
+
 // Direct Stripe payment links
 const GIFT_PAYMENT_LINKS = {
   coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
@@ -21,9 +24,11 @@ const GIFT_PAYMENT_LINKS = {
   diamond: "https://buy.stripe.com/aFa3cvcX8bvU2rVg8x7bW04",
   yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05"
 };
+
 let currentGiftPost = null;
 let currentGiftRecipient = null;
 let currentGiftUsername = null;
+
 // ═══════════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
@@ -38,6 +43,7 @@ document.getElementById('logoutBtn').onclick = async () => {
   await auth.signOut();
   window.location.href = 'login.html';
 };
+
 // Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
@@ -45,13 +51,15 @@ hamburger.onclick = () => {
   hamburger.classList.toggle('active');
   navLinks.classList.toggle('active');
 };
+
 // ═══════════════════════════════════════════════════════════
-// USER SEARCH - FIXED
+// USER SEARCH
 // ═══════════════════════════════════════════════════════════
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
 let searchTimeout;
+
 searchBar.addEventListener('input', async (e) => {
   const searchTerm = e.target.value.trim().toLowerCase();
  
@@ -63,11 +71,9 @@ searchBar.addEventListener('input', async (e) => {
  
   clearSearchBtn.style.display = 'block';
  
-  // Debounce search
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
     try {
-      // Search by username
       const usersSnapshot = await db.collection('users')
         .orderBy('username')
         .startAt(searchTerm)
@@ -104,23 +110,26 @@ searchBar.addEventListener('input', async (e) => {
     }
   }, 300);
 });
+
 clearSearchBtn.onclick = () => {
   searchBar.value = '';
   searchResults.style.display = 'none';
   clearSearchBtn.style.display = 'none';
 };
-// Close search when clicking outside
+
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-container')) {
     searchResults.style.display = 'none';
   }
 });
+
 // ═══════════════════════════════════════════════════════════
 // CREATE POST
 // ═══════════════════════════════════════════════════════════
 const postBtn = document.getElementById('postBtn');
 const postText = document.getElementById('postText');
 const postFileInput = document.getElementById('postFileInput');
+
 postBtn.onclick = async () => {
   const text = postText.value.trim();
   const file = postFileInput.files[0];
@@ -175,6 +184,7 @@ postBtn.onclick = async () => {
     postBtn.disabled = false;
   }
 };
+
 // ═══════════════════════════════════════════════════════════
 // LOAD POSTS
 // ═══════════════════════════════════════════════════════════
@@ -204,6 +214,7 @@ async function loadPosts() {
     container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts</p>';
   }
 }
+
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
   const user = auth.currentUser;
@@ -232,19 +243,19 @@ function renderPost(post, postId) {
         : `<img src="${post.mediaURL}" class="post-media" />`
     ) : ''}
     <div class="actions">
-      <button class="like-btn ${isLiked ? 'active' : ''}" data-postid="${postId}">👍 ${likeCount}</button>
-      <button class="dislike-btn ${isDisliked ? 'active' : ''}" data-postid="${postId}">🖕 ${dislikeCount}</button>
-      <button class="comment-toggle" data-postid="${postId}">💬 Comments</button>
-      <button class="share-btn" data-postid="${postId}">🔗 Share</button>
-      ${!isOwner ? `<button class="gift-btn" data-postid="${postId}" data-recipient="${post.userId}" data-username="${post.username}">🎁 Gift</button>` : ''}
-      ${isOwner ? `<button class="delete-btn" data-postid="${postId}">🗑️ Delete</button>` : ''}
-      ${isAdmin ? `<button class="pin-btn" data-postid="${postId}">📌 Pin</button>` : ''}
+      <button class="like-btn ${isLiked ? 'active' : ''}" onclick="handleLike('${postId}')">👍 ${likeCount}</button>
+      <button class="dislike-btn ${isDisliked ? 'active' : ''}" onclick="handleDislike('${postId}')">🖕 ${dislikeCount}</button>
+      <button class="comment-toggle" onclick="toggleComments('${postId}')">💬 Comments</button>
+      <button class="share-btn" onclick="handleShare('${postId}')">🔗 Share</button>
+      ${!isOwner ? `<button class="gift-btn" onclick="openGiftDialog('${postId}', '${post.userId}', '${post.username}')">🎁 Gift</button>` : ''}
+      ${isOwner ? `<button class="delete-btn" onclick="handleDeletePost('${postId}')">🗑️ Delete</button>` : ''}
+      ${isAdmin ? `<button class="pin-btn" onclick="handlePin('${postId}')">📌 Pin</button>` : ''}
     </div>
     <div class="comments-section" id="comments-${postId}" style="display:none;">
       <div class="comments-list" id="comments-list-${postId}"></div>
       <div class="comment-form">
         <input type="text" placeholder="Write a comment..." class="comment-input" id="comment-input-${postId}">
-        <button class="comment-btn" data-postid="${postId}">Send</button>
+        <button class="comment-btn" onclick="handleComment('${postId}')">Send</button>
       </div>
     </div>
   `;
@@ -252,125 +263,112 @@ function renderPost(post, postId) {
   container.appendChild(postDiv);
   loadComments(postId);
 }
+
 // ═══════════════════════════════════════════════════════════
-// POST ACTIONS - FIXED LIKE/DISLIKE
+// POST ACTIONS - DEFINED AS GLOBAL FUNCTIONS
 // ═══════════════════════════════════════════════════════════
-document.addEventListener('click', async (e) => {
-  const postId = e.target.dataset.postid;
-  if (!postId) return;
- 
+window.handleLike = async function(postId) {
   const userId = auth.currentUser.uid;
- 
-  // LIKE - FIXED
-  if (e.target.classList.contains('like-btn')) {
-    try {
-      const postRef = db.collection('posts').doc(postId);
-      const postDoc = await postRef.get();
-      const post = postDoc.data();
-     
-      if (post.likedBy?.includes(userId)) {
-        // Remove like
-        await postRef.update({
-          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      } else {
-        // Add like, remove dislike
-        await postRef.update({
-          likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      }
-      loadPosts();
-    } catch (error) {
-      console.error('Like error:', error);
+  try {
+    const postRef = db.collection('posts').doc(postId);
+    const postDoc = await postRef.get();
+    const post = postDoc.data();
+   
+    if (post.likedBy?.includes(userId)) {
+      await postRef.update({
+        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
+    } else {
+      await postRef.update({
+        likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
     }
+    loadPosts();
+  } catch (error) {
+    console.error('Like error:', error);
   }
- 
-  // DISLIKE - FIXED
-  if (e.target.classList.contains('dislike-btn')) {
-    try {
-      const postRef = db.collection('posts').doc(postId);
-      const postDoc = await postRef.get();
-      const post = postDoc.data();
-     
-      if (post.dislikedBy?.includes(userId)) {
-        // Remove dislike
-        await postRef.update({
-          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      } else {
-        // Add dislike, remove like
-        await postRef.update({
-          dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      }
-      loadPosts();
-    } catch (error) {
-      console.error('Dislike error:', error);
+};
+
+window.handleDislike = async function(postId) {
+  const userId = auth.currentUser.uid;
+  try {
+    const postRef = db.collection('posts').doc(postId);
+    const postDoc = await postRef.get();
+    const post = postDoc.data();
+   
+    if (post.dislikedBy?.includes(userId)) {
+      await postRef.update({
+        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
+    } else {
+      await postRef.update({
+        dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
     }
+    loadPosts();
+  } catch (error) {
+    console.error('Dislike error:', error);
   }
- 
-  // COMMENT TOGGLE
-  if (e.target.classList.contains('comment-toggle')) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-  }
- 
-  // SHARE
-  if (e.target.classList.contains('share-btn')) {
-    const url = `${window.location.origin}/feed.html#post-${postId}`;
-    navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard!');
-  }
- 
-  // GIFT
-  if (e.target.classList.contains('gift-btn')) {
-    currentGiftPost = postId;
-    currentGiftRecipient = e.target.dataset.recipient;
-    currentGiftUsername = e.target.dataset.username;
-    document.getElementById('giftRecipientName').textContent = currentGiftUsername;
-    document.getElementById('giftDialog').style.display = 'flex';
-  }
- 
-  // DELETE
-  if (e.target.classList.contains('delete-btn')) {
-    if (confirm('Delete this post?')) {
-      await db.collection('posts').doc(postId).delete();
-      loadPosts();
-    }
-  }
- 
-  // PIN (admin only)
-  if (e.target.classList.contains('pin-btn')) {
-    await db.collection('posts').doc(postId).update({
-      pinned: true
-    });
+};
+
+window.toggleComments = function(postId) {
+  const commentsSection = document.getElementById(`comments-${postId}`);
+  commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+};
+
+window.handleShare = function(postId) {
+  const url = `${window.location.origin}/feed.html#post-${postId}`;
+  navigator.clipboard.writeText(url);
+  alert('Link copied to clipboard!');
+};
+
+window.openGiftDialog = function(postId, recipientId, username) {
+  currentGiftPost = postId;
+  currentGiftRecipient = recipientId;
+  currentGiftUsername = username;
+  document.getElementById('giftRecipientName').textContent = username;
+  document.getElementById('giftDialog').style.display = 'flex';
+};
+
+window.handleDeletePost = async function(postId) {
+  if (confirm('Delete this post?')) {
+    await db.collection('posts').doc(postId).delete();
     loadPosts();
   }
+};
+
+window.handlePin = async function(postId) {
+  await db.collection('posts').doc(postId).update({
+    pinned: true
+  });
+  loadPosts();
+};
+
+window.handleComment = async function(postId) {
+  const input = document.getElementById(`comment-input-${postId}`);
+  const text = input.value.trim();
+  if (!text) return;
  
-  // COMMENT
-  if (e.target.classList.contains('comment-btn')) {
-    const input = document.getElementById(`comment-input-${postId}`);
-    const text = input.value.trim();
-    if (!text) return;
-   
-    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-   
-    await db.collection('posts').doc(postId).collection('comments').add({
-      userId: auth.currentUser.uid,
-      username: username,
-      text: text,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-   
-    input.value = '';
-    loadComments(postId);
-  }
-});
+  const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+  const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
+ 
+  await db.collection('posts').doc(postId).collection('comments').add({
+    userId: auth.currentUser.uid,
+    username: username,
+    text: text,
+    parentCommentId: null,
+    replies: [],
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+ 
+  input.value = '';
+  loadComments(postId);
+};
+
 // ═══════════════════════════════════════════════════════════
-// COMMENTS - THREAD STYLE
+// NESTED COMMENTS with REPLIES
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -379,6 +377,7 @@ async function loadComments(postId) {
   try {
     const snapshot = await db.collection('posts').doc(postId)
       .collection('comments')
+      .where('parentCommentId', '==', null)
       .orderBy('createdAt', 'asc')
       .get();
    
@@ -389,52 +388,112 @@ async function loadComments(postId) {
       return;
     }
    
-    snapshot.forEach(doc => {
-      const comment = doc.data();
-      const commentDiv = document.createElement('div');
-      commentDiv.className = 'comment-thread';
-     
-      const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
-      const isOwner = comment.userId === auth.currentUser.uid;
-     
-      commentDiv.innerHTML = `
-        <div class="comment-avatar">
-          <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
-        </div>
-        <div class="comment-content">
-          <div class="comment-header">
-            <strong class="comment-username">${comment.username}</strong>
-            <small class="comment-time">${timestamp}</small>
-          </div>
-          <p class="comment-text">${comment.text}</p>
-          ${isOwner ? `<button class="delete-comment" data-commentid="${doc.id}" data-postid="${postId}">Delete</button>` : ''}
-        </div>
-      `;
-      commentsList.appendChild(commentDiv);
-    });
-   
-    // Delete comment handler
-    commentsList.querySelectorAll('.delete-comment').forEach(btn => {
-      btn.onclick = async () => {
-        if (confirm('Delete this comment?')) {
-          const commentId = btn.dataset.commentid;
-          const postId = btn.dataset.postid;
-          await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-          loadComments(postId);
-        }
-      };
-    });
+    for (const doc of snapshot.docs) {
+      await renderComment(doc.data(), doc.id, postId, commentsList);
+    }
    
   } catch (error) {
     console.error('Load comments error:', error);
   }
 }
+
+async function renderComment(comment, commentId, postId, container, isReply = false) {
+  const commentDiv = document.createElement('div');
+  commentDiv.className = isReply ? 'comment-thread reply' : 'comment-thread';
+  commentDiv.style.marginLeft = isReply ? '40px' : '0';
+ 
+  const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
+  const isOwner = comment.userId === auth.currentUser.uid;
+ 
+  commentDiv.innerHTML = `
+    <div class="comment-avatar">
+      <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
+    </div>
+    <div class="comment-content">
+      <div class="comment-header">
+        <strong class="comment-username">${comment.username}</strong>
+        <small class="comment-time">${timestamp}</small>
+      </div>
+      <p class="comment-text">${comment.text}</p>
+      <button class="reply-btn" onclick="showReplyBox('${postId}', '${commentId}')">Reply</button>
+      ${isOwner ? `<button class="delete-comment" onclick="handleDeleteComment('${postId}', '${commentId}')">Delete</button>` : ''}
+      <div class="reply-box" id="reply-box-${commentId}" style="display:none;">
+        <input type="text" placeholder="Write a reply..." id="reply-input-${commentId}">
+        <button onclick="handleReply('${postId}', '${commentId}')">Send</button>
+        <button onclick="hideReplyBox('${commentId}')">Cancel</button>
+      </div>
+      <div class="replies" id="replies-${commentId}"></div>
+    </div>
+  `;
+ 
+  container.appendChild(commentDiv);
+  
+  // Load replies
+  await loadReplies(postId, commentId);
+}
+
+async function loadReplies(postId, parentCommentId) {
+  const repliesContainer = document.getElementById(`replies-${parentCommentId}`);
+  if (!repliesContainer) return;
+  
+  try {
+    const snapshot = await db.collection('posts').doc(postId)
+      .collection('comments')
+      .where('parentCommentId', '==', parentCommentId)
+      .orderBy('createdAt', 'asc')
+      .get();
+    
+    for (const doc of snapshot.docs) {
+      await renderComment(doc.data(), doc.id, postId, repliesContainer, true);
+    }
+  } catch (error) {
+    console.error('Load replies error:', error);
+  }
+}
+
+window.showReplyBox = function(postId, commentId) {
+  document.getElementById(`reply-box-${commentId}`).style.display = 'block';
+};
+
+window.hideReplyBox = function(commentId) {
+  document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+};
+
+window.handleReply = async function(postId, parentCommentId) {
+  const input = document.getElementById(`reply-input-${parentCommentId}`);
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+  const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
+  
+  await db.collection('posts').doc(postId).collection('comments').add({
+    userId: auth.currentUser.uid,
+    username: username,
+    text: text,
+    parentCommentId: parentCommentId,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  
+  input.value = '';
+  hideReplyBox(parentCommentId);
+  loadComments(postId);
+};
+
+window.handleDeleteComment = async function(postId, commentId) {
+  if (confirm('Delete this comment?')) {
+    await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+    loadComments(postId);
+  }
+};
+
 // ═══════════════════════════════════════════════════════════
-// GIFT DIALOG - FIXED PERMISSIONS
+// GIFT DIALOG
 // ═══════════════════════════════════════════════════════════
 document.getElementById('cancelGiftBtn').onclick = () => {
   document.getElementById('giftDialog').style.display = 'none';
 };
+
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
     const giftType = option.dataset.gift;
@@ -456,7 +515,6 @@ document.querySelectorAll('.gift-option').forEach(option => {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
      
-      // Create pending gift with timestamp
       await db.collection('pendingGifts').add({
         senderId: user.uid,
         senderName: username,
@@ -469,10 +527,8 @@ document.querySelectorAll('.gift-option').forEach(option => {
         createdAt: firebase.firestore.Timestamp.now()
       });
      
-      // Small delay to ensure Firestore write completes
       await new Promise(resolve => setTimeout(resolve, 500));
      
-      // Redirect to Stripe payment link
       const paymentLink = GIFT_PAYMENT_LINKS[giftType];
       if (paymentLink) {
         window.location.href = paymentLink;
@@ -486,19 +542,7 @@ document.querySelectorAll('.gift-option').forEach(option => {
     }
   };
 });
-// Check for successful gift payment on page load
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('gift') === 'success') {
-  setTimeout(() => {
-    alert('🎁 Gift sent successfully! The recipient will be notified.');
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }, 500);
-} else if (urlParams.get('gift') === 'cancelled') {
-  setTimeout(() => {
-    alert('Gift cancelled. No charges were made.');
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }, 500);
-}
+
 // ═══════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════
@@ -510,21 +554,5 @@ auth.onAuthStateChanged(user => {
       document.getElementById('adminNavBtn').style.display = 'inline-block';
     }
     loadPosts();
-
-    // ────────────────────────────────────────────────
-    // Listen for payout balance updates
-    const userRef = db.collection('users').doc(user.uid);
-    userRef.onSnapshot((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        const balance = (data.payoutBalance || 0) / 100; // cents → dollars
-        // Update UI element (add <span id="payout-balance"> in your HTML)
-        const balanceEl = document.getElementById('payout-balance');
-        if (balanceEl) {
-          balanceEl.textContent = `Payout Balance: $${balance.toFixed(2)}`;
-        }
-      }
-    });
-    // ────────────────────────────────────────────────
   }
 });

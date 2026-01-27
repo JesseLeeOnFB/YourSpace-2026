@@ -1,340 +1,329 @@
-// index.js (Firebase Cloud Functions 2nd gen / v2 syntax, secrets-safe)
+// Firebase Functions index.js - V7 COMPATIBLE
+// Uses environment parameters instead of functions.config()
 
-const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const {onRequest} = require("firebase-functions/v2/https");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {onCall} = require("firebase-functions/v2/https");
+const {defineString} = require("firebase-functions/params");
 const admin = require("firebase-admin");
-const Stripe = require("stripe");
+
+// Define environment parameters (replaces functions.config())
+const stripeSecretKey = defineString("STRIPE_SECRET_KEY");
+const stripeWebhookSecret = defineString("STRIPE_WEBHOOK_SECRET");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Helper to safely create Stripe instance inside handlers only
-function getStripe() {
-  if (!process.env.STRIPE_KEY) {
-    throw new Error("STRIPE_KEY environment variable is not set (check secrets)");
-  }
-  return new Stripe(process.env.STRIPE_KEY, { apiVersion: "2024-06-20" });
-}
+// Gift payout amounts (what creators actually receive)
+const CREATOR_PAYOUTS = {
+  rose: 0.12,      // $0.12 for $1.99 gift
+  coffee: 0.29,    // $0.29 for $4.99 gift
+  bear: 0.58,      // $0.58 for $9.99 gift
+  cake: 0.86,      // $0.86 for $14.99 gift
+  diamond: 2.88,   // $2.88 for $49.99 gift
+  yacht: 5.75      // $5.75 for $99.99 gift
+};
 
-// ════════════════════════════════════
-// 1. CREATE STRIPE CONNECT ACCOUNT
-// ════════════════════════════════════
-exports.createConnectAccount = onCall(
-  {
-    secrets: ["STRIPE_KEY"],
-    memory: "256MB",
-    timeoutSeconds: 60,
-  },
-  async (request) => {
-    console.log('createConnectAccount started', {
-      authUid: request.auth?.uid,
-      data: request.data,
-    });
-
-    try {
-      if (!request.auth) throw new HttpsError("unauthenticated", "User must be logged in");
-
-      const { userId, email, refreshUrl, returnUrl } = request.data || {};
-      if (!userId || !email || !refreshUrl || !returnUrl) {
-        throw new HttpsError("invalid-argument", "Missing required fields");
-      }
-
-      console.log('Params OK', { userId, email, refreshUrl, returnUrl });
-
-      const stripe = new Stripe(process.env.STRIPE_KEY, { apiVersion: "2024-06-20" });
-
-      const userDoc = await db.collection("users").doc(userId).get();
-      let stripeAccountId = userDoc.data()?.stripeAccountId;
-
-      if (!stripeAccountId) {
-        console.log('Creating new Stripe account');
-        const account = await stripe.accounts.create({
-          type: "express",
-          email,
-          capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
-          business_type: "individual",
-        });
-        stripeAccountId = account.id;
-
-        await db.collection("users").doc(userId).set(
-          {
-            stripeAccountId,
-            stripeAccountStatus: "pending",
-            stripeTaxInfoProvided: false,
-          },
-          { merge: true }
-        );
-        console.log('Account created', stripeAccountId);
-      }
-
-      console.log('Creating account link');
-      const accountLink = await stripe.accountLinks.create({
-        account: stripeAccountId,
-        refresh_url: refreshUrl,
-        return_url: returnUrl,
-        type: "account_onboarding",
-      });
-
-      console.log('Account link created', accountLink.url);
-      return { url: accountLink.url };
-    } catch (err) {
-      console.error('createConnectAccount failed:', {
-        message: err.message,
-        type: err.type,
-        code: err.code,
-        param: err.param,
-        stack: err.stack?.substring(0, 500),
-      });
-
-      if (err instanceof HttpsError) throw err;
-
-      // Return structured error so client can show better message
-      throw new HttpsError("internal", `Failed to create Stripe link: ${err.message || 'Unknown error'}`);
-    }
-  }
-);
-
-// ════════════════════════════════════
-// 2. STRIPE WEBHOOK
-// ════════════════════════════════════
-exports.stripeWebhook = onRequest(
-  {
-    secrets: ["STRIPE_KEY", "STRIPE_WEBHOOK_SECRET"],
-    memory: "256MB",
-    timeoutSeconds: 60,
-    // Add this to ensure raw body is available
-    rawBody: true,  // Key fix: preserves raw buffer
-  },
-  async (req, res) => {
-    // Manually buffer the raw body if not already present (safety net)
-    if (!req.rawBody) {
-      let body = [];
-      req.on('data', (chunk) => body.push(chunk));
-      req.on('end', () => {
-        req.rawBody = Buffer.concat(body);
-        processWebhook(req, res);  // Call a separate function below
-      });
-      return;  // Wait for buffering
-    }
-
-    processWebhook(req, res);
-  }
-);
-
-// Helper to avoid duplicating logic
-async function processWebhook(req, res) {
-  const stripe = getStripe();
+// Stripe Webhook - Called when payment succeeds
+exports.stripeWebhook = onRequest(async (req, res) => {
+  // Initialize Stripe with the secret key
+  const stripe = require("stripe")(stripeSecretKey.value());
+  
   const sig = req.headers["stripe-signature"];
-
+  const webhookSecret = stripeWebhookSecret.value();
+  
+  let event;
+  
   try {
-    const event = stripe.webhooks.constructEvent(
-      req.rawBody,  // Now guaranteed to be the raw Buffer
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
+  } catch (err) {
+    console.error("❌ Webhook signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  
+  console.log("✅ Webhook received:", event.type);
+  
+  // Handle checkout session completed (for payment links)
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const giftId = session.client_reference_id;
+    
+    console.log("💳 Checkout session completed, gift ID:", giftId);
+    
+    if (!giftId) {
+      console.log("⚠️ No gift ID in client_reference_id");
+      return res.status(200).send("OK - No gift ID");
+    }
+    
+    try {
+      // Get gift info from Firestore
+      const giftRef = db.collection("gifts").doc(giftId);
+      const giftDoc = await giftRef.get();
+      
+      if (!giftDoc.exists) {
+        console.error("❌ Gift not found:", giftId);
+        return res.status(404).send("Gift not found");
+      }
+      
+      const gift = giftDoc.data();
+      const creatorPayout = CREATOR_PAYOUTS[gift.giftType] || 0;
+      const creatorPayoutCents = Math.round(creatorPayout * 100); // Convert to cents
+      
+      console.log("🎁 Processing gift:", {
+        giftId,
+        giftType: gift.giftType,
+        toUserId: gift.toUserId,
+        creatorPayout: creatorPayout,
+        creatorPayoutCents: creatorPayoutCents
+      });
+      
+      // Update gift status
+      await giftRef.update({
+        status: "paid",
+        paidAt: admin.firestore.FieldValue.serverTimestamp(),
+        creatorPayout: creatorPayoutCents, // Store in cents
+        stripeSessionId: session.id
+      });
+      
+      console.log("✅ Gift updated to 'paid'");
+      
+      // Update creator earnings using correct field names for dashboard
+      const creatorRef = db.collection("users").doc(gift.toUserId);
+      
+      await creatorRef.update({
+        payoutBalance: admin.firestore.FieldValue.increment(creatorPayoutCents), // IN CENTS
+        totalEarned: admin.firestore.FieldValue.increment(creatorPayoutCents),   // IN CENTS
+        totalGiftsReceived: admin.firestore.FieldValue.increment(1)              // COUNT
+      });
+      
+      console.log(`✅ Creator earnings updated: +${creatorPayoutCents} cents ($${creatorPayout})`);
+      
+      // Create notification for creator
+      await db.collection("users").doc(gift.toUserId).collection("notifications").add({
+        type: "gift",
+        fromUserId: gift.fromUserId,
+        fromUsername: gift.fromUsername,
+        giftType: gift.giftType,
+        amount: creatorPayout, // In dollars for display
+        amountCents: creatorPayoutCents, // In cents
+        postId: gift.postId,
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      
+      console.log("✅ Notification created");
+      console.log(`🎉 Gift ${giftId} processed successfully! Creator earns $${creatorPayout}`);
+      
+    } catch (error) {
+      console.error("❌ Error processing gift:", error);
+      return res.status(500).send("Internal error: " + error.message);
+    }
+  }
+  
+  res.status(200).send("OK");
+});
 
-    console.log(`Received Stripe event: ${event.type}`);  // For debugging
-
-    if (event.type === "account.updated") {
-      const account = event.data.object;
-      const usersSnapshot = await db.collection("users")
-        .where("stripeAccountId", "==", account.id)
-        .limit(1)
-        .get();
-
-      if (!usersSnapshot.empty) {
-        const userDoc = usersSnapshot.docs[0];
-        await userDoc.ref.update({
-          stripeAccountStatus:
-            account.details_submitted && account.charges_enabled && account.payouts_enabled
-              ? "complete"
-              : "pending",
-          stripeTaxInfoProvided: account.details_submitted,
+// Scheduled function - Runs every day at midnight to process payouts
+exports.processPayouts = onSchedule({
+  schedule: "0 0 * * *",
+  timeZone: "America/New_York"
+}, async (event) => {
+  // Initialize Stripe with the secret key
+  const stripe = require("stripe")(stripeSecretKey.value());
+  
+  console.log("🕐 Running payout check...");
+  
+  const now = new Date();
+  const fourteenDaysAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+  
+  try {
+    // Get all users with earnings >= $10 (1000 cents)
+    const usersSnapshot = await db.collection("users")
+      .where("payoutBalance", ">=", 1000) // $10 in cents
+      .get();
+    
+    console.log(`📊 Found ${usersSnapshot.size} users with balance >= $10`);
+    
+    for (const userDoc of usersSnapshot.docs) {
+      const user = userDoc.data();
+      const userId = userDoc.id;
+      
+      // Check if 14 days have passed since last payout
+      const lastPayout = user.lastPayoutDate?.toDate() || user.createdAt?.toDate() || new Date(0);
+      
+      if (lastPayout > fourteenDaysAgo) {
+        console.log(`⏳ User ${userId} not ready for payout yet (last: ${lastPayout.toISOString()})`);
+        continue;
+      }
+      
+      // Check if user has Stripe Connect account
+      if (!user.stripeAccountId) {
+        console.log(`⚠️ User ${userId} has no Stripe account`);
+        continue;
+      }
+      
+      const amountCents = user.payoutBalance || 0;
+      const amountDollars = amountCents / 100;
+      
+      console.log(`💰 Processing payout for user ${userId}: $${amountDollars}`);
+      
+      try {
+        // Create Stripe Transfer to creator's connected account
+        const transfer = await stripe.transfers.create({
+          amount: amountCents, // Already in cents
+          currency: "usd",
+          destination: user.stripeAccountId,
+          description: `YourSpace Creator Payout - 14 day period`,
+          metadata: {
+            userId: userId,
+            payoutPeriod: `${fourteenDaysAgo.toISOString()} to ${now.toISOString()}`
+          }
         });
-        console.log(`Updated user for account ${account.id}`);
+        
+        console.log(`✅ Transfer created: ${transfer.id}`);
+        
+        // Update user record
+        await userDoc.ref.update({
+          payoutBalance: 0, // Reset to 0
+          lastPayoutDate: admin.firestore.FieldValue.serverTimestamp(),
+          lastPayoutAmount: amountCents,
+          lastPayoutTransferId: transfer.id
+        });
+        
+        // Create payout record
+        await db.collection("payouts").add({
+          userId: userId,
+          amount: amountCents,
+          stripeTransferId: transfer.id,
+          status: "completed",
+          payoutDate: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // Notify creator
+        await db.collection("users").doc(userId).collection("notifications").add({
+          type: "payout",
+          amount: amountDollars,
+          amountCents: amountCents,
+          transferId: transfer.id,
+          message: `Payout of $${amountDollars.toFixed(2)} sent to your bank account!`,
+          read: false,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        
+        console.log(`✅ Payout processed: User ${userId}, Amount $${amountDollars}`);
+        
+      } catch (error) {
+        console.error(`❌ Error processing payout for user ${userId}:`, error);
+        
+        // Log failed payout
+        await db.collection("payouts").add({
+          userId: userId,
+          amount: amountCents,
+          status: "failed",
+          error: error.message,
+          payoutDate: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
       }
     }
-
-    // Add handling for other events if needed, e.g., "account.application.authorized"
-    // For now, just ack them
-    res.json({ received: true });
-  } catch (err) {
-    console.error("Webhook error:", err.message, err.stack);
-    res.status(400).send(`Webhook Error: ${err.message}`);
+    
+    console.log("✅ Payout check complete");
+    
+  } catch (error) {
+    console.error("❌ Error in payout process:", error);
   }
-}
+});
 
-// ═══════════════════════════════════════════════
-// 3. PURCHASE GIFT
-// ═══════════════════════════════════════════════
-exports.purchaseGift = onCall(
-  {
-    memory: "512MB",
-    timeoutSeconds: 60,
-  },
-  async (request) => {
-    const { auth, data } = request;
-    if (!auth) throw new HttpsError("unauthenticated", "User must be logged in");
+// Create Stripe Connect account for creator
+exports.createConnectAccount = onCall(async (request) => {
+  // Initialize Stripe with the secret key
+  const stripe = require("stripe")(stripeSecretKey.value());
+  
+  if (!request.auth) {
+    throw new Error("User must be logged in");
+  }
+  
+  const userId = request.auth.uid;
+  const userEmail = request.data.email || request.auth.token.email;
+  
+  console.log("Creating Stripe Connect account for:", userId);
+  
+  try {
+    // Create Stripe Express account
+    const account = await stripe.accounts.create({
+      type: "express",
+      country: "US",
+      email: userEmail,
+      capabilities: {
+        transfers: { requested: true }
+      },
+      business_type: "individual"
+    });
+    
+    console.log("✅ Stripe account created:", account.id);
+    
+    // Save account ID to user
+    await db.collection("users").doc(userId).update({
+      stripeAccountId: account.id,
+      stripeAccountStatus: "pending",
+      stripeAccountCreatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Create account link for onboarding
+    const accountLink = await stripe.accountLinks.create({
+      account: account.id,
+      refresh_url: request.data.refreshUrl || `https://yourspacesocial.com/stripe-connect.html`,
+      return_url: request.data.returnUrl || `https://yourspacesocial.com/dashboard.html?stripe=complete`,
+      type: "account_onboarding"
+    });
+    
+    console.log("✅ Account link created");
+    
+    return { url: accountLink.url };
+    
+  } catch (error) {
+    console.error("❌ Error creating Stripe account:", error);
+    throw new Error(error.message);
+  }
+});
 
-    const { recipientId, giftType, giftPrice, giftName } = data;
-    const buyerId = auth.uid;
-
-    try {
-      const recipientDoc = await db.collection("users").doc(recipientId).get();
-      if (!recipientDoc.exists) throw new HttpsError("not-found", "Recipient not found");
-
-      const totalAmount = giftPrice; // cents
-      const creatorAmount = Math.floor(totalAmount * 0.7);
-      const platformFee = totalAmount - creatorAmount;
-
-      await db.collection("users").doc(recipientId).update({
-        payoutBalance: admin.firestore.FieldValue.increment(creatorAmount),
-        totalEarned: admin.firestore.FieldValue.increment(creatorAmount),
-        totalGiftsReceived: admin.firestore.FieldValue.increment(1),
-        [`rewards.${giftType}`]: admin.firestore.FieldValue.increment(1),
-      });
-
-      await db.collection("users").doc(buyerId).update({
-        totalGiftsSent: admin.firestore.FieldValue.increment(1),
-        totalSpent: admin.firestore.FieldValue.increment(totalAmount),
-      });
-
-      await db.collection("transactions").add({
-        buyerId,
-        recipientId,
-        giftType,
-        giftName,
-        amount: totalAmount,
-        creatorAmount,
-        platformFee,
-        status: "completed",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      await db.collection("notifications").add({
-        userId: recipientId,
-        type: "gift_received",
-        fromUserId: buyerId,
-        giftType,
-        giftName,
-        amount: creatorAmount,
-        read: false,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      return { success: true, message: `Gift sent! Creator earned $${(creatorAmount / 100).toFixed(2)}` };
-    } catch (error) {
-      console.error("Gift purchase error:", error);
-      throw new HttpsError("internal", error.message);
+// Check Stripe Connect account status
+exports.checkConnectStatus = onCall(async (request) => {
+  // Initialize Stripe with the secret key
+  const stripe = require("stripe")(stripeSecretKey.value());
+  
+  if (!request.auth) {
+    throw new Error("User must be logged in");
+  }
+  
+  const userId = request.auth.uid;
+  
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+    const stripeAccountId = userDoc.data()?.stripeAccountId;
+    
+    if (!stripeAccountId) {
+      return { status: "not_created" };
     }
+    
+    const account = await stripe.accounts.retrieve(stripeAccountId);
+    
+    // Update user's Stripe status
+    await db.collection("users").doc(userId).update({
+      stripeAccountStatus: account.charges_enabled ? "complete" : "pending",
+      stripeTaxInfoProvided: account.charges_enabled
+    });
+    
+    return {
+      status: account.charges_enabled ? "active" : "incomplete",
+      accountId: stripeAccountId,
+      payoutsEnabled: account.payouts_enabled,
+      chargesEnabled: account.charges_enabled
+    };
+    
+  } catch (error) {
+    console.error("❌ Error checking account status:", error);
+    throw new Error(error.message);
   }
-);
-
-// ═══════════════════════════════════════════════
-// 4. UPDATE POST STATS
-// ═══════════════════════════════════════════════
-exports.onPostCreated = onDocumentCreated(
-  "posts/{postId}",
-  {
-    memory: "256MB",
-    timeoutSeconds: 30,
-  },
-  async (event) => {
-    const post = event.data.data();
-    const userId = post.userId;
-    if (!userId) return;
-
-    try {
-      await db.collection("users").doc(userId).update({
-        totalPosts: admin.firestore.FieldValue.increment(1),
-      });
-    } catch (err) {
-      console.error("Error updating post stats:", err);
-    }
-  }
-);
-
-exports.onPostLiked = onDocumentUpdated(
-  "posts/{postId}",
-  {
-    memory: "256MB",
-    timeoutSeconds: 30,
-  },
-  async (event) => {
-    const before = event.data.before.data();
-    const after = event.data.after.data();
-    const userId = after.userId;
-    if (!userId) return;
-
-    const likesDiff = (after.likedBy?.length || 0) - (before.likedBy?.length || 0);
-    const commentsDiff = (after.comments?.length || 0) - (before.comments?.length || 0);
-
-    try {
-      if (likesDiff !== 0)
-        await db.collection("users").doc(userId).update({
-          totalLikes: admin.firestore.FieldValue.increment(likesDiff),
-        });
-      if (commentsDiff !== 0)
-        await db.collection("users").doc(userId).update({
-          totalComments: admin.firestore.FieldValue.increment(commentsDiff),
-        });
-    } catch (err) {
-      console.error("Error updating like/comment stats:", err);
-    }
-  }
-);
-
-// ═══════════════════════════════════════════════
-// 5. PROCESS PAYOUT
-// ═══════════════════════════════════════════════
-exports.processPayout = onCall(
-  {
-    secrets: ["STRIPE_KEY"],
-    memory: "512MB",
-    timeoutSeconds: 60,
-  },
-  async (request) => {
-    const stripe = getStripe();
-
-    const { auth } = request;
-    if (!auth) throw new HttpsError("unauthenticated", "User must be logged in");
-
-    const userId = auth.uid;
-
-    try {
-      const userDoc = await db.collection("users").doc(userId).get();
-      const userData = userDoc.data();
-
-      if (!userData.stripeAccountId) throw new HttpsError("failed-precondition", "Stripe account not connected");
-      if (userData.stripeAccountStatus !== "complete") throw new HttpsError("failed-precondition", "Complete Stripe verification first");
-
-      const payoutBalance = userData.payoutBalance || 0;
-      if (payoutBalance < 1000) throw new HttpsError("failed-precondition", "Minimum payout is $10");
-
-      const transfer = await stripe.transfers.create({
-        amount: payoutBalance,
-        currency: "usd",
-        destination: userData.stripeAccountId,
-        description: `YourSpace payout for ${userData.displayName || userData.email}`,
-      });
-
-      await db.collection("users").doc(userId).update({
-        payoutBalance: 0,
-        lastPayoutDate: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      await db.collection("payouts").add({
-        userId,
-        amount: payoutBalance,
-        stripeTransferId: transfer.id,
-        status: "completed",
-        payoutDate: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      return { success: true, amount: payoutBalance, message: `Payout of $${(payoutBalance / 100).toFixed(2)} processed successfully!` };
-    } catch (err) {
-      console.error("Payout error:", err);
-      throw new HttpsError("internal", err.message);
-    }
-  }
-);
+});

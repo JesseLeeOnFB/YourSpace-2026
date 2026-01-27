@@ -19,7 +19,7 @@
       <button id="profileNavBtn">👤 Profile</button>
       <button id="messagesNavBtn">💬 Messages</button>
       <button id="notificationsNavBtn">🔔 Notifications</button>
-      <button id="dashboardNavBtn" style="display:none;">📊 Dashboard</button>
+      <button id="dashboardNavBtn">📊 Dashboard</button>
       <button id="adminNavBtn" style="display:none;">👑 Admin</button>
       <button id="contactNavBtn">📞 Contact</button>
       <button id="logoutBtn">🚪 Logout</button>
@@ -47,13 +47,13 @@
     </div>
 
     <!-- Empty State -->
-    <div id="emptyState">
+    <div id="emptyState" class="empty-state">
       <h2>Start a Conversation</h2>
       <p>Search for a user to start a conversation</p>
     </div>
 
     <!-- Active Chat -->
-    <div id="chatSection" style="display:none;">
+    <div id="chatSection" class="chat-section" style="display:none;">
       <div class="chat-header">
         <div class="chat-user-info">
           <img id="chatUserAvatar" src="default-avatar.png" alt="Avatar">
@@ -78,11 +78,17 @@
     </div>
   </div>
 
-  <!-- Notification Sound (hidden audio element) -->
+  <!-- Notification Sound -->
   <audio id="notificationSound" preload="auto">
     <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwNUKXh8LJnHwU2jdT0zn0vBSh+zPLaizsKFFu16+qnVhMJRp/g8r5sIAUrgc/z2YY2Bxtr" type="audio/wav">
   </audio>
 
-  <script type="module" src="messages.js"></script>
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Messages Script -->
+  <script src="messages.js"></script>
 </body>
 </html>

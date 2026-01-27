@@ -1,4 +1,4 @@
-// dashboard.js - Creator Dashboard Logic with Debug Logging
+// dashboard.js - Creator Dashboard Logic with STRIPE LOOP FIX
 console.log("Dashboard.js loaded");
 
 // Check if Firebase is loaded
@@ -105,7 +105,9 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById('totalGiftsReceived').textContent = totalGiftsReceived;
     document.getElementById('totalEarned').textContent = `$${totalEarned.toFixed(2)}`;
 
-    // Stripe Connect status
+    // ════════════════════════════════════════════════════════════
+    // FIXED: Stripe Connect status - NO MORE LOOP!
+    // ════════════════════════════════════════════════════════════
     const stripeSetup = document.getElementById('stripeSetup');
     const payoutStatus = document.getElementById('payoutStatus');
     const statusText = document.getElementById('statusText');
@@ -116,20 +118,70 @@ auth.onAuthStateChanged(async (user) => {
       taxInfo: data.stripeTaxInfoProvided
     });
     
-    if (!data.stripeAccountId || data.stripeAccountStatus !== 'complete') {
-      stripeSetup.style.display = 'block';
-      payoutStatus.querySelector('.status-indicator').style.backgroundColor = '#f44336';
-      statusText.textContent = 'Payment setup incomplete - complete Stripe verification to receive payouts';
+    // FIXED: Accept "pending" as valid! Webhooks work with pending accounts!
+    const hasStripeAccount = !!data.stripeAccountId;
+    const isStripeReady = hasStripeAccount && (
+      data.stripeAccountStatus === 'complete' || 
+      data.stripeAccountStatus === 'pending' ||
+      data.stripeTaxInfoProvided === true
+    );
+    
+    console.log("Stripe ready check:", { hasStripeAccount, isStripeReady });
+    
+    if (!hasStripeAccount) {
+      // No Stripe account at all - show setup
+      if (stripeSetup) stripeSetup.style.display = 'block';
+      if (payoutStatus) {
+        payoutStatus.querySelector('.status-indicator').style.backgroundColor = '#f44336';
+      }
+      if (statusText) {
+        statusText.textContent = 'Payment setup required - connect Stripe to receive payouts';
+      }
       
-      document.getElementById('stripeVerifiedStatus').textContent = 
-        data.stripeAccountId ? '✓ Stripe account connected' : '⚠️ Connect Stripe account';
-      document.getElementById('stripeTaxStatus').textContent = 
-        data.stripeTaxInfoProvided ? '✓ Tax information completed' : '⚠️ Complete tax info';
+      const verifiedStatus = document.getElementById('stripeVerifiedStatus');
+      const taxStatus = document.getElementById('stripeTaxStatus');
+      
+      if (verifiedStatus) verifiedStatus.textContent = '⚠️ Connect Stripe account';
+      if (taxStatus) taxStatus.textContent = '⚠️ Complete tax info';
+      
+    } else if (isStripeReady) {
+      // Stripe account exists and is ready (complete OR pending with tax info)
+      // FIXED: Don't block the user! They can receive payouts!
+      if (stripeSetup) stripeSetup.style.display = 'none';
+      if (payoutStatus) {
+        payoutStatus.querySelector('.status-indicator').style.backgroundColor = '#4caf50';
+      }
+      if (statusText) {
+        statusText.textContent = 'Payment setup complete - ready to receive payouts';
+      }
+      
+      console.log("✅ Stripe is ready! User can receive payouts!");
+      
     } else {
-      stripeSetup.style.display = 'none';
-      payoutStatus.querySelector('.status-indicator').style.backgroundColor = '#4caf50';
-      statusText.textContent = 'Payment setup complete - ready to receive payouts';
+      // Has account but needs attention (rare case)
+      if (stripeSetup) stripeSetup.style.display = 'block';
+      if (payoutStatus) {
+        payoutStatus.querySelector('.status-indicator').style.backgroundColor = '#ff9800';
+      }
+      if (statusText) {
+        statusText.textContent = 'Payment setup in progress - finish Stripe setup to receive payouts';
+      }
+      
+      const verifiedStatus = document.getElementById('stripeVerifiedStatus');
+      const taxStatus = document.getElementById('stripeTaxStatus');
+      
+      if (verifiedStatus) {
+        verifiedStatus.textContent = hasStripeAccount ? 
+          '✓ Stripe account connected' : 
+          '⚠️ Connect Stripe account';
+      }
+      if (taxStatus) {
+        taxStatus.textContent = data.stripeTaxInfoProvided ? 
+          '✓ Tax information completed' : 
+          '⚠️ Complete tax info';
+      }
     }
+    // ════════════════════════════════════════════════════════════
 
     // Rewards
     const rewards = data.rewards || {};

@@ -26,4 +26,7 @@ functions/node_modules/
 # Firebase
 .firebase/
 firebase-debug.log
-firestore-debug.log
+firestore-debug.logfunctions/.env
+functions/.env.local.bak functions/.env.txt functions/.env.yourspace-2026
+.env
+node_modules/

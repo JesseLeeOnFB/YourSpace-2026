@@ -1,4 +1,4 @@
-// messages.js – Using Firebase Compat SDK
+// messages.js - COMPLETELY FIXED - All Issues Resolved
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -12,6 +12,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
+
 let currentChatUid = null;
 let currentChatUsername = null;
 let unsubscribeChat = null;
@@ -19,11 +21,16 @@ let selectedMessages = new Set();
 
 console.log("✅ Messages.js loaded");
 
-// Navigation
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION - COMPLETELY FIXED
+// ═══════════════════════════════════════════════════════════
 document.getElementById("feedNavBtn").onclick = () => window.location.href = "feed.html";
 document.getElementById("profileNavBtn").onclick = () => window.location.href = "profile.html";
 document.getElementById("messagesNavBtn").onclick = () => window.location.href = "messages.html";
+document.getElementById("notificationsNavBtn").onclick = () => window.location.href = "notifications.html";
 document.getElementById("dashboardNavBtn").onclick = () => window.location.href = "dashboard.html";
+document.getElementById("adminNavBtn").onclick = () => window.location.href = "admin.html";
+document.getElementById("contactNavBtn").onclick = () => window.location.href = "contact.html";
 document.getElementById("logoutBtn").onclick = async () => {
   await auth.signOut();
   window.location.href = "login.html";
@@ -39,12 +46,20 @@ if (hamburger) {
   };
 }
 
-// Auth check
+// ═══════════════════════════════════════════════════════════
+// AUTH CHECK
+// ═══════════════════════════════════════════════════════════
 auth.onAuthStateChanged((user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     console.log("✅ User authenticated:", user.email);
+    
+    // Show admin button if admin
+    if (ADMIN_EMAILS.includes(user.email)) {
+      document.getElementById('adminNavBtn').style.display = 'inline-block';
+    }
+    
     loadConversations();
     requestNotificationPermission();
   }
@@ -70,7 +85,7 @@ async function loadConversations() {
       conversationsList.innerHTML = "";
       
       if (snapshot.empty) {
-        conversationsList.innerHTML = "<p>No conversations yet. Search for users to start one!</p>";
+        conversationsList.innerHTML = "<p style='color:#666;text-align:center;padding:1rem;'>No conversations yet. Search for users to start one!</p>";
         return;
       }
 
@@ -82,7 +97,7 @@ async function loadConversations() {
         convoItem.className = "convo-item";
         convoItem.dataset.uid = otherUid;
         convoItem.innerHTML = `
-          <div class="convo-avatar" style="background-image: url('default-avatar.png');"></div>
+          <div class="convo-avatar" style="background-image: url('https://via.placeholder.com/40');"></div>
           <div class="convo-info">
             <h4>Loading...</h4>
             <p>${convo.lastMessage || "No messages yet"}</p>
@@ -94,7 +109,7 @@ async function loadConversations() {
         const userDoc = await db.collection('users').doc(otherUid).get();
         if (userDoc.exists) {
           const u = userDoc.data();
-          convoItem.querySelector(".convo-avatar").style.backgroundImage = `url(${u.photoURL || 'default-avatar.png'})`;
+          convoItem.querySelector(".convo-avatar").style.backgroundImage = `url(${u.photoURL || 'https://via.placeholder.com/40'})`;
           convoItem.querySelector("h4").textContent = u.username || "Unknown";
         }
         
@@ -105,7 +120,7 @@ async function loadConversations() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// SEARCH USERS
+// SEARCH USERS - COMPLETELY FIXED
 // ═══════════════════════════════════════════════════════════
 const searchUserInput = document.getElementById("searchUserInput");
 const searchUserBtn = document.getElementById("searchUserBtn");
@@ -121,21 +136,12 @@ searchUserBtn.addEventListener("click", async () => {
   try {
     console.log("Searching for:", searchTerm);
     
-    // Try exact match first
-    let usersSnapshot = await db.collection("users")
-      .where("usernameLower", "==", searchTerm)
+    // FIXED: Search using usernameLower field with range query
+    const usersSnapshot = await db.collection("users")
+      .where("usernameLower", ">=", searchTerm)
+      .where("usernameLower", "<=", searchTerm + '\uf8ff')
+      .limit(10)
       .get();
-
-    // If no exact match, try fuzzy search
-    if (usersSnapshot.empty) {
-      console.log("No exact match - trying fuzzy search");
-      usersSnapshot = await db.collection("users")
-        .orderBy("usernameLower")
-        .startAt(searchTerm)
-        .endAt(searchTerm + '\uf8ff')
-        .limit(10)
-        .get();
-    }
 
     searchResults.innerHTML = "";
 
@@ -150,10 +156,10 @@ searchUserBtn.addEventListener("click", async () => {
       resultItem.className = "search-result-item";
       resultItem.dataset.uid = docSnap.id;
       resultItem.innerHTML = `
-        <img src="${user.photoURL || 'default-avatar.png'}" class="search-avatar" alt="Avatar">
+        <img src="${user.photoURL || 'https://via.placeholder.com/40'}" class="search-avatar" alt="Avatar">
         <div class="search-info">
           <h4>${user.username || 'Unknown'}</h4>
-          <p>@${(user.username || '').toLowerCase()}</p>
+          <p>@${user.username || ''}</p>
         </div>
         <button class="start-chat-btn">Start Chat</button>
       `;
@@ -166,12 +172,21 @@ searchUserBtn.addEventListener("click", async () => {
         e.stopPropagation();
         const uid = e.target.closest(".search-result-item").dataset.uid;
         openChat(uid);
+        searchResults.innerHTML = ""; // Clear results
+        searchUserInput.value = ""; // Clear input
       });
     });
     
   } catch (err) {
     console.error("Search error:", err);
     alert("Error searching users: " + err.message);
+  }
+});
+
+// Allow Enter key to search
+searchUserInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    searchUserBtn.click();
   }
 });
 
@@ -195,7 +210,7 @@ async function openChat(otherUid) {
     const u = otherUserDoc.data();
     currentChatUsername = u.username;
     chatWith.textContent = u.username;
-    chatUserAvatar.src = u.photoURL || "default-avatar.png";
+    chatUserAvatar.src = u.photoURL || "https://via.placeholder.com/40";
   }
 
   emptyState.style.display = "none";

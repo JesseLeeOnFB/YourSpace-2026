@@ -1,81 +1,192 @@
-// functions/index.js
-const functions = require("firebase-functions");
+// index.js (Firebase Cloud Functions 2nd gen / v2 syntax, secrets-safe)
+
+const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const Stripe = require("stripe");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Use Firebase secrets for Stripe keys
-const stripe = new Stripe(process.env.STRIPE_KEY, {
-  apiVersion: "2024-06-20",
-});
+// Helper to safely create Stripe instance inside handlers only
+function getStripe() {
+  if (!process.env.STRIPE_KEY) {
+    throw new Error("STRIPE_KEY environment variable is not set (check secrets)");
+  }
+  return new Stripe(process.env.STRIPE_KEY, { apiVersion: "2024-06-20" });
+}
 
 // ════════════════════════════════════
 // 1. CREATE STRIPE CONNECT ACCOUNT
 // ════════════════════════════════════
-exports.createConnectAccount = functions
-  .runWith({ secrets: ["STRIPE_KEY"] })
-  .https.onCall(async (data, context) => {
-    if (!context.auth)
-      throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
-
-    const { userId, email, refreshUrl, returnUrl } = data;
-
-    const userDoc = await db.collection("users").doc(userId).get();
-    let stripeAccountId = userDoc.data()?.stripeAccountId;
-
-    if (!stripeAccountId) {
-      const account = await stripe.accounts.create({
-        type: "express",
-        email: email,
-        capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
-        business_type: "individual",
-      });
-
-      stripeAccountId = account.id;
-      await db.collection("users").doc(userId).set(
-        {
-          stripeAccountId,
-          stripeAccountStatus: "pending",
-          stripeTaxInfoProvided: false,
-        },
-        { merge: true }
-      );
-    }
-
-    const accountLink = await stripe.accountLinks.create({
-      account: stripeAccountId,
-      refresh_url: refreshUrl,
-      return_url: returnUrl,
-      type: "account_onboarding",
+exports.createConnectAccount = onCall(
+  {
+    secrets: ["STRIPE_KEY"],
+    memory: "256MB",
+    timeoutSeconds: 60,
+  },
+  async (request) => {
+    console.log('createConnectAccount started', {
+      authUid: request.auth?.uid,
+      data: request.data,
     });
 
-    return { url: accountLink.url };
-  });
+    try {
+      if (!request.auth) throw new HttpsError("unauthenticated", "User must be logged in");
+
+      const { userId, email, refreshUrl, returnUrl } = request.data || {};
+      if (!userId || !email || !refreshUrl || !returnUrl) {
+        throw new HttpsError("invalid-argument", "Missing required fields");
+      }
+
+      console.log('Params OK', { userId, email, refreshUrl, returnUrl });
+
+      const stripe = new Stripe(process.env.STRIPE_KEY, { apiVersion: "2024-06-20" });
+
+      const userDoc = await db.collection("users").doc(userId).get();
+      let stripeAccountId = userDoc.data()?.stripeAccountId;
+
+      if (!stripeAccountId) {
+        console.log('Creating new Stripe account');
+        const account = await stripe.accounts.create({
+          type: "express",
+          email,
+          capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+          business_type: "individual",
+        });
+        stripeAccountId = account.id;
+
+        await db.collection("users").doc(userId).set(
+          {
+            stripeAccountId,
+            stripeAccountStatus: "pending",
+            stripeTaxInfoProvided: false,
+          },
+          { merge: true }
+        );
+        console.log('Account created', stripeAccountId);
+      }
+
+      console.log('Creating account link');
+      const accountLink = await stripe.accountLinks.create({
+        account: stripeAccountId,
+        refresh_url: refreshUrl,
+        return_url: returnUrl,
+        type: "account_onboarding",
+      });
+
+      console.log('Account link created', accountLink.url);
+      return { url: accountLink.url };
+    } catch (err) {
+      console.error('createConnectAccount failed:', {
+        message: err.message,
+        type: err.type,
+        code: err.code,
+        param: err.param,
+        stack: err.stack?.substring(0, 500),
+      });
+
+      if (err instanceof HttpsError) throw err;
+
+      // Return structured error so client can show better message
+      throw new HttpsError("internal", `Failed to create Stripe link: ${err.message || 'Unknown error'}`);
+    }
+  }
+);
 
 // ════════════════════════════════════
-// 2. PROCESS GIFT PURCHASE
+// 2. STRIPE WEBHOOK
 // ════════════════════════════════════
-exports.purchaseGift = functions
-  .runWith({ secrets: ["STRIPE_KEY"] })
-  .https.onCall(async (data, context) => {
-    if (!context.auth)
-      throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
+exports.stripeWebhook = onRequest(
+  {
+    secrets: ["STRIPE_KEY", "STRIPE_WEBHOOK_SECRET"],
+    memory: "256MB",
+    timeoutSeconds: 60,
+    // Add this to ensure raw body is available
+    rawBody: true,  // Key fix: preserves raw buffer
+  },
+  async (req, res) => {
+    // Manually buffer the raw body if not already present (safety net)
+    if (!req.rawBody) {
+      let body = [];
+      req.on('data', (chunk) => body.push(chunk));
+      req.on('end', () => {
+        req.rawBody = Buffer.concat(body);
+        processWebhook(req, res);  // Call a separate function below
+      });
+      return;  // Wait for buffering
+    }
+
+    processWebhook(req, res);
+  }
+);
+
+// Helper to avoid duplicating logic
+async function processWebhook(req, res) {
+  const stripe = getStripe();
+  const sig = req.headers["stripe-signature"];
+
+  try {
+    const event = stripe.webhooks.constructEvent(
+      req.rawBody,  // Now guaranteed to be the raw Buffer
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+
+    console.log(`Received Stripe event: ${event.type}`);  // For debugging
+
+    if (event.type === "account.updated") {
+      const account = event.data.object;
+      const usersSnapshot = await db.collection("users")
+        .where("stripeAccountId", "==", account.id)
+        .limit(1)
+        .get();
+
+      if (!usersSnapshot.empty) {
+        const userDoc = usersSnapshot.docs[0];
+        await userDoc.ref.update({
+          stripeAccountStatus:
+            account.details_submitted && account.charges_enabled && account.payouts_enabled
+              ? "complete"
+              : "pending",
+          stripeTaxInfoProvided: account.details_submitted,
+        });
+        console.log(`Updated user for account ${account.id}`);
+      }
+    }
+
+    // Add handling for other events if needed, e.g., "account.application.authorized"
+    // For now, just ack them
+    res.json({ received: true });
+  } catch (err) {
+    console.error("Webhook error:", err.message, err.stack);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 3. PURCHASE GIFT
+// ═══════════════════════════════════════════════
+exports.purchaseGift = onCall(
+  {
+    memory: "512MB",
+    timeoutSeconds: 60,
+  },
+  async (request) => {
+    const { auth, data } = request;
+    if (!auth) throw new HttpsError("unauthenticated", "User must be logged in");
 
     const { recipientId, giftType, giftPrice, giftName } = data;
-    const buyerId = context.auth.uid;
+    const buyerId = auth.uid;
 
     try {
       const recipientDoc = await db.collection("users").doc(recipientId).get();
-      if (!recipientDoc.exists)
-        throw new functions.https.HttpsError("not-found", "Recipient not found");
+      if (!recipientDoc.exists) throw new HttpsError("not-found", "Recipient not found");
 
-      const totalAmount = giftPrice; // in cents
+      const totalAmount = giftPrice; // cents
       const creatorAmount = Math.floor(totalAmount * 0.7);
       const platformFee = totalAmount - creatorAmount;
 
-      // Update recipient stats
       await db.collection("users").doc(recipientId).update({
         payoutBalance: admin.firestore.FieldValue.increment(creatorAmount),
         totalEarned: admin.firestore.FieldValue.increment(creatorAmount),
@@ -83,13 +194,11 @@ exports.purchaseGift = functions
         [`rewards.${giftType}`]: admin.firestore.FieldValue.increment(1),
       });
 
-      // Update buyer stats
       await db.collection("users").doc(buyerId).update({
         totalGiftsSent: admin.firestore.FieldValue.increment(1),
         totalSpent: admin.firestore.FieldValue.increment(totalAmount),
       });
 
-      // Log transaction
       await db.collection("transactions").add({
         buyerId,
         recipientId,
@@ -102,7 +211,6 @@ exports.purchaseGift = functions
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // Send notification
       await db.collection("notifications").add({
         userId: recipientId,
         type: "gift_received",
@@ -117,18 +225,22 @@ exports.purchaseGift = functions
       return { success: true, message: `Gift sent! Creator earned $${(creatorAmount / 100).toFixed(2)}` };
     } catch (error) {
       console.error("Gift purchase error:", error);
-      throw new functions.https.HttpsError("internal", error.message);
+      throw new HttpsError("internal", error.message);
     }
-  });
+  }
+);
 
-// ════════════════════════════════════
-// 3. UPDATE POST STATS
-// ════════════════════════════════════
-exports.onPostCreated = functions
-  .runWith({ secrets: ["STRIPE_KEY"] })
-  .firestore.document("posts/{postId}")
-  .onCreate(async (snap) => {
-    const post = snap.data();
+// ═══════════════════════════════════════════════
+// 4. UPDATE POST STATS
+// ═══════════════════════════════════════════════
+exports.onPostCreated = onDocumentCreated(
+  "posts/{postId}",
+  {
+    memory: "256MB",
+    timeoutSeconds: 30,
+  },
+  async (event) => {
+    const post = event.data.data();
     const userId = post.userId;
     if (!userId) return;
 
@@ -139,17 +251,18 @@ exports.onPostCreated = functions
     } catch (err) {
       console.error("Error updating post stats:", err);
     }
-  });
+  }
+);
 
-// ════════════════════════════════════
-// 4. UPDATE LIKE/COMMENT STATS
-// ════════════════════════════════════
-exports.onPostLiked = functions
-  .runWith({ secrets: ["STRIPE_KEY"] })
-  .firestore.document("posts/{postId}")
-  .onUpdate(async (change) => {
-    const before = change.before.data();
-    const after = change.after.data();
+exports.onPostLiked = onDocumentUpdated(
+  "posts/{postId}",
+  {
+    memory: "256MB",
+    timeoutSeconds: 30,
+  },
+  async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
     const userId = after.userId;
     if (!userId) return;
 
@@ -168,31 +281,35 @@ exports.onPostLiked = functions
     } catch (err) {
       console.error("Error updating like/comment stats:", err);
     }
-  });
+  }
+);
 
-// ════════════════════════════════════
+// ═══════════════════════════════════════════════
 // 5. PROCESS PAYOUT
-// ════════════════════════════════════
-exports.processPayout = functions
-  .runWith({ secrets: ["STRIPE_KEY"] })
-  .https.onCall(async (data, context) => {
-    if (!context.auth)
-      throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
+// ═══════════════════════════════════════════════
+exports.processPayout = onCall(
+  {
+    secrets: ["STRIPE_KEY"],
+    memory: "512MB",
+    timeoutSeconds: 60,
+  },
+  async (request) => {
+    const stripe = getStripe();
 
-    const userId = context.auth.uid;
+    const { auth } = request;
+    if (!auth) throw new HttpsError("unauthenticated", "User must be logged in");
+
+    const userId = auth.uid;
 
     try {
       const userDoc = await db.collection("users").doc(userId).get();
       const userData = userDoc.data();
 
-      if (!userData.stripeAccountId)
-        throw new functions.https.HttpsError("failed-precondition", "Stripe account not connected");
-      if (userData.stripeAccountStatus !== "complete")
-        throw new functions.https.HttpsError("failed-precondition", "Complete Stripe verification first");
+      if (!userData.stripeAccountId) throw new HttpsError("failed-precondition", "Stripe account not connected");
+      if (userData.stripeAccountStatus !== "complete") throw new HttpsError("failed-precondition", "Complete Stripe verification first");
 
       const payoutBalance = userData.payoutBalance || 0;
-      if (payoutBalance < 1000)
-        throw new functions.https.HttpsError("failed-precondition", "Minimum payout is $10");
+      if (payoutBalance < 1000) throw new HttpsError("failed-precondition", "Minimum payout is $10");
 
       const transfer = await stripe.transfers.create({
         amount: payoutBalance,
@@ -217,40 +334,7 @@ exports.processPayout = functions
       return { success: true, amount: payoutBalance, message: `Payout of $${(payoutBalance / 100).toFixed(2)} processed successfully!` };
     } catch (err) {
       console.error("Payout error:", err);
-      throw new functions.https.HttpsError("internal", err.message);
+      throw new HttpsError("internal", err.message);
     }
-  });
-
-// ════════════════════════════════════
-// 6. STRIPE WEBHOOK
-// ════════════════════════════════════
-exports.stripeWebhook = functions
-  .runWith({ secrets: ["STRIPE_KEY", "STRIPE_WEBHOOK_SECRET"] })
-  .https.onRequest(async (req, res) => {
-    const sig = req.headers["stripe-signature"];
-    try {
-      const event = stripe.webhooks.constructEvent(
-        req.rawBody,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-
-      if (event.type === "account.updated") {
-        const account = event.data.object;
-        const usersSnapshot = await db.collection("users").where("stripeAccountId", "==", account.id).limit(1).get();
-
-        if (!usersSnapshot.empty) {
-          const userDoc = usersSnapshot.docs[0];
-          await userDoc.ref.update({
-            stripeAccountStatus: account.details_submitted && account.charges_enabled && account.payouts_enabled ? "complete" : "pending",
-            stripeTaxInfoProvided: account.details_submitted,
-          });
-        }
-      }
-
-      res.json({ received: true });
-    } catch (err) {
-      console.error("Webhook error:", err);
-      res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  });
+  }
+);

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fix Usernames - YourSpace</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f0f2f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { color: #333; margin-bottom: 20px; }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover { background: #5568d3; }
+    #log {
+      background: #1e1e1e;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Fix Usernames for YourSpace</h1>
+    
+    <div class="warning">
+      <strong>⚠️ Important:</strong> This script will set up usernames for all existing users. 
+      Run this ONCE to fix the search issues.
+    </div>
+    
+    <button id="fixAllBtn">Fix All Users</button>
+    <button id="fixCurrentBtn">Fix Current User Only</button>
+    <button id="clearBtn">Clear Log</button>
+    
+    <div id="log">Waiting for action...</div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const logDiv = document.getElementById('log');
+    
+    function log(msg, color = '#0f0') {
+      const time = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `<div style="color:${color}">[${time}] ${msg}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(msg);
+    }
+
+    document.getElementById('clearBtn').onclick = () => {
+      logDiv.innerHTML = 'Log cleared.\n';
+    };
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        log(`✅ Logged in as: ${user.email}`, '#0ff');
+      } else {
+        log('❌ Not logged in. Redirecting...', '#f00');
+        setTimeout(() => window.location.href = 'login.html', 2000);
+      }
+    });
+
+    document.getElementById('fixCurrentBtn').onclick = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        log('❌ Not logged in', '#f00');
+        return;
+      }
+
+      log('🔧 Fixing current user...');
+      
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          const username = data.username || user.email.split('@')[0];
+          
+          await db.collection('users').doc(user.uid).update({
+            username: username,
+            email: user.email
+          });
+          
+          log(`✅ Updated ${username}`, '#0f0');
+        } else {
+          // Create user document
+          const username = user.email.split('@')[0];
+          await db.collection('users').doc(user.uid).set({
+            username: username,
+            email: user.email,
+            photoURL: user.photoURL || null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          log(`✅ Created user document for ${username}`, '#0f0');
+        }
+        
+        log('✅ Done! You can now search for users.', '#0ff');
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, '#f00');
+      }
+    };
+
+    document.getElementById('fixAllBtn').onclick = async () => {
+      if (!confirm('This will update ALL users in the database. Continue?')) {
+        return;
+      }
+
+      log('🔧 Starting bulk fix...');
+      
+      try {
+        const usersSnapshot = await db.collection('users').get();
+        log(`📊 Found ${usersSnapshot.size} users`);
+        
+        let updated = 0;
+        let skipped = 0;
+        
+        for (const doc of usersSnapshot.docs) {
+          const data = doc.data();
+          
+          if (data.username) {
+            skipped++;
+            log(`⏭️ Skipped ${data.username} (already has username)`);
+            continue;
+          }
+          
+          const username = data.email ? data.email.split('@')[0] : `user_${doc.id.substring(0, 8)}`;
+          
+          await db.collection('users').doc(doc.id).update({
+            username: username
+          });
+          
+          updated++;
+          log(`✅ Updated ${username}`);
+        }
+        
+        log(`✅ Complete! Updated: ${updated}, Skipped: ${skipped}`, '#0ff');
+        log('🎉 All users can now be searched!', '#0ff');
+        
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, '#f00');
+      }
+    };
+  </script>
+</body>
+</html>

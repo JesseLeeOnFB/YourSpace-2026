@@ -1,4 +1,4 @@
-// feed.js - FIXED VERSION with working buttons and nested comments
+// feed.js - COMPLETELY FIXED VERSION
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,7 +15,6 @@ const storage = firebase.storage();
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
-// Direct Stripe payment links
 const GIFT_PAYMENT_LINKS = {
   coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
   rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
@@ -44,7 +43,6 @@ document.getElementById('logoutBtn').onclick = async () => {
   window.location.href = 'login.html';
 };
 
-// Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 hamburger.onclick = () => {
@@ -74,6 +72,7 @@ searchBar.addEventListener('input', async (e) => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
     try {
+      // Search using startAt/endAt for prefix matching
       const usersSnapshot = await db.collection('users')
         .orderBy('username')
         .startAt(searchTerm)
@@ -161,7 +160,6 @@ postBtn.onclick = async () => {
     await db.collection('posts').add({
       userId: user.uid,
       username: username,
-      usernameLower: username.toLowerCase(),
       text: text,
       mediaURL: mediaURL,
       mediaType: mediaType,
@@ -233,7 +231,7 @@ function renderPost(post, postId) {
  
   postDiv.innerHTML = `
     <div class="post-header">
-      <strong style="cursor:pointer;" onclick="window.location.href='profile.html?uid=${post.userId}'">${post.username}</strong>
+      <strong class="post-username" data-uid="${post.userId}">${post.username}</strong>
       <small>${timestamp}</small>
     </div>
     <p>${post.text || ''}</p>
@@ -243,132 +241,216 @@ function renderPost(post, postId) {
         : `<img src="${post.mediaURL}" class="post-media" />`
     ) : ''}
     <div class="actions">
-      <button class="like-btn ${isLiked ? 'active' : ''}" onclick="handleLike('${postId}')">👍 ${likeCount}</button>
-      <button class="dislike-btn ${isDisliked ? 'active' : ''}" onclick="handleDislike('${postId}')">🖕 ${dislikeCount}</button>
-      <button class="comment-toggle" onclick="toggleComments('${postId}')">💬 Comments</button>
-      <button class="share-btn" onclick="handleShare('${postId}')">🔗 Share</button>
-      ${!isOwner ? `<button class="gift-btn" onclick="openGiftDialog('${postId}', '${post.userId}', '${post.username}')">🎁 Gift</button>` : ''}
-      ${isOwner ? `<button class="delete-btn" onclick="handleDeletePost('${postId}')">🗑️ Delete</button>` : ''}
-      ${isAdmin ? `<button class="pin-btn" onclick="handlePin('${postId}')">📌 Pin</button>` : ''}
+      <button class="like-btn ${isLiked ? 'active' : ''}" data-postid="${postId}">👍 ${likeCount}</button>
+      <button class="dislike-btn ${isDisliked ? 'active' : ''}" data-postid="${postId}">🖕 ${dislikeCount}</button>
+      <button class="comment-toggle" data-postid="${postId}">💬 Comments</button>
+      <button class="share-btn" data-postid="${postId}">🔗 Share</button>
+      ${!isOwner ? `<button class="gift-btn" data-postid="${postId}" data-recipient="${post.userId}" data-username="${post.username}">🎁 Gift</button>` : ''}
+      ${isOwner ? `<button class="delete-btn" data-postid="${postId}">🗑️ Delete</button>` : ''}
+      ${isAdmin ? `<button class="pin-btn" data-postid="${postId}">📌 Pin</button>` : ''}
     </div>
     <div class="comments-section" id="comments-${postId}" style="display:none;">
       <div class="comments-list" id="comments-list-${postId}"></div>
       <div class="comment-form">
         <input type="text" placeholder="Write a comment..." class="comment-input" id="comment-input-${postId}">
-        <button class="comment-btn" onclick="handleComment('${postId}')">Send</button>
+        <button class="comment-btn" data-postid="${postId}">Send</button>
       </div>
     </div>
   `;
  
   container.appendChild(postDiv);
+  
+  // Add click handler for username
+  postDiv.querySelector('.post-username').addEventListener('click', function() {
+    const uid = this.dataset.uid;
+    window.location.href = `profile.html?uid=${uid}`;
+  });
+  
   loadComments(postId);
 }
 
 // ═══════════════════════════════════════════════════════════
-// POST ACTIONS - DEFINED AS GLOBAL FUNCTIONS
+// POST ACTIONS - Using Event Delegation
 // ═══════════════════════════════════════════════════════════
-window.handleLike = async function(postId) {
-  const userId = auth.currentUser.uid;
-  try {
-    const postRef = db.collection('posts').doc(postId);
-    const postDoc = await postRef.get();
-    const post = postDoc.data();
-   
-    if (post.likedBy?.includes(userId)) {
-      await postRef.update({
-        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
-    } else {
-      await postRef.update({
-        likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
+document.addEventListener('click', async (e) => {
+  const target = e.target;
+  
+  // LIKE BUTTON
+  if (target.classList.contains('like-btn')) {
+    const postId = target.dataset.postid;
+    const userId = auth.currentUser.uid;
+    
+    try {
+      const postRef = db.collection('posts').doc(postId);
+      const postDoc = await postRef.get();
+      const post = postDoc.data();
+     
+      if (post.likedBy?.includes(userId)) {
+        await postRef.update({
+          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      } else {
+        await postRef.update({
+          likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      }
+      loadPosts();
+    } catch (error) {
+      console.error('Like error:', error);
     }
-    loadPosts();
-  } catch (error) {
-    console.error('Like error:', error);
+    return;
   }
-};
-
-window.handleDislike = async function(postId) {
-  const userId = auth.currentUser.uid;
-  try {
-    const postRef = db.collection('posts').doc(postId);
-    const postDoc = await postRef.get();
-    const post = postDoc.data();
-   
-    if (post.dislikedBy?.includes(userId)) {
-      await postRef.update({
-        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
-    } else {
-      await postRef.update({
-        dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-      });
+  
+  // DISLIKE BUTTON
+  if (target.classList.contains('dislike-btn')) {
+    const postId = target.dataset.postid;
+    const userId = auth.currentUser.uid;
+    
+    try {
+      const postRef = db.collection('posts').doc(postId);
+      const postDoc = await postRef.get();
+      const post = postDoc.data();
+     
+      if (post.dislikedBy?.includes(userId)) {
+        await postRef.update({
+          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      } else {
+        await postRef.update({
+          dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+        });
+      }
+      loadPosts();
+    } catch (error) {
+      console.error('Dislike error:', error);
     }
-    loadPosts();
-  } catch (error) {
-    console.error('Dislike error:', error);
+    return;
   }
-};
-
-window.toggleComments = function(postId) {
-  const commentsSection = document.getElementById(`comments-${postId}`);
-  commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-};
-
-window.handleShare = function(postId) {
-  const url = `${window.location.origin}/feed.html#post-${postId}`;
-  navigator.clipboard.writeText(url);
-  alert('Link copied to clipboard!');
-};
-
-window.openGiftDialog = function(postId, recipientId, username) {
-  currentGiftPost = postId;
-  currentGiftRecipient = recipientId;
-  currentGiftUsername = username;
-  document.getElementById('giftRecipientName').textContent = username;
-  document.getElementById('giftDialog').style.display = 'flex';
-};
-
-window.handleDeletePost = async function(postId) {
-  if (confirm('Delete this post?')) {
-    await db.collection('posts').doc(postId).delete();
-    loadPosts();
+  
+  // COMMENT TOGGLE
+  if (target.classList.contains('comment-toggle')) {
+    const postId = target.dataset.postid;
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+    return;
   }
-};
-
-window.handlePin = async function(postId) {
-  await db.collection('posts').doc(postId).update({
-    pinned: true
-  });
-  loadPosts();
-};
-
-window.handleComment = async function(postId) {
-  const input = document.getElementById(`comment-input-${postId}`);
-  const text = input.value.trim();
-  if (!text) return;
- 
-  const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-  const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
- 
-  await db.collection('posts').doc(postId).collection('comments').add({
-    userId: auth.currentUser.uid,
-    username: username,
-    text: text,
-    parentCommentId: null,
-    replies: [],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
- 
-  input.value = '';
-  loadComments(postId);
-};
+  
+  // SHARE
+  if (target.classList.contains('share-btn')) {
+    const postId = target.dataset.postid;
+    const url = `${window.location.origin}/feed.html#post-${postId}`;
+    navigator.clipboard.writeText(url);
+    alert('Link copied to clipboard!');
+    return;
+  }
+  
+  // GIFT
+  if (target.classList.contains('gift-btn')) {
+    currentGiftPost = target.dataset.postid;
+    currentGiftRecipient = target.dataset.recipient;
+    currentGiftUsername = target.dataset.username;
+    document.getElementById('giftRecipientName').textContent = currentGiftUsername;
+    document.getElementById('giftDialog').style.display = 'flex';
+    return;
+  }
+  
+  // DELETE
+  if (target.classList.contains('delete-btn')) {
+    const postId = target.dataset.postid;
+    if (confirm('Delete this post?')) {
+      await db.collection('posts').doc(postId).delete();
+      loadPosts();
+    }
+    return;
+  }
+  
+  // PIN
+  if (target.classList.contains('pin-btn')) {
+    const postId = target.dataset.postid;
+    await db.collection('posts').doc(postId).update({ pinned: true });
+    loadPosts();
+    return;
+  }
+  
+  // COMMENT SEND
+  if (target.classList.contains('comment-btn')) {
+    const postId = target.dataset.postid;
+    const input = document.getElementById(`comment-input-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+   
+    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+    const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
+   
+    await db.collection('posts').doc(postId).collection('comments').add({
+      userId: auth.currentUser.uid,
+      username: username,
+      text: text,
+      parentCommentId: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+   
+    input.value = '';
+    loadComments(postId);
+    return;
+  }
+  
+  // REPLY BUTTON
+  if (target.classList.contains('reply-btn')) {
+    const commentId = target.dataset.commentid;
+    const replyBox = document.getElementById(`reply-box-${commentId}`);
+    replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  
+  // SEND REPLY
+  if (target.classList.contains('send-reply-btn')) {
+    const postId = target.dataset.postid;
+    const parentCommentId = target.dataset.commentid;
+    const input = document.getElementById(`reply-input-${parentCommentId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    
+    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+    const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
+    
+    await db.collection('posts').doc(postId).collection('comments').add({
+      userId: auth.currentUser.uid,
+      username: username,
+      text: text,
+      parentCommentId: parentCommentId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    input.value = '';
+    document.getElementById(`reply-box-${parentCommentId}`).style.display = 'none';
+    loadComments(postId);
+    return;
+  }
+  
+  // CANCEL REPLY
+  if (target.classList.contains('cancel-reply-btn')) {
+    const commentId = target.dataset.commentid;
+    document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+    return;
+  }
+  
+  // DELETE COMMENT
+  if (target.classList.contains('delete-comment')) {
+    const postId = target.dataset.postid;
+    const commentId = target.dataset.commentid;
+    if (confirm('Delete this comment?')) {
+      await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+      loadComments(postId);
+    }
+    return;
+  }
+});
 
 // ═══════════════════════════════════════════════════════════
-// NESTED COMMENTS with REPLIES
+// COMMENTS with NESTED REPLIES
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -389,7 +471,7 @@ async function loadComments(postId) {
     }
    
     for (const doc of snapshot.docs) {
-      await renderComment(doc.data(), doc.id, postId, commentsList);
+      await renderComment(doc.data(), doc.id, postId, commentsList, false);
     }
    
   } catch (error) {
@@ -397,10 +479,10 @@ async function loadComments(postId) {
   }
 }
 
-async function renderComment(comment, commentId, postId, container, isReply = false) {
+async function renderComment(comment, commentId, postId, container, isReply) {
   const commentDiv = document.createElement('div');
-  commentDiv.className = isReply ? 'comment-thread reply' : 'comment-thread';
-  commentDiv.style.marginLeft = isReply ? '40px' : '0';
+  commentDiv.className = 'comment-thread';
+  if (isReply) commentDiv.style.marginLeft = '40px';
  
   const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
   const isOwner = comment.userId === auth.currentUser.uid;
@@ -415,12 +497,12 @@ async function renderComment(comment, commentId, postId, container, isReply = fa
         <small class="comment-time">${timestamp}</small>
       </div>
       <p class="comment-text">${comment.text}</p>
-      <button class="reply-btn" onclick="showReplyBox('${postId}', '${commentId}')">Reply</button>
-      ${isOwner ? `<button class="delete-comment" onclick="handleDeleteComment('${postId}', '${commentId}')">Delete</button>` : ''}
+      <button class="reply-btn" data-commentid="${commentId}">Reply</button>
+      ${isOwner ? `<button class="delete-comment" data-commentid="${commentId}" data-postid="${postId}">Delete</button>` : ''}
       <div class="reply-box" id="reply-box-${commentId}" style="display:none;">
         <input type="text" placeholder="Write a reply..." id="reply-input-${commentId}">
-        <button onclick="handleReply('${postId}', '${commentId}')">Send</button>
-        <button onclick="hideReplyBox('${commentId}')">Cancel</button>
+        <button class="send-reply-btn" data-postid="${postId}" data-commentid="${commentId}">Send</button>
+        <button class="cancel-reply-btn" data-commentid="${commentId}">Cancel</button>
       </div>
       <div class="replies" id="replies-${commentId}"></div>
     </div>
@@ -450,42 +532,6 @@ async function loadReplies(postId, parentCommentId) {
     console.error('Load replies error:', error);
   }
 }
-
-window.showReplyBox = function(postId, commentId) {
-  document.getElementById(`reply-box-${commentId}`).style.display = 'block';
-};
-
-window.hideReplyBox = function(commentId) {
-  document.getElementById(`reply-box-${commentId}`).style.display = 'none';
-};
-
-window.handleReply = async function(postId, parentCommentId) {
-  const input = document.getElementById(`reply-input-${parentCommentId}`);
-  const text = input.value.trim();
-  if (!text) return;
-  
-  const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-  const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-  
-  await db.collection('posts').doc(postId).collection('comments').add({
-    userId: auth.currentUser.uid,
-    username: username,
-    text: text,
-    parentCommentId: parentCommentId,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  
-  input.value = '';
-  hideReplyBox(parentCommentId);
-  loadComments(postId);
-};
-
-window.handleDeleteComment = async function(postId, commentId) {
-  if (confirm('Delete this comment?')) {
-    await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-    loadComments(postId);
-  }
-};
 
 // ═══════════════════════════════════════════════════════════
 // GIFT DIALOG

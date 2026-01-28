@@ -1,4 +1,4 @@
-// feed.js - COMPLETE UPDATE - All 18 Gifts + All Fixes
+// feed.js - COMPLETE WITH ALL FIXES + 18 GIFTS + COMMENT DELETE BUTTONS
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,7 +15,7 @@ const storage = firebase.storage();
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
-// ALL 18 STRIPE PAYMENT LINKS
+// ALL 18 GIFT PAYMENT LINKS
 const GIFT_PAYMENT_LINKS = {
   // Original 6 gifts
   rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
@@ -119,7 +119,7 @@ searchBar.addEventListener('input', async (e) => {
      
     } catch (error) {
       console.error('Search error:', error);
-      searchResults.innerHTML = '<p class="no-results">Error searching users. Make sure usernameLower field exists on all users.</p>';
+      searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
       searchResults.style.display = 'block';
     }
   }, 300);
@@ -225,7 +225,7 @@ async function loadPosts() {
    
   } catch (error) {
     console.error('Load posts error:', error);
-    container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts. Check console for details.</p>';
+    container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts</p>';
   }
 }
 
@@ -245,7 +245,7 @@ function renderPost(post, postId) {
   const isLiked = post.likedBy?.includes(user.uid);
   const isDisliked = post.dislikedBy?.includes(user.uid);
  
-  // FIXED: Username clickable with correct UID
+  // FIXED: Username clicks go to CORRECT profile using post.userId
   postDiv.innerHTML = `
     <div class="post-header">
       <strong style="cursor:pointer;" class="username-link" data-uid="${post.userId}">${post.username}</strong>
@@ -288,7 +288,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// POST ACTIONS - ALL FIXED
+// POST ACTIONS
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
@@ -364,7 +364,7 @@ document.addEventListener('click', async (e) => {
     document.getElementById('giftDialog').style.display = 'flex';
   }
  
-  // DELETE
+  // DELETE POST
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
       await db.collection('posts').doc(postId).delete();
@@ -391,6 +391,7 @@ document.addEventListener('click', async (e) => {
       userId: auth.currentUser.uid,
       username: username,
       text: text,
+      parentCommentId: null,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
    
@@ -400,7 +401,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// COMMENTS - FIXED with delete buttons
+// COMMENTS WITH DELETE BUTTONS - FIXED
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -409,6 +410,7 @@ async function loadComments(postId) {
   try {
     const snapshot = await db.collection('posts').doc(postId)
       .collection('comments')
+      .where('parentCommentId', '==', null)
       .orderBy('createdAt', 'asc')
       .get();
    
@@ -419,44 +421,134 @@ async function loadComments(postId) {
       return;
     }
    
-    snapshot.forEach(doc => {
-      const comment = doc.data();
-      const commentDiv = document.createElement('div');
-      commentDiv.className = 'comment-thread';
-     
-      const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
-      const isOwner = comment.userId === auth.currentUser.uid;
-     
-      commentDiv.innerHTML = `
-        <div class="comment-avatar">
-          <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
-        </div>
-        <div class="comment-content">
-          <div class="comment-header">
-            <strong class="comment-username">${comment.username}</strong>
-            <small class="comment-time">${timestamp}</small>
-          </div>
-          <p class="comment-text">${comment.text}</p>
-          ${isOwner ? `<button class="delete-comment" data-commentid="${doc.id}" data-postid="${postId}">Delete</button>` : ''}
-        </div>
-      `;
-      commentsList.appendChild(commentDiv);
-    });
-   
-    // FIXED: Delete comment handler
-    commentsList.querySelectorAll('.delete-comment').forEach(btn => {
-      btn.onclick = async () => {
-        if (confirm('Delete this comment?')) {
-          const commentId = btn.dataset.commentid;
-          const postId = btn.dataset.postid;
-          await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-          loadComments(postId);
-        }
-      };
-    });
+    for (const doc of snapshot.docs) {
+      await renderComment(doc.data(), doc.id, postId, commentsList, false);
+    }
    
   } catch (error) {
     console.error('Load comments error:', error);
+  }
+}
+
+async function renderComment(comment, commentId, postId, container, isReply) {
+  const commentDiv = document.createElement('div');
+  commentDiv.className = 'comment-thread';
+  if (isReply) commentDiv.style.marginLeft = '40px';
+ 
+  const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
+  const currentUserId = auth.currentUser?.uid;
+  const isOwner = comment.userId === currentUserId;
+ 
+  commentDiv.innerHTML = `
+    <div class="comment-avatar">
+      <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
+    </div>
+    <div class="comment-content">
+      <div class="comment-header">
+        <strong class="comment-username">${comment.username}</strong>
+        <small class="comment-time">${timestamp}</small>
+      </div>
+      <p class="comment-text">${comment.text}</p>
+      <div class="comment-actions">
+        ${!isReply ? `<button class="reply-btn" data-commentid="${commentId}">Reply</button>` : ''}
+        ${isOwner ? `<button class="delete-comment-btn" data-commentid="${commentId}" data-postid="${postId}">Delete</button>` : ''}
+      </div>
+      <div class="reply-box" id="reply-box-${commentId}" style="display:none;">
+        <input type="text" placeholder="Write a reply..." class="reply-input" id="reply-input-${commentId}">
+        <button class="send-reply-btn" data-postid="${postId}" data-commentid="${commentId}">Send</button>
+        <button class="cancel-reply-btn" data-commentid="${commentId}">Cancel</button>
+      </div>
+      <div class="replies" id="replies-${commentId}"></div>
+    </div>
+  `;
+ 
+  container.appendChild(commentDiv);
+  
+  // Attach event handlers AFTER adding to DOM
+  attachCommentHandlers(commentDiv, commentId, postId);
+  
+  // Load replies if not already a reply
+  if (!isReply) {
+    await loadReplies(postId, commentId);
+  }
+}
+
+function attachCommentHandlers(commentDiv, commentId, postId) {
+  // Reply button
+  const replyBtn = commentDiv.querySelector('.reply-btn');
+  if (replyBtn) {
+    replyBtn.onclick = () => {
+      const replyBox = document.getElementById(`reply-box-${commentId}`);
+      replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
+    };
+  }
+  
+  // Delete button - FIXED: Proper handler attachment
+  const deleteBtn = commentDiv.querySelector('.delete-comment-btn');
+  if (deleteBtn) {
+    deleteBtn.onclick = async () => {
+      if (confirm('Delete this comment?')) {
+        try {
+          await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+          loadComments(postId);
+        } catch (error) {
+          console.error('Error deleting comment:', error);
+          alert('Error deleting comment');
+        }
+      }
+    };
+  }
+  
+  // Send reply button
+  const sendReplyBtn = commentDiv.querySelector('.send-reply-btn');
+  if (sendReplyBtn) {
+    sendReplyBtn.onclick = async () => {
+      const input = document.getElementById(`reply-input-${commentId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      
+      const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+      const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
+      
+      await db.collection('posts').doc(postId).collection('comments').add({
+        userId: auth.currentUser.uid,
+        username: username,
+        text: text,
+        parentCommentId: commentId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      input.value = '';
+      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+      loadComments(postId);
+    };
+  }
+  
+  // Cancel reply button
+  const cancelReplyBtn = commentDiv.querySelector('.cancel-reply-btn');
+  if (cancelReplyBtn) {
+    cancelReplyBtn.onclick = () => {
+      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+    };
+  }
+}
+
+async function loadReplies(postId, parentCommentId) {
+  const repliesContainer = document.getElementById(`replies-${parentCommentId}`);
+  if (!repliesContainer) return;
+  
+  try {
+    const snapshot = await db.collection('posts').doc(postId)
+      .collection('comments')
+      .where('parentCommentId', '==', parentCommentId)
+      .orderBy('createdAt', 'asc')
+      .get();
+    
+    for (const doc of snapshot.docs) {
+      await renderComment(doc.data(), doc.id, postId, repliesContainer, true);
+    }
+  } catch (error) {
+    console.error('Load replies error:', error);
   }
 }
 
@@ -488,7 +580,6 @@ document.querySelectorAll('.gift-option').forEach(option => {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
      
-      // Create gift record
       const giftRef = await db.collection('gifts').add({
         fromUserId: user.uid,
         fromUsername: username,
@@ -502,7 +593,6 @@ document.querySelectorAll('.gift-option').forEach(option => {
      
       await new Promise(resolve => setTimeout(resolve, 500));
      
-      // Redirect to Stripe with gift ID
       const paymentLink = GIFT_PAYMENT_LINKS[giftType];
       if (paymentLink) {
         window.location.href = `${paymentLink}?client_reference_id=${giftRef.id}`;

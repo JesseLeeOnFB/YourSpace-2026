@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About YourSpace - Social Media Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 3px solid #667eea;
+    }
+    
+    h1 {
+      color: #667eea;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+      color: #666;
+      font-style: italic;
+    }
+    
+    h2 {
+      color: #667eea;
+      font-size: 2rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    h3 {
+      color: #764ba2;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+    
+    .gift-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    
+    .gift-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+    
+    .gift-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+      border-color: #667eea;
+    }
+    
+    .gift-emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .gift-name {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 0.3rem;
+    }
+    
+    .gift-price {
+      color: #667eea;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    
+    .info-box {
+      background: #f0f4f8;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1.5rem 0;
+      border-left: 4px solid #667eea;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .gift-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>✨ YourSpace</h1>
+      <p class="tagline">Social Media Platform with Virtual Gift Economy</p>
+    </header>
+
+    <section>
+      <h2>About YourSpace</h2>
+      <p>YourSpace is a modern social media platform where users can create personalized profiles, share content, connect with friends, and support creators through virtual gifts.</p>
+      
+      <p>Similar to platforms like TikTok and Twitch, we've built a creator economy where users can monetarily support their favorite content creators through digital gift purchases.</p>
+    </section>
+
+    <section>
+      <h2>Virtual Gifts System</h2>
+      <p>Our platform features a comprehensive virtual gifts marketplace with 18 different digital items. Users purchase these gifts to send to content creators as a form of appreciation and support.</p>
+
+      <div class="info-box">
+        <strong>How Virtual Gifts Work:</strong>
+        <ol>
+          <li>User views content from another user/creator</li>
+          <li>User clicks "Send Gift" button on posts</li>
+          <li>User selects a virtual gift and completes payment via Stripe</li>
+          <li>Gift appears on recipient's profile as a badge/counter</li>
+          <li>Recipient receives a revenue share (6-40% depending on gift value)</li>
+          <li>Creator earnings are paid out every 14 days via Stripe Connect</li>
+        </ol>
+      </div>
+
+      <h3>Available Virtual Gifts</h3>
+      <div class="gift-grid">
+        <div class="gift-item">
+          <div class="gift-emoji">🌹</div>
+          <div class="gift-name">Rose</div>
+          <div class="gift-price">$1.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">☕</div>
+          <div class="gift-name">Coffee</div>
+          <div class="gift-price">$4.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🧸</div>
+          <div class="gift-name">Teddy Bear</div>
+          <div class="gift-price">$9.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🎂</div>
+          <div class="gift-name">Cake</div>
+          <div class="gift-price">$14.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🏠</div>
+          <div class="gift-name">House</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🚗</div>
+          <div class="gift-name">Car</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🚚</div>
+          <div class="gift-name">Truck</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🐕</div>
+          <div class="gift-name">Pet</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🌱</div>
+          <div class="gift-name">Lawn</div>
+          <div class="gift-price">$8.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🌳</div>
+          <div class="gift-name">Trees</div>
+          <div class="gift-price">$13.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🛣️</div>
+          <div class="gift-name">Driveway</div>
+          <div class="gift-price">$29.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🚐</div>
+          <div class="gift-name">Minivan</div>
+          <div class="gift-price">$39.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">💎</div>
+          <div class="gift-name">Diamond</div>
+          <div class="gift-price">$49.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">👑</div>
+          <div class="gift-name">Crown</div>
+          <div class="gift-price">$69.69</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🛥️</div>
+          <div class="gift-name">Yacht</div>
+          <div class="gift-price">$99.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">🏰</div>
+          <div class="gift-name">Mansion</div>
+          <div class="gift-price">$99.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">✈️</div>
+          <div class="gift-name">Ultimate Jet</div>
+          <div class="gift-price">$99.99</div>
+        </div>
+        <div class="gift-item">
+          <div class="gift-emoji">💎💎</div>
+          <div class="gift-name">Diamonds</div>
+          <div class="gift-price">$300.00</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Business Model</h2>
+      <p>YourSpace operates as a digital gift marketplace and social platform:</p>
+      
+      <ul>
+        <li><strong>Revenue Model:</strong> Platform fee on virtual gift transactions</li>
+        <li><strong>Platform Fee:</strong> 60-94% (industry standard for virtual goods/digital content platforms)</li>
+        <li><strong>Creator Payout:</strong> 6-40% depending on gift value and transaction fees</li>
+        <li><strong>Payout Schedule:</strong> Every 14 days via Stripe Connect</li>
+        <li><strong>Product Type:</strong> Non-refundable digital virtual items</li>
+      </ul>
+
+      <div class="info-box">
+        <strong>Transaction Flow:</strong><br>
+        User purchases virtual gift ($1.99-$300) → Stripe processes payment → Platform takes fee → Creator receives revenue share → Payout every 14 days to creator's bank account
+      </div>
+    </section>
+
+    <section>
+      <h2>Platform Features</h2>
+      <ul>
+        <li>Customizable user profiles with 50+ themes</li>
+        <li>Content feed with posts, images, and videos</li>
+        <li>Real-time messaging system</li>
+        <li>Virtual gift marketplace (18 different gifts)</li>
+        <li>Creator monetization via Stripe Connect</li>
+        <li>Leaderboards and gamification</li>
+        <li>XP and leveling system</li>
+        <li>Badge and achievement system</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Platform Access</h2>
+      <p><strong>Why Login is Required:</strong> YourSpace is a social media platform with user-generated content. Like Facebook, Instagram, Twitter, and other social platforms, users must create an account to access the platform for privacy and safety reasons.</p>
+      
+      <p><strong>Registration:</strong> Free and open to anyone at <a href="https://yourspacesocial.com">yourspacesocial.com</a></p>
+
+      <div class="info-box">
+        <strong>For Business Verification:</strong><br>
+        Demo account credentials are available for payment processor verification teams. Contact us at <strong>stripe-review@yourspacesocial.com</strong> for access.
+      </div>
+    </section>
+
+    <section>
+      <h2>Business Information</h2>
+      <ul>
+        <li><strong>Platform Name:</strong> YourSpace</li>
+        <li><strong>Website:</strong> yourspacesocial.com</li>
+        <li><strong>Type:</strong> Social Media Platform / Digital Marketplace</li>
+        <li><strong>Founded:</strong> January 2026</li>
+        <li><strong>Business Type:</strong> Digital goods marketplace (virtual gifts)</li>
+        <li><strong>Payment Processing:</strong> Stripe (for gift purchases and creator payouts)</li>
+        <li><strong>Active Users:</strong> 500+</li>
+        <li><strong>Status:</strong> Operating and growing</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Contact Information</h2>
+      <p><strong>Support:</strong> support@yourspacesocial.com</p>
+      <p><strong>Business Inquiries:</strong> business@yourspacesocial.com</p>
+      <p><strong>Payment Verification:</strong> stripe-review@yourspacesocial.com</p>
+    </section>
+
+    <section>
+      <h2>Get Started</h2>
+      <p>Join YourSpace today and start connecting with creators!</p>
+      <a href="https://yourspacesocial.com" class="cta-button">Create Free Account →</a>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 YourSpace Social. All rights reserved.</p>
+      <p><a href="https://yourspacesocial.com/terms.html" style="color: #667eea;">Terms of Service</a> | <a href="https://yourspacesocial.com/privacy.html" style="color: #667eea;">Privacy Policy</a></p>
+    </footer>
+  </div>
+</body>
+</html>

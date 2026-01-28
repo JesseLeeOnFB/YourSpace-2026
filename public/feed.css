@@ -688,3 +688,212 @@ h1 {
     padding: 0.8rem 1.5rem !important;
   }
 }
+/* PUBLIC GIFTING STYLES - Add to end of feed.css */
+
+/* ═══════════════════════════════════════════════════════════
+   GIFT POST CARDS - PUBLIC ANNOUNCEMENTS
+   ═══════════════════════════════════════════════════════════ */
+
+.gift-post-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: 3px solid #ffd700 !important;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4) !important;
+  position: relative;
+  overflow: hidden;
+  animation: giftGlow 2s ease-in-out infinite;
+}
+
+@keyframes giftGlow {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 48px rgba(255, 215, 0, 0.8);
+  }
+}
+
+.gift-post-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.gift-post-emoji {
+  font-size: 3rem;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.gift-post-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+}
+
+.gift-post-content {
+  color: #ffffff;
+}
+
+.gift-post-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.gift-post-text .username-link {
+  color: #ffd700;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.gift-post-text .username-link:hover {
+  color: #ffed4e;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.gift-name {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+  font-weight: 800;
+}
+
+.gift-post-price {
+  display: inline-block;
+  background: #ffd700;
+  color: #000;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+}
+
+.gift-post-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Sparkle animation */
+.gift-sparkle::before {
+  content: '✨';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  font-size: 2rem;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.gift-sparkle::after {
+  content: '✨';
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+  font-size: 2rem;
+  animation: sparkle 1.5s ease-in-out infinite 0.5s;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LEVEL BADGES IN SEARCH
+   ═══════════════════════════════════════════════════════════ */
+
+.level-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GIFT BUTTON ENHANCEMENT
+   ═══════════════════════════════════════════════════════════ */
+
+.gift-btn {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  border: none;
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.gift-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.gift-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.gift-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .gift-post-emoji {
+    font-size: 2rem;
+  }
+  
+  .gift-post-title {
+    font-size: 1.2rem;
+  }
+  
+  .gift-post-text {
+    font-size: 1rem;
+  }
+  
+  .gift-post-price {
+    font-size: 1.2rem;
+    padding: 0.4rem 1rem;
+  }
+}

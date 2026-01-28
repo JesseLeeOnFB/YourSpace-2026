@@ -1,4 +1,4 @@
-// feed.js - COMPLETE WITH ALL FIXES + 18 GIFTS + COMMENT DELETE BUTTONS
+// feed.js - PUBLIC GIFTING SYSTEM + ALL FIXES
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -12,19 +12,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+const functions = firebase.functions();
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
 // ALL 18 GIFT PAYMENT LINKS
 const GIFT_PAYMENT_LINKS = {
-  // Original 6 gifts
   rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
   coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
   teddybear: "https://buy.stripe.com/cNi7sL2iugQed6z6xX7bW02",
   cake: "https://buy.stripe.com/14A5kD0am2Zo9UncWl7bW03",
   diamond: "https://buy.stripe.com/aFa3cvcX8bvU2rVg8x7bW04",
   yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05",
-  // NEW 12 gifts
   houses: "https://buy.stripe.com/eVq28r4qC1VkaYr5tT7bW0h",
   cars: "https://buy.stripe.com/aFacN5aP0bvUc2v3lL7bW0g",
   trucks: "https://buy.stripe.com/bJe9AT8GSczY0jN9K97bW0f",
@@ -51,6 +50,7 @@ document.getElementById('profileNavBtn').onclick = () => window.location.href = 
 document.getElementById('messagesNavBtn').onclick = () => window.location.href = 'messages.html';
 document.getElementById('notificationsNavBtn').onclick = () => window.location.href = 'notifications.html';
 document.getElementById('dashboardNavBtn').onclick = () => window.location.href = 'dashboard.html';
+document.getElementById('leaderboardsNavBtn')?.addEventListener('click', () => window.location.href = 'leaderboards.html');
 document.getElementById('adminNavBtn').onclick = () => window.location.href = 'admin.html';
 document.getElementById('contactNavBtn').onclick = () => window.location.href = 'contact.html';
 document.getElementById('logoutBtn').onclick = async () => {
@@ -66,7 +66,7 @@ hamburger.onclick = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// USER SEARCH - FIXED with usernameLower
+// USER SEARCH - FIXED
 // ═══════════════════════════════════════════════════════════
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
@@ -87,7 +87,6 @@ searchBar.addEventListener('input', async (e) => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
     try {
-      // FIXED: Use usernameLower field for case-insensitive search
       const usersSnapshot = await db.collection('users')
         .where('usernameLower', '>=', searchTerm)
         .where('usernameLower', '<=', searchTerm + '\uf8ff')
@@ -103,11 +102,16 @@ searchBar.addEventListener('input', async (e) => {
           const user = doc.data();
           const item = document.createElement('div');
           item.className = 'search-result-item';
+          
+          const levelBadge = user.level ? `<span class="level-badge">Lv.${user.level}</span>` : '';
+          
           item.innerHTML = `
             <img src="${user.photoURL || 'https://via.placeholder.com/45'}" class="search-result-avatar" alt="Avatar">
-            <span class="search-result-username">@${user.username}</span>
+            <div>
+              <span class="search-result-username">@${user.username}</span>
+              ${levelBadge}
+            </div>
           `;
-          // FIXED: Use doc.id to go to correct profile
           item.onclick = () => {
             window.location.href = `profile.html?uid=${doc.id}`;
           };
@@ -181,8 +185,16 @@ postBtn.onclick = async () => {
       mediaType: mediaType,
       likedBy: [],
       dislikedBy: [],
+      type: 'user_post',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    
+    // Add XP for creating post
+    try {
+      await functions.httpsCallable('addXP')({ action: 'createPost' });
+    } catch (xpError) {
+      console.log('XP add failed (non-critical):', xpError);
+    }
    
     postText.value = '';
     postFileInput.value = '';
@@ -200,7 +212,7 @@ postBtn.onclick = async () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// LOAD POSTS
+// LOAD POSTS - WITH GIFT ANNOUNCEMENTS
 // ═══════════════════════════════════════════════════════════
 async function loadPosts() {
   const container = document.getElementById('postsContainer');
@@ -220,7 +232,12 @@ async function loadPosts() {
     }
    
     snapshot.forEach(doc => {
-      renderPost(doc.data(), doc.id);
+      const post = doc.data();
+      if (post.type === 'gift_announcement') {
+        renderGiftPost(post, doc.id);
+      } else {
+        renderPost(post, doc.id);
+      }
     });
    
   } catch (error) {
@@ -229,6 +246,48 @@ async function loadPosts() {
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// RENDER GIFT POST - PUBLIC ANNOUNCEMENT
+// ═══════════════════════════════════════════════════════════
+function renderGiftPost(post, postId) {
+  const container = document.getElementById('postsContainer');
+  
+  const postDiv = document.createElement('div');
+  postDiv.className = 'post-card gift-post-card';
+  postDiv.id = `post-${postId}`;
+  
+  const timestamp = post.createdAt ? post.createdAt.toDate().toLocaleString() : 'Just now';
+  
+  postDiv.innerHTML = `
+    <div class="gift-post-header">
+      <span class="gift-post-emoji">${post.giftEmoji}</span>
+      <span class="gift-post-title">GIFT SENT!</span>
+    </div>
+    <div class="gift-post-content">
+      <p class="gift-post-text">
+        🔥 <strong class="username-link" data-uid="${post.fromUserId}">@${post.fromUsername}</strong> 
+        just sent 
+        <strong class="username-link" data-uid="${post.toUserId}">@${post.toUsername}</strong> 
+        a <span class="gift-name">${post.giftEmoji} ${post.giftName.toUpperCase()}</span>!
+      </p>
+      <div class="gift-post-price">$${post.giftPrice.toFixed(2)}</div>
+    </div>
+    <div class="gift-post-footer">
+      <small>${timestamp}</small>
+    </div>
+  `;
+  
+  container.appendChild(postDiv);
+  
+  // Add sparkle animation
+  setTimeout(() => {
+    postDiv.classList.add('gift-sparkle');
+  }, 100);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER REGULAR POST
+// ═══════════════════════════════════════════════════════════
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
   const user = auth.currentUser;
@@ -245,7 +304,6 @@ function renderPost(post, postId) {
   const isLiked = post.likedBy?.includes(user.uid);
   const isDisliked = post.dislikedBy?.includes(user.uid);
  
-  // FIXED: Username clicks go to CORRECT profile using post.userId
   postDiv.innerHTML = `
     <div class="post-header">
       <strong style="cursor:pointer;" class="username-link" data-uid="${post.userId}">${post.username}</strong>
@@ -279,7 +337,7 @@ function renderPost(post, postId) {
   loadComments(postId);
 }
 
-// FIXED: Username click handler
+// Username click handler
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('username-link')) {
     const uid = e.target.dataset.uid;
@@ -312,6 +370,15 @@ document.addEventListener('click', async (e) => {
           likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
           dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
         });
+        
+        // Add XP to post owner
+        if (post.userId !== userId) {
+          try {
+            await functions.httpsCallable('addXP')({ action: 'receiveLike', targetUserId: post.userId });
+          } catch (xpError) {
+            console.log('XP add failed (non-critical)');
+          }
+        }
       }
       loadPosts();
     } catch (error) {
@@ -401,7 +468,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// COMMENTS WITH DELETE BUTTONS - FIXED
+// COMMENTS - WITH DELETE BUTTONS
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -463,18 +530,14 @@ async function renderComment(comment, commentId, postId, container, isReply) {
   `;
  
   container.appendChild(commentDiv);
-  
-  // Attach event handlers AFTER adding to DOM
   attachCommentHandlers(commentDiv, commentId, postId);
   
-  // Load replies if not already a reply
   if (!isReply) {
     await loadReplies(postId, commentId);
   }
 }
 
 function attachCommentHandlers(commentDiv, commentId, postId) {
-  // Reply button
   const replyBtn = commentDiv.querySelector('.reply-btn');
   if (replyBtn) {
     replyBtn.onclick = () => {
@@ -483,7 +546,6 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
     };
   }
   
-  // Delete button - FIXED: Proper handler attachment
   const deleteBtn = commentDiv.querySelector('.delete-comment-btn');
   if (deleteBtn) {
     deleteBtn.onclick = async () => {
@@ -493,13 +555,11 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
           loadComments(postId);
         } catch (error) {
           console.error('Error deleting comment:', error);
-          alert('Error deleting comment');
         }
       }
     };
   }
   
-  // Send reply button
   const sendReplyBtn = commentDiv.querySelector('.send-reply-btn');
   if (sendReplyBtn) {
     sendReplyBtn.onclick = async () => {
@@ -524,7 +584,6 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
     };
   }
   
-  // Cancel reply button
   const cancelReplyBtn = commentDiv.querySelector('.cancel-reply-btn');
   if (cancelReplyBtn) {
     cancelReplyBtn.onclick = () => {

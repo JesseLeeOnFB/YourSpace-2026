@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Users - YourSpace</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      color: #667eea;
+      text-align: center;
+    }
+    
+    .status {
+      background: #f0f4f8;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      min-height: 100px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .info {
+      color: #007bff;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Update Users for Public Gifting</h1>
+    
+    <div class="warning">
+      ⚠️ <strong>Important:</strong> This will update ALL users in your database with new fields for the public gifting system. Run this ONCE after deploying the new Firebase Functions.
+    </div>
+    
+    <button id="updateBtn" onclick="updateAllUsers()">
+      Update All Users
+    </button>
+    
+    <div class="status" id="status">
+Ready to update users...
+
+Click the button above to start.
+    </div>
+  </div>
+
+  <!-- Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+      authDomain: "yourspace-2026.firebaseapp.com",
+      projectId: "yourspace-2026",
+      storageBucket: "yourspace-2026.firebasestorage.app",
+      messagingSenderId: "72667267302",
+      appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const statusDiv = document.getElementById('status');
+    const updateBtn = document.getElementById('updateBtn');
+
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type;
+      statusDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      statusDiv.scrollTop = statusDiv.scrollHeight;
+    }
+
+    async function updateAllUsers() {
+      updateBtn.disabled = true;
+      statusDiv.innerHTML = '';
+      
+      log('🚀 Starting user update process...', 'info');
+      
+      try {
+        // Check if user is logged in
+        const user = auth.currentUser;
+        if (!user) {
+          log('❌ ERROR: You must be logged in to run this script', 'error');
+          log('Please log in at yourspacesocial.com first, then come back here', 'error');
+          updateBtn.disabled = false;
+          return;
+        }
+        
+        log(`✅ Logged in as: ${user.email}`, 'success');
+        log('📊 Fetching all users...', 'info');
+        
+        // Get all users
+        const snapshot = await db.collection('users').get();
+        const totalUsers = snapshot.size;
+        
+        log(`📦 Found ${totalUsers} users to update`, 'info');
+        log('', 'info');
+        
+        let updated = 0;
+        let errors = 0;
+        
+        // Update each user
+        for (const doc of snapshot.docs) {
+          try {
+            const userData = doc.data();
+            const username = userData.username || 'Unknown';
+            
+            await doc.ref.update({
+              totalGiftsSent: 0,
+              totalGiftValue: 0,
+              totalGiftsReceived: 0,
+              totalEarned: 0,
+              xp: 0,
+              level: 1,
+              topSupporters: {},
+              sentGifts: {},
+              receivedGifts: {}
+            });
+            
+            updated++;
+            log(`✓ Updated user ${updated}/${totalUsers}: @${username}`, 'success');
+            
+          } catch (error) {
+            errors++;
+            log(`✗ Error updating user: ${error.message}`, 'error');
+          }
+        }
+        
+        log('', 'info');
+        log('═══════════════════════════════════', 'info');
+        log('✅ UPDATE COMPLETE!', 'success');
+        log(`📊 Total users: ${totalUsers}`, 'info');
+        log(`✅ Successfully updated: ${updated}`, 'success');
+        log(`❌ Errors: ${errors}`, errors > 0 ? 'error' : 'info');
+        log('═══════════════════════════════════', 'info');
+        log('', 'info');
+        log('🎉 All users are now ready for public gifting!', 'success');
+        log('You can close this page now.', 'info');
+        
+      } catch (error) {
+        log(`❌ FATAL ERROR: ${error.message}`, 'error');
+        log('Stack trace:', 'error');
+        log(error.stack, 'error');
+        updateBtn.disabled = false;
+      }
+    }
+
+    // Auto-login check
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        log('⚠️ Not logged in. Please log in at yourspacesocial.com first.', 'warning');
+        log('After logging in, refresh this page.', 'warning');
+      } else {
+        log(`✅ Ready! Logged in as: ${user.email}`, 'success');
+      }
+    });
+  </script>
+</body>
+</html>

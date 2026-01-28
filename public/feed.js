@@ -1,14 +1,6 @@
-// feed.js - COMPLETE WITH NAVIGATION FIXED + NO FUNCTIONS ERROR
-const firebaseConfig = {
-  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
-  authDomain: "yourspace-2026.firebaseapp.com",
-  projectId: "yourspace-2026",
-  storageBucket: "yourspace-2026.firebasestorage.app",
-  messagingSenderId: "72667267302",
-  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
-};
+// feed.js - COMPLETE (navigation.js handles Firebase initialization)
 
-firebase.initializeApp(firebaseConfig);
+// Use Firebase instances from navigation.js (already initialized)
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -41,52 +33,7 @@ let currentGiftPost = null;
 let currentGiftRecipient = null;
 let currentGiftUsername = null;
 
-// ═══════════════════════════════════════════════════════════
-// NAVIGATION - FIXED
-// ═══════════════════════════════════════════════════════════
-function setupNavigation() {
-  const buttons = {
-    feedNavBtn: 'feed.html',
-    profileNavBtn: 'profile.html',
-    messagesNavBtn: 'messages.html',
-    notificationsNavBtn: 'notifications.html',
-    dashboardNavBtn: 'dashboard.html',
-    leaderboardsNavBtn: 'leaderboards.html',
-    contactNavBtn: 'contact.html',
-    adminNavBtn: 'admin.html'
-  };
-
-  Object.keys(buttons).forEach(btnId => {
-    const btn = document.getElementById(btnId);
-    if (btn) {
-      btn.onclick = () => window.location.href = buttons[btnId];
-    }
-  });
-
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-      await auth.signOut();
-      window.location.href = 'login.html';
-    };
-  }
-
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('navLinks');
-  if (hamburger && navLinks) {
-    hamburger.onclick = () => {
-      hamburger.classList.toggle('active');
-      navLinks.classList.toggle('active');
-    };
-  }
-}
-
-// Call navigation setup
-setupNavigation();
-
-// ═══════════════════════════════════════════════════════════
 // USER SEARCH
-// ═══════════════════════════════════════════════════════════
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
@@ -149,11 +96,13 @@ if (searchBar) {
     }, 300);
   });
 
-  clearSearchBtn.onclick = () => {
-    searchBar.value = '';
-    searchResults.style.display = 'none';
-    clearSearchBtn.style.display = 'none';
-  };
+  if (clearSearchBtn) {
+    clearSearchBtn.onclick = () => {
+      searchBar.value = '';
+      searchResults.style.display = 'none';
+      clearSearchBtn.style.display = 'none';
+    };
+  }
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-container')) {
@@ -162,9 +111,7 @@ if (searchBar) {
   });
 }
 
-// ═══════════════════════════════════════════════════════════
 // CREATE POST
-// ═══════════════════════════════════════════════════════════
 const postBtn = document.getElementById('postBtn');
 const postText = document.getElementById('postText');
 const postFileInput = document.getElementById('postFileInput');
@@ -227,9 +174,7 @@ if (postBtn) {
   };
 }
 
-// ═══════════════════════════════════════════════════════════
 // LOAD POSTS
-// ═══════════════════════════════════════════════════════════
 async function loadPosts() {
   const container = document.getElementById('postsContainer');
   if (!container) return;
@@ -264,9 +209,7 @@ async function loadPosts() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
 // RENDER GIFT POST
-// ═══════════════════════════════════════════════════════════
 function renderGiftPost(post, postId) {
   const container = document.getElementById('postsContainer');
   if (!container) return;
@@ -303,9 +246,7 @@ function renderGiftPost(post, postId) {
   }, 100);
 }
 
-// ═══════════════════════════════════════════════════════════
 // RENDER REGULAR POST
-// ═══════════════════════════════════════════════════════════
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
   if (!container) return;
@@ -361,68 +302,45 @@ function renderPost(post, postId) {
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('username-link')) {
     const uid = e.target.dataset.uid;
-    if (uid) {
-      window.location.href = `profile.html?uid=${uid}`;
-    }
+    if (uid) window.location.href = `profile.html?uid=${uid}`;
   }
 });
 
-// ═══════════════════════════════════════════════════════════
 // POST ACTIONS
-// ═══════════════════════════════════════════════════════════
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
   if (!postId) return;
  
   const userId = auth.currentUser.uid;
  
-  // LIKE
   if (e.target.classList.contains('like-btn')) {
-    try {
-      const postRef = db.collection('posts').doc(postId);
-      const postDoc = await postRef.get();
-      const post = postDoc.data();
-     
-      if (post.likedBy?.includes(userId)) {
-        await postRef.update({
-          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      } else {
-        await postRef.update({
-          likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      }
-      loadPosts();
-    } catch (error) {
-      console.error('Like error:', error);
+    const postRef = db.collection('posts').doc(postId);
+    const post = (await postRef.get()).data();
+    if (post.likedBy?.includes(userId)) {
+      await postRef.update({ likedBy: firebase.firestore.FieldValue.arrayRemove(userId) });
+    } else {
+      await postRef.update({ 
+        likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+        dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
     }
+    loadPosts();
   }
  
-  // DISLIKE
   if (e.target.classList.contains('dislike-btn')) {
-    try {
-      const postRef = db.collection('posts').doc(postId);
-      const postDoc = await postRef.get();
-      const post = postDoc.data();
-     
-      if (post.dislikedBy?.includes(userId)) {
-        await postRef.update({
-          dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      } else {
-        await postRef.update({
-          dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
-          likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
-        });
-      }
-      loadPosts();
-    } catch (error) {
-      console.error('Dislike error:', error);
+    const postRef = db.collection('posts').doc(postId);
+    const post = (await postRef.get()).data();
+    if (post.dislikedBy?.includes(userId)) {
+      await postRef.update({ dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId) });
+    } else {
+      await postRef.update({ 
+        dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
+        likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
+      });
     }
+    loadPosts();
   }
  
-  // COMMENT TOGGLE
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
     if (commentsSection) {
@@ -430,29 +348,21 @@ document.addEventListener('click', async (e) => {
     }
   }
  
-  // SHARE
   if (e.target.classList.contains('share-btn')) {
-    const url = `${window.location.origin}/feed.html#post-${postId}`;
-    navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard!');
+    navigator.clipboard.writeText(`${window.location.origin}/feed.html#post-${postId}`);
+    alert('Link copied!');
   }
  
-  // GIFT
   if (e.target.classList.contains('gift-btn')) {
     currentGiftPost = postId;
     currentGiftRecipient = e.target.dataset.recipient;
     currentGiftUsername = e.target.dataset.username;
     const recipientName = document.getElementById('giftRecipientName');
-    if (recipientName) {
-      recipientName.textContent = currentGiftUsername;
-    }
+    if (recipientName) recipientName.textContent = currentGiftUsername;
     const giftDialog = document.getElementById('giftDialog');
-    if (giftDialog) {
-      giftDialog.style.display = 'flex';
-    }
+    if (giftDialog) giftDialog.style.display = 'flex';
   }
  
-  // DELETE POST
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
       await db.collection('posts').doc(postId).delete();
@@ -460,23 +370,18 @@ document.addEventListener('click', async (e) => {
     }
   }
  
-  // PIN
   if (e.target.classList.contains('pin-btn')) {
     await db.collection('posts').doc(postId).update({ pinned: true });
     loadPosts();
   }
  
-  // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     if (!input) return;
-    
     const text = input.value.trim();
     if (!text) return;
-   
     const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
     const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-   
     await db.collection('posts').doc(postId).collection('comments').add({
       userId: auth.currentUser.uid,
       username: username,
@@ -484,37 +389,29 @@ document.addEventListener('click', async (e) => {
       parentCommentId: null,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-   
     input.value = '';
     loadComments(postId);
   }
 });
 
-// ═══════════════════════════════════════════════════════════
 // COMMENTS
-// ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
   if (!commentsList) return;
- 
   try {
     const snapshot = await db.collection('posts').doc(postId)
       .collection('comments')
       .where('parentCommentId', '==', null)
       .orderBy('createdAt', 'asc')
       .get();
-   
     commentsList.innerHTML = '';
-   
     if (snapshot.empty) {
       commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first!</p>';
       return;
     }
-   
     for (const doc of snapshot.docs) {
       await renderComment(doc.data(), doc.id, postId, commentsList, false);
     }
-   
   } catch (error) {
     console.error('Load comments error:', error);
   }
@@ -524,11 +421,9 @@ async function renderComment(comment, commentId, postId, container, isReply) {
   const commentDiv = document.createElement('div');
   commentDiv.className = 'comment-thread';
   if (isReply) commentDiv.style.marginLeft = '40px';
- 
   const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
   const currentUserId = auth.currentUser?.uid;
   const isOwner = comment.userId === currentUserId;
- 
   commentDiv.innerHTML = `
     <div class="comment-avatar">
       <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
@@ -551,13 +446,9 @@ async function renderComment(comment, commentId, postId, container, isReply) {
       <div class="replies" id="replies-${commentId}"></div>
     </div>
   `;
- 
   container.appendChild(commentDiv);
   attachCommentHandlers(commentDiv, commentId, postId);
-  
-  if (!isReply) {
-    await loadReplies(postId, commentId);
-  }
+  if (!isReply) await loadReplies(postId, commentId);
 }
 
 function attachCommentHandlers(commentDiv, commentId, postId) {
@@ -565,38 +456,27 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
   if (replyBtn) {
     replyBtn.onclick = () => {
       const replyBox = document.getElementById(`reply-box-${commentId}`);
-      if (replyBox) {
-        replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
-      }
+      if (replyBox) replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
     };
   }
-  
   const deleteBtn = commentDiv.querySelector('.delete-comment-btn');
   if (deleteBtn) {
     deleteBtn.onclick = async () => {
-      if (confirm('Delete this comment?')) {
-        try {
-          await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-          loadComments(postId);
-        } catch (error) {
-          console.error('Error deleting comment:', error);
-        }
+      if (confirm('Delete comment?')) {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+        loadComments(postId);
       }
     };
   }
-  
   const sendReplyBtn = commentDiv.querySelector('.send-reply-btn');
   if (sendReplyBtn) {
     sendReplyBtn.onclick = async () => {
       const input = document.getElementById(`reply-input-${commentId}`);
       if (!input) return;
-      
       const text = input.value.trim();
       if (!text) return;
-      
       const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
       const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-      
       await db.collection('posts').doc(postId).collection('comments').add({
         userId: auth.currentUser.uid,
         username: username,
@@ -604,19 +484,15 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
         parentCommentId: commentId,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      
       input.value = '';
-      const replyBox = document.getElementById(`reply-box-${commentId}`);
-      if (replyBox) replyBox.style.display = 'none';
+      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
       loadComments(postId);
     };
   }
-  
   const cancelReplyBtn = commentDiv.querySelector('.cancel-reply-btn');
   if (cancelReplyBtn) {
     cancelReplyBtn.onclick = () => {
-      const replyBox = document.getElementById(`reply-box-${commentId}`);
-      if (replyBox) replyBox.style.display = 'none';
+      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
     };
   }
 }
@@ -624,14 +500,12 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
 async function loadReplies(postId, parentCommentId) {
   const repliesContainer = document.getElementById(`replies-${parentCommentId}`);
   if (!repliesContainer) return;
-  
   try {
     const snapshot = await db.collection('posts').doc(postId)
       .collection('comments')
       .where('parentCommentId', '==', parentCommentId)
       .orderBy('createdAt', 'asc')
       .get();
-    
     for (const doc of snapshot.docs) {
       await renderComment(doc.data(), doc.id, postId, repliesContainer, true);
     }
@@ -640,43 +514,32 @@ async function loadReplies(postId, parentCommentId) {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
 // GIFT DIALOG
-// ═══════════════════════════════════════════════════════════
 const cancelGiftBtn = document.getElementById('cancelGiftBtn');
 if (cancelGiftBtn) {
   cancelGiftBtn.onclick = () => {
     const giftDialog = document.getElementById('giftDialog');
-    if (giftDialog) {
-      giftDialog.style.display = 'none';
-    }
+    if (giftDialog) giftDialog.style.display = 'none';
   };
 }
 
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
     const giftType = option.dataset.gift;
-   
     if (!currentGiftPost || !currentGiftRecipient) {
       alert('Error: Missing post or recipient information');
       return;
     }
-   
     const user = auth.currentUser;
     if (!user) {
       alert('You must be logged in');
       return;
     }
-   
     const giftDialog = document.getElementById('giftDialog');
-    if (giftDialog) {
-      giftDialog.style.display = 'none';
-    }
-   
+    if (giftDialog) giftDialog.style.display = 'none';
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
-     
       const giftRef = await db.collection('gifts').add({
         fromUserId: user.uid,
         fromUsername: username,
@@ -687,16 +550,13 @@ document.querySelectorAll('.gift-option').forEach(option => {
         status: 'pending',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-     
       await new Promise(resolve => setTimeout(resolve, 500));
-     
       const paymentLink = GIFT_PAYMENT_LINKS[giftType];
       if (paymentLink) {
         window.location.href = `${paymentLink}?client_reference_id=${giftRef.id}`;
       } else {
         alert('Payment link not found for this gift');
       }
-     
     } catch (error) {
       console.error('Gift error:', error);
       alert('Error sending gift: ' + error.message);
@@ -704,17 +564,7 @@ document.querySelectorAll('.gift-option').forEach(option => {
   };
 });
 
-// ═══════════════════════════════════════════════════════════
-// AUTH
-// ═══════════════════════════════════════════════════════════
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = 'login.html';
-  } else {
-    const adminBtn = document.getElementById('adminNavBtn');
-    if (adminBtn && ADMIN_EMAILS.includes(user.email)) {
-      adminBtn.style.display = 'inline-block';
-    }
-    loadPosts();
-  }
-});
+// PAGE LOAD
+window.onAuthReady = function(user) {
+  loadPosts();
+};

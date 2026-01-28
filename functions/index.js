@@ -1,5 +1,5 @@
-// Firebase Functions index.js - V7 COMPATIBLE
-// Uses environment parameters instead of functions.config()
+// Firebase Functions index.js - ALL 18 GIFTS COMPLETE
+// Stripe v7 with .env configuration
 
 const {onRequest} = require("firebase-functions/v2/https");
 const {onSchedule} = require("firebase-functions/v2/scheduler");
@@ -7,26 +7,39 @@ const {onCall} = require("firebase-functions/v2/https");
 const {defineString} = require("firebase-functions/params");
 const admin = require("firebase-admin");
 
-// Define environment parameters (replaces functions.config())
 const stripeSecretKey = defineString("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineString("STRIPE_WEBHOOK_SECRET");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// Gift payout amounts (what creators actually receive)
+// COMPLETE PAYOUT STRUCTURE - 18 GIFTS
 const CREATOR_PAYOUTS = {
-  rose: 0.12,      // $0.12 for $1.99 gift
-  coffee: 0.29,    // $0.29 for $4.99 gift
-  bear: 0.58,      // $0.58 for $9.99 gift
-  cake: 0.86,      // $0.86 for $14.99 gift
-  diamond: 2.88,   // $2.88 for $49.99 gift
-  yacht: 5.75      // $5.75 for $99.99 gift
+  // Original 6 gifts
+  rose: 0.12,          // $1.99 gift → $0.12 (6%)
+  coffee: 0.29,        // $4.99 gift → $0.29 (6%)
+  teddybear: 2.00,     // $9.99 gift → $2.00 (20%)
+  cake: 0.86,          // $14.99 gift → $0.86 (6%)
+  diamond: 2.88,       // $49.99 gift → $2.88 (6%)
+  yacht: 40.00,        // $99.99 gift → $40.00 (40%)
+  
+  // NEW 12 gifts - YourSpace Place items
+  houses: 0.24,        // $3.99 gift → $0.24 (6%)
+  cars: 0.24,          // $3.99 gift → $0.24 (6%)
+  trucks: 0.24,        // $3.99 gift → $0.24 (6%)
+  pets: 0.24,          // $3.99 gift → $0.24 (6%)
+  lawn: 1.35,          // $8.99 gift → $1.35 (15%)
+  trees: 1.40,         // $13.99 gift → $1.40 (10%)
+  driveway: 3.60,      // $29.99 gift → $3.60 (12%)
+  minivan: 6.00,       // $39.99 gift → $6.00 (15%)
+  crowns: 20.91,       // $69.69 gift → $20.91 (30%)
+  mansion: 40.00,      // $99.99 gift → $40.00 (40%)
+  ultimatejet: 40.00,  // $99.99 gift → $40.00 (40%)
+  diamonds: 120.00     // $300.00 gift → $120.00 (40%)
 };
 
-// Stripe Webhook - Called when payment succeeds
+// Stripe Webhook - Processes payments
 exports.stripeWebhook = onRequest(async (req, res) => {
-  // Initialize Stripe with the secret key
   const stripe = require("stripe")(stripeSecretKey.value());
   
   const sig = req.headers["stripe-signature"];
@@ -43,7 +56,6 @@ exports.stripeWebhook = onRequest(async (req, res) => {
   
   console.log("✅ Webhook received:", event.type);
   
-  // Handle checkout session completed (for payment links)
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const giftId = session.client_reference_id;
@@ -56,7 +68,6 @@ exports.stripeWebhook = onRequest(async (req, res) => {
     }
     
     try {
-      // Get gift info from Firestore
       const giftRef = db.collection("gifts").doc(giftId);
       const giftDoc = await giftRef.get();
       
@@ -67,7 +78,7 @@ exports.stripeWebhook = onRequest(async (req, res) => {
       
       const gift = giftDoc.data();
       const creatorPayout = CREATOR_PAYOUTS[gift.giftType] || 0;
-      const creatorPayoutCents = Math.round(creatorPayout * 100); // Convert to cents
+      const creatorPayoutCents = Math.round(creatorPayout * 100);
       
       console.log("🎁 Processing gift:", {
         giftId,
@@ -77,23 +88,25 @@ exports.stripeWebhook = onRequest(async (req, res) => {
         creatorPayoutCents: creatorPayoutCents
       });
       
-      // Update gift status
+      // Update gift status to paid
       await giftRef.update({
         status: "paid",
         paidAt: admin.firestore.FieldValue.serverTimestamp(),
-        creatorPayout: creatorPayoutCents, // Store in cents
+        creatorPayout: creatorPayoutCents,
         stripeSessionId: session.id
       });
       
       console.log("✅ Gift updated to 'paid'");
       
-      // Update creator earnings using correct field names for dashboard
+      // Update creator's earnings
       const creatorRef = db.collection("users").doc(gift.toUserId);
       
       await creatorRef.update({
-        payoutBalance: admin.firestore.FieldValue.increment(creatorPayoutCents), // IN CENTS
-        totalEarned: admin.firestore.FieldValue.increment(creatorPayoutCents),   // IN CENTS
-        totalGiftsReceived: admin.firestore.FieldValue.increment(1)              // COUNT
+        payoutBalance: admin.firestore.FieldValue.increment(creatorPayoutCents),
+        totalEarned: admin.firestore.FieldValue.increment(creatorPayoutCents),
+        totalGiftsReceived: admin.firestore.FieldValue.increment(1),
+        // Track received gifts for YourSpace Place interactive map
+        [`receivedGifts.${gift.giftType}`]: admin.firestore.FieldValue.increment(1)
       });
       
       console.log(`✅ Creator earnings updated: +${creatorPayoutCents} cents ($${creatorPayout})`);
@@ -104,15 +117,15 @@ exports.stripeWebhook = onRequest(async (req, res) => {
         fromUserId: gift.fromUserId,
         fromUsername: gift.fromUsername,
         giftType: gift.giftType,
-        amount: creatorPayout, // In dollars for display
-        amountCents: creatorPayoutCents, // In cents
+        amount: creatorPayout,
+        amountCents: creatorPayoutCents,
         postId: gift.postId,
         read: false,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
       
       console.log("✅ Notification created");
-      console.log(`🎉 Gift ${giftId} processed successfully! Creator earns $${creatorPayout}`);
+      console.log(`🎉 Gift ${giftId} processed! Creator earns $${creatorPayout}`);
       
     } catch (error) {
       console.error("❌ Error processing gift:", error);
@@ -123,12 +136,11 @@ exports.stripeWebhook = onRequest(async (req, res) => {
   res.status(200).send("OK");
 });
 
-// Scheduled function - Runs every day at midnight to process payouts
+// Automatic Payouts - Runs daily at midnight EST
 exports.processPayouts = onSchedule({
   schedule: "0 0 * * *",
   timeZone: "America/New_York"
 }, async (event) => {
-  // Initialize Stripe with the secret key
   const stripe = require("stripe")(stripeSecretKey.value());
   
   console.log("🕐 Running payout check...");
@@ -137,9 +149,9 @@ exports.processPayouts = onSchedule({
   const fourteenDaysAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
   
   try {
-    // Get all users with earnings >= $10 (1000 cents)
+    // Get users with balance >= $10 (1000 cents)
     const usersSnapshot = await db.collection("users")
-      .where("payoutBalance", ">=", 1000) // $10 in cents
+      .where("payoutBalance", ">=", 1000)
       .get();
     
     console.log(`📊 Found ${usersSnapshot.size} users with balance >= $10`);
@@ -148,15 +160,14 @@ exports.processPayouts = onSchedule({
       const user = userDoc.data();
       const userId = userDoc.id;
       
-      // Check if 14 days have passed since last payout
+      // Check 14 day waiting period
       const lastPayout = user.lastPayoutDate?.toDate() || user.createdAt?.toDate() || new Date(0);
       
       if (lastPayout > fourteenDaysAgo) {
-        console.log(`⏳ User ${userId} not ready for payout yet (last: ${lastPayout.toISOString()})`);
+        console.log(`⏳ User ${userId} not ready for payout yet`);
         continue;
       }
       
-      // Check if user has Stripe Connect account
       if (!user.stripeAccountId) {
         console.log(`⚠️ User ${userId} has no Stripe account`);
         continue;
@@ -168,9 +179,9 @@ exports.processPayouts = onSchedule({
       console.log(`💰 Processing payout for user ${userId}: $${amountDollars}`);
       
       try {
-        // Create Stripe Transfer to creator's connected account
+        // Create Stripe Transfer
         const transfer = await stripe.transfers.create({
-          amount: amountCents, // Already in cents
+          amount: amountCents,
           currency: "usd",
           destination: user.stripeAccountId,
           description: `YourSpace Creator Payout - 14 day period`,
@@ -184,7 +195,7 @@ exports.processPayouts = onSchedule({
         
         // Update user record
         await userDoc.ref.update({
-          payoutBalance: 0, // Reset to 0
+          payoutBalance: 0,
           lastPayoutDate: admin.firestore.FieldValue.serverTimestamp(),
           lastPayoutAmount: amountCents,
           lastPayoutTransferId: transfer.id
@@ -216,7 +227,6 @@ exports.processPayouts = onSchedule({
       } catch (error) {
         console.error(`❌ Error processing payout for user ${userId}:`, error);
         
-        // Log failed payout
         await db.collection("payouts").add({
           userId: userId,
           amount: amountCents,
@@ -235,9 +245,8 @@ exports.processPayouts = onSchedule({
   }
 });
 
-// Create Stripe Connect account for creator
+// Create Stripe Connect Account
 exports.createConnectAccount = onCall(async (request) => {
-  // Initialize Stripe with the secret key
   const stripe = require("stripe")(stripeSecretKey.value());
   
   if (!request.auth) {
@@ -250,7 +259,6 @@ exports.createConnectAccount = onCall(async (request) => {
   console.log("Creating Stripe Connect account for:", userId);
   
   try {
-    // Create Stripe Express account
     const account = await stripe.accounts.create({
       type: "express",
       country: "US",
@@ -263,14 +271,12 @@ exports.createConnectAccount = onCall(async (request) => {
     
     console.log("✅ Stripe account created:", account.id);
     
-    // Save account ID to user
     await db.collection("users").doc(userId).update({
       stripeAccountId: account.id,
       stripeAccountStatus: "pending",
       stripeAccountCreatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
     
-    // Create account link for onboarding
     const accountLink = await stripe.accountLinks.create({
       account: account.id,
       refresh_url: request.data.refreshUrl || `https://yourspacesocial.com/stripe-connect.html`,
@@ -288,9 +294,8 @@ exports.createConnectAccount = onCall(async (request) => {
   }
 });
 
-// Check Stripe Connect account status
+// Check Stripe Connect Status
 exports.checkConnectStatus = onCall(async (request) => {
-  // Initialize Stripe with the secret key
   const stripe = require("stripe")(stripeSecretKey.value());
   
   if (!request.auth) {
@@ -309,7 +314,6 @@ exports.checkConnectStatus = onCall(async (request) => {
     
     const account = await stripe.accounts.retrieve(stripeAccountId);
     
-    // Update user's Stripe status
     await db.collection("users").doc(userId).update({
       stripeAccountStatus: account.charges_enabled ? "complete" : "pending",
       stripeTaxInfoProvided: account.charges_enabled

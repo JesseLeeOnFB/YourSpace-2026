@@ -1,4 +1,4 @@
-// feed.js - COMPLETELY FIXED - All Issues Resolved
+// feed.js - COMPLETE UPDATE - All 18 Gifts + All Fixes
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -15,13 +15,28 @@ const storage = firebase.storage();
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
+// ALL 18 STRIPE PAYMENT LINKS
 const GIFT_PAYMENT_LINKS = {
-  coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
+  // Original 6 gifts
   rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
+  coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
   teddybear: "https://buy.stripe.com/cNi7sL2iugQed6z6xX7bW02",
   cake: "https://buy.stripe.com/14A5kD0am2Zo9UncWl7bW03",
   diamond: "https://buy.stripe.com/aFa3cvcX8bvU2rVg8x7bW04",
-  yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05"
+  yacht: "https://buy.stripe.com/eVqaEX8GS2Zo6Ib2hH7bW05",
+  // NEW 12 gifts
+  houses: "https://buy.stripe.com/eVq28r4qC1VkaYr5tT7bW0h",
+  cars: "https://buy.stripe.com/aFacN5aP0bvUc2v3lL7bW0g",
+  trucks: "https://buy.stripe.com/bJe9AT8GSczY0jN9K97bW0f",
+  pets: "https://buy.stripe.com/dRmbJ1e1c0Rg6Ib9K97bW0e",
+  lawn: "https://buy.stripe.com/fZucN50ambvU6Ib2hH7bW09",
+  trees: "https://buy.stripe.com/28E9AT6yK2Zo3vZg8x7bW08",
+  driveway: "https://buy.stripe.com/4gM7sL2iuczY0jNf4t7bW0b",
+  minivan: "https://buy.stripe.com/cNi9AT6yK2Zo1nRg8x7bW0c",
+  crowns: "https://buy.stripe.com/aFa14ne1c0RgfeH9K97bW0d",
+  mansion: "https://buy.stripe.com/3cI5kDcX81VkgiL09z7bW0i",
+  ultimatejet: "https://buy.stripe.com/bJecN59KWeI6feHcWl7bW0a",
+  diamonds: "https://buy.stripe.com/00wfZh7CO7fE9Une0p7bW0j"
 };
 
 let currentGiftPost = null;
@@ -51,7 +66,7 @@ hamburger.onclick = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// USER SEARCH - FIXED
+// USER SEARCH - FIXED with usernameLower
 // ═══════════════════════════════════════════════════════════
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
@@ -72,7 +87,7 @@ searchBar.addEventListener('input', async (e) => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
     try {
-      // FIXED: Search using usernameLower field
+      // FIXED: Use usernameLower field for case-insensitive search
       const usersSnapshot = await db.collection('users')
         .where('usernameLower', '>=', searchTerm)
         .where('usernameLower', '<=', searchTerm + '\uf8ff')
@@ -92,7 +107,7 @@ searchBar.addEventListener('input', async (e) => {
             <img src="${user.photoURL || 'https://via.placeholder.com/45'}" class="search-result-avatar" alt="Avatar">
             <span class="search-result-username">@${user.username}</span>
           `;
-          // FIXED: Correct profile navigation
+          // FIXED: Use doc.id to go to correct profile
           item.onclick = () => {
             window.location.href = `profile.html?uid=${doc.id}`;
           };
@@ -104,7 +119,7 @@ searchBar.addEventListener('input', async (e) => {
      
     } catch (error) {
       console.error('Search error:', error);
-      searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
+      searchResults.innerHTML = '<p class="no-results">Error searching users. Make sure usernameLower field exists on all users.</p>';
       searchResults.style.display = 'block';
     }
   }, 300);
@@ -210,7 +225,7 @@ async function loadPosts() {
    
   } catch (error) {
     console.error('Load posts error:', error);
-    container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts</p>';
+    container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts. Check console for details.</p>';
   }
 }
 
@@ -230,10 +245,10 @@ function renderPost(post, postId) {
   const isLiked = post.likedBy?.includes(user.uid);
   const isDisliked = post.dislikedBy?.includes(user.uid);
  
-  // FIXED: Profile link with correct UID
+  // FIXED: Username clickable with correct UID
   postDiv.innerHTML = `
     <div class="post-header">
-      <strong style="cursor:pointer;" onclick="window.location.href='profile.html?uid=${post.userId}'">${post.username}</strong>
+      <strong style="cursor:pointer;" class="username-link" data-uid="${post.userId}">${post.username}</strong>
       <small>${timestamp}</small>
     </div>
     <p>${post.text || ''}</p>
@@ -264,8 +279,16 @@ function renderPost(post, postId) {
   loadComments(postId);
 }
 
+// FIXED: Username click handler
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('username-link')) {
+    const uid = e.target.dataset.uid;
+    window.location.href = `profile.html?uid=${uid}`;
+  }
+});
+
 // ═══════════════════════════════════════════════════════════
-// POST ACTIONS - COMPLETELY FIXED
+// POST ACTIONS - ALL FIXED
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
@@ -273,7 +296,7 @@ document.addEventListener('click', async (e) => {
  
   const userId = auth.currentUser.uid;
  
-  // LIKE - FIXED
+  // LIKE
   if (e.target.classList.contains('like-btn')) {
     try {
       const postRef = db.collection('posts').doc(postId);
@@ -281,12 +304,10 @@ document.addEventListener('click', async (e) => {
       const post = postDoc.data();
      
       if (post.likedBy?.includes(userId)) {
-        // Remove like
         await postRef.update({
           likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
         });
       } else {
-        // Add like, remove dislike
         await postRef.update({
           likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
           dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
@@ -298,7 +319,7 @@ document.addEventListener('click', async (e) => {
     }
   }
  
-  // DISLIKE - FIXED
+  // DISLIKE
   if (e.target.classList.contains('dislike-btn')) {
     try {
       const postRef = db.collection('posts').doc(postId);
@@ -306,12 +327,10 @@ document.addEventListener('click', async (e) => {
       const post = postDoc.data();
      
       if (post.dislikedBy?.includes(userId)) {
-        // Remove dislike
         await postRef.update({
           dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
         });
       } else {
-        // Add dislike, remove like
         await postRef.update({
           dislikedBy: firebase.firestore.FieldValue.arrayUnion(userId),
           likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
@@ -353,15 +372,13 @@ document.addEventListener('click', async (e) => {
     }
   }
  
-  // PIN (admin only)
+  // PIN
   if (e.target.classList.contains('pin-btn')) {
-    await db.collection('posts').doc(postId).update({
-      pinned: true
-    });
+    await db.collection('posts').doc(postId).update({ pinned: true });
     loadPosts();
   }
  
-  // COMMENT - FIXED
+  // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     const text = input.value.trim();
@@ -383,7 +400,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// COMMENTS - FIXED
+// COMMENTS - FIXED with delete buttons
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -426,7 +443,7 @@ async function loadComments(postId) {
       commentsList.appendChild(commentDiv);
     });
    
-    // Delete comment handler
+    // FIXED: Delete comment handler
     commentsList.querySelectorAll('.delete-comment').forEach(btn => {
       btn.onclick = async () => {
         if (confirm('Delete this comment?')) {
@@ -444,7 +461,7 @@ async function loadComments(postId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// GIFT DIALOG
+// GIFT DIALOG - ALL 18 GIFTS
 // ═══════════════════════════════════════════════════════════
 document.getElementById('cancelGiftBtn').onclick = () => {
   document.getElementById('giftDialog').style.display = 'none';
@@ -471,7 +488,7 @@ document.querySelectorAll('.gift-option').forEach(option => {
       const userDoc = await db.collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
      
-      // Create gift record with metadata for Stripe
+      // Create gift record
       const giftRef = await db.collection('gifts').add({
         fromUserId: user.uid,
         fromUsername: username,

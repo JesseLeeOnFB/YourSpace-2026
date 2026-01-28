@@ -87,6 +87,48 @@
       padding: 2rem;
       font-style: italic;
     }
+    
+    /* Gift dialog updated for 18 gifts */
+    .gift-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    
+    .gift-option {
+      cursor: pointer;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .gift-option:hover {
+      border-color: #667eea;
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .gift-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .gift-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .gift-price {
+      color: #667eea;
+      font-weight: 700;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -109,32 +151,38 @@
       <button id="logoutBtn">🚪 Logout</button>
     </div>
   </nav>
+  
   <!-- MAIN FEED -->
   <main class="feed-container">
     <h1>Global Feed</h1>
+    
     <!-- SEARCH BAR -->
     <div class="search-container">
       <input type="text" id="searchBar" class="search-bar" placeholder="🔍 Search users...">
       <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">✕</button>
       <div id="searchResults" class="search-results"></div>
     </div>
+    
     <!-- NEW POST -->
     <section class="new-post">
       <textarea id="postText" placeholder="What's on your mind?"></textarea>
       <input type="file" id="postFileInput" accept="image/*,video/*" />
       <button id="postBtn">Post</button>
     </section>
+    
     <!-- POSTS CONTAINER -->
     <section id="postsContainer">
       <p style="text-align: center; color: #666;">Loading posts...</p>
     </section>
   </main>
-  <!-- GIFT DIALOG -->
+  
+  <!-- GIFT DIALOG - ALL 18 GIFTS -->
   <div id="giftDialog" class="gift-dialog-overlay" style="display:none;">
     <div class="gift-dialog">
       <h3>🎁 Send a Gift</h3>
       <p class="gift-subtitle">Choose a gift to send to <span id="giftRecipientName"></span></p>
       <div class="gift-options">
+        <!-- Original 6 -->
         <div class="gift-option" data-gift="rose">
           <div class="gift-icon">🌹</div>
           <div class="gift-name">Rose</div>
@@ -165,10 +213,73 @@
           <div class="gift-name">Yacht</div>
           <div class="gift-price">$99.99</div>
         </div>
+        
+        <!-- New 12 Gifts -->
+        <div class="gift-option" data-gift="houses">
+          <div class="gift-icon">🏠</div>
+          <div class="gift-name">Houses</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-option" data-gift="cars">
+          <div class="gift-icon">🚗</div>
+          <div class="gift-name">Cars</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-option" data-gift="trucks">
+          <div class="gift-icon">🚚</div>
+          <div class="gift-name">Trucks</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-option" data-gift="pets">
+          <div class="gift-icon">🐕</div>
+          <div class="gift-name">Pets</div>
+          <div class="gift-price">$3.99</div>
+        </div>
+        <div class="gift-option" data-gift="lawn">
+          <div class="gift-icon">🌱</div>
+          <div class="gift-name">Lawn</div>
+          <div class="gift-price">$8.99</div>
+        </div>
+        <div class="gift-option" data-gift="trees">
+          <div class="gift-icon">🌳</div>
+          <div class="gift-name">Trees</div>
+          <div class="gift-price">$13.99</div>
+        </div>
+        <div class="gift-option" data-gift="driveway">
+          <div class="gift-icon">🛣️</div>
+          <div class="gift-name">Driveway</div>
+          <div class="gift-price">$29.99</div>
+        </div>
+        <div class="gift-option" data-gift="minivan">
+          <div class="gift-icon">🚐</div>
+          <div class="gift-name">Minivan</div>
+          <div class="gift-price">$39.99</div>
+        </div>
+        <div class="gift-option" data-gift="crowns">
+          <div class="gift-icon">👑</div>
+          <div class="gift-name">Crowns</div>
+          <div class="gift-price">$69.69</div>
+        </div>
+        <div class="gift-option" data-gift="mansion">
+          <div class="gift-icon">🏰</div>
+          <div class="gift-name">Mansion</div>
+          <div class="gift-price">$99.99</div>
+        </div>
+        <div class="gift-option" data-gift="ultimatejet">
+          <div class="gift-icon">✈️</div>
+          <div class="gift-name">Ultimate Jet</div>
+          <div class="gift-price">$99.99</div>
+        </div>
+        <div class="gift-option" data-gift="diamonds">
+          <div class="gift-icon">💎💎</div>
+          <div class="gift-name">Diamonds</div>
+          <div class="gift-price">$300</div>
+        </div>
       </div>
       <button class="gift-cancel-btn" id="cancelGiftBtn">Cancel</button>
     </div>
   </div>
+  
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>

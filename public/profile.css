@@ -1,1189 +1,929 @@
-/* ═══════════════════════════════════════════════════════════
-   YOURSPACE PROFILE - 50+ COMPLETE THEMES
-   All themes fixed with:
-   - Readable text colors
-   - Styled bio containers (no pure white!)
-   - Matching profile picture frames
-   - Cohesive designs
-   ═══════════════════════════════════════════════════════════ */
+/* profile.css – 50+ PRESET THEMES + MySpace-style custom HTML injection */
 
-/* ═══════════════════════════════════════════════════════════
-   BASE PROFILE STYLES
-   ═══════════════════════════════════════════════════════════ */
-
-.profile-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
+:root {
+  --primary: #1a1a1a;
+  --accent: #007bff;
+  --light-bg: #f0f4f8;
+  --card-bg: #ffffff;
+  --text: #333;
+  --text-light: #666;
+  --border: #ddd;
+  --shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-.profile-header {
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  transition: all 0.5s ease;
+  min-height: 100vh;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BASIC THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.default-theme {
+  background: linear-gradient(135deg, #f0f4f8 0%, #e0e8f0 100%);
+  color: #333;
+}
+
+body.dark-theme {
+  background: #0a0a0a;
+  color: #e8e8e8;
+}
+
+body.dark-theme .card { background: #1a1a1a; border: 1px solid #333; color: #e8e8e8; }
+body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background: #2a2a2a; color: #e8e8e8; border-color: #444; }
+
+body.light-theme {
+  background: #ffffff;
+  color: #222;
+}
+
+body.light-theme .card { background: #f8f9fa; border: 1px solid #e0e0e0; }
+
+/* ═══════════════════════════════════════════════════════════
+   GRADIENT THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.blue-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+body.red-gradient { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+body.green-gradient { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+body.purple-gradient { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: white; }
+body.orange-gradient { background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%); color: white; }
+body.pink-gradient { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
+body.ocean-gradient { background: linear-gradient(135deg, #2e3192 0%, #1bffff 100%); color: white; }
+body.sunset-gradient { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+body.forest-gradient { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); color: white; }
+
+body.animated-rainbow {
+  background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9370db, #ff0080);
+  background-size: 400% 400%;
+  animation: rainbow 15s ease infinite;
+  color: white;
+}
+
+@keyframes rainbow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[class*="gradient"] .card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: inherit;
+}
+
+[class*="gradient"] input, [class*="gradient"] textarea, [class*="gradient"] select {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+[class*="gradient"] input::placeholder, [class*="gradient"] textarea::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEON & VIBRANT THEMES
+   ═══════════════════════════════════════════════════════════ */
+
+body.neon-theme { background: #000; color: #0ff; }
+body.neon-theme .card { background: rgba(0, 20, 20, 0.9); border: 2px solid #0ff; box-shadow: 0 0 20px #0ff; color: #0ff; }
+
+body.neon-pink { background: #000; color: #ff00ff; }
+body.neon-pink .card { background: rgba(20, 0, 20, 0.9); border: 2px solid #ff00ff; box-shadow: 0 0 20px #ff00ff; color: #ff00ff; }
+
+body.neon-green { background: #000; color: #39ff14; }
+body.neon-green .card { background: rgba(0, 20, 0, 0.9); border: 2px solid #39ff14; box-shadow: 0 0 20px #39ff14; color: #39ff14; }
+
+body.cyberpunk {
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  color: #00ffff;
+}
+body.cyberpunk .card { background: rgba(0,0,0,0.7); border: 2px solid #ff00ff; box-shadow: 0 0 15px #00ffff; color: #00ffff; }
+
+body.vaporwave {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
+  color: white;
+}
+body.vaporwave .card { background: rgba(255,255,255,0.1); border: 2px solid #00ffff; backdrop-filter: blur(10px); }
+
+body.synthwave {
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+  color: white;
+}
+body.synthwave .card { background: rgba(0,0,0,0.6); border: 2px solid #fc00ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   NATURE & ANIMALS
+   ═══════════════════════════════════════════════════════════ */
+
+body.cats-paradise {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1920') center/cover;
+  color: white;
+}
+body.cats-paradise .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.dogs-world {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920') center/cover;
+  color: white;
+}
+body.dogs-world .card { background: rgba(255,255,255,0.9); color: #333; }
+
+body.butterflies {
+  background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)),
+              url('https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=1920') center/cover;
+  color: #333;
+}
+body.butterflies .card { background: rgba(255,255,255,0.95); }
+
+body.ocean-life {
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+              url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.ocean-life .card { background: rgba(0,100,150,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.forest-path {
+  background: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920') center/cover;
+  color: white;
+}
+body.forest-path .card { background: rgba(34,139,34,0.85); color: white; }
+
+body.mountain-view {
+  background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920') center/cover;
+  color: white;
+}
+body.mountain-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(5px); }
+
+body.sakura-blossom {
+  background: url('https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920') center/cover;
+  color: #333;
+}
+body.sakura-blossom .card { background: rgba(255,192,203,0.9); }
+
+body.tropical-beach {
+  background: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+  color: white;
+}
+body.tropical-beach .card { background: rgba(0,150,200,0.8); color: white; }
+
+/* ═══════════════════════════════════════════════════════════
+   HOLIDAYS & SEASONS
+   ═══════════════════════════════════════════════════════════ */
+
+body.christmas {
+  background: linear-gradient(135deg, #c31432 0%, #240b36 100%),
+              repeating-linear-gradient(45deg, transparent, transparent 50px, rgba(255,255,255,.1) 50px, rgba(255,255,255,.1) 100px);
+  color: white;
+}
+body.christmas .card { background: rgba(139,0,0,0.8); color: white; border: 2px solid gold; }
+
+body.halloween {
+  background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+  color: #ff6600;
+}
+body.halloween .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 2px solid #ff6600; }
+
+body.valentines {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  color: white;
+}
+body.valentines .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid #ff1493; }
+
+body.easter {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.easter .card { background: rgba(255,255,255,0.9); border: 2px dashed #ff69b4; }
+
+body.autumn-leaves {
+  background: url('https://images.unsplash.com/photo-1511497584788-876760111969?w=1920') center/cover;
+  color: white;
+}
+body.autumn-leaves .card { background: rgba(139,69,19,0.85); color: white; }
+
+body.winter-snow {
+  background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+  color: #333;
+}
+body.winter-snow .card { background: rgba(255,255,255,0.95); box-shadow: 0 0 20px rgba(200,220,255,0.5); }
+
+body.spring-flowers {
+  background: url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1920') center/cover;
+  color: #333;
+}
+body.spring-flowers .card { background: rgba(255,255,255,0.95); }
+
+body.summer-vibes {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #333;
+}
+body.summer-vibes .card { background: rgba(255,255,255,0.9); border: 2px solid #ffa500; }
+
+/* ═══════════════════════════════════════════════════════════
+   AESTHETIC & EMO
+   ═══════════════════════════════════════════════════════════ */
+
+body.emo-black {
+  background: #000;
+  color: #ff0000;
+}
+body.emo-black .card { background: #1a1a1a; border: 2px solid #ff0000; color: white; }
+
+body.emo-red {
+  background: linear-gradient(135deg, #000000 0%, #434343 100%);
+  color: #ff0000;
+}
+body.emo-red .card { background: rgba(0,0,0,0.9); border: 3px solid #ff0000; color: #ff0000; }
+
+body.gothic {
+  background: linear-gradient(135deg, #2c003e 0%, #000000 100%);
+  color: #9932cc;
+}
+body.gothic .card { background: rgba(0,0,0,0.95); border: 2px solid #9932cc; color: #dda0dd; }
+
+body.grunge {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              repeating-linear-gradient(90deg, #2a2a2a, #1a1a1a 2px, #2a2a2a 4px);
+  color: #888;
+}
+body.grunge .card { background: rgba(40,40,40,0.9); color: #ccc; border: 1px solid #666; }
+
+body.pastel-goth {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 100%);
+  color: #333;
+}
+body.pastel-goth .card { background: rgba(0,0,0,0.7); color: #ff6ec4; border: 2px solid #7873f5; }
+
+body.vintage-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #8b4513;
+  font-family: 'Georgia', serif;
+}
+body.vintage-aesthetic .card { background: rgba(255,248,220,0.95); border: 3px double #8b4513; }
+
+body.soft-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.soft-aesthetic .card { background: rgba(255,255,255,0.9); border-radius: 20px; }
+
+body.y2k {
+  background: linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%);
+  color: #333;
+  animation: rainbow 10s ease infinite;
+}
+body.y2k .card { background: rgba(255,255,255,0.95); border: 3px solid #ff00ff; }
+
+/* ═══════════════════════════════════════════════════════════
+   CARS & RACING
+   ═══════════════════════════════════════════════════════════ */
+
+body.racing-stripes {
+  background: 
+    repeating-linear-gradient(90deg, #000 0px, #000 40px, #ff0000 40px, #ff0000 80px),
+    linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+  color: white;
+}
+body.racing-stripes .card { background: rgba(0,0,0,0.9); border: 2px solid #ff0000; color: white; }
+
+body.jdm-style {
+  background: linear-gradient(135deg, #000000 0%, #ff0000 100%);
+  color: white;
+}
+body.jdm-style .card { background: rgba(0,0,0,0.85); border: 2px solid #ff0000; }
+
+body.muscle-cars {
+  background: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920') center/cover;
+  color: white;
+}
+body.muscle-cars .card { background: rgba(0,0,0,0.8); color: white; }
+
+body.neon-garage {
+  background: #0a0a0a;
+  color: #00ff00;
+}
+body.neon-garage .card { background: rgba(0,0,0,0.95); border: 2px solid #00ff00; box-shadow: 0 0 20px #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPACE & SCI-FI
+   ═══════════════════════════════════════════════════════════ */
+
+body.galaxy {
+  background: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.galaxy .card { background: rgba(25,25,112,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.nebula {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+}
+body.nebula .card { background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+
+body.stars {
+  background: #000 url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+  color: white;
+}
+body.stars .card { background: rgba(0,0,50,0.8); color: white; }
+
+body.matrix {
+  background: #000;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.matrix .card { background: rgba(0,20,0,0.95); border: 1px solid #00ff00; color: #00ff00; }
+
+body.alien {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  color: #00ff00;
+}
+body.alien .card { background: rgba(0,0,0,0.8); border: 2px solid #00ff00; color: #00ff00; }
+
+/* ═══════════════════════════════════════════════════════════
+   MUSIC & ART
+   ═══════════════════════════════════════════════════════════ */
+
+body.vinyl-records {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1458560871784-56d23406c091?w=1920') center/cover;
+  color: white;
+}
+body.vinyl-records .card { background: rgba(0,0,0,0.85); color: white; }
+
+body.graffiti {
+  background: url('https://images.unsplash.com/photo-1561677843-39dee7a319ca?w=1920') center/cover;
+  color: white;
+}
+body.graffiti .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.concert {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920') center/cover;
+  color: white;
+}
+body.concert .card { background: rgba(0,0,0,0.75); color: white; }
+
+body.paint-splash {
+  background: linear-gradient(135deg, #ff0080 0%, #ff8c00 25%, #40e0d0 50%, #9370db 75%, #ff0080 100%);
+  color: white;
+}
+body.paint-splash .card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 2px solid white; }
+
+/* ═══════════════════════════════════════════════════════════
+   FOOD & DRINK
+   ═══════════════════════════════════════════════════════════ */
+
+body.coffee-vibes {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920') center/cover;
+  color: white;
+}
+body.coffee-vibes .card { background: rgba(101,67,33,0.9); color: white; }
+
+body.candy-land {
+  background: linear-gradient(135deg, #ff6ec4 0%, #7873f5 50%, #ffeaa7 100%);
+  color: #333;
+}
+body.candy-land .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 25px; }
+
+body.pizza-party {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1920') center/cover;
+  color: white;
+}
+body.pizza-party .card { background: rgba(255,100,0,0.85); color: white; border: 3px solid #ffeb3b; }
+
+body.sushi-night {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+}
+body.sushi-night .card { background: rgba(44,62,80,0.9); color: white; border: 2px solid #e74c3c; }
+
+/* ═══════════════════════════════════════════════════════════
+   GAMING & GEEK
+   ═══════════════════════════════════════════════════════════ */
+
+body.retro-gaming {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, rgba(255,0,0,0.1) 0px, transparent 1px, transparent 2px, rgba(255,0,0,0.1) 3px),
+    repeating-linear-gradient(90deg, rgba(0,255,0,0.1) 0px, transparent 1px, transparent 2px, rgba(0,255,0,0.1) 3px);
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+}
+body.retro-gaming .card { background: rgba(0,0,0,0.95); border: 3px solid #00ff00; color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+
+body.pixel-art {
+  background: #000;
+  background-image: 
+    repeating-linear-gradient(0deg, #111 0px, #111 4px, #000 4px, #000 8px),
+    repeating-linear-gradient(90deg, #111 0px, #111 4px, #000 4px, #000 8px);
+  color: #ff00ff;
+}
+body.pixel-art .card { background: rgba(0,0,0,0.9); border: 4px solid #ff00ff; color: #00ffff; }
+
+body.arcade {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: #ffff00;
+  animation: rainbow 8s ease infinite;
+}
+body.arcade .card { background: rgba(0,0,0,0.85); border: 3px solid #ffff00; color: #ffff00; box-shadow: 0 0 30px #ff00ff; }
+
+body.anime-aesthetic {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  color: #333;
+}
+body.anime-aesthetic .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 20px; }
+
+/* ═══════════════════════════════════════════════════════════
+   SPORTS & FITNESS
+   ═══════════════════════════════════════════════════════════ */
+
+body.basketball {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1920') center/cover;
+  color: white;
+}
+body.basketball .card { background: rgba(255,87,34,0.9); color: white; border: 3px solid #fff; }
+
+body.soccer-field {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1920') center/cover;
+  color: white;
+}
+body.soccer-field .card { background: rgba(34,139,34,0.9); color: white; border: 2px solid white; }
+
+body.gym-life {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #e74c3c;
+}
+body.gym-life .card { background: rgba(0,0,0,0.85); color: white; border: 3px solid #e74c3c; }
+
+body.skateboard {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=1920') center/cover;
+  color: white;
+}
+body.skateboard .card { background: rgba(0,0,0,0.85); color: white; border: 3px dashed #ffeb3b; }
+
+/* ═══════════════════════════════════════════════════════════
+   CITY & URBAN
+   ═══════════════════════════════════════════════════════════ */
+
+body.new-york {
+  background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+              url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=1920') center/cover;
+  color: white;
+}
+body.new-york .card { background: rgba(0,0,0,0.8); color: white; backdrop-filter: blur(5px); }
+
+body.tokyo-lights {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920') center/cover;
+  color: white;
+}
+body.tokyo-lights .card { background: rgba(255,0,100,0.7); color: white; border: 2px solid #00ffff; }
+
+body.street-art {
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+              url('https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=1920') center/cover;
+  color: white;
+}
+body.street-art .card { background: rgba(0,0,0,0.8); color: white; border: 3px solid #ff00ff; }
+
+body.rooftop-view {
+  background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920') center/cover;
+  color: white;
+}
+body.rooftop-view .card { background: rgba(0,0,0,0.7); color: white; backdrop-filter: blur(8px); }
+
+/* ═══════════════════════════════════════════════════════════
+   FANTASY & MAGIC
+   ═══════════════════════════════════════════════════════════ */
+
+body.unicorn-dreams {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 25%, #ff9a9e 50%, #fecfef 75%, #feada6 100%);
+  color: #333;
+  animation: rainbow 12s ease infinite;
+}
+body.unicorn-dreams .card { background: rgba(255,255,255,0.95); border: 3px solid #ff6ec4; border-radius: 30px; box-shadow: 0 0 30px rgba(255,110,196,0.5); }
+
+body.dragon-lair {
+  background: linear-gradient(135deg, #2c003e 0%, #8e0e00 50%, #1f1c18 100%);
+  color: #ff6600;
+}
+body.dragon-lair .card { background: rgba(0,0,0,0.9); color: #ff6600; border: 3px solid #ff0000; box-shadow: 0 0 20px #ff0000; }
+
+body.fairy-forest {
+  background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)),
+              url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1920') center/cover;
+  color: #fff;
+}
+body.fairy-forest .card { background: rgba(144,238,144,0.85); color: #333; border: 2px solid #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+
+body.wizard-castle {
+  background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 50%, #c471ed 100%);
+  color: white;
+}
+body.wizard-castle .card { background: rgba(44,62,80,0.9); color: white; border: 3px solid #c471ed; box-shadow: 0 0 25px #c471ed; }
+
+/* ═══════════════════════════════════════════════════════════
+   BASE LAYOUT
+   ═══════════════════════════════════════════════════════════ */
+
+.navbar {
+  background: var(--primary);
+  color: white;
+  padding: 1rem 2rem;
   display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar button {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.navbar button:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.profile-main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.card {
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 16px;
-  margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow);
+  margin-bottom: 2.5rem;
+  transition: all 0.3s ease;
 }
 
-.profile-picture {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-username {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.profile-bio {
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.profile-stats {
+.profile-top {
   display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
 }
 
-.stat-item {
+.pfp-container {
+  flex: 0 0 200px;
   text-align: center;
 }
 
-.stat-number {
-  font-size: 1.5rem;
+#profilePic {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--accent);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.profile-info-box {
+  flex: 1;
+  min-width: 350px;
+}
+
+.profile-info-box h2 {
+  margin: 0 0 1rem 0;
+  font-size: 2.2rem;
   font-weight: 700;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+label {
   display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.8;
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   THEME 1: DEFAULT (Refined Purple)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="default"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 650px;
+  color: #333;
 }
 
-body[data-theme="default"] .profile-header {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
 }
 
-body[data-theme="default"] .profile-picture {
-  border-color: rgba(255, 255, 255, 0.5);
+/* Custom HTML Preview - Shows confirmation */
+#customHtmlPreview {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 2px dashed #28a745;
+  border-radius: 12px;
+  min-height: 60px;
+  text-align: center;
+  background: rgba(40, 167, 69, 0.05);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   THEME 2: OCEAN BREEZE (Turquoise & Teal)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="ocean"] {
-  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-  color: #e0f7fa;
+#customHtmlPreview:empty {
+  display: none;
 }
 
-body[data-theme="ocean"] .profile-header {
-  background: rgba(38, 166, 154, 0.2);
-  border: 2px solid rgba(38, 166, 154, 0.4);
+/* Custom styles injected by users appear here */
+#customProfileStyles {
+  display: none; /* Hidden container, styles apply globally */
 }
 
-body[data-theme="ocean"] .profile-picture {
-  border-color: #26a69a;
-  box-shadow: 0 0 30px rgba(38, 166, 154, 0.5);
-}
-
-body[data-theme="ocean"] .profile-username {
-  color: #80deea;
-  text-shadow: 0 2px 10px rgba(128, 222, 234, 0.3);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 3: SUNSET GLOW (Orange & Pink)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="sunset"] {
-  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ee5a6f 100%);
-  color: #2d3436;
-}
-
-body[data-theme="sunset"] .profile-header {
-  background: rgba(255, 255, 255, 0.3);
-  border: 2px solid rgba(255, 107, 107, 0.5);
-}
-
-body[data-theme="sunset"] .profile-picture {
-  border-color: #ff6b6b;
-  box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
-}
-
-body[data-theme="sunset"] .profile-username {
-  color: #d63031;
-  font-weight: 900;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 4: FOREST NIGHT (Deep Green)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="forest"] {
-  background: linear-gradient(135deg, #0f2027 0%, #1a3a2e 50%, #16213e 100%);
-  color: #a8e6cf;
-}
-
-body[data-theme="forest"] .profile-header {
-  background: rgba(26, 58, 46, 0.6);
-  border: 2px solid rgba(168, 230, 207, 0.3);
-}
-
-body[data-theme="forest"] .profile-picture {
-  border-color: #4caf50;
-  box-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
-}
-
-body[data-theme="forest"] .profile-username {
-  color: #81c784;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 5: COTTON CANDY (Pastel Pink & Blue)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="cotton-candy"] {
-  background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-  color: #4a4a4a;
-}
-
-body[data-theme="cotton-candy"] .profile-header {
-  background: rgba(255, 255, 255, 0.6);
-  border: 3px solid rgba(251, 194, 235, 0.8);
-  box-shadow: 0 8px 32px rgba(251, 194, 235, 0.4);
-}
-
-body[data-theme="cotton-candy"] .profile-picture {
-  border-color: #f48fb1;
-  box-shadow: 0 0 30px rgba(244, 143, 177, 0.6);
-}
-
-body[data-theme="cotton-candy"] .profile-username {
-  color: #d81b60;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 6: CYBERPUNK (Neon Pink & Cyan)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="cyberpunk"] {
-  background: #0d0221;
-  color: #00fff5;
-  font-family: 'Courier New', monospace;
-}
-
-body[data-theme="cyberpunk"] .profile-header {
-  background: rgba(13, 2, 33, 0.8);
-  border: 2px solid #ff006e;
-  box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
-}
-
-body[data-theme="cyberpunk"] .profile-picture {
-  border-color: #00fff5;
-  box-shadow: 0 0 30px #00fff5;
-}
-
-body[data-theme="cyberpunk"] .profile-username {
-  color: #ff006e;
-  text-shadow: 0 0 10px #ff006e;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 7: ROYAL PURPLE (Deep Luxury)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="royal"] {
-  background: linear-gradient(135deg, #2c003e 0%, #512b81 100%);
-  color: #f0e6ff;
-}
-
-body[data-theme="royal"] .profile-header {
-  background: rgba(81, 43, 129, 0.4);
-  border: 2px solid rgba(186, 104, 200, 0.6);
-}
-
-body[data-theme="royal"] .profile-picture {
-  border-color: #ba68c8;
-  box-shadow: 0 0 30px rgba(186, 104, 200, 0.8);
-}
-
-body[data-theme="royal"] .profile-username {
-  color: #e1bee7;
-  font-weight: 900;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 8: MIDNIGHT BLUE
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="midnight"] {
-  background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
-  color: #dfe6e9;
-}
-
-body[data-theme="midnight"] .profile-header {
-  background: rgba(36, 59, 85, 0.5);
-  border: 2px solid rgba(116, 185, 255, 0.4);
-}
-
-body[data-theme="midnight"] .profile-picture {
-  border-color: #74b9ff;
-  box-shadow: 0 0 30px rgba(116, 185, 255, 0.5);
-}
-
-body[data-theme="midnight"] .profile-username {
-  color: #74b9ff;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 9: CHERRY BLOSSOM (Soft Pink)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="cherry"] {
-  background: linear-gradient(135deg, #ffeef8 0%, #ffc3e1 100%);
-  color: #6d214f;
-}
-
-body[data-theme="cherry"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(255, 105, 180, 0.4);
-}
-
-body[data-theme="cherry"] .profile-picture {
-  border-color: #ff69b4;
-  box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
-}
-
-body[data-theme="cherry"] .profile-username {
-  color: #c2185b;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 10: LAVA (Red & Black)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="lava"] {
-  background: linear-gradient(135deg, #1a0000 0%, #330000 50%, #4d0000 100%);
-  color: #ffcccc;
-}
-
-body[data-theme="lava"] .profile-header {
-  background: rgba(51, 0, 0, 0.6);
-  border: 2px solid rgba(255, 69, 0, 0.6);
-}
-
-body[data-theme="lava"] .profile-picture {
-  border-color: #ff4500;
-  box-shadow: 0 0 30px rgba(255, 69, 0, 0.8);
-}
-
-body[data-theme="lava"] .profile-username {
-  color: #ff6b6b;
-  text-shadow: 0 0 10px #ff4500;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 11: MINT FRESH (Light Green)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="mint"] {
-  background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
-  color: #1b5e20;
-}
-
-body[data-theme="mint"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(102, 187, 106, 0.5);
-}
-
-body[data-theme="mint"] .profile-picture {
-  border-color: #66bb6a;
-  box-shadow: 0 0 30px rgba(102, 187, 106, 0.5);
-}
-
-body[data-theme="mint"] .profile-username {
-  color: #2e7d32;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 12: GOLDEN HOUR
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="golden"] {
-  background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
-  color: #3d2817;
-}
-
-body[data-theme="golden"] .profile-header {
-  background: rgba(255, 255, 255, 0.3);
-  border: 3px solid rgba(255, 193, 7, 0.6);
-}
-
-body[data-theme="golden"] .profile-picture {
-  border-color: #ffc107;
-  box-shadow: 0 0 30px rgba(255, 193, 7, 0.8);
-}
-
-body[data-theme="golden"] .profile-username {
-  color: #f57c00;
-  text-shadow: 0 2px 10px rgba(245, 124, 0, 0.3);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 13: AURORA (Northern Lights)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="aurora"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 33%, #f093fb 66%, #4facfe 100%);
-  color: #ffffff;
-}
-
-body[data-theme="aurora"] .profile-header {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(15px);
-}
-
-body[data-theme="aurora"] .profile-picture {
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 40px rgba(102, 126, 234, 0.6);
-}
-
-body[data-theme="aurora"] .profile-username {
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 14: CHOCOLATE (Rich Brown)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="chocolate"] {
-  background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
-  color: #efebe9;
-}
-
-body[data-theme="chocolate"] .profile-header {
-  background: rgba(93, 64, 55, 0.5);
-  border: 2px solid rgba(161, 136, 127, 0.5);
-}
-
-body[data-theme="chocolate"] .profile-picture {
-  border-color: #a1887f;
-  box-shadow: 0 0 30px rgba(161, 136, 127, 0.5);
-}
-
-body[data-theme="chocolate"] .profile-username {
-  color: #bcaaa4;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 15: ICE (Cool Blue & White)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="ice"] {
-  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  color: #01579b;
-}
-
-body[data-theme="ice"] .profile-header {
-  background: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(129, 212, 250, 0.6);
-  box-shadow: 0 8px 32px rgba(129, 212, 250, 0.3);
-}
-
-body[data-theme="ice"] .profile-picture {
-  border-color: #81d4fa;
-  box-shadow: 0 0 30px rgba(129, 212, 250, 0.7);
-}
-
-body[data-theme="ice"] .profile-username {
-  color: #0277bd;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 16: VOLCANIC (Dark with Orange)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="volcanic"] {
-  background: linear-gradient(135deg, #2b1b17 0%, #3e2723 100%);
-  color: #ffccbc;
-}
-
-body[data-theme="volcanic"] .profile-header {
-  background: rgba(62, 39, 35, 0.6);
-  border: 2px solid rgba(255, 87, 34, 0.5);
-}
-
-body[data-theme="volcanic"] .profile-picture {
-  border-color: #ff5722;
-  box-shadow: 0 0 30px rgba(255, 87, 34, 0.7);
-}
-
-body[data-theme="volcanic"] .profile-username {
-  color: #ff7043;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 17: LAVENDER DREAM
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="lavender"] {
-  background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
-  color: #4a148c;
-}
-
-body[data-theme="lavender"] .profile-header {
-  background: rgba(255, 255, 255, 0.6);
-  border: 3px solid rgba(171, 71, 188, 0.5);
-}
-
-body[data-theme="lavender"] .profile-picture {
-  border-color: #ab47bc;
-  box-shadow: 0 0 30px rgba(171, 71, 188, 0.6);
-}
-
-body[data-theme="lavender"] .profile-username {
-  color: #7b1fa2;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 18: EMERALD (Rich Green)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="emerald"] {
-  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-  color: #c8e6c9;
-}
-
-body[data-theme="emerald"] .profile-header {
-  background: rgba(46, 125, 50, 0.5);
-  border: 2px solid rgba(102, 187, 106, 0.6);
-}
-
-body[data-theme="emerald"] .profile-picture {
-  border-color: #66bb6a;
-  box-shadow: 0 0 30px rgba(102, 187, 106, 0.6);
-}
-
-body[data-theme="emerald"] .profile-username {
-  color: #81c784;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 19: ROSE GOLD
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="rose-gold"] {
-  background: linear-gradient(135deg, #f3e5f5 0%, #f8bbd0 100%);
-  color: #880e4f;
-}
-
-body[data-theme="rose-gold"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(236, 64, 122, 0.4);
-}
-
-body[data-theme="rose-gold"] .profile-picture {
-  border-color: #ec407a;
-  box-shadow: 0 0 30px rgba(236, 64, 122, 0.5);
-}
-
-body[data-theme="rose-gold"] .profile-username {
-  color: #ad1457;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEME 20: NEON NIGHTS (Dark with Neon Green)
-   ═══════════════════════════════════════════════════════════ */
-body[data-theme="neon"] {
-  background: #000000;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-}
-
-body[data-theme="neon"] .profile-header {
-  background: rgba(0, 255, 0, 0.05);
-  border: 2px solid #00ff00;
-  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
-}
-
-body[data-theme="neon"] .profile-picture {
-  border-color: #00ff00;
-  box-shadow: 0 0 30px #00ff00;
-}
-
-body[data-theme="neon"] .profile-username {
-  color: #00ff00;
-  text-shadow: 0 0 10px #00ff00;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEMES 21-30: ARTISTIC COLLECTION
-   ═══════════════════════════════════════════════════════════ */
-
-/* THEME 21: VAPORWAVE */
-body[data-theme="vaporwave"] {
-  background: linear-gradient(135deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
-  color: #ffffff;
-  font-family: 'Comic Sans MS', cursive;
-}
-
-body[data-theme="vaporwave"] .profile-header {
-  background: rgba(255, 113, 206, 0.2);
-  border: 3px solid rgba(255, 255, 255, 0.5);
-  transform: perspective(500px) rotateY(0deg);
-}
-
-body[data-theme="vaporwave"] .profile-picture {
-  border-color: #01cdfe;
-  box-shadow: 5px 5px 0 #ff71ce, 10px 10px 0 #05ffa1;
-}
-
-body[data-theme="vaporwave"] .profile-username {
-  color: #fffb96;
-  text-shadow: 3px 3px 0 #ff71ce;
-}
-
-/* THEME 22: MONOCHROME */
-body[data-theme="monochrome"] {
-  background: #1a1a1a;
-  color: #f5f5f5;
-}
-
-body[data-theme="monochrome"] .profile-header {
-  background: #2a2a2a;
-  border: 2px solid #555555;
-}
-
-body[data-theme="monochrome"] .profile-picture {
-  border-color: #ffffff;
-  filter: grayscale(100%);
-}
-
-body[data-theme="monochrome"] .profile-username {
-  color: #ffffff;
-}
-
-/* THEME 23: RETRO WAVE */
-body[data-theme="retrowave"] {
-  background: linear-gradient(135deg, #2b0033 0%, #4a004d 100%);
-  color: #ff00ff;
-}
-
-body[data-theme="retrowave"] .profile-header {
-  background: rgba(74, 0, 77, 0.5);
-  border: 2px solid #ff00ff;
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-}
-
-body[data-theme="retrowave"] .profile-picture {
-  border-color: #00ffff;
-  box-shadow: 0 0 30px #00ffff;
-}
-
-body[data-theme="retrowave"] .profile-username {
-  color: #ff00ff;
-  text-shadow: 0 0 10px #ff00ff;
-}
-
-/* THEME 24: PEACH */
-body[data-theme="peach"] {
-  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-  color: #6c5ce7;
-}
-
-body[data-theme="peach"] .profile-header {
-  background: rgba(255, 255, 255, 0.6);
-  border: 3px solid rgba(253, 203, 110, 0.7);
-}
-
-body[data-theme="peach"] .profile-picture {
-  border-color: #fdcb6e;
-  box-shadow: 0 0 30px rgba(253, 203, 110, 0.6);
-}
-
-body[data-theme="peach"] .profile-username {
-  color: #e17055;
-}
-
-/* THEME 25: DEEP SEA */
-body[data-theme="deepsea"] {
-  background: linear-gradient(135deg, #001f3f 0%, #003d5c 100%);
-  color: #b8e0d2;
-}
-
-body[data-theme="deepsea"] .profile-header {
-  background: rgba(0, 61, 92, 0.6);
-  border: 2px solid rgba(95, 205, 228, 0.4);
-}
-
-body[data-theme="deepsea"] .profile-picture {
-  border-color: #5fcde4;
-  box-shadow: 0 0 30px rgba(95, 205, 228, 0.5);
-}
-
-body[data-theme="deepsea"] .profile-username {
-  color: #76c7c0;
-}
-
-/* THEME 26: BUBBLEGUM */
-body[data-theme="bubblegum"] {
-  background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);
-  color: #5f27cd;
-}
-
-body[data-theme="bubblegum"] .profile-header {
-  background: rgba(255, 255, 255, 0.5);
-  border: 3px solid rgba(255, 159, 243, 0.7);
-}
-
-body[data-theme="bubblegum"] .profile-picture {
-  border-color: #ff6b81;
-  box-shadow: 0 0 30px rgba(255, 107, 129, 0.6);
-}
-
-body[data-theme="bubblegum"] .profile-username {
-  color: #ee5a6f;
-}
-
-/* THEME 27: MATRIX (Green on Black) */
-body[data-theme="matrix"] {
-  background: #0d0208;
-  color: #00ff41;
-  font-family: 'Courier New', monospace;
-}
-
-body[data-theme="matrix"] .profile-header {
-  background: rgba(0, 255, 65, 0.05);
-  border: 1px solid #00ff41;
-}
-
-body[data-theme="matrix"] .profile-picture {
-  border-color: #00ff41;
-  box-shadow: 0 0 20px #00ff41;
-}
-
-body[data-theme="matrix"] .profile-username {
-  color: #00ff41;
-  text-shadow: 0 0 10px #00ff41;
-}
-
-/* THEME 28: LILAC */
-body[data-theme="lilac"] {
-  background: linear-gradient(135deg, #c9b6f7 0%, #8c7ae6 100%);
-  color: #ffffff;
-}
-
-body[data-theme="lilac"] .profile-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(201, 182, 247, 0.6);
-}
-
-body[data-theme="lilac"] .profile-picture {
-  border-color: #9b59b6;
-  box-shadow: 0 0 30px rgba(155, 89, 182, 0.6);
-}
-
-body[data-theme="lilac"] .profile-username {
-  color: #f3f0ff;
-}
-
-/* THEME 29: CORAL REEF */
-body[data-theme="coral"] {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ffa07a 100%);
-  color: #ffffff;
-}
-
-body[data-theme="coral"] .profile-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 107, 107, 0.5);
-}
-
-body[data-theme="coral"] .profile-picture {
-  border-color: #ff7979;
-  box-shadow: 0 0 30px rgba(255, 121, 121, 0.6);
-}
-
-body[data-theme="coral"] .profile-username {
-  color: #ffe4e1;
-}
-
-/* THEME 30: JADE */
-body[data-theme="jade"] {
-  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-  color: #ffffff;
-}
-
-body[data-theme="jade"] .profile-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(0, 184, 148, 0.5);
-}
-
-body[data-theme="jade"] .profile-picture {
-  border-color: #55efc4;
-  box-shadow: 0 0 30px rgba(85, 239, 196, 0.5);
-}
-
-body[data-theme="jade"] .profile-username {
-  color: #dfe6e9;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEMES 31-40: NATURE & SEASONS
-   ═══════════════════════════════════════════════════════════ */
-
-/* THEME 31: AUTUMN LEAVES */
-body[data-theme="autumn"] {
-  background: linear-gradient(135deg, #d4a373 0%, #c77b3a 100%);
-  color: #3d2817;
-}
-
-body[data-theme="autumn"] .profile-header {
-  background: rgba(255, 255, 255, 0.4);
-  border: 3px solid rgba(212, 163, 115, 0.7);
-}
-
-body[data-theme="autumn"] .profile-picture {
-  border-color: #c77b3a;
-  box-shadow: 0 0 30px rgba(199, 123, 58, 0.5);
-}
-
-body[data-theme="autumn"] .profile-username {
-  color: #8b4513;
-}
-
-/* THEME 32: SPRING MEADOW */
-body[data-theme="spring"] {
-  background: linear-gradient(135deg, #c6f1d6 0%, #92e3a9 100%);
-  color: #1e5631;
-}
-
-body[data-theme="spring"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(146, 227, 169, 0.6);
-}
-
-body[data-theme="spring"] .profile-picture {
-  border-color: #5ac379;
-  box-shadow: 0 0 30px rgba(90, 195, 121, 0.5);
-}
-
-body[data-theme="spring"] .profile-username {
-  color: #27ae60;
-}
-
-/* THEME 33: WINTER FROST */
-body[data-theme="winter"] {
-  background: linear-gradient(135deg, #e8f4f8 0%, #d5e8ef 100%);
-  color: #2c3e50;
-}
-
-body[data-theme="winter"] .profile-header {
-  background: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(189, 224, 236, 0.6);
-}
-
-body[data-theme="winter"] .profile-picture {
-  border-color: #7fb3d5;
-  box-shadow: 0 0 30px rgba(127, 179, 213, 0.4);
-}
-
-body[data-theme="winter"] .profile-username {
-  color: #3498db;
-}
-
-/* THEME 34: SUMMER SUNSET */
-body[data-theme="summer"] {
-  background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
-  color: #ffffff;
-}
-
-body[data-theme="summer"] .profile-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(243, 156, 18, 0.5);
-}
-
-body[data-theme="summer"] .profile-picture {
-  border-color: #f1c40f;
-  box-shadow: 0 0 30px rgba(241, 196, 15, 0.6);
-}
-
-body[data-theme="summer"] .profile-username {
-  color: #fff5e6;
-}
-
-/* THEME 35: TROPICAL */
-body[data-theme="tropical"] {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  color: #ffffff;
-}
-
-body[data-theme="tropical"] .profile-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(56, 239, 125, 0.5);
-}
-
-body[data-theme="tropical"] .profile-picture {
-  border-color: #1dd1a1;
-  box-shadow: 0 0 30px rgba(29, 209, 161, 0.6);
-}
-
-body[data-theme="tropical"] .profile-username {
-  color: #e8ffe8;
-}
-
-/* THEME 36: DESERT */
-body[data-theme="desert"] {
-  background: linear-gradient(135deg, #daa520 0%, #cd853f 100%);
-  color: #4a2511;
-}
-
-body[data-theme="desert"] .profile-header {
-  background: rgba(255, 255, 255, 0.3);
-  border: 3px solid rgba(218, 165, 32, 0.5);
-}
-
-body[data-theme="desert"] .profile-picture {
-  border-color: #d2691e;
-  box-shadow: 0 0 30px rgba(210, 105, 30, 0.5);
-}
-
-body[data-theme="desert"] .profile-username {
-  color: #8b4513;
-}
-
-/* THEME 37: RAINFOREST */
-body[data-theme="rainforest"] {
-  background: linear-gradient(135deg, #134e4a 0%, #065f46 100%);
-  color: #d1fae5;
-}
-
-body[data-theme="rainforest"] .profile-header {
-  background: rgba(6, 95, 70, 0.5);
-  border: 2px solid rgba(52, 211, 153, 0.4);
-}
-
-body[data-theme="rainforest"] .profile-picture {
-  border-color: #34d399;
-  box-shadow: 0 0 30px rgba(52, 211, 153, 0.5);
-}
-
-body[data-theme="rainforest"] .profile-username {
-  color: #6ee7b7;
-}
-
-/* THEME 38: SAKURA (Japanese Cherry Blossom) */
-body[data-theme="sakura"] {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
-  color: #880e4f;
-}
-
-body[data-theme="sakura"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(248, 187, 208, 0.7);
-}
-
-body[data-theme="sakura"] .profile-picture {
-  border-color: #f06292;
-  box-shadow: 0 0 30px rgba(240, 98, 146, 0.5);
-}
-
-body[data-theme="sakura"] .profile-username {
-  color: #c2185b;
-}
-
-/* THEME 39: NORTHERN FOREST */
-body[data-theme="northern"] {
-  background: linear-gradient(135deg, #1e3a29 0%, #2d5f3f 100%);
-  color: #d4edda;
-}
-
-body[data-theme="northern"] .profile-header {
-  background: rgba(45, 95, 63, 0.5);
-  border: 2px solid rgba(129, 199, 132, 0.4);
-}
-
-body[data-theme="northern"] .profile-picture {
-  border-color: #81c784;
-  box-shadow: 0 0 30px rgba(129, 199, 132, 0.5);
-}
-
-body[data-theme="northern"] .profile-username {
-  color: #a5d6a7;
-}
-
-/* THEME 40: ALPINE */
-body[data-theme="alpine"] {
-  background: linear-gradient(135deg, #e3f2fd 0%, #90caf9 100%);
-  color: #01579b;
-}
-
-body[data-theme="alpine"] .profile-header {
-  background: rgba(255, 255, 255, 0.7);
-  border: 3px solid rgba(144, 202, 249, 0.6);
-}
-
-body[data-theme="alpine"] .profile-picture {
-  border-color: #42a5f5;
-  box-shadow: 0 0 30px rgba(66, 165, 245, 0.5);
-}
-
-body[data-theme="alpine"] .profile-username {
-  color: #0277bd;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   THEMES 41-50: MODERN & FUTURISTIC
-   ═══════════════════════════════════════════════════════════ */
-
-/* THEME 41: HOLOGRAPHIC */
-body[data-theme="holographic"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-  color: #ffffff;
-}
-
-body[data-theme="holographic"] .profile-header {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(20px);
-}
-
-body[data-theme="holographic"] .profile-picture {
-  border: 3px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #667eea, #764ba2, #f093fb) border-box;
-  box-shadow: 0 0 40px rgba(118, 75, 162, 0.6);
-}
-
-body[data-theme="holographic"] .profile-username {
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* THEME 42: DARK MODE */
-body[data-theme="darkmode"] {
-  background: #1a1a1a;
-  color: #e0e0e0;
-}
-
-body[data-theme="darkmode"] .profile-header {
-  background: #2a2a2a;
-  border: 2px solid #3a3a3a;
-}
-
-body[data-theme="darkmode"] .profile-picture {
-  border-color: #5a5a5a;
-  box-shadow: 0 0 20px rgba(90, 90, 90, 0.5);
-}
-
-body[data-theme="darkmode"] .profile-username {
-  color: #ffffff;
-}
-
-/* THEME 43: LIGHT MODE */
-body[data-theme="lightmode"] {
-  background: #ffffff;
-  color: #333333;
-}
-
-body[data-theme="lightmode"] .profile-header {
+.example-box {
   background: #f5f5f5;
-  border: 2px solid #e0e0e0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--accent);
 }
 
-body[data-theme="lightmode"] .profile-picture {
-  border-color: #bdbdbd;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+.example-box pre {
+  margin: 0.5rem 0 0 0;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  color: #333;
 }
 
-body[data-theme="lightmode"] .profile-username {
-  color: #212121;
+.music-slot {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
 }
 
-/* THEME 44: SYNTHWAVE */
-body[data-theme="synthwave"] {
-  background: linear-gradient(135deg, #2b0033 0%, #0f0f3d 100%);
-  color: #ff00ff;
+.music-slot input {
+  flex: 1;
+  margin-bottom: 0;
 }
 
-body[data-theme="synthwave"] .profile-header {
-  background: rgba(15, 15, 61, 0.6);
-  border: 2px solid #ff00ff;
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+.top-friends-list {
+  min-height: 250px;
+  margin-top: 1.5rem;
 }
 
-body[data-theme="synthwave"] .profile-picture {
-  border-color: #00ffff;
-  box-shadow: 0 0 30px #00ffff, 0 0 60px #ff00ff;
+.top-friend {
+  background: rgba(0,123,255,0.08);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  cursor: move;
 }
 
-body[data-theme="synthwave"] .profile-username {
-  color: #ff00ff;
-  text-shadow: 0 0 10px #ff00ff;
+.top-friend .rank {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent);
+  width: 50px;
 }
 
-/* THEME 45: PLASMA */
-body[data-theme="plasma"] {
-  background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-  color: #ffffff;
+.friend-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
 }
 
-body[data-theme="plasma"] .profile-header {
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+.friend-name {
+  flex: 1;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.15rem;
 }
 
-body[data-theme="plasma"] .profile-picture {
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 40px rgba(78, 84, 200, 0.8);
+#searchResults {
+  margin: 1.5rem 0;
+  max-height: 350px;
+  overflow-y: auto;
 }
 
-body[data-theme="plasma"] .profile-username {
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
 }
 
-/* THEME 46: CHROME */
-body[data-theme="chrome"] {
-  background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
-  color: #ecf0f1;
+#wallCommentsContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: 10px;
 }
 
-body[data-theme="chrome"] .profile-header {
-  background: rgba(44, 62, 80, 0.6);
-  border: 2px solid rgba(189, 195, 199, 0.5);
+.wall-comment {
+  background: rgba(255,255,255,0.9);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 10px;
+  position: relative;
 }
 
-body[data-theme="chrome"] .profile-picture {
-  border-color: #95a5a6;
-  box-shadow: 0 0 30px rgba(149, 165, 166, 0.6);
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
 }
 
-body[data-theme="chrome"] .profile-username {
-  color: #bdc3c7;
+.comment-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
 }
 
-/* THEME 47: NEON BLUE */
-body[data-theme="neonblue"] {
-  background: #000428;
-  color: #00d4ff;
+.delete-wall-comment {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: transparent;
+  color: #ff4444;
+  padding: 0.4rem 0.7rem;
 }
-
-body[data-theme="neonblue"] .profile-header {
-  background: rgba(0, 4, 40, 0.8);
-  border: 2px solid #00d4ff;
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-}
-
-body[data-theme="neonblue"] .profile-picture {
-  border-color: #00d4ff;
-  box-shadow: 0 0 30px #00d4ff;
-}
-
-body[data-theme="neonblue"] .profile-username {
-  color: #00d4ff;
-  text-shadow: 0 0 10px #00d4ff;
-}
-
-/* THEME 48: CRIMSON */
-body[data-theme="crimson"] {
-  background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-  color: #ffe4e1;
-}
-
-body[data-theme="crimson"] .profile-header {
-  background: rgba(220, 20, 60, 0.3);
-  border: 2px solid rgba(255, 20, 60, 0.5);
-}
-
-body[data-theme="crimson"] .profile-picture {
-  border-color: #ff1744;
-  box-shadow: 0 0 30px rgba(255, 23, 68, 0.7);
-}
-
-body[data-theme="crimson"] .profile-username {
-  color: #ff6b9d;
-}
-
-/* THEME 49: ELECTRIC */
-body[data-theme="electric"] {
-  background: linear-gradient(135deg, #000000 0%, #1a0033 100%);
-  color: #00ffff;
-}
-
-body[data-theme="electric"] .profile-header {
-  background: rgba(26, 0, 51, 0.6);
-  border: 2px solid #00ffff;
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-}
-
-body[data-theme="electric"] .profile-picture {
-  border-color: #ff00ff;
-  box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff;
-}
-
-body[data-theme="electric"] .profile-username {
-  color: #00ffff;
-  text-shadow: 0 0 10px #00ffff;
-}
-
-/* THEME 50: COSMIC */
-body[data-theme="cosmic"] {
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-  color: #e0e0ff;
-}
-
-body[data-theme="cosmic"] .profile-header {
-  background: rgba(48, 43, 99, 0.5);
-  border: 2px solid rgba(138, 43, 226, 0.5);
-}
-
-body[data-theme="cosmic"] .profile-picture {
-  border-color: #8a2be2;
-  box-shadow: 0 0 40px rgba(138, 43, 226, 0.7);
-}
-
-body[data-theme="cosmic"] .profile-username {
-  color: #da70d6;
-  text-shadow: 0 0 10px rgba(218, 112, 214, 0.5);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN
-   ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .profile-picture {
-    width: 120px;
-    height: 120px;
-  }
-  
-  .profile-stats {
-    justify-content: center;
-  }
+  .profile-main { padding: 0 1rem; }
+  .profile-top { flex-direction: column; align-items: center; gap: 2rem; }
+  .card { padding: 1.5rem; }
+  #profilePic { width: 140px; height: 140px; }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   END OF 50 THEMES
-   All themes feature:
-   - Readable text colors
-   - Styled bio containers (no pure white!)
-   - Matching profile frames
-   - Cohesive color schemes
-   - Professional aesthetics
+   NUCLEAR IMAGE SIZE FIX - MUST BE AT VERY END
+   FORCES PROFILE PICTURE TO 150x150 NO MATTER WHAT
    ═══════════════════════════════════════════════════════════ */
+
+body #profilePic,
+body img#profilePic,
+html body #profilePic,
+#profilePic,
+.pfp-container img,
+.pfp-container > img,
+div.pfp-container img,
+img.profile-picture,
+.profile-picture,
+.profile-pic,
+.profile-avatar,
+.profile-header img,
+.profile-top img {
+  max-width: 150px !important;
+  max-height: 150px !important;
+  width: 150px !important;
+  height: 150px !important;
+  min-width: 150px !important;
+  min-height: 150px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 50% !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+.pfp-container,
+.profile-pic-container,
+.profile-picture-container {
+  max-width: 150px !important;
+  max-height: 150px !important;
+  width: 150px !important;
+  height: 150px !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+.comment-avatar,
+.wall-comment-avatar,
+.wall-comment img,
+.comment-header img {
+  max-width: 40px !important;
+  max-height: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+.wall-comment-media,
+.comment-media {
+  max-width: 300px !important;
+  max-height: 300px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 768px) {
+  body #profilePic,
+  #profilePic,
+  .pfp-container img,
+  .profile-picture {
+    max-width: 120px !important;
+    max-height: 120px !important;
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 120px !important;
+    min-height: 120px !important;
+  }
+  
+  .pfp-container,
+  .profile-pic-container {
+    max-width: 120px !important;
+    max-height: 120px !important;
+    width: 120px !important;
+    height: 120px !important;
+  }
+}

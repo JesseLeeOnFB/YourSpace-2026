@@ -1,4 +1,4 @@
-// feed.js - PUBLIC GIFTING SYSTEM + ALL FIXES
+// feed.js - COMPLETE WITH NAVIGATION FIXED + NO FUNCTIONS ERROR
 const firebaseConfig = {
   apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
   authDomain: "yourspace-2026.firebaseapp.com",
@@ -12,7 +12,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
-const functions = firebase.functions();
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
@@ -43,103 +42,125 @@ let currentGiftRecipient = null;
 let currentGiftUsername = null;
 
 // ═══════════════════════════════════════════════════════════
-// NAVIGATION
+// NAVIGATION - FIXED
 // ═══════════════════════════════════════════════════════════
-document.getElementById('feedNavBtn').onclick = () => window.location.href = 'feed.html';
-document.getElementById('profileNavBtn').onclick = () => window.location.href = 'profile.html';
-document.getElementById('messagesNavBtn').onclick = () => window.location.href = 'messages.html';
-document.getElementById('notificationsNavBtn').onclick = () => window.location.href = 'notifications.html';
-document.getElementById('dashboardNavBtn').onclick = () => window.location.href = 'dashboard.html';
-document.getElementById('leaderboardsNavBtn')?.addEventListener('click', () => window.location.href = 'leaderboards.html');
-document.getElementById('adminNavBtn').onclick = () => window.location.href = 'admin.html';
-document.getElementById('contactNavBtn').onclick = () => window.location.href = 'contact.html';
-document.getElementById('logoutBtn').onclick = async () => {
-  await auth.signOut();
-  window.location.href = 'login.html';
-};
+function setupNavigation() {
+  const buttons = {
+    feedNavBtn: 'feed.html',
+    profileNavBtn: 'profile.html',
+    messagesNavBtn: 'messages.html',
+    notificationsNavBtn: 'notifications.html',
+    dashboardNavBtn: 'dashboard.html',
+    leaderboardsNavBtn: 'leaderboards.html',
+    contactNavBtn: 'contact.html',
+    adminNavBtn: 'admin.html'
+  };
 
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
-hamburger.onclick = () => {
-  hamburger.classList.toggle('active');
-  navLinks.classList.toggle('active');
-};
+  Object.keys(buttons).forEach(btnId => {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      btn.onclick = () => window.location.href = buttons[btnId];
+    }
+  });
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+      await auth.signOut();
+      window.location.href = 'login.html';
+    };
+  }
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  if (hamburger && navLinks) {
+    hamburger.onclick = () => {
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    };
+  }
+}
+
+// Call navigation setup
+setupNavigation();
 
 // ═══════════════════════════════════════════════════════════
-// USER SEARCH - FIXED
+// USER SEARCH
 // ═══════════════════════════════════════════════════════════
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
 let searchTimeout;
 
-searchBar.addEventListener('input', async (e) => {
-  const searchTerm = e.target.value.trim().toLowerCase();
- 
-  if (searchTerm.length === 0) {
+if (searchBar) {
+  searchBar.addEventListener('input', async (e) => {
+    const searchTerm = e.target.value.trim().toLowerCase();
+   
+    if (searchTerm.length === 0) {
+      searchResults.style.display = 'none';
+      clearSearchBtn.style.display = 'none';
+      return;
+    }
+   
+    clearSearchBtn.style.display = 'block';
+   
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      try {
+        const usersSnapshot = await db.collection('users')
+          .where('usernameLower', '>=', searchTerm)
+          .where('usernameLower', '<=', searchTerm + '\uf8ff')
+          .limit(10)
+          .get();
+       
+        searchResults.innerHTML = '';
+       
+        if (usersSnapshot.empty) {
+          searchResults.innerHTML = '<p class="no-results">No users found</p>';
+        } else {
+          usersSnapshot.forEach(doc => {
+            const user = doc.data();
+            const item = document.createElement('div');
+            item.className = 'search-result-item';
+            
+            const levelBadge = user.level ? `<span class="level-badge">Lv.${user.level}</span>` : '';
+            
+            item.innerHTML = `
+              <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&size=45'}" class="search-result-avatar" alt="Avatar">
+              <div>
+                <span class="search-result-username">@${user.username}</span>
+                ${levelBadge}
+              </div>
+            `;
+            item.onclick = () => {
+              window.location.href = `profile.html?uid=${doc.id}`;
+            };
+            searchResults.appendChild(item);
+          });
+        }
+       
+        searchResults.style.display = 'block';
+       
+      } catch (error) {
+        console.error('Search error:', error);
+        searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
+        searchResults.style.display = 'block';
+      }
+    }, 300);
+  });
+
+  clearSearchBtn.onclick = () => {
+    searchBar.value = '';
     searchResults.style.display = 'none';
     clearSearchBtn.style.display = 'none';
-    return;
-  }
- 
-  clearSearchBtn.style.display = 'block';
- 
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(async () => {
-    try {
-      const usersSnapshot = await db.collection('users')
-        .where('usernameLower', '>=', searchTerm)
-        .where('usernameLower', '<=', searchTerm + '\uf8ff')
-        .limit(10)
-        .get();
-     
-      searchResults.innerHTML = '';
-     
-      if (usersSnapshot.empty) {
-        searchResults.innerHTML = '<p class="no-results">No users found</p>';
-      } else {
-        usersSnapshot.forEach(doc => {
-          const user = doc.data();
-          const item = document.createElement('div');
-          item.className = 'search-result-item';
-          
-          const levelBadge = user.level ? `<span class="level-badge">Lv.${user.level}</span>` : '';
-          
-          item.innerHTML = `
-            <img src="${user.photoURL || 'https://via.placeholder.com/45'}" class="search-result-avatar" alt="Avatar">
-            <div>
-              <span class="search-result-username">@${user.username}</span>
-              ${levelBadge}
-            </div>
-          `;
-          item.onclick = () => {
-            window.location.href = `profile.html?uid=${doc.id}`;
-          };
-          searchResults.appendChild(item);
-        });
-      }
-     
-      searchResults.style.display = 'block';
-     
-    } catch (error) {
-      console.error('Search error:', error);
-      searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
-      searchResults.style.display = 'block';
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-container')) {
+      searchResults.style.display = 'none';
     }
-  }, 300);
-});
-
-clearSearchBtn.onclick = () => {
-  searchBar.value = '';
-  searchResults.style.display = 'none';
-  clearSearchBtn.style.display = 'none';
-};
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.search-container')) {
-    searchResults.style.display = 'none';
-  }
-});
+  });
+}
 
 // ═══════════════════════════════════════════════════════════
 // CREATE POST
@@ -148,74 +169,71 @@ const postBtn = document.getElementById('postBtn');
 const postText = document.getElementById('postText');
 const postFileInput = document.getElementById('postFileInput');
 
-postBtn.onclick = async () => {
-  const text = postText.value.trim();
-  const file = postFileInput.files[0];
- 
-  if (!text && !file) {
-    return alert('Post cannot be empty');
-  }
- 
-  const user = auth.currentUser;
-  if (!user) return;
- 
-  postBtn.disabled = true;
-  postBtn.textContent = 'Posting...';
- 
-  try {
-    let mediaURL = '';
-    let mediaType = '';
+if (postBtn) {
+  postBtn.onclick = async () => {
+    const text = postText.value.trim();
+    const file = postFileInput.files[0];
    
-    if (file) {
-      mediaType = file.type.startsWith('video') ? 'video' : 'image';
-      const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
-      await storageRef.put(file);
-      mediaURL = await storageRef.getDownloadURL();
+    if (!text && !file) {
+      return alert('Post cannot be empty');
     }
    
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    const username = userDoc.data()?.username || user.email.split('@')[0];
+    const user = auth.currentUser;
+    if (!user) return;
    
-    await db.collection('posts').add({
-      userId: user.uid,
-      username: username,
-      usernameLower: username.toLowerCase(),
-      text: text,
-      mediaURL: mediaURL,
-      mediaType: mediaType,
-      likedBy: [],
-      dislikedBy: [],
-      type: 'user_post',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    // Add XP for creating post
+    postBtn.disabled = true;
+    postBtn.textContent = 'Posting...';
+   
     try {
-      await functions.httpsCallable('addXP')({ action: 'createPost' });
-    } catch (xpError) {
-      console.log('XP add failed (non-critical):', xpError);
+      let mediaURL = '';
+      let mediaType = '';
+     
+      if (file) {
+        mediaType = file.type.startsWith('video') ? 'video' : 'image';
+        const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
+        await storageRef.put(file);
+        mediaURL = await storageRef.getDownloadURL();
+      }
+     
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const username = userDoc.data()?.username || user.email.split('@')[0];
+     
+      await db.collection('posts').add({
+        userId: user.uid,
+        username: username,
+        usernameLower: username.toLowerCase(),
+        text: text,
+        mediaURL: mediaURL,
+        mediaType: mediaType,
+        likedBy: [],
+        dislikedBy: [],
+        type: 'user_post',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+     
+      postText.value = '';
+      postFileInput.value = '';
+      postBtn.textContent = 'Post';
+      postBtn.disabled = false;
+     
+      loadPosts();
+     
+    } catch (error) {
+      console.error('Post error:', error);
+      alert('Error creating post: ' + error.message);
+      postBtn.textContent = 'Post';
+      postBtn.disabled = false;
     }
-   
-    postText.value = '';
-    postFileInput.value = '';
-    postBtn.textContent = 'Post';
-    postBtn.disabled = false;
-   
-    loadPosts();
-   
-  } catch (error) {
-    console.error('Post error:', error);
-    alert('Error creating post: ' + error.message);
-    postBtn.textContent = 'Post';
-    postBtn.disabled = false;
-  }
-};
+  };
+}
 
 // ═══════════════════════════════════════════════════════════
-// LOAD POSTS - WITH GIFT ANNOUNCEMENTS
+// LOAD POSTS
 // ═══════════════════════════════════════════════════════════
 async function loadPosts() {
   const container = document.getElementById('postsContainer');
+  if (!container) return;
+  
   container.innerHTML = '<p style="text-align:center;color:#666;">Loading...</p>';
  
   try {
@@ -247,10 +265,11 @@ async function loadPosts() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// RENDER GIFT POST - PUBLIC ANNOUNCEMENT
+// RENDER GIFT POST
 // ═══════════════════════════════════════════════════════════
 function renderGiftPost(post, postId) {
   const container = document.getElementById('postsContainer');
+  if (!container) return;
   
   const postDiv = document.createElement('div');
   postDiv.className = 'post-card gift-post-card';
@@ -260,7 +279,7 @@ function renderGiftPost(post, postId) {
   
   postDiv.innerHTML = `
     <div class="gift-post-header">
-      <span class="gift-post-emoji">${post.giftEmoji}</span>
+      <span class="gift-post-emoji">${post.giftEmoji || '🎁'}</span>
       <span class="gift-post-title">GIFT SENT!</span>
     </div>
     <div class="gift-post-content">
@@ -268,9 +287,9 @@ function renderGiftPost(post, postId) {
         🔥 <strong class="username-link" data-uid="${post.fromUserId}">@${post.fromUsername}</strong> 
         just sent 
         <strong class="username-link" data-uid="${post.toUserId}">@${post.toUsername}</strong> 
-        a <span class="gift-name">${post.giftEmoji} ${post.giftName.toUpperCase()}</span>!
+        a <span class="gift-name">${post.giftEmoji || '🎁'} ${post.giftName || 'Gift'}</span>!
       </p>
-      <div class="gift-post-price">$${post.giftPrice.toFixed(2)}</div>
+      <div class="gift-post-price">$${(post.giftPrice || 0).toFixed(2)}</div>
     </div>
     <div class="gift-post-footer">
       <small>${timestamp}</small>
@@ -279,7 +298,6 @@ function renderGiftPost(post, postId) {
   
   container.appendChild(postDiv);
   
-  // Add sparkle animation
   setTimeout(() => {
     postDiv.classList.add('gift-sparkle');
   }, 100);
@@ -290,6 +308,8 @@ function renderGiftPost(post, postId) {
 // ═══════════════════════════════════════════════════════════
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
+  if (!container) return;
+  
   const user = auth.currentUser;
   const isOwner = post.userId === user.uid;
   const isAdmin = ADMIN_EMAILS.includes(user.email);
@@ -341,7 +361,9 @@ function renderPost(post, postId) {
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('username-link')) {
     const uid = e.target.dataset.uid;
-    window.location.href = `profile.html?uid=${uid}`;
+    if (uid) {
+      window.location.href = `profile.html?uid=${uid}`;
+    }
   }
 });
 
@@ -370,15 +392,6 @@ document.addEventListener('click', async (e) => {
           likedBy: firebase.firestore.FieldValue.arrayUnion(userId),
           dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId)
         });
-        
-        // Add XP to post owner
-        if (post.userId !== userId) {
-          try {
-            await functions.httpsCallable('addXP')({ action: 'receiveLike', targetUserId: post.userId });
-          } catch (xpError) {
-            console.log('XP add failed (non-critical)');
-          }
-        }
       }
       loadPosts();
     } catch (error) {
@@ -412,7 +425,9 @@ document.addEventListener('click', async (e) => {
   // COMMENT TOGGLE
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
-    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+    if (commentsSection) {
+      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+    }
   }
  
   // SHARE
@@ -427,8 +442,14 @@ document.addEventListener('click', async (e) => {
     currentGiftPost = postId;
     currentGiftRecipient = e.target.dataset.recipient;
     currentGiftUsername = e.target.dataset.username;
-    document.getElementById('giftRecipientName').textContent = currentGiftUsername;
-    document.getElementById('giftDialog').style.display = 'flex';
+    const recipientName = document.getElementById('giftRecipientName');
+    if (recipientName) {
+      recipientName.textContent = currentGiftUsername;
+    }
+    const giftDialog = document.getElementById('giftDialog');
+    if (giftDialog) {
+      giftDialog.style.display = 'flex';
+    }
   }
  
   // DELETE POST
@@ -448,6 +469,8 @@ document.addEventListener('click', async (e) => {
   // COMMENT
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
+    if (!input) return;
+    
     const text = input.value.trim();
     if (!text) return;
    
@@ -468,7 +491,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// COMMENTS - WITH DELETE BUTTONS
+// COMMENTS
 // ═══════════════════════════════════════════════════════════
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
@@ -542,7 +565,9 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
   if (replyBtn) {
     replyBtn.onclick = () => {
       const replyBox = document.getElementById(`reply-box-${commentId}`);
-      replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
+      if (replyBox) {
+        replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
+      }
     };
   }
   
@@ -564,6 +589,8 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
   if (sendReplyBtn) {
     sendReplyBtn.onclick = async () => {
       const input = document.getElementById(`reply-input-${commentId}`);
+      if (!input) return;
+      
       const text = input.value.trim();
       if (!text) return;
       
@@ -579,7 +606,8 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
       });
       
       input.value = '';
-      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+      const replyBox = document.getElementById(`reply-box-${commentId}`);
+      if (replyBox) replyBox.style.display = 'none';
       loadComments(postId);
     };
   }
@@ -587,7 +615,8 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
   const cancelReplyBtn = commentDiv.querySelector('.cancel-reply-btn');
   if (cancelReplyBtn) {
     cancelReplyBtn.onclick = () => {
-      document.getElementById(`reply-box-${commentId}`).style.display = 'none';
+      const replyBox = document.getElementById(`reply-box-${commentId}`);
+      if (replyBox) replyBox.style.display = 'none';
     };
   }
 }
@@ -612,11 +641,17 @@ async function loadReplies(postId, parentCommentId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// GIFT DIALOG - ALL 18 GIFTS
+// GIFT DIALOG
 // ═══════════════════════════════════════════════════════════
-document.getElementById('cancelGiftBtn').onclick = () => {
-  document.getElementById('giftDialog').style.display = 'none';
-};
+const cancelGiftBtn = document.getElementById('cancelGiftBtn');
+if (cancelGiftBtn) {
+  cancelGiftBtn.onclick = () => {
+    const giftDialog = document.getElementById('giftDialog');
+    if (giftDialog) {
+      giftDialog.style.display = 'none';
+    }
+  };
+}
 
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
@@ -633,7 +668,10 @@ document.querySelectorAll('.gift-option').forEach(option => {
       return;
     }
    
-    document.getElementById('giftDialog').style.display = 'none';
+    const giftDialog = document.getElementById('giftDialog');
+    if (giftDialog) {
+      giftDialog.style.display = 'none';
+    }
    
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
@@ -673,8 +711,9 @@ auth.onAuthStateChanged(user => {
   if (!user) {
     window.location.href = 'login.html';
   } else {
-    if (ADMIN_EMAILS.includes(user.email)) {
-      document.getElementById('adminNavBtn').style.display = 'inline-block';
+    const adminBtn = document.getElementById('adminNavBtn');
+    if (adminBtn && ADMIN_EMAILS.includes(user.email)) {
+      adminBtn.style.display = 'inline-block';
     }
     loadPosts();
   }

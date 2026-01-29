@@ -289,11 +289,36 @@
     </div>
   </div>
   
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-  <script src="feed.js"></script>
+ ```html
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+<!-- Firebase Init (INLINE - ONCE) -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAHMbxr7rJS88ZefVJzt8p_9CCTstLmLU8",
+  authDomain: "yourspace-2026.firebaseapp.com",
+  projectId: "yourspace-2026",
+  storageBucket: "yourspace-2026.firebasestorage.app",
+  messagingSenderId: "72667267302",
+  appId: "1:72667267302:web:2bed5f543e05d49ca8fb27"
+};
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+</script>
+
+<!-- Navigation -->
+<script src="navigation.js"></script>
+
+<!-- Feed Page -->
+<script src="feed.js"></script>
+
+</body>
+</html>
+```
 </body>
 </html>

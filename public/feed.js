@@ -1,13 +1,7 @@
-// feed.js - COMPLETE (navigation.js handles Firebase initialization)
-
-// Use Firebase instances from navigation.js (already initialized)
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// feed.js - Uses Firebase directly (NO const declarations)
 
 const ADMIN_EMAILS = ["skeeterjeeter8@gmail.com", "daniellehunt01@gmail.com"];
 
-// ALL 18 GIFT PAYMENT LINKS
 const GIFT_PAYMENT_LINKS = {
   rose: "https://buy.stripe.com/3cIaEXg9kdE25E7g8x7bW00",
   coffee: "https://buy.stripe.com/7sY9ATf5garQaYrg8x7bW01",
@@ -33,7 +27,6 @@ let currentGiftPost = null;
 let currentGiftRecipient = null;
 let currentGiftUsername = null;
 
-// USER SEARCH
 const searchBar = document.getElementById('searchBar');
 const searchResults = document.getElementById('searchResults');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
@@ -42,26 +35,21 @@ let searchTimeout;
 if (searchBar) {
   searchBar.addEventListener('input', async (e) => {
     const searchTerm = e.target.value.trim().toLowerCase();
-   
     if (searchTerm.length === 0) {
       searchResults.style.display = 'none';
       clearSearchBtn.style.display = 'none';
       return;
     }
-   
     clearSearchBtn.style.display = 'block';
-   
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
       try {
-        const usersSnapshot = await db.collection('users')
+        const usersSnapshot = await firebase.firestore().collection('users')
           .where('usernameLower', '>=', searchTerm)
           .where('usernameLower', '<=', searchTerm + '\uf8ff')
           .limit(10)
           .get();
-       
         searchResults.innerHTML = '';
-       
         if (usersSnapshot.empty) {
           searchResults.innerHTML = '<p class="no-results">No users found</p>';
         } else {
@@ -69,9 +57,7 @@ if (searchBar) {
             const user = doc.data();
             const item = document.createElement('div');
             item.className = 'search-result-item';
-            
             const levelBadge = user.level ? `<span class="level-badge">Lv.${user.level}</span>` : '';
-            
             item.innerHTML = `
               <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username) + '&size=45'}" class="search-result-avatar" alt="Avatar">
               <div>
@@ -79,15 +65,11 @@ if (searchBar) {
                 ${levelBadge}
               </div>
             `;
-            item.onclick = () => {
-              window.location.href = `profile.html?uid=${doc.id}`;
-            };
+            item.onclick = () => window.location.href = `profile.html?uid=${doc.id}`;
             searchResults.appendChild(item);
           });
         }
-       
         searchResults.style.display = 'block';
-       
       } catch (error) {
         console.error('Search error:', error);
         searchResults.innerHTML = '<p class="no-results">Error searching users</p>';
@@ -111,7 +93,6 @@ if (searchBar) {
   });
 }
 
-// CREATE POST
 const postBtn = document.getElementById('postBtn');
 const postText = document.getElementById('postText');
 const postFileInput = document.getElementById('postFileInput');
@@ -120,32 +101,23 @@ if (postBtn) {
   postBtn.onclick = async () => {
     const text = postText.value.trim();
     const file = postFileInput.files[0];
-   
-    if (!text && !file) {
-      return alert('Post cannot be empty');
-    }
-   
-    const user = auth.currentUser;
+    if (!text && !file) return alert('Post cannot be empty');
+    const user = firebase.auth().currentUser;
     if (!user) return;
-   
     postBtn.disabled = true;
     postBtn.textContent = 'Posting...';
-   
     try {
       let mediaURL = '';
       let mediaType = '';
-     
       if (file) {
         mediaType = file.type.startsWith('video') ? 'video' : 'image';
-        const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
+        const storageRef = firebase.storage().ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
         await storageRef.put(file);
         mediaURL = await storageRef.getDownloadURL();
       }
-     
-      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
-     
-      await db.collection('posts').add({
+      await firebase.firestore().collection('posts').add({
         userId: user.uid,
         username: username,
         usernameLower: username.toLowerCase(),
@@ -157,14 +129,11 @@ if (postBtn) {
         type: 'user_post',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-     
       postText.value = '';
       postFileInput.value = '';
       postBtn.textContent = 'Post';
       postBtn.disabled = false;
-     
       loadPosts();
-     
     } catch (error) {
       console.error('Post error:', error);
       alert('Error creating post: ' + error.message);
@@ -174,26 +143,20 @@ if (postBtn) {
   };
 }
 
-// LOAD POSTS
 async function loadPosts() {
   const container = document.getElementById('postsContainer');
   if (!container) return;
-  
   container.innerHTML = '<p style="text-align:center;color:#666;">Loading...</p>';
- 
   try {
-    const snapshot = await db.collection('posts')
+    const snapshot = await firebase.firestore().collection('posts')
       .orderBy('createdAt', 'desc')
       .limit(50)
       .get();
-   
     container.innerHTML = '';
-   
     if (snapshot.empty) {
       container.innerHTML = '<p style="text-align:center;color:#666;">No posts yet. Be the first!</p>';
       return;
     }
-   
     snapshot.forEach(doc => {
       const post = doc.data();
       if (post.type === 'gift_announcement') {
@@ -202,24 +165,19 @@ async function loadPosts() {
         renderPost(post, doc.id);
       }
     });
-   
   } catch (error) {
     console.error('Load posts error:', error);
     container.innerHTML = '<p style="text-align:center;color:red;">Error loading posts</p>';
   }
 }
 
-// RENDER GIFT POST
 function renderGiftPost(post, postId) {
   const container = document.getElementById('postsContainer');
   if (!container) return;
-  
   const postDiv = document.createElement('div');
   postDiv.className = 'post-card gift-post-card';
   postDiv.id = `post-${postId}`;
-  
   const timestamp = post.createdAt ? post.createdAt.toDate().toLocaleString() : 'Just now';
-  
   postDiv.innerHTML = `
     <div class="gift-post-header">
       <span class="gift-post-emoji">${post.giftEmoji || '🎁'}</span>
@@ -238,44 +196,31 @@ function renderGiftPost(post, postId) {
       <small>${timestamp}</small>
     </div>
   `;
-  
   container.appendChild(postDiv);
-  
-  setTimeout(() => {
-    postDiv.classList.add('gift-sparkle');
-  }, 100);
+  setTimeout(() => postDiv.classList.add('gift-sparkle'), 100);
 }
 
-// RENDER REGULAR POST
 function renderPost(post, postId) {
   const container = document.getElementById('postsContainer');
   if (!container) return;
-  
-  const user = auth.currentUser;
+  const user = firebase.auth().currentUser;
   const isOwner = post.userId === user.uid;
   const isAdmin = ADMIN_EMAILS.includes(user.email);
- 
   const postDiv = document.createElement('div');
   postDiv.className = 'post-card';
   postDiv.id = `post-${postId}`;
- 
   const timestamp = post.createdAt ? post.createdAt.toDate().toLocaleString() : 'Just now';
   const likeCount = post.likedBy?.length || 0;
   const dislikeCount = post.dislikedBy?.length || 0;
   const isLiked = post.likedBy?.includes(user.uid);
   const isDisliked = post.dislikedBy?.includes(user.uid);
- 
   postDiv.innerHTML = `
     <div class="post-header">
       <strong style="cursor:pointer;" class="username-link" data-uid="${post.userId}">${post.username}</strong>
       <small>${timestamp}</small>
     </div>
     <p>${post.text || ''}</p>
-    ${post.mediaURL ? (
-      post.mediaType === 'video'
-        ? `<video controls src="${post.mediaURL}" class="post-media"></video>`
-        : `<img src="${post.mediaURL}" class="post-media" />`
-    ) : ''}
+    ${post.mediaURL ? (post.mediaType === 'video' ? `<video controls src="${post.mediaURL}" class="post-media"></video>` : `<img src="${post.mediaURL}" class="post-media" />`) : ''}
     <div class="actions">
       <button class="like-btn ${isLiked ? 'active' : ''}" data-postid="${postId}">👍 ${likeCount}</button>
       <button class="dislike-btn ${isDisliked ? 'active' : ''}" data-postid="${postId}">👎 ${dislikeCount}</button>
@@ -293,12 +238,10 @@ function renderPost(post, postId) {
       </div>
     </div>
   `;
- 
   container.appendChild(postDiv);
   loadComments(postId);
 }
 
-// Username click handler
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('username-link')) {
     const uid = e.target.dataset.uid;
@@ -306,15 +249,15 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// POST ACTIONS
 document.addEventListener('click', async (e) => {
   const postId = e.target.dataset.postid;
   if (!postId) return;
- 
-  const userId = auth.currentUser.uid;
- 
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  const userId = user.uid;
+
   if (e.target.classList.contains('like-btn')) {
-    const postRef = db.collection('posts').doc(postId);
+    const postRef = firebase.firestore().collection('posts').doc(postId);
     const post = (await postRef.get()).data();
     if (post.likedBy?.includes(userId)) {
       await postRef.update({ likedBy: firebase.firestore.FieldValue.arrayRemove(userId) });
@@ -326,9 +269,9 @@ document.addEventListener('click', async (e) => {
     }
     loadPosts();
   }
- 
+
   if (e.target.classList.contains('dislike-btn')) {
-    const postRef = db.collection('posts').doc(postId);
+    const postRef = firebase.firestore().collection('posts').doc(postId);
     const post = (await postRef.get()).data();
     if (post.dislikedBy?.includes(userId)) {
       await postRef.update({ dislikedBy: firebase.firestore.FieldValue.arrayRemove(userId) });
@@ -340,19 +283,17 @@ document.addEventListener('click', async (e) => {
     }
     loadPosts();
   }
- 
+
   if (e.target.classList.contains('comment-toggle')) {
     const commentsSection = document.getElementById(`comments-${postId}`);
-    if (commentsSection) {
-      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-    }
+    if (commentsSection) commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
   }
- 
+
   if (e.target.classList.contains('share-btn')) {
     navigator.clipboard.writeText(`${window.location.origin}/feed.html#post-${postId}`);
     alert('Link copied!');
   }
- 
+
   if (e.target.classList.contains('gift-btn')) {
     currentGiftPost = postId;
     currentGiftRecipient = e.target.dataset.recipient;
@@ -362,28 +303,28 @@ document.addEventListener('click', async (e) => {
     const giftDialog = document.getElementById('giftDialog');
     if (giftDialog) giftDialog.style.display = 'flex';
   }
- 
+
   if (e.target.classList.contains('delete-btn')) {
     if (confirm('Delete this post?')) {
-      await db.collection('posts').doc(postId).delete();
+      await firebase.firestore().collection('posts').doc(postId).delete();
       loadPosts();
     }
   }
- 
+
   if (e.target.classList.contains('pin-btn')) {
-    await db.collection('posts').doc(postId).update({ pinned: true });
+    await firebase.firestore().collection('posts').doc(postId).update({ pinned: true });
     loadPosts();
   }
- 
+
   if (e.target.classList.contains('comment-btn')) {
     const input = document.getElementById(`comment-input-${postId}`);
     if (!input) return;
     const text = input.value.trim();
     if (!text) return;
-    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-    await db.collection('posts').doc(postId).collection('comments').add({
-      userId: auth.currentUser.uid,
+    const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+    const username = userDoc.data()?.username || user.email.split('@')[0];
+    await firebase.firestore().collection('posts').doc(postId).collection('comments').add({
+      userId: user.uid,
       username: username,
       text: text,
       parentCommentId: null,
@@ -394,12 +335,11 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// COMMENTS
 async function loadComments(postId) {
   const commentsList = document.getElementById(`comments-list-${postId}`);
   if (!commentsList) return;
   try {
-    const snapshot = await db.collection('posts').doc(postId)
+    const snapshot = await firebase.firestore().collection('posts').doc(postId)
       .collection('comments')
       .where('parentCommentId', '==', null)
       .orderBy('createdAt', 'asc')
@@ -422,12 +362,10 @@ async function renderComment(comment, commentId, postId, container, isReply) {
   commentDiv.className = 'comment-thread';
   if (isReply) commentDiv.style.marginLeft = '40px';
   const timestamp = comment.createdAt ? comment.createdAt.toDate().toLocaleString() : 'Just now';
-  const currentUserId = auth.currentUser?.uid;
-  const isOwner = comment.userId === currentUserId;
+  const currentUser = firebase.auth().currentUser;
+  const isOwner = comment.userId === currentUser?.uid;
   commentDiv.innerHTML = `
-    <div class="comment-avatar">
-      <div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div>
-    </div>
+    <div class="comment-avatar"><div class="avatar-circle">${comment.username.charAt(0).toUpperCase()}</div></div>
     <div class="comment-content">
       <div class="comment-header">
         <strong class="comment-username">${comment.username}</strong>
@@ -463,7 +401,7 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
   if (deleteBtn) {
     deleteBtn.onclick = async () => {
       if (confirm('Delete comment?')) {
-        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+        await firebase.firestore().collection('posts').doc(postId).collection('comments').doc(commentId).delete();
         loadComments(postId);
       }
     };
@@ -475,10 +413,11 @@ function attachCommentHandlers(commentDiv, commentId, postId) {
       if (!input) return;
       const text = input.value.trim();
       if (!text) return;
-      const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-      const username = userDoc.data()?.username || auth.currentUser.email.split('@')[0];
-      await db.collection('posts').doc(postId).collection('comments').add({
-        userId: auth.currentUser.uid,
+      const user = firebase.auth().currentUser;
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+      const username = userDoc.data()?.username || user.email.split('@')[0];
+      await firebase.firestore().collection('posts').doc(postId).collection('comments').add({
+        userId: user.uid,
         username: username,
         text: text,
         parentCommentId: commentId,
@@ -501,7 +440,7 @@ async function loadReplies(postId, parentCommentId) {
   const repliesContainer = document.getElementById(`replies-${parentCommentId}`);
   if (!repliesContainer) return;
   try {
-    const snapshot = await db.collection('posts').doc(postId)
+    const snapshot = await firebase.firestore().collection('posts').doc(postId)
       .collection('comments')
       .where('parentCommentId', '==', parentCommentId)
       .orderBy('createdAt', 'asc')
@@ -514,7 +453,6 @@ async function loadReplies(postId, parentCommentId) {
   }
 }
 
-// GIFT DIALOG
 const cancelGiftBtn = document.getElementById('cancelGiftBtn');
 if (cancelGiftBtn) {
   cancelGiftBtn.onclick = () => {
@@ -526,21 +464,15 @@ if (cancelGiftBtn) {
 document.querySelectorAll('.gift-option').forEach(option => {
   option.onclick = async () => {
     const giftType = option.dataset.gift;
-    if (!currentGiftPost || !currentGiftRecipient) {
-      alert('Error: Missing post or recipient information');
-      return;
-    }
-    const user = auth.currentUser;
-    if (!user) {
-      alert('You must be logged in');
-      return;
-    }
+    if (!currentGiftPost || !currentGiftRecipient) return alert('Error: Missing post or recipient information');
+    const user = firebase.auth().currentUser;
+    if (!user) return alert('You must be logged in');
     const giftDialog = document.getElementById('giftDialog');
     if (giftDialog) giftDialog.style.display = 'none';
     try {
-      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
       const username = userDoc.data()?.username || user.email.split('@')[0];
-      const giftRef = await db.collection('gifts').add({
+      const giftRef = await firebase.firestore().collection('gifts').add({
         fromUserId: user.uid,
         fromUsername: username,
         toUserId: currentGiftRecipient,
@@ -564,7 +496,6 @@ document.querySelectorAll('.gift-option').forEach(option => {
   };
 });
 
-// PAGE LOAD
 window.onAuthReady = function(user) {
   loadPosts();
 };
